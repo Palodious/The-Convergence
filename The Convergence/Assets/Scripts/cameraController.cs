@@ -19,8 +19,8 @@ public class cameraController : MonoBehaviour
     void Update()
     {
         // get input
-        float mouseX = Input.GetAxisRaw("Mouse X") + sens * Time.deltaTime;
-        float mouseY = Input.GetAxisRaw("Mouse Y") + sens * Time.deltaTime;
+        float mouseX = Input.GetAxisRaw("Mouse X") * sens * Time.deltaTime;
+        float mouseY = Input.GetAxisRaw("Mouse Y") * sens * Time.deltaTime;
 
         // use the invertY
         if (invertY)
