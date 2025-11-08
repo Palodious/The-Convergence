@@ -31,7 +31,6 @@ public class enemyAI : MonoBehaviour, IDamage
     void Start()
     {
         colorOrig = model.material.color;
-        gamemanager.instance.updateGameGoal(1);
         stoppingDistOrig = agent.stoppingDistance;
 
     }
@@ -49,7 +48,6 @@ public class enemyAI : MonoBehaviour, IDamage
 
     bool canSeePlayer()
     {
-        playerDir = gamemanager.instance.player.transform.position - headPos.position;
         angleToPlayer = Vector3.Angle(playerDir, transform.forward);
 
         Debug.DrawRay(headPos.position, playerDir);
@@ -61,7 +59,6 @@ public class enemyAI : MonoBehaviour, IDamage
 
             if (angleToPlayer <= FOV && hit.collider.CompareTag("Player"))
             {
-                agent.SetDestination(gamemanager.instance.player.transform.position);
 
                 if (shootTimer >= shootRate)
                 {
@@ -104,7 +101,6 @@ public class enemyAI : MonoBehaviour, IDamage
 
         if (HP <= 0)
         {
-            gamemanager.instance.updateGameGoal(-1);
             Destroy(gameObject);
         }
         else
