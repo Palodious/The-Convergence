@@ -246,6 +246,37 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 50, y: -30, z: 0}
+--- !u!1 &230276096
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 230276097}
+  m_Layer: 0
+  m_Name: Patrol Point 1
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &230276097
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 230276096}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 34.58, y: 0, z: 7.46}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &338388883
 GameObject:
   m_ObjectHideFlags: 0
@@ -310,6 +341,37 @@ MonoBehaviour:
   m_MinRegionArea: 2
   m_NavMeshData: {fileID: 23800000, guid: 034413472cc19004980f4fd81bb054ce, type: 2}
   m_BuildHeightMesh: 0
+--- !u!1 &463893697
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 463893698}
+  m_Layer: 0
+  m_Name: Patrol Point 2
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &463893698
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 463893697}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 10.01, y: 0, z: 7.47}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1394528613
 GameObject:
   m_ObjectHideFlags: 0
@@ -793,7 +855,7 @@ Transform:
   m_GameObject: {fileID: 7407676147446938368}
   serializedVersion: 2
   m_LocalRotation: {x: 0.000000021855694, y: 0, z: -0, w: 1}
-  m_LocalPosition: {x: 15.58256, y: 0, z: -6.44125}
+  m_LocalPosition: {x: 15.58256, y: 0.83, z: -6.44125}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -811,10 +873,12 @@ GameObject:
   m_Component:
   - component: {fileID: 7407676147446769440}
   - component: {fileID: 7407676147449025954}
+  - component: {fileID: 7407676147449025955}
   - component: {fileID: 7407676147443869440}
   - component: {fileID: 7407676147444999616}
   - component: {fileID: 7407676147449025952}
   - component: {fileID: 7407676147449025953}
+  - component: {fileID: 7407676147449025956}
   m_Layer: 0
   m_Name: Willy the Patrol Bot
   m_TagString: Untagged
@@ -863,7 +927,7 @@ NavMeshAgent:
   m_AutoBraking: 1
   m_AutoRepath: 1
   m_Height: 3.216654
-  m_BaseOffset: 1.608327
+  m_BaseOffset: 0.8
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
 --- !u!114 &7407676147449025954
@@ -881,12 +945,64 @@ MonoBehaviour:
   agent: {fileID: 7407676147449025953}
   model: {fileID: 7407676147444999616}
   headPOS: {fileID: 0}
-  HP: 0
-  FOV: 0
-  faceTargetSpeed: 0
+  HP: 30
+  FOV: 50
+  faceTargetSpeed: 100
   bullet: {fileID: 0}
-  shootRate: 0
-  shootPOS: {fileID: 0}
+  shootRate: 0.25
+  shootPOS: {fileID: 6407002878540162478}
+--- !u!114 &7407676147449025955
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7407676147446938368}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 36d36acae6ac70d4aa70c7204b045b3c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::enemyAIExtras
+  ai: {fileID: 7407676147449025954}
+  agent: {fileID: 7407676147449025953}
+  useShield: 0
+  shieldHP: 30
+  shieldMaxHP: 30
+  shieldRegenDelay: 5
+  shieldPrefab: {fileID: 0}
+  shieldFlashColor: {r: 1, g: 1, b: 1, a: 1}
+  shieldFlashDuration: 0.1
+  useMelee: 0
+  meleeDamage: 0
+  meleeRange: 0
+  meleeRate: 0
+  usePatrol: 1
+  patrolPoints:
+  - {fileID: 230276097}
+  - {fileID: 463893698}
+  patrolWaitTime: 3
+  useShooting: 1
+--- !u!135 &7407676147449025956
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7407676147446938368}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Radius: 8
+  m_Center: {x: 0, y: 1.1744165, z: -0.028170496}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
@@ -897,3 +1013,5 @@ SceneRoots:
   - {fileID: 1394528617}
   - {fileID: 4854333678391905049}
   - {fileID: 7407676147446769440}
+  - {fileID: 230276097}
+  - {fileID: 463893698}
