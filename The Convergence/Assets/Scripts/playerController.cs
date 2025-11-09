@@ -115,6 +115,7 @@ public class playerController : MonoBehaviour, IDamage
         if (HP <= 0)
         {
             // You Lose!!!
+            gamemanager.instance.youLose();
         }
     }
     public void updatePlayerUI()
