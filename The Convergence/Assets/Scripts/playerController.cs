@@ -1,6 +1,6 @@
 using UnityEngine;
 using System.Collections;
-using Unity.VisualScripting;
+
 
 public class playerController : MonoBehaviour, IDamage
 {
@@ -119,6 +119,7 @@ public class playerController : MonoBehaviour, IDamage
     }
     public void updatePlayerUI()
     {
+        gamemanager.instance.playerHPBar.fillAmount = (float)HP / HPOrig;
     }
 
     IEnumerator screenFlashDamage()
