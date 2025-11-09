@@ -12,6 +12,9 @@ public class gamemanager : MonoBehaviour
 
     public TMP_Text gameGoalCountText;
 
+    public GameObject player;
+    public playerController controller;
+
     public bool isPaused;
 
     float timeScaleOrig;
@@ -23,6 +26,9 @@ public class gamemanager : MonoBehaviour
     {
         instance = this;
         timeScaleOrig = Time.timeScale;
+
+        player = GameObject.FindWithTag("Player");
+        controller = player.GetComponent<playerController>();
 
     }
 

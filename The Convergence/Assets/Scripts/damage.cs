@@ -17,7 +17,7 @@ public class damage : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        if (type == damageType.moving || type == damageType.homing)
+        if (type == damageType.moving || type == damageType.homing || type == damageType.melee)
         {
             Destroy(gameObject, destroyTime);
 
@@ -33,6 +33,7 @@ public class damage : MonoBehaviour
     {
         if (type == damageType.homing)
         {
+            rb.linearVelocity = (gamemanager.instance.player.transform.position - transform.position).normalized * speed * Time.deltaTime;
         }
     }
 
@@ -51,6 +52,7 @@ public class damage : MonoBehaviour
             Destroy(gameObject);
         }
     }
+
     private void OnTriggerStay(Collider other)
     {
         if (other.isTrigger)
