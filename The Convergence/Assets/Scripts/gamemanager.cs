@@ -59,6 +59,7 @@ public class gamemanager : MonoBehaviour
         Time.timeScale = 0;
         Cursor.visible = true;
         Cursor.lockState = CursorLockMode.None;
+        controller.enabled = false; //
     }
     public void stateUnpause()
     {
@@ -68,6 +69,7 @@ public class gamemanager : MonoBehaviour
         Cursor.lockState = CursorLockMode.Locked;
         menuActive.SetActive(false);
         menuActive = null;
+        controller.enabled = true; //
     }
     public void updateGameGoal(int amount)
     {
