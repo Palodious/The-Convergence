@@ -1,6 +1,4 @@
 using UnityEngine;
-using TMPro;
-using UnityEngine.UI;
 
 public class gamemanager : MonoBehaviour
 {
@@ -10,10 +8,6 @@ public class gamemanager : MonoBehaviour
     [SerializeField] GameObject menuPause;
     [SerializeField] GameObject menuWin;
     [SerializeField] GameObject menuLose;
-
-
-    public Image playerHPBar;
-
 
     public bool isPaused;
 
