@@ -91,19 +91,33 @@ public class playerController : MonoBehaviour, IDamage
 
     void shoot()
     {
-        shootTimer = 0;
-
         RaycastHit hit;
+
         if (Physics.Raycast(Camera.main.transform.position, Camera.main.transform.forward, out hit, shootDist, ~ignoreLayer))
         {
-            Debug.Log(hit.collider.name);
+            Debug.Log("Hit: " + hit.collider.name);
 
+            // Find the enemyExtras script on the object or its parent
+            enemyAIExtras enemyExtras = hit.collider.GetComponentInParent<enemyAIExtras>();
+
+            // If the enemy has a shield and it’s active, damage the shield
+            if (enemyExtras != null && enemyExtras.IsShieldActive())
+            {
+                enemyExtras.takeShieldDamage((int)shootDamage);
+                shootTimer = 0;
+                return; // Stop here so the hit doesn’t also damage the enemy
+            }
+
+            // Otherwise, try to damage the enemy or other object
             IDamage dmg = hit.collider.GetComponent<IDamage>();
             if (dmg != null)
             {
-                dmg.takeDamage(shootDamage);
+                dmg.takeDamage((int)shootDamage);
             }
         }
+
+        shootTimer = 0;
+        updatePlayerUI();
     }
 
     public void takeDamage(int amount)
