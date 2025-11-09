@@ -1,5 +1,6 @@
 using UnityEngine;
 using TMPro;
+using UnityEngine.UI;
 
 public class gamemanager : MonoBehaviour
 {
@@ -11,6 +12,7 @@ public class gamemanager : MonoBehaviour
     [SerializeField] GameObject menuLose;
 
     public TMP_Text gameGoalCountText;
+    public Image playerHPBar;
 
     public GameObject player;
     public playerController controller;

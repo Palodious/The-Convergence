@@ -118,13 +118,14 @@ public class playerController : MonoBehaviour, IDamage
             gamemanager.instance.youLose();
         }
     }
-    public void updatePlayerUI()
-    {
-        //gamemanager.instance.playerHPBar.fillAmount = (float)HP / HPOrig;
-    }
 
     IEnumerator screenFlashDamage()
     {
         yield return new WaitForSeconds(0.1f);
+    }
+
+    public void updatePlayerUI()
+    {
+        gamemanager.instance.playerHPBar.fillAmount = (float)HP / HPOrig;
     }
 }
