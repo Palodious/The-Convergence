@@ -54,7 +54,7 @@ public class enemyAIExtras : MonoBehaviour
         }
 
         // Start patrol if enabled and has valid points
-        if (usePatrol && patrolPoints.Length > 0)
+        if (usePatrol && agent != null && patrolPoints.Length > 0)   // <-- added agent != null
         {
             isPatrolling = true;
             agent.SetDestination(patrolPoints[patrolIndex].position);
@@ -85,7 +85,7 @@ public class enemyAIExtras : MonoBehaviour
         }
 
         // Patrol loop that triggers once enemy reaches destination
-        if (usePatrol && isPatrolling)
+        if (usePatrol && isPatrolling && agent != null)   // <-- added agent != null
         {
             if (!agent.pathPending && agent.remainingDistance <= agent.stoppingDistance)
                 StartCoroutine(patrolWait());
@@ -147,6 +147,11 @@ public class enemyAIExtras : MonoBehaviour
         }
     }
 
+    public bool IsShieldBroken()
+    {
+        return shieldBroken;
+    }
+
     IEnumerator shieldRegen()
     {
         // Waits for delay before regenerating shield
@@ -182,7 +187,9 @@ public class enemyAIExtras : MonoBehaviour
         if (patrolIndex >= patrolPoints.Length)
             patrolIndex = 0;
 
-        agent.SetDestination(patrolPoints[patrolIndex].position);
+        if (agent != null)   // <-- added agent != null
+            agent.SetDestination(patrolPoints[patrolIndex].position);
+
         isPatrolling = true;
     }
 
