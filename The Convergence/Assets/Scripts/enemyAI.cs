@@ -16,21 +16,6 @@ public class enemyAI : MonoBehaviour, IDamage
     [SerializeField] float shootRate;
     [SerializeField] Transform shootPOS;
 
-    // Shield features
-    [SerializeField] bool hasShield = false; // Toggle shield on/off
-    [SerializeField] int maxShield; // Maximum shield value
-    [SerializeField] float shieldRegenRate; // Amount regenerated per second
-    [SerializeField] float shieldRegenDelay; // Time before regen starts after taking damage
-    [SerializeField] GameObject shieldVisual; // GameObject for shield visuals
-    [SerializeField] Color shieldFlashColor = Color.white; // Color when shield flashes on damage
-    [SerializeField] float shieldFlashDuration = 0.1f; // How long the shield flashes
-
-    int currentShield;
-    bool shieldBroken;
-    bool canRegenShield;
-    Coroutine regenCoroutine;
-    Color shieldOrigColor; // Original color for shield flash
-
     // Patrol features
     [SerializeField] bool enablePatrol = false; // Toggle patrol on/off
     [SerializeField] Transform[] patrolPoints;  // List of patrol points
@@ -55,29 +40,14 @@ public class enemyAI : MonoBehaviour, IDamage
 
     float shootTimer;
     float angleToPlayer;
-    Vector3 playerDir;
     float stoppingDistOrig;
+    Vector3 playerDir;
 
     void Start()
     {
         colorOrig = model.material.color;
         gamemanager.instance.updateGameGoal(1);
         stoppingDistOrig = agent.stoppingDistance;
-
-        // Initialize shield if enabled
-        if (hasShield)
-        {
-            currentShield = maxShield; // Initialize shield value
-            shieldBroken = false; // Shield is not broken at start
-            canRegenShield = true; // Allow regen initially
-
-            // Enable shield visuals
-            if (shieldVisual != null)
-            {
-                shieldVisual.SetActive(true);
-                shieldOrigColor = shieldVisual.GetComponent<Renderer>().material.color;
-            }
-        }
 
         // Start patrol if enabled and waypoints exist
         if (enablePatrol && patrolPoints != null && patrolPoints.Length > 0)
@@ -99,6 +69,7 @@ public class enemyAI : MonoBehaviour, IDamage
         }
         else if (playerInTrigger && !canSeePlayer())
         {
+            // Player is in range but not visible; start counting down to resume patrol
             if (canCurrentlySeePlayer)
             {
                 lostSightTimer += Time.deltaTime;
@@ -108,6 +79,7 @@ public class enemyAI : MonoBehaviour, IDamage
                     playerInTrigger = false; // Stop chasing, resume patrol
                     lostSightTimer = 0;
 
+                    // Start random rotation only after fully stopped
                     if (enablePatrol && !isRotating && patrolPoints.Length > 0)
                         StartCoroutine(RandomRotation());
                 }
@@ -116,14 +88,6 @@ public class enemyAI : MonoBehaviour, IDamage
         else if (enablePatrol && patrolPoints != null && patrolPoints.Length > 0)
         {
             Patrol(); // Run patrol when not chasing
-        }
-
-        // Handle shield regeneration (gradual)
-        if (hasShield && !shieldBroken && canRegenShield && currentShield < maxShield)
-        {
-            currentShield += Mathf.CeilToInt(shieldRegenRate * Time.deltaTime);
-            if (currentShield > maxShield)
-                currentShield = maxShield;
         }
     }
 
@@ -154,43 +118,51 @@ public class enemyAI : MonoBehaviour, IDamage
         return false;
     }
 
+    // Handles moving between patrol points
     void Patrol()
     {
+        // Only act when agent is fully stopped at patrol point
         if (!agent.pathPending && agent.remainingDistance <= agent.stoppingDistance)
         {
-            patrolTimer += Time.deltaTime;
+            patrolTimer += Time.deltaTime; // Increment timer for waiting at current point
 
+            // Only rotate while waiting at the patrol point, not when moving
             if (!isRotating && patrolTimer < patrolWaitTime)
-                StartCoroutine(RandomRotation());
+            {
+                StartCoroutine(RandomRotation()); // Start random rotation coroutine
+            }
 
+            // Move to next patrol point after waiting
             if (patrolTimer >= patrolWaitTime)
             {
-                currentPatrolIndex = (currentPatrolIndex + 1) % patrolPoints.Length;
-                agent.SetDestination(patrolPoints[currentPatrolIndex].position);
-                patrolTimer = 0;
+                currentPatrolIndex = (currentPatrolIndex + 1) % patrolPoints.Length; // Loop through patrol points
+                agent.SetDestination(patrolPoints[currentPatrolIndex].position); // Move agent to next patrol point
+                patrolTimer = 0; // Reset wait timer
             }
         }
     }
 
+    // Coroutine to smoothly rotate randomly while stopped
     IEnumerator RandomRotation()
     {
         isRotating = true;
 
+        // Pick a random angle between 0 and 360 degrees
         float randomAngle = Random.Range(0f, 360f);
-        Quaternion startRot = transform.rotation;
-        Quaternion endRot = Quaternion.Euler(0, randomAngle, 0);
+        Quaternion startRot = transform.rotation; // Current rotation
+        Quaternion endRot = Quaternion.Euler(0, randomAngle, 0); // Target random rotation
 
         float rotationTime = Random.Range(minRotationTime, maxRotationTime);
         float elapsed = 0f;
 
         while (elapsed < rotationTime)
         {
-            transform.rotation = Quaternion.Slerp(startRot, endRot, elapsed / rotationTime);
-            elapsed += Time.deltaTime * rotationSpeed;
+            transform.rotation = Quaternion.Slerp(startRot, endRot, elapsed / rotationTime); // Smoothly rotate
+            elapsed += Time.deltaTime * rotationSpeed; // Increase elapsed based on rotation speed
             yield return null;
         }
 
-        transform.rotation = endRot;
+        transform.rotation = endRot; // Ensure final rotation matches exactly
         isRotating = false;
     }
 
@@ -203,7 +175,9 @@ public class enemyAI : MonoBehaviour, IDamage
     private void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("Player"))
+        {
             playerInTrigger = true;
+        }
     }
 
     private void OnTriggerExit(Collider other)
@@ -218,36 +192,6 @@ public class enemyAI : MonoBehaviour, IDamage
 
     public void takeDamage(int amount)
     {
-        // Handle shield before HP
-        if (hasShield && currentShield > 0)
-        {
-            currentShield -= amount;
-
-            // Stop any existing regen delay
-            if (regenCoroutine != null)
-                StopCoroutine(regenCoroutine);
-
-            canRegenShield = false;
-            regenCoroutine = StartCoroutine(ShieldRegenDelay());
-
-            // Flash shield visual
-            if (shieldVisual != null)
-                StartCoroutine(FlashShield());
-
-            // Check if shield breaks
-            if (currentShield <= 0)
-            {
-                currentShield = 0;
-                shieldBroken = true;
-
-                if (shieldVisual != null)
-                    shieldVisual.SetActive(false);
-            }
-
-            return; // Exit early so HP is not reduced
-        }
-
-        // Apply damage to HP if shield is inactive
         HP -= amount;
 
         if (HP <= 0)
@@ -258,33 +202,6 @@ public class enemyAI : MonoBehaviour, IDamage
         else
         {
             StartCoroutine(flashRed());
-        }
-    }
-
-    IEnumerator ShieldRegenDelay()
-    {
-        yield return new WaitForSeconds(shieldRegenDelay);
-        canRegenShield = true;
-
-        // If shield was broken, reset shield
-        if (shieldBroken)
-        {
-            shieldBroken = false;
-            currentShield = maxShield;
-            if (shieldVisual != null)
-                shieldVisual.SetActive(true);
-        }
-    }
-
-    IEnumerator FlashShield()
-    {
-        Renderer shieldRenderer = shieldVisual.GetComponent<Renderer>();
-        if (shieldRenderer != null)
-        {
-            Color originalColor = shieldRenderer.material.color;
-            shieldRenderer.material.color = shieldFlashColor;
-            yield return new WaitForSeconds(shieldFlashDuration);
-            shieldRenderer.material.color = originalColor;
         }
     }
 
@@ -299,6 +216,8 @@ public class enemyAI : MonoBehaviour, IDamage
     {
         shootTimer = 0;
         if (projectile != null && shootPOS != null)
+        {
             Instantiate(projectile, shootPOS.position, transform.rotation);
+        }
     }
 }
