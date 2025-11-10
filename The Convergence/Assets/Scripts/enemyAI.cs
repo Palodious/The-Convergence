@@ -82,6 +82,18 @@ public class enemyAI : MonoBehaviour, IDamage
         {
 
         }
+        else
+        {
+            // >>> ADDED: Patrol handling
+            if (patrolEnabled && patrolPoints != null && patrolPoints.Length > 0)
+            {
+                Patrol();
+            }
+            else
+            {
+                agent.SetDestination(transform.position);
+            }
+        }
     }
 
     bool canSeePlayer()
