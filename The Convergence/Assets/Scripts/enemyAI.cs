@@ -12,16 +12,16 @@ public class enemyAI : MonoBehaviour, IDamage
     [SerializeField] int FOV;
     [SerializeField] int faceTargetSpeed;
 
-    [SerializeField] GameObject bullet;
+    [SerializeField] GameObject Projectile;
     [SerializeField] float shootRate;
     [SerializeField] Transform shootPOS;
-
     [SerializeField] bool shootEnabled;
 
     [SerializeField] bool meleeEnabled;
-    [SerializeField] bool meleeObject;
+    [SerializeField] GameObject melee;
     [SerializeField] float meleeRate;
     [SerializeField] Transform meleePOS;
+    [SerializeField] float meleeRange;
 
     [SerializeField] bool patrolEnabled;
     [SerializeField] Transform[] patrolPoints;
@@ -35,7 +35,6 @@ public class enemyAI : MonoBehaviour, IDamage
     [SerializeField] float shieldRegenDelay;
     [SerializeField] int shieldRegenAmount;
     [SerializeField] float shieldRegenRate;
-
     [SerializeField] bool shieldBreakEnabled;
     [SerializeField] float shieldBrakDuration;
     [SerializeField] bool shieldBreakDisableOnBreak;
@@ -59,7 +58,7 @@ public class enemyAI : MonoBehaviour, IDamage
 
     int patrolIndex;
     float agentSpeedOrig;
-    bool isWAitingPatrol;
+    bool isWaitingPatrol;
 
     float meleeTimer;
 
@@ -163,6 +162,36 @@ public class enemyAI : MonoBehaviour, IDamage
     {
         shootTimer = 0;
 
-        Instantiate(bullet, shootPOS.position, shootPOS.rotation);
+        Instantiate(Projectile, shootPOS.position, shootPOS.rotation);
+    }
+    void Patrol()
+    {
+        if (patrolPoints == null || patrolPoints.Length == 0)
+            return;
+
+        if (isWaitingPatrol)
+            return;
+
+        if (!agent.hasPath || agent.remainingDistance <= agent.stoppingDistance)
+        {
+            StartCoroutine(PatrolWait());
+        }
+    }
+
+    IEnumerator PatrolWait()
+    {
+        isWaitingPatrol = true;
+
+        if (patrolWaitTime > 0)
+            yield return new WaitForSeconds(patrolWaitTime);
+
+        agent.speed = patrolSpeed;
+        agent.SetDestination(patrolPoints[patrolIndex].position);
+
+        patrolIndex++;
+        if (patrolIndex >= patrolPoints.Length)
+            patrolIndex = 0;
+
+        isWaitingPatrol = false;
     }
 }
