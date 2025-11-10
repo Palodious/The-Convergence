@@ -13,6 +13,7 @@ public class gamemanager : MonoBehaviour
 
     public TMP_Text gameGoalCountText;
     public Image playerHPBar;
+    public Image playerFlowBar;
     public GameObject playerDamagePanel;
 
     public GameObject player;
