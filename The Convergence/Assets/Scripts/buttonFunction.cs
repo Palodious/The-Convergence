@@ -13,6 +13,12 @@ public class buttonFunction : MonoBehaviour
         gamemanager.instance.stateUnpause();
     }
 
+    public void mainmenu()
+    {
+        gamemanager.instance.stateUnpause();
+        SceneManager.LoadScene("Main Menu");
+    }
+
     public void quit()
     {
 #if UNITY_EDITOR
