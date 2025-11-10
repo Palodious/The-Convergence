@@ -27,7 +27,7 @@ public class enemyAI : MonoBehaviour, IDamage
     bool canCurrentlySeePlayer; // Tracks if enemy currently sees player
 
     // Random rotation features
-    [SerializeField] float rotationSpeed ; // Speed of smooth rotation
+    [SerializeField] float rotationSpeed; // Speed of smooth rotation
     [SerializeField] float minRotationTime; // Minimum time to rotate
     [SerializeField] float maxRotationTime;  // Maximum time to rotate
     bool isRotating; // Tracks if currently rotating
@@ -124,20 +124,20 @@ public class enemyAI : MonoBehaviour, IDamage
         // Only act when agent is fully stopped at patrol point
         if (!agent.pathPending && agent.remainingDistance <= agent.stoppingDistance)
         {
-            patrolTimer += Time.deltaTime;
+            patrolTimer += Time.deltaTime; // Increment timer for waiting at current point
 
             // Only rotate while waiting at the patrol point, not when moving
             if (!isRotating && patrolTimer < patrolWaitTime)
             {
-                StartCoroutine(RandomRotation());
+                StartCoroutine(RandomRotation()); // Start random rotation coroutine
             }
 
             // Move to next patrol point after waiting
             if (patrolTimer >= patrolWaitTime)
             {
-                currentPatrolIndex = (currentPatrolIndex + 1) % patrolPoints.Length;
-                agent.SetDestination(patrolPoints[currentPatrolIndex].position);
-                patrolTimer = 0;
+                currentPatrolIndex = (currentPatrolIndex + 1) % patrolPoints.Length; // Loop through patrol points
+                agent.SetDestination(patrolPoints[currentPatrolIndex].position); // Move agent to next patrol point
+                patrolTimer = 0; // Reset wait timer
             }
         }
     }
@@ -149,20 +149,20 @@ public class enemyAI : MonoBehaviour, IDamage
 
         // Pick a random angle between 0 and 360 degrees
         float randomAngle = Random.Range(0f, 360f);
-        Quaternion startRot = transform.rotation;
-        Quaternion endRot = Quaternion.Euler(0, randomAngle, 0);
+        Quaternion startRot = transform.rotation; // Current rotation
+        Quaternion endRot = Quaternion.Euler(0, randomAngle, 0); // Target random rotation
 
         float rotationTime = Random.Range(minRotationTime, maxRotationTime);
         float elapsed = 0f;
 
         while (elapsed < rotationTime)
         {
-            transform.rotation = Quaternion.Slerp(startRot, endRot, elapsed / rotationTime);
-            elapsed += Time.deltaTime * rotationSpeed; // Only affects look-around speed
+            transform.rotation = Quaternion.Slerp(startRot, endRot, elapsed / rotationTime); // Smoothly rotate
+            elapsed += Time.deltaTime * rotationSpeed; // Increase elapsed based on rotation speed
             yield return null;
         }
 
-        transform.rotation = endRot;
+        transform.rotation = endRot; // Ensure final rotation matches exactly
         isRotating = false;
     }
 
