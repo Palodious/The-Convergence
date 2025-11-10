@@ -36,11 +36,12 @@ public class enemyAI : MonoBehaviour, IDamage
     [SerializeField] int shieldRegenAmount;
     [SerializeField] float shieldRegenRate;
     [SerializeField] bool shieldBreakEnabled;
-    [SerializeField] float shieldBrakDuration;
+    [SerializeField] float shieldBreakDuration;
     [SerializeField] bool shieldBreakDisableOnBreak;
 
 
     Color colorOrig;
+    Color shieldOrigColor;
 
     bool playerInTrigger;
 
@@ -70,7 +71,16 @@ public class enemyAI : MonoBehaviour, IDamage
         agentSpeedOrig = agent.speed;
 
         shieldCurrent = shieldMax;
+        if (shieldVFX != null)
+        {
+            shieldInstance = Instantiate(shieldVFX, transform.position, Quaternion.identity, transform);
+            shieldInstance.transform.localPosition = Vector3.zero;
+            shieldInstance.SetActive(shieldEnabled && shieldCurrent > 0 && !isShieldBroken);
 
+            Renderer r = shieldInstance.GetComponent<Renderer>();
+            if (r != null)
+                shieldOrigColor = r.material.color;
+        }
     }
 
     // Update is called once per frame
@@ -81,11 +91,10 @@ public class enemyAI : MonoBehaviour, IDamage
 
         if (playerInTrigger && canSeePlayer())
         {
-
+            
         }
         else
         {
-            // >>> ADDED: Patrol handling
             if (patrolEnabled && patrolPoints != null && patrolPoints.Length > 0)
             {
                 Patrol();
@@ -144,7 +153,6 @@ public class enemyAI : MonoBehaviour, IDamage
         if (other.CompareTag("Player"))
         {
             playerInTrigger = true;
-            // agent.stoppingDistance = 1.5f;
         }
     }
 
@@ -153,12 +161,48 @@ public class enemyAI : MonoBehaviour, IDamage
         if (other.CompareTag("Player"))
         {
             playerInTrigger = false;
-            // agent.stoppingDistance = stoppingDistOrig;
         }
     }
 
     public void takeDamage(int amount)
     {
+        if (shieldEnabled && !isShieldBroken && shieldCurrent > 0)
+        {
+            int left = amount - shieldCurrent;
+            shieldCurrent -= amount;
+
+            if (shieldInstance != null)
+            {
+                Renderer r = shieldInstance.GetComponent<Renderer>();
+                if (r != null)
+                    StartCoroutine(shieldFlash(r));
+            }
+
+            if (shieldCurrent <= 0)
+            {
+                shieldCurrent = 0;
+                OnShieldBroken();
+
+                if (left > 0)
+                    HP -= left;
+            }
+
+            if (shieldInstance != null)
+                shieldInstance.SetActive(shieldCurrent > 0 && !isShieldBroken);
+
+            if (shieldRegenEnabled && regenCoroutine != null)
+            {
+                StopCoroutine(regenCoroutine);
+                regenCoroutine = null;
+            }
+            if (shieldRegenEnabled && !isShieldBroken)
+                regenCoroutine = StartCoroutine(ShieldRegenDelay());
+
+            StartCoroutine(flashRed());
+            return;
+        }
+        // <<< END ADD
+
         HP -= amount;
 
         if (HP <= 0)
@@ -169,6 +213,76 @@ public class enemyAI : MonoBehaviour, IDamage
         {
             StartCoroutine(flashRed());
         }
+    }
+
+    IEnumerator shieldFlash(Renderer r)
+    {
+        r.material.color = Color.white;
+        yield return new WaitForSeconds(0.1f);
+        r.material.color = shieldOrigColor;
+    }
+
+    void OnShieldBroken()
+    {
+        if (!shieldEnabled)
+            return;
+
+        if (shieldBreakEnabled)
+        {
+            if (breakCoroutine != null)
+                StopCoroutine(breakCoroutine);
+
+            breakCoroutine = StartCoroutine(DoShieldBreak());
+        }
+        else
+        {
+            if (shieldInstance != null)
+                shieldInstance.SetActive(false);
+        }
+    }
+
+    IEnumerator DoShieldBreak()
+    {
+        isShieldBroken = true;
+
+        if (shieldInstance != null)
+            shieldInstance.SetActive(false);
+
+        if (shieldBreakDisableOnBreak && regenCoroutine != null)
+        {
+            StopCoroutine(regenCoroutine);
+            regenCoroutine = null;
+        }
+
+        yield return new WaitForSeconds(shieldBreakDuration);
+
+        shieldCurrent = shieldMax;
+        isShieldBroken = false;
+
+        if (shieldInstance != null)
+            shieldInstance.SetActive(true);
+
+        if (shieldRegenEnabled && regenCoroutine == null)
+            regenCoroutine = StartCoroutine(ShieldRegenDelay());
+    }
+
+    IEnumerator ShieldRegenDelay()
+    {
+        yield return new WaitForSeconds(shieldRegenDelay);
+
+        while (shieldCurrent < shieldMax && shieldRegenEnabled && !isShieldBroken)
+        {
+            shieldCurrent += shieldRegenAmount;
+            if (shieldCurrent > shieldMax)
+                shieldCurrent = shieldMax;
+
+            if (shieldInstance != null)
+                shieldInstance.SetActive(shieldCurrent > 0 && !isShieldBroken);
+
+            yield return new WaitForSeconds(shieldRegenRate);
+        }
+
+        regenCoroutine = null;
     }
 
     IEnumerator flashRed()
