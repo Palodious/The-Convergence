@@ -15858,7 +15858,6 @@ GameObject:
   m_Component:
   - component: {fileID: 7407676147446769440}
   - component: {fileID: 7407676147449025954}
-  - component: {fileID: 7407676147449025955}
   - component: {fileID: 7407676147443869440}
   - component: {fileID: 7407676147444999616}
   - component: {fileID: 7407676147449025952}
@@ -15933,40 +15932,9 @@ MonoBehaviour:
   HP: 30
   FOV: 50
   faceTargetSpeed: 100
-  bullet: {fileID: 0}
+  bullet: {fileID: 5859473114449325236}
   shootRate: 0.25
   shootPOS: {fileID: 6407002878540162478}
---- !u!114 &7407676147449025955
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7407676147446938368}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 36d36acae6ac70d4aa70c7204b045b3c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::enemyAIExtras
-  ai: {fileID: 7407676147449025954}
-  agent: {fileID: 7407676147449025953}
-  useShield: 1
-  shieldHP: 30
-  shieldMaxHP: 30
-  shieldRegenDelay: 5
-  shieldPrefab: {fileID: 4559513475317550826}
-  shieldFlashColor: {r: 1, g: 1, b: 1, a: 1}
-  shieldFlashDuration: 0.1
-  useMelee: 0
-  meleeDamage: 0
-  meleeRange: 0
-  meleeRate: 0
-  usePatrol: 1
-  patrolPoints:
-  - {fileID: 4218026897995479974}
-  - {fileID: 93139458750466466}
-  patrolWaitTime: 3
-  useShooting: 1
 --- !u!135 &7407676147449025956
 SphereCollider:
   m_ObjectHideFlags: 0
