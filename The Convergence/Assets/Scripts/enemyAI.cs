@@ -12,7 +12,7 @@ public class enemyAI : MonoBehaviour, IDamage
     [SerializeField] int FOV;
     [SerializeField] int faceTargetSpeed;
 
-    [SerializeField] GameObject Projectile;
+    [SerializeField] GameObject bullet;
     [SerializeField] float shootRate;
     [SerializeField] Transform shootPOS;
 
@@ -31,7 +31,6 @@ public class enemyAI : MonoBehaviour, IDamage
     void Start()
     {
         colorOrig = model.material.color;
-        gamemanager.instance.updateGameGoal(1);
         stoppingDistOrig = agent.stoppingDistance;
 
     }
@@ -87,7 +86,7 @@ public class enemyAI : MonoBehaviour, IDamage
         if (other.CompareTag("Player"))
         {
             playerInTrigger = true;
-           // agent.stoppingDistance = 1.5f;
+            // agent.stoppingDistance = 1.5f;
         }
     }
 
@@ -96,7 +95,7 @@ public class enemyAI : MonoBehaviour, IDamage
         if (other.CompareTag("Player"))
         {
             playerInTrigger = false;
-           // agent.stoppingDistance = stoppingDistOrig;
+            // agent.stoppingDistance = stoppingDistOrig;
         }
     }
 
@@ -106,7 +105,6 @@ public class enemyAI : MonoBehaviour, IDamage
 
         if (HP <= 0)
         {
-            gamemanager.instance.updateGameGoal(-1);
             Destroy(gameObject);
         }
         else
@@ -126,6 +124,6 @@ public class enemyAI : MonoBehaviour, IDamage
     {
         shootTimer = 0;
 
-        Instantiate(Projectile, shootPOS.position, shootPOS.rotation);
+        Instantiate(bullet, shootPOS.position, shootPOS.rotation);
     }
 }
