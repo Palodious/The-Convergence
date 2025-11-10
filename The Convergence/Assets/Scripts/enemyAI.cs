@@ -16,8 +16,21 @@ public class enemyAI : MonoBehaviour, IDamage
     [SerializeField] float shootRate;
     [SerializeField] Transform shootPOS;
 
+    // Shield features
+    [SerializeField] bool hasShield; // Toggle shield on/off
+    [SerializeField] int maxShield; // Maximum shield value
+    [SerializeField] float shieldRegenRate; // Amount regenerated per second
+    [SerializeField] float sRegenDelay; // Time before regen starts after taking damage
+    [SerializeField] GameObject shieldVisual; // GameObject for shield visuals
+    [SerializeField] Renderer shieldRenderer; // Renderer for flash effect
+
+    int currentShield;
+    bool shieldBroken;
+    bool canRegenShield;
+    Coroutine regenCoroutine;
+
     // Patrol features
-    [SerializeField] bool enablePatrol = false; // Toggle patrol on/off
+    [SerializeField] bool enablePatrol; // Toggle patrol on/off
     [SerializeField] Transform[] patrolPoints;  // List of patrol points
     [SerializeField] float patrolWaitTime; // Time to wait at each patrol point
 
@@ -36,6 +49,7 @@ public class enemyAI : MonoBehaviour, IDamage
     float patrolTimer;
 
     Color colorOrig;
+    Color shieldOrigColor;
     bool playerInTrigger;
 
     float shootTimer;
@@ -48,6 +62,20 @@ public class enemyAI : MonoBehaviour, IDamage
         colorOrig = model.material.color;
         gamemanager.instance.updateGameGoal(1);
         stoppingDistOrig = agent.stoppingDistance;
+
+        // Initialize shield if enabled
+        if (hasShield)
+        {
+            currentShield = maxShield;
+            shieldBroken = false;
+            canRegenShield = true;
+
+            if (shieldVisual != null)
+                shieldVisual.SetActive(true);
+
+            if (shieldRenderer != null)
+                shieldOrigColor = shieldRenderer.material.color;
+        }
 
         // Start patrol if enabled and waypoints exist
         if (enablePatrol && patrolPoints != null && patrolPoints.Length > 0)
@@ -88,6 +116,14 @@ public class enemyAI : MonoBehaviour, IDamage
         else if (enablePatrol && patrolPoints != null && patrolPoints.Length > 0)
         {
             Patrol(); // Run patrol when not chasing
+        }
+
+        // Handle shield regeneration
+        if (hasShield && !shieldBroken && canRegenShield && currentShield < maxShield)
+        {
+            currentShield += Mathf.CeilToInt(shieldRegenRate * Time.deltaTime);
+            if (currentShield > maxShield)
+                currentShield = maxShield;
         }
     }
 
@@ -192,6 +228,34 @@ public class enemyAI : MonoBehaviour, IDamage
 
     public void takeDamage(int amount)
     {
+        // Handle shield before HP
+        if (hasShield && !shieldBroken && currentShield > 0)
+        {
+            currentShield -= amount;
+
+            if (regenCoroutine != null)
+                StopCoroutine(regenCoroutine);
+
+            canRegenShield = false;
+            regenCoroutine = StartCoroutine(shieldRegenDelay());
+
+            if (currentShield <= 0)
+            {
+                currentShield = 0;
+                shieldBroken = true;
+
+                // Shield break visual or sound effect could go here
+                if (shieldVisual != null)
+                    shieldVisual.SetActive(false);
+            }
+            else
+            {
+                StartCoroutine(flashShield());
+            }
+
+            return; // Exit early so HP is not reduced
+        }
+
         HP -= amount;
 
         if (HP <= 0)
@@ -205,11 +269,35 @@ public class enemyAI : MonoBehaviour, IDamage
         }
     }
 
+    IEnumerator shieldRegenDelay()
+    {
+        yield return new WaitForSeconds(sRegenDelay);
+        canRegenShield = true;
+
+        // If shield was broken, reactivate visuals once regen starts
+        if (hasShield && shieldBroken)
+        {
+            shieldBroken = false;
+            if (shieldVisual != null)
+                shieldVisual.SetActive(true);
+        }
+    }
+
     IEnumerator flashRed()
     {
         model.material.color = Color.red;
         yield return new WaitForSeconds(0.1f);
         model.material.color = colorOrig;
+    }
+
+    IEnumerator flashShield()
+    {
+        if (shieldRenderer != null)
+        {
+            shieldRenderer.material.color = Color.white;
+            yield return new WaitForSeconds(0.1f);
+            shieldRenderer.material.color = shieldOrigColor;
+        }
     }
 
     void shoot()
