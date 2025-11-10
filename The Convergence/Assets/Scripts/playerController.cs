@@ -4,40 +4,47 @@ using System.Collections;
 public class playerController : MonoBehaviour, IDamage
 {
     [SerializeField] CharacterController controller;
-    [SerializeField] LayerMask ignoreLayer;
+    [SerializeField] LayerMask ignoreLayer;  // ignore layers for shooting  
 
     [SerializeField] int HP;
     [SerializeField] int speed;
     [SerializeField] int sprintMod;
     [SerializeField] int JumpSpeed;
     [SerializeField] int maxJumps;
-    [SerializeField] int gravity;
+    [SerializeField] int gravity;  // gravity applied each frame  
 
     [SerializeField] int shootDamage;
     [SerializeField] int shootDist;
-    [SerializeField] float shootRate;
+    [SerializeField] float shootRate;  // time between shots  
 
+    [SerializeField] float glideGravity;// lower gravity while gliding  
+    [SerializeField] float crouchSpeedMod;
+    [SerializeField] float crouchHeight;
+    float originalHeight;  // remember height for uncrouch  
+    int originalSpeed; // store original speed  
 
     Vector3 moveDir;
     Vector3 playerVel;
 
     int jumpCount;
     int HPOrig;
-
     float shootTimer;
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    bool isCrouching;  // crouch state  
+    bool isGliding;    // glide state  
+
     void Start()
     {
         HPOrig = HP;
-        updatePlayerUI();
+        originalHeight = controller.height;
+        originalSpeed = speed;
+
+        updatePlayerUI(); // fill HP bar at start
     }
 
-    // Update is called once per frame
     void Update()
     {
         Debug.DrawRay(Camera.main.transform.position, Camera.main.transform.forward * shootDist, Color.red);
-
         shootTimer += Time.deltaTime;
 
         movement();
@@ -48,35 +55,38 @@ public class playerController : MonoBehaviour, IDamage
     {
         if (controller.isGrounded)
         {
-            playerVel = Vector3.zero;
+            if (playerVel.y < 0) playerVel.y = -2f;
             jumpCount = 0;
         }
         else
         {
-            playerVel.y -= gravity * Time.deltaTime;
+            if (isGliding)
+                playerVel.y = Mathf.Max(playerVel.y - glideGravity * Time.deltaTime, -glideGravity);
+            else
+                playerVel.y -= gravity * Time.deltaTime;  // normal gravity  
         }
+
         moveDir = Input.GetAxis("Horizontal") * transform.right + Input.GetAxis("Vertical") * transform.forward;
         controller.Move(moveDir * speed * Time.deltaTime);
 
         jump();
         controller.Move(playerVel * Time.deltaTime);
 
-        if (Input.GetButton("Fire1") && shootTimer >= shootRate)
+        if (Input.GetKey(KeyCode.C)) crouch();
+        else uncrouch();  // restore if not crouched  
+
+        if (!controller.isGrounded)
         {
-            shoot();
+            if (Input.GetKeyDown(KeyCode.G)) StartGlide();
+            if (Input.GetKeyUp(KeyCode.G)) StopGlide();
         }
+        else if (isGliding) StopGlide();
     }
 
     void sprint()
     {
-        if (Input.GetButtonDown("Sprint"))
-        {
-            speed *= sprintMod;
-        }
-        else if (Input.GetButtonUp("Sprint"))
-        {
-            speed /= sprintMod;
-        }
+        if (Input.GetButtonDown("Sprint")) speed *= sprintMod;
+        else if (Input.GetButtonUp("Sprint")) speed /= sprintMod;
     }
 
     void jump()
@@ -88,20 +98,48 @@ public class playerController : MonoBehaviour, IDamage
         }
     }
 
+    void crouch()
+    {
+        if (!isCrouching)
+        {
+            isCrouching = true;
+            controller.height = crouchHeight;
+            speed = Mathf.RoundToInt(originalSpeed * crouchSpeedMod);  // slow down  
+        }
+    }
+
+    void uncrouch()
+    {
+        if (isCrouching)
+        {
+            isCrouching = false;
+            controller.height = originalHeight;  // back to normal height  
+            speed = originalSpeed;  // speed reset  
+        }
+    }
+
+    void StartGlide()
+    {
+        if (!controller.isGrounded && !isGliding)
+        {
+            isGliding = true;
+            playerVel.y = -1f;  // little downward push to start  
+        }
+    }
+
+    void StopGlide()
+    {
+        if (isGliding) isGliding = false;
+    }
+
     void shoot()
     {
         shootTimer = 0;
 
-        RaycastHit hit;
-        if (Physics.Raycast(Camera.main.transform.position, Camera.main.transform.forward, out hit, shootDist, ~ignoreLayer))
+        if (Physics.Raycast(Camera.main.transform.position, Camera.main.transform.forward, out RaycastHit hit, shootDist, ~ignoreLayer))
         {
-            Debug.Log(hit.collider.name);
-
             IDamage dmg = hit.collider.GetComponent<IDamage>();
-            if (dmg != null)
-            {
-                dmg.takeDamage(shootDamage);
-            }
+            if (dmg != null) dmg.takeDamage(shootDamage);
         }
     }
 
@@ -111,15 +149,13 @@ public class playerController : MonoBehaviour, IDamage
         updatePlayerUI();
         StartCoroutine(screenFlashDamage());
 
-        if (HP <= 0)
-        {
-            // You Lose!!!
-            gamemanager.instance.youLose();
-        }
+        if (HP <= 0) gamemanager.instance.youLose();  // game over  
     }
+
     public void updatePlayerUI()
     {
-        gamemanager.instance.playerHPBar.fillAmount = (float)HP / HPOrig;
+        if (gamemanager.instance.playerHPBar != null)
+            gamemanager.instance.playerHPBar.fillAmount = (float)HP / HPOrig;
     }
 
     IEnumerator screenFlashDamage()
