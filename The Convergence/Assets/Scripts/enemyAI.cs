@@ -12,7 +12,7 @@ public class enemyAI : MonoBehaviour, IDamage
     [SerializeField] int FOV;
     [SerializeField] int faceTargetSpeed;
 
-    [SerializeField] GameObject bullet;
+    [SerializeField] GameObject Projectile;
     [SerializeField] float shootRate;
     [SerializeField] Transform shootPOS;
 
@@ -126,6 +126,6 @@ public class enemyAI : MonoBehaviour, IDamage
     {
         shootTimer = 0;
 
-        Instantiate(bullet, shootPOS.position, shootPOS.rotation);
+        Instantiate(Projectile, shootPOS.position, shootPOS.rotation);
     }
 }
