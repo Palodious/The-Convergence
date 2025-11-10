@@ -33,6 +33,9 @@ public class playerController : MonoBehaviour, IDamage
     bool isCrouching;  // crouch state  
     bool isGliding;    // glide state  
 
+    // Modified by playerAbilities during surge
+    [HideInInspector] public float damageBoost = 1f;
+
     void Start()
     {
         HPOrig = HP;
@@ -139,7 +142,7 @@ public class playerController : MonoBehaviour, IDamage
         if (Physics.Raycast(Camera.main.transform.position, Camera.main.transform.forward, out RaycastHit hit, shootDist, ~ignoreLayer))
         {
             IDamage dmg = hit.collider.GetComponent<IDamage>();
-            if (dmg != null) dmg.takeDamage(shootDamage);
+            if (dmg != null) dmg.takeDamage(Mathf.RoundToInt(shootDamage * damageBoost));
         }
     }
 
