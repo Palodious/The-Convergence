@@ -16,6 +16,30 @@ public class enemyAI : MonoBehaviour, IDamage
     [SerializeField] float shootRate;
     [SerializeField] Transform shootPOS;
 
+    [SerializeField] bool shootEnabled;
+
+    [SerializeField] bool meleeEnabled;
+    [SerializeField] bool meleeObject;
+    [SerializeField] float meleeRate;
+    [SerializeField] Transform meleePOS;
+
+    [SerializeField] bool patrolEnabled;
+    [SerializeField] Transform[] patrolPoints;
+    [SerializeField] float patrolSpeed;
+    [SerializeField] float patrolWaitTime;
+
+    [SerializeField] bool shieldEnabled;
+    [SerializeField] int shieldMax;
+    [SerializeField] GameObject shieldVFX;
+    [SerializeField] bool shieldRegenEnabled;
+    [SerializeField] float shieldRegenDelay;
+    [SerializeField] int shieldRegenAmount;
+    [SerializeField] float shieldRegenRate;
+
+    [SerializeField] bool shieldBreakEnabled;
+    [SerializeField] float shieldBrakDuration;
+    [SerializeField] bool shieldBreakDisableOnBreak;
+
 
     Color colorOrig;
 
@@ -27,11 +51,26 @@ public class enemyAI : MonoBehaviour, IDamage
 
     Vector3 playerDir;
 
+    int shieldCurrent;
+    bool isShieldBroken;
+    GameObject shieldInstance;
+    Coroutine regenCoroutine;
+    Coroutine breakCoroutine;
+
+    int patrolIndex;
+    float agentSpeedOrig;
+    bool isWAitingPatrol;
+
+    float meleeTimer;
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         colorOrig = model.material.color;
         stoppingDistOrig = agent.stoppingDistance;
+        agentSpeedOrig = agent.speed;
+
+        shieldCurrent = shieldMax;
 
     }
 
