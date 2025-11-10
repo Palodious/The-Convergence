@@ -18,7 +18,7 @@ public class enemyAI : MonoBehaviour, IDamage
     [SerializeField] bool shootEnabled;
 
     [SerializeField] bool meleeEnabled;
-    [SerializeField] GameObject melee;
+    [SerializeField] GameObject meleeA;
     [SerializeField] float meleeRate;
     [SerializeField] Transform meleePOS;
     [SerializeField] float meleeRange;
@@ -77,6 +77,7 @@ public class enemyAI : MonoBehaviour, IDamage
     void Update()
     {
         shootTimer += Time.deltaTime;
+        meleeTimer += Time.deltaTime;
 
         if (playerInTrigger && canSeePlayer())
         {
@@ -110,9 +111,16 @@ public class enemyAI : MonoBehaviour, IDamage
 
             if (angleToPlayer <= FOV && hit.collider.CompareTag("Player"))
             {
+                agent.stoppingDistance = stoppingDistOrig;
                 agent.SetDestination(gamemanager.instance.player.transform.position);
 
-                if (shootTimer >= shootRate)
+                float distanceToPlayer = Vector3.Distance(transform.position, gamemanager.instance.player.transform.position);
+
+                if (meleeEnabled && meleeTimer >= meleeRate && distanceToPlayer <= meleeRange)   // melee priority
+                {
+                    melee();
+                }
+                else if (shootEnabled && shootTimer >= shootRate && distanceToPlayer > meleeRange) // shoot only if not melee range
                 {
                     shoot();
                 }
@@ -176,6 +184,13 @@ public class enemyAI : MonoBehaviour, IDamage
 
         Instantiate(Projectile, shootPOS.position, shootPOS.rotation);
     }
+
+    void melee()
+    {
+        meleeTimer = 0;
+        Instantiate(meleeA, meleePOS.position, meleePOS.rotation);
+    }
+
     void Patrol()
     {
         if (patrolPoints == null || patrolPoints.Length == 0)
