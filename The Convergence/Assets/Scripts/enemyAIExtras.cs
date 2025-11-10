@@ -1,5 +1,5 @@
-using UnityEngine;
 using System.Collections;
+using UnityEngine;
 using UnityEngine.AI;
 
 public class enemyAIExtras : MonoBehaviour
@@ -34,7 +34,6 @@ public class enemyAIExtras : MonoBehaviour
     int patrolIndex; // Current patrol point index
     float meleeTimer; // Tracks melee attack cooldown
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         // Initialize shield if enabled
@@ -67,7 +66,6 @@ public class enemyAIExtras : MonoBehaviour
         }
     }
 
-    // Update is called once per frame
     void Update()
     {
         // Handles melee attack timing and distance check
