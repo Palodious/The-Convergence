@@ -29,7 +29,7 @@ Transform:
   m_GameObject: {fileID: 2376811500745352790}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.93, z: 0}
+  m_LocalPosition: {x: 0, y: -80.93, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -61,6 +61,10 @@ MonoBehaviour:
   shootDamage: 5
   shootDist: 15
   shootRate: 0.5
+  glideGravity: 0
+  crouchSpeedMod: 0
+  crouchHeight: 0
+  damageBoost: 1
 --- !u!33 &2198682085582701513
 MeshFilter:
   m_ObjectHideFlags: 0
