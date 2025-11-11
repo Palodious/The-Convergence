@@ -18,10 +18,6 @@ public class pickupitem : MonoBehaviour
                 {
                     player.CurrentHP += amount;  // Use public property instead of inaccessible HP field
                 }
-                else if (type == PickupType.Flow)
-                {
-                    player.addFlow(amount);
-                }
             }
             Destroy(gameObject);
         }
