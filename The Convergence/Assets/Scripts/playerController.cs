@@ -58,17 +58,11 @@ public class playerController : MonoBehaviour, IDamage
     void movement()
     {
         // --- Crouch handling ---
-        if (Input.GetKey(KeyCode.C))
-        {
-            if (!isCrouching) crouch();
-        }
-        else
-        {
-            if (isCrouching) uncrouch();
-        }
+        if (Input.GetKey(KeyCode.C)) crouch();
+        else uncrouch();
 
-        // --- Horizontal input ---
-        Vector3 moveDir = (transform.right * Input.GetAxis("Horizontal") + transform.forward * Input.GetAxis("Vertical")).normalized;
+        // --- Horizontal movement ---
+        Vector3 moveInput = Input.GetAxis("Horizontal") * transform.right + Input.GetAxis("Vertical") * transform.forward;
 
         // --- Gravity / Glide ---
         if (controller.isGrounded)
@@ -81,7 +75,7 @@ public class playerController : MonoBehaviour, IDamage
             if (isGliding)
             {
                 playerVel.y -= glideGravity * Time.deltaTime;
-                playerVel.y = Mathf.Max(playerVel.y, -gravity * 0.4f); // gradual descent
+                playerVel.y = Mathf.Max(playerVel.y, -gravity * 0.4f);
             }
             else
             {
@@ -92,8 +86,8 @@ public class playerController : MonoBehaviour, IDamage
         // --- Jump ---
         jump();
 
-        // --- Combine horizontal and vertical movement ---
-        Vector3 velocity = moveDir * speed + new Vector3(0, playerVel.y, 0);
+        // --- Move character ---
+        Vector3 velocity = moveInput * speed + new Vector3(0, playerVel.y, 0);
         controller.Move(velocity * Time.deltaTime);
 
         // --- Glide toggle ---
@@ -105,11 +99,9 @@ public class playerController : MonoBehaviour, IDamage
         else if (isGliding) StopGlide();
 
         // --- Shooting ---
-        if (Input.GetButton("Fire1") && shootTimer >= shootRate)
-        {
-            shoot();
-        }
+        if (Input.GetButton("Fire1") && shootTimer >= shootRate) shoot();
     }
+
 
     void sprint()
     {
@@ -131,7 +123,14 @@ public class playerController : MonoBehaviour, IDamage
         if (!isCrouching)
         {
             isCrouching = true;
+
+            // Lower height
             controller.height = crouchHeight;
+
+            // Lower center
+            controller.center = new Vector3(controller.center.x, crouchHeight / 2f, controller.center.z);
+
+            // Slow player
             speed = Mathf.RoundToInt(originalSpeed * crouchSpeedMod);
         }
     }
@@ -140,23 +139,25 @@ public class playerController : MonoBehaviour, IDamage
     {
         if (isCrouching)
         {
-            isCrouching = false;
-            controller.height = originalHeight;
-            speed = originalSpeed;
-        }
-    }
+            // Check for space above
+            float standHeightDiff = originalHeight - controller.height;
+            Vector3 origin = transform.position + Vector3.up * controller.height;
+            RaycastHit hit;
+            if (!Physics.SphereCast(origin, controller.radius, Vector3.up, out hit, standHeightDiff))
+            {
+                isCrouching = false;
 
-    void UpdateCrouch()
-    {
-        if (Input.GetKey(KeyCode.C))
-        {
-            if (!isCrouching)
-                crouch();
-        }
-        else
-        {
-            if (isCrouching)
-                uncrouch();
+                // Move the player's **transform** up first by half the height difference
+                transform.position += Vector3.up * (standHeightDiff / 2f);
+
+                // Restore height and center
+                controller.height = originalHeight;
+                controller.center = new Vector3(controller.center.x, originalHeight / 2f, controller.center.z);
+
+                // Restore speed
+                speed = originalSpeed;
+            }
+            // else remain crouched
         }
     }
 
