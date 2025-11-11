@@ -57,7 +57,20 @@ public class playerController : MonoBehaviour, IDamage
 
     void movement()
     {
-        // Ground check
+        // --- Crouch handling ---
+        if (Input.GetKey(KeyCode.C))
+        {
+            if (!isCrouching) crouch();
+        }
+        else
+        {
+            if (isCrouching) uncrouch();
+        }
+
+        // --- Horizontal input ---
+        Vector3 moveDir = (transform.right * Input.GetAxis("Horizontal") + transform.forward * Input.GetAxis("Vertical")).normalized;
+
+        // --- Gravity / Glide ---
         if (controller.isGrounded)
         {
             if (playerVel.y < 0) playerVel.y = -2f;
@@ -66,24 +79,24 @@ public class playerController : MonoBehaviour, IDamage
         else
         {
             if (isGliding)
-                playerVel.y = Mathf.Max(playerVel.y - glideGravity * Time.deltaTime, -glideGravity);
+            {
+                playerVel.y -= glideGravity * Time.deltaTime;
+                playerVel.y = Mathf.Max(playerVel.y, -gravity * 0.4f); // gradual descent
+            }
             else
+            {
                 playerVel.y -= gravity * Time.deltaTime;
+            }
         }
 
-        // Movement
-        moveDir = Input.GetAxis("Horizontal") * transform.right + Input.GetAxis("Vertical") * transform.forward;
-        controller.Move(moveDir * speed * Time.deltaTime);
-
-        // Jump
+        // --- Jump ---
         jump();
-        controller.Move(playerVel * Time.deltaTime);
 
-        // Crouch
-        if (Input.GetKey(KeyCode.C)) crouch();
-        else uncrouch();
+        // --- Combine horizontal and vertical movement ---
+        Vector3 velocity = moveDir * speed + new Vector3(0, playerVel.y, 0);
+        controller.Move(velocity * Time.deltaTime);
 
-        // Glide
+        // --- Glide toggle ---
         if (!controller.isGrounded)
         {
             if (Input.GetKeyDown(KeyCode.G)) StartGlide();
@@ -91,6 +104,7 @@ public class playerController : MonoBehaviour, IDamage
         }
         else if (isGliding) StopGlide();
 
+        // --- Shooting ---
         if (Input.GetButton("Fire1") && shootTimer >= shootRate)
         {
             shoot();
@@ -129,6 +143,20 @@ public class playerController : MonoBehaviour, IDamage
             isCrouching = false;
             controller.height = originalHeight;
             speed = originalSpeed;
+        }
+    }
+
+    void UpdateCrouch()
+    {
+        if (Input.GetKey(KeyCode.C))
+        {
+            if (!isCrouching)
+                crouch();
+        }
+        else
+        {
+            if (isCrouching)
+                uncrouch();
         }
     }
 
