@@ -18,11 +18,8 @@ public class playerController : MonoBehaviour, IDamage
     [SerializeField] float shootRate;  // time between shots  
 
     [SerializeField] float glideGravity;  // lower gravity while gliding  
-    [SerializeField] float crouchSpeedMod;
-    [SerializeField] float crouchHeight;
 
-    float originalHeight;  // remember height for uncrouch  
-    int originalSpeed;     // store original speed  
+    float originalSpeed;     // store original speed  
 
     Vector3 moveDir;
     Vector3 playerVel;
@@ -31,7 +28,6 @@ public class playerController : MonoBehaviour, IDamage
     int HPOrig;
     float shootTimer;
 
-    bool isCrouching;  // crouch state  
     bool isGliding;    // glide state  
 
     // Modified by playerAbilities during surge
@@ -40,7 +36,6 @@ public class playerController : MonoBehaviour, IDamage
     void Start()
     {
         HPOrig = HP;
-        originalHeight = controller.height;
         originalSpeed = speed;
 
         updatePlayerUI(); // fill HP bar at start
@@ -57,10 +52,6 @@ public class playerController : MonoBehaviour, IDamage
 
     void movement()
     {
-        // --- Crouch handling ---
-        if (Input.GetKey(KeyCode.C)) crouch();
-        else uncrouch();
-
         // --- Horizontal movement ---
         Vector3 moveInput = Input.GetAxis("Horizontal") * transform.right + Input.GetAxis("Vertical") * transform.forward;
 
@@ -102,7 +93,6 @@ public class playerController : MonoBehaviour, IDamage
         if (Input.GetButton("Fire1") && shootTimer >= shootRate) shoot();
     }
 
-
     void sprint()
     {
         if (Input.GetButtonDown("Sprint")) speed *= sprintMod;
@@ -115,49 +105,6 @@ public class playerController : MonoBehaviour, IDamage
         {
             playerVel.y = JumpSpeed;
             jumpCount++;
-        }
-    }
-
-    void crouch()
-    {
-        if (!isCrouching)
-        {
-            isCrouching = true;
-
-            // Lower height
-            controller.height = crouchHeight;
-
-            // Lower center
-            controller.center = new Vector3(controller.center.x, crouchHeight / 2f, controller.center.z);
-
-            // Slow player
-            speed = Mathf.RoundToInt(originalSpeed * crouchSpeedMod);
-        }
-    }
-
-    void uncrouch()
-    {
-        if (isCrouching)
-        {
-            // Check for space above
-            float standHeightDiff = originalHeight - controller.height;
-            Vector3 origin = transform.position + Vector3.up * controller.height;
-            RaycastHit hit;
-            if (!Physics.SphereCast(origin, controller.radius, Vector3.up, out hit, standHeightDiff))
-            {
-                isCrouching = false;
-
-                // Move the player's **transform** up first by half the height difference
-                transform.position += Vector3.up * (standHeightDiff / 2f);
-
-                // Restore height and center
-                controller.height = originalHeight;
-                controller.center = new Vector3(controller.center.x, originalHeight / 2f, controller.center.z);
-
-                // Restore speed
-                speed = originalSpeed;
-            }
-            // else remain crouched
         }
     }
 
