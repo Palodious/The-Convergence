@@ -1,113 +1,217 @@
-using UnityEngine;
 using System.Collections;
+using UnityEngine;
 
-public class playerAbilities : MonoBehaviour
+public class PlayerAbilities : MonoBehaviour
 {
-    [SerializeField] playerController controller; // Reference to playerController
-    [SerializeField] GameObject surgeEffect; // Visual effect for surge
-    [SerializeField] ParticleSystem jumpEffect;// Particle effect for jump
-    [SerializeField] AudioClip jumpSound;   // Sound for jump
+    [SerializeField] playerController controller;
+    [SerializeField] PlayerSpecialization specialization;
+    [SerializeField] CharacterController charController;
 
-    AudioSource audioSource;
-    CharacterController charController;
+ //rift Pulse
+    [SerializeField] int pulseDamage = 25;
+    [SerializeField] float pulseRange = 6f;
+    [SerializeField] float pulseCooldown = 2.5f;
 
-    [SerializeField] float surgeDuration ; // Duration of surge damage boost
-    [SerializeField] float surgeDamageBoost ; // Multiplier for damage during surge
-    [SerializeField] float surgeCooldown ;// Cooldown before next surge
+  //rift surge
+    [SerializeField] float surgeDuration = 5f;
+    [SerializeField] float surgeSpeedBoost = 1.5f;
+    [SerializeField] float surgeDamageBoost = 1.5f;
+    [SerializeField] float surgeCooldown = 10f;
 
-    [SerializeField] float jumpDistance ;  // Distance jumped when using ability
-    [SerializeField] float jumpCooldown; // Cooldown before next jump
+    //rift jump
+    [SerializeField] float jumpDistance = 15f;
+    [SerializeField] float jumpCooldown = 3f;
+    [SerializeField] float jumpPrepTime = 0.3f;
 
-    bool canSurge = true;
-    bool canJump = true;
-    bool isSurging = false;
+    //masking layers
+    [SerializeField] LayerMask enemyMask;
+    [SerializeField] LayerMask environmentMask;
 
-    float surgeEndTime;
+    // Timers
+    float pulseTimer;
+    float surgeTimer;
+    float jumpTimer;
 
-    void Awake()
+    // In surge
+    bool isSurging;
+    GameObject surgeEffect;
+
+    void Start()
     {
-        controller = GetComponent<playerController>();
-        audioSource = GetComponent<AudioSource>();
-        charController = GetComponent<CharacterController>();
+        if (controller == null)
+            controller = GetComponent<playerController>();
+        if (charController == null)
+            charController = GetComponent<CharacterController>();
+
+
+        // Set timers ready
+        pulseTimer = pulseCooldown;
+        surgeTimer = surgeCooldown;
+        jumpTimer = jumpCooldown;
     }
 
     void Update()
     {
-        // Activate surge on E key
-        if (Input.GetKeyDown(KeyCode.E) && canSurge)
+        // Update timers
+        pulseTimer += Time.deltaTime;
+        surgeTimer += Time.deltaTime;
+        jumpTimer += Time.deltaTime;
+
+        // Input handling
+        if (Input.GetKeyDown(KeyCode.Q) && pulseTimer >= pulseCooldown)
+            StartCoroutine(RiftPulse());
+
+        if (Input.GetKeyDown(KeyCode.E) && surgeTimer >= surgeCooldown)
             StartCoroutine(RiftSurge());
 
-        // Activate jump on F key
-        if (Input.GetKeyDown(KeyCode.F) && canJump)
+        if (Input.GetKeyDown(KeyCode.F) && jumpTimer >= jumpCooldown)
             StartCoroutine(RiftJump());
 
-        // End surge if duration expired
-        if (isSurging && Time.time >= surgeEndTime)
-            EndSurge();
+        if (Input.GetKeyDown(KeyCode.Tab))
+            specialization.CycleElement();
+    }
+
+    IEnumerator RiftPulse()
+    {
+        pulseTimer = 0;
+
+        Element currentElement = specialization.GetCurrentElement();
+
+        // Create pulse effect
+        GameObject pulseVFX = EffectsManager.Instance.CreateEffect("PulseCast", transform.position);
+        SetEffectColor(pulseVFX, currentElement.color);
+
+        // Play sound
+        SFXManager.Instance.PlaySound("PulseCast");
+
+        // Calculate damage with element bonus
+        float modifiedRange = pulseRange * currentElement.areaScale;
+        int totalDamage = pulseDamage + currentElement.damageBonus;
+
+        // Hit enemies
+        Collider[] hits = Physics.OverlapSphere(transform.position, modifiedRange, enemyMask);
+        foreach (Collider hit in hits)
+        {
+            IDamage dmg = hit.GetComponent<IDamage>();
+            if (dmg != null)
+            {
+                dmg.takeDamage(totalDamage);
+
+                // Create element impact
+                EffectsManager.Instance.CreateElementEffect(
+                    currentElement.elementType,
+                    hit.transform.position
+                );
+
+                SFXManager.Instance.PlayElementSound(currentElement.elementType);
+            }
+        }
+
+        yield return null;
     }
 
     IEnumerator RiftSurge()
     {
-        canSurge = false;
+        surgeTimer = 0;
         isSurging = true;
-        surgeEndTime = Time.time + surgeDuration;
 
-        if (surgeEffect != null)
-            Instantiate(surgeEffect, transform.position, Quaternion.identity);
+        // Create surge effect (follows player)
+        surgeEffect = EffectsManager.Instance.CreateEffect("Surge", transform.position);
+        surgeEffect.transform.SetParent(transform);
 
-        // Apply damage boost
+        // Play sounds
+        SFXManager.Instance.PlaySound("SurgeStart");
+        SFXManager.Instance.PlayLoopSound("SurgeLoop");
+
+        // Apply buff
         controller.damageBoost = surgeDamageBoost;
 
         yield return new WaitForSeconds(surgeDuration);
-        EndSurge();
 
-        // Wait cooldown before allowing next surge
-        yield return new WaitForSeconds(surgeCooldown);
-        canSurge = true;
+        EndSurge();
     }
 
     void EndSurge()
     {
         isSurging = false;
-        if (controller != null)
-        {
-            controller.damageBoost = 1f; // Reset damage multiplier
-        }
+        controller.damageBoost = 1f;
+
+        // Stop effects
+        SFXManager.Instance.StopLoopSound();
+        if (surgeEffect != null)
+            EffectsManager.Instance.ReturnEffect(surgeEffect);
     }
 
     IEnumerator RiftJump()
     {
-        canJump = false;
+        jumpTimer = 0;
 
+        // Create prep effect
+        GameObject prepEffect = EffectsManager.Instance.CreateEffect("JumpPrep", transform.position);
+        SFXManager.Instance.PlaySound("JumpPrep");
+
+        yield return new WaitForSeconds(jumpPrepTime);
+
+        // Get safe position
+        Vector3 targetPos = GetSafeJumpPosition();
+
+        // Teleport
+        charController.enabled = false;
+        transform.position = targetPos;
+        charController.enabled = true;
+
+        // Create impact effect
+        EffectsManager.Instance.CreateEffect("JumpImpact", transform.position);
+        SFXManager.Instance.PlaySound("JumpImpact");
+
+        // Clean up prep effect
+        EffectsManager.Instance.ReturnEffect(prepEffect);
+    }
+
+    Vector3 GetSafeJumpPosition()
+    {
         Vector3 startPos = transform.position;
-        Vector3 targetPos = transform.position + transform.forward * jumpDistance;
+        Vector3 direction = transform.forward;
+        float safeDistance = jumpDistance;
 
-        // Play particle effect at start
-        if (jumpEffect != null)
-            Instantiate(jumpEffect, startPos, Quaternion.identity);
+        float radius = charController.radius;
+        float height = charController.height;
 
-        // Play jump sound
-        if (audioSource != null && jumpSound != null)
-            audioSource.PlayOneShot(jumpSound);
+        // Check at different heights
+        float[] testHeights = { 0.1f, height / 2f, height - 0.1f };
 
-        // Move player
-        if (charController != null)
+        foreach (float testHeight in testHeights)
         {
-            charController.enabled = false;
-            transform.position = targetPos;
-            charController.enabled = true;
-        }
-        else
-        {
-            transform.position = targetPos;
+            Vector3 testPoint = startPos + Vector3.up * testHeight;
+
+            if (Physics.SphereCast(testPoint, radius, direction, out RaycastHit hit, jumpDistance, environmentMask))
+            {
+                if (hit.distance < safeDistance)
+                    safeDistance = hit.distance - radius;
+            }
         }
 
-        // Play particle effect at landing
-        if (jumpEffect != null)
-            Instantiate(jumpEffect, targetPos, Quaternion.identity);
+        // Safety buffer
+        safeDistance = Mathf.Max(0, safeDistance - 0.2f);
 
-        // Wait cooldown before allowing next jump
-        yield return new WaitForSeconds(jumpCooldown);
-        canJump = true;
+        Vector3 finalPos = startPos + direction * safeDistance;
+
+        // Snap to ground
+        if (Physics.Raycast(finalPos + Vector3.up * 0.5f, Vector3.down, out RaycastHit groundHit, 1f, environmentMask))
+        {
+            finalPos = groundHit.point;
+        }
+
+        return finalPos;
+    }
+
+    void SetEffectColor(GameObject effect, Color color)
+    {
+        ParticleSystem ps = effect.GetComponent<ParticleSystem>();
+        if (ps != null)
+        {
+            var main = ps.main;
+            main.startColor = color;
+        }
     }
 }

@@ -7,7 +7,7 @@ public class playerController : MonoBehaviour, IDamage
     [SerializeField] LayerMask ignoreLayer;  // ignore layers for shooting  
 
     [SerializeField] int HP;
-    [SerializeField] int speed;
+   public int speed;
     [SerializeField] int sprintMod;
     [SerializeField] int JumpSpeed;
     [SerializeField] int maxJumps;

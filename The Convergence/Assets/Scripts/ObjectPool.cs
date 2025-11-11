@@ -1,70 +1,49 @@
 using UnityEngine;
-using System.Collections;
 using System.Collections.Generic;
-using UnityEngine.VFX;
 
 public class ObjectPool : MonoBehaviour
 {
+    [SerializeField] public GameObject prefab;
+    [SerializeField] public int poolSize = 10;
 
-    public GameObject prefab;
-    public int initialSize = 10;
-    private Queue<GameObject> pool = new Queue<GameObject>();
+    Queue<GameObject> available = new Queue<GameObject>();
+    List<GameObject> allObjects = new List<GameObject>();
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    public void Initialize()
     {
-        for (int i = 0; i < initialSize; i++)
+        for (int i = 0; i < poolSize; i++)
         {
             CreateNewObject();
         }
     }
 
-    public GameObject GetObject()
+    void CreateNewObject()
     {
-        if (pool.Count == 0)
+        GameObject obj = Instantiate(prefab, transform);
+        obj.SetActive(false);
+        available.Enqueue(obj);
+        allObjects.Add(obj);
+    }
+
+    public GameObject GetFromPool()
+    {
+        if (available.Count == 0)
         {
             CreateNewObject();
         }
 
-        GameObject obj = pool.Dequeue();
-        obj.SetActive(true);
-        return obj;
+        return available.Dequeue();
     }
 
-    public void ReturnObject(GameObject obj)
+    public void ReturnToPool(GameObject obj)
     {
         obj.SetActive(false);
-        pool.Enqueue(obj);
+        obj.transform.SetParent(transform);
+        available.Enqueue(obj);
     }
 
-    private void CreateNewObject()
+    public bool BelongsToPool(GameObject obj)
     {
-        GameObject obj = Instantiate(prefab);
-        obj.SetActive(false);
-        pool.Enqueue(obj);
-
-        var returnToPool = obj.AddComponent<ReturnToPool>();
-        returnToPool.pool = this;
-
+        return allObjects.Contains(obj);
     }
 }
-
-public class ReturnToPool : MonoBehaviour
-{
-    public ObjectPool pool;
-    private float timer;
-
-   void OnDisable()
-    {
-        pool?.ReturnObject(gameObject);
-    }
-
-    void Update()
-    {
-        var ps = GetComponent<ParticleSystem>();
-        if (ps && !ps.IsAlive()) {
-                pool.ReturnObject(gameObject);
-        }
-    }
-}
-
