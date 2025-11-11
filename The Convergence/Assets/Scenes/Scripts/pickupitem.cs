@@ -2,22 +2,10 @@ using UnityEngine;
 
 public class pickupitem : MonoBehaviour
 {
-    public enum PickupType { Health, Flow } 
+    public enum PickupType { Health, Flow }
 
     [SerializeField] PickupType type;
-    [SerializeField] int amount = 0; 
-
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+    [SerializeField] int amount = 0;
 
     private void OnTriggerEnter(Collider other)
     {
@@ -28,15 +16,14 @@ public class pickupitem : MonoBehaviour
             {
                 if (type == PickupType.Health)
                 {
-                    player.HP += amount; 
+                    player.CurrentHP += amount;  // Use public property instead of inaccessible HP field
                 }
                 else if (type == PickupType.Flow)
                 {
-                    player.addFlow(amount); 
+                    player.addFlow(amount);
                 }
             }
-            Destroy(gameObject); 
+            Destroy(gameObject);
         }
     }
-
 }

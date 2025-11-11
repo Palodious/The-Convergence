@@ -7,9 +7,9 @@ public class playerController : MonoBehaviour, IDamage
     [SerializeField] LayerMask ignoreLayer;  // ignore layers for shooting  
 
     [SerializeField] int HP = 100;
-    [SerializeField] int maxHP = 100;
+    [SerializeField] int maxHP = 100;  // now actively used to clamp HP
     [SerializeField] int flow = 30;
-    [SerializeField] int maxFlow = 100; 
+    [SerializeField] int maxFlow = 100;
     [SerializeField] int speed;
     [SerializeField] int sprintMod;
     [SerializeField] int JumpSpeed;
@@ -38,7 +38,8 @@ public class playerController : MonoBehaviour, IDamage
 
     void Start()
     {
-        HPOrig = HP;
+        HPOrig = maxHP;  // use maxHP as max health for UI calculations
+        HP = maxHP;
         originalSpeed = speed;
 
         updatePlayerUI(); // fill HP bar at start
@@ -53,19 +54,17 @@ public class playerController : MonoBehaviour, IDamage
         sprint();
     }
 
-public void addFlow(int value)
+    public void addFlow(int value)
     {
-        flow += value; 
-        if(flow > maxFlow)
-            flow = maxFlow; 
+        flow += value;
+        if (flow > maxFlow)
+            flow = maxFlow;
     }
 
     void movement()
     {
-        // --- Horizontal movement ---
         Vector3 moveInput = Input.GetAxis("Horizontal") * transform.right + Input.GetAxis("Vertical") * transform.forward;
 
-        // --- Gravity / Glide ---
         if (controller.isGrounded)
         {
             if (playerVel.y < 0) playerVel.y = -2f;
@@ -84,14 +83,11 @@ public void addFlow(int value)
             }
         }
 
-        // --- Jump ---
         jump();
 
-        // --- Move character ---
         Vector3 velocity = moveInput * speed + new Vector3(0, playerVel.y, 0);
         controller.Move(velocity * Time.deltaTime);
 
-        // --- Glide toggle ---
         if (!controller.isGrounded)
         {
             if (Input.GetKeyDown(KeyCode.G)) StartGlide();
@@ -99,7 +95,6 @@ public void addFlow(int value)
         }
         else if (isGliding) StopGlide();
 
-        // --- Shooting ---
         if (Input.GetButton("Fire1") && shootTimer >= shootRate) shoot();
     }
 
@@ -123,7 +118,7 @@ public void addFlow(int value)
         if (!controller.isGrounded && !isGliding)
         {
             isGliding = true;
-            playerVel.y = -1f;  // little downward push to start  
+            playerVel.y = -1f;
         }
     }
 
@@ -152,10 +147,14 @@ public void addFlow(int value)
     public void takeDamage(int amount)
     {
         HP -= amount;
+
+        // Clamp HP so it never goes below 0 or above maxHP
+        HP = Mathf.Clamp(HP, 0, maxHP);
+
         updatePlayerUI();
         StartCoroutine(screenFlashDamage());
 
-        if (HP <= 0) gamemanager.instance.youLose();  // game over  
+        if (HP <= 0) gamemanager.instance.youLose();
     }
 
     public void updatePlayerUI()
