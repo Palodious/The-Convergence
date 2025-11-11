@@ -17,11 +17,12 @@ public class playerController : MonoBehaviour, IDamage
     [SerializeField] int shootDist;
     [SerializeField] float shootRate;  // time between shots  
 
-    [SerializeField] float glideGravity;// lower gravity while gliding  
+    [SerializeField] float glideGravity;  // lower gravity while gliding  
     [SerializeField] float crouchSpeedMod;
     [SerializeField] float crouchHeight;
+
     float originalHeight;  // remember height for uncrouch  
-    int originalSpeed; // store original speed  
+    int originalSpeed;     // store original speed  
 
     Vector3 moveDir;
     Vector3 playerVel;
@@ -52,15 +53,11 @@ public class playerController : MonoBehaviour, IDamage
 
         movement();
         sprint();
-
-        if (Input.GetButton("Fire1") && shootTimer >= shootRate)
-        {
-            shoot();
-        }
     }
 
     void movement()
     {
+        // Ground check
         if (controller.isGrounded)
         {
             if (playerVel.y < 0) playerVel.y = -2f;
@@ -71,24 +68,33 @@ public class playerController : MonoBehaviour, IDamage
             if (isGliding)
                 playerVel.y = Mathf.Max(playerVel.y - glideGravity * Time.deltaTime, -glideGravity);
             else
-                playerVel.y -= gravity * Time.deltaTime;  // normal gravity  
+                playerVel.y -= gravity * Time.deltaTime;
         }
 
+        // Movement
         moveDir = Input.GetAxis("Horizontal") * transform.right + Input.GetAxis("Vertical") * transform.forward;
         controller.Move(moveDir * speed * Time.deltaTime);
 
+        // Jump
         jump();
         controller.Move(playerVel * Time.deltaTime);
 
+        // Crouch
         if (Input.GetKey(KeyCode.C)) crouch();
-        else uncrouch();  // restore if not crouched  
+        else uncrouch();
 
+        // Glide
         if (!controller.isGrounded)
         {
             if (Input.GetKeyDown(KeyCode.G)) StartGlide();
             if (Input.GetKeyUp(KeyCode.G)) StopGlide();
         }
         else if (isGliding) StopGlide();
+
+        if (Input.GetButton("Fire1") && shootTimer >= shootRate)
+        {
+            shoot();
+        }
     }
 
     void sprint()
@@ -112,7 +118,7 @@ public class playerController : MonoBehaviour, IDamage
         {
             isCrouching = true;
             controller.height = crouchHeight;
-            speed = Mathf.RoundToInt(originalSpeed * crouchSpeedMod);  // slow down  
+            speed = Mathf.RoundToInt(originalSpeed * crouchSpeedMod);
         }
     }
 
@@ -121,8 +127,8 @@ public class playerController : MonoBehaviour, IDamage
         if (isCrouching)
         {
             isCrouching = false;
-            controller.height = originalHeight;  // back to normal height  
-            speed = originalSpeed;  // speed reset  
+            controller.height = originalHeight;
+            speed = originalSpeed;
         }
     }
 
@@ -152,7 +158,7 @@ public class playerController : MonoBehaviour, IDamage
             IDamage dmg = hit.collider.GetComponent<IDamage>();
             if (dmg != null)
             {
-                dmg.takeDamage(shootDamage);
+                dmg.takeDamage(Mathf.RoundToInt(shootDamage * damageBoost));
             }
         }
     }
