@@ -391,43 +391,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::uiParallax
   range: 4
   smooth: 10
---- !u!1 &500174192 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 2376811500745352790, guid: 90e596fc3a9567b4c8d42d0523a13f19, type: 3}
-  m_PrefabInstance: {fileID: 1825169859962424559}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &500174196 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 5386695453824410145, guid: 90e596fc3a9567b4c8d42d0523a13f19, type: 3}
-  m_PrefabInstance: {fileID: 1825169859962424559}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 500174192}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6b88e82bc0866ac4db3bb1f1ca64acdb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::playerController
---- !u!114 &500174198
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 500174192}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bf169a0e27b04814199389ad80307e1d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::playerAbilities
-  controller: {fileID: 500174196}
-  surgeEffect: {fileID: 0}
-  jumpEffect: {fileID: 0}
-  jumpSound: {fileID: 0}
-  surgeDuration: 5
-  surgeDamageBoost: 2
-  surgeCooldown: 10
-  jumpDistance: 15
-  jumpCooldown: 10
 --- !u!1 &534064738 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 3144046922181542436, guid: a428ce1e50984774c948c5fcb56de73b, type: 3}
@@ -868,10 +831,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: Player
       objectReference: {fileID: 0}
-    - target: {fileID: 2376811500745352790, guid: 90e596fc3a9567b4c8d42d0523a13f19, type: 3}
-      propertyPath: m_Layer
-      value: 3
-      objectReference: {fileID: 0}
     - target: {fileID: 3810211579639045497, guid: 90e596fc3a9567b4c8d42d0523a13f19, type: 3}
       propertyPath: m_LocalPosition.x
       value: -22.54
@@ -912,25 +871,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 5386695453824410145, guid: 90e596fc3a9567b4c8d42d0523a13f19, type: 3}
-      propertyPath: HP
-      value: 50
-      objectReference: {fileID: 0}
-    - target: {fileID: 5386695453824410145, guid: 90e596fc3a9567b4c8d42d0523a13f19, type: 3}
-      propertyPath: ignoreLayer.m_Bits
-      value: 8
-      objectReference: {fileID: 0}
-    - target: {fileID: 8058420778030705383, guid: 90e596fc3a9567b4c8d42d0523a13f19, type: 3}
-      propertyPath: m_Layer
-      value: 3
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 2376811500745352790, guid: 90e596fc3a9567b4c8d42d0523a13f19, type: 3}
-      insertIndex: 2
-      addedObject: {fileID: 500174198}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 90e596fc3a9567b4c8d42d0523a13f19, type: 3}
 --- !u!1001 &1912067757248967434
 PrefabInstance:
