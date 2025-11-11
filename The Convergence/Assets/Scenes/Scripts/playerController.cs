@@ -6,7 +6,10 @@ public class playerController : MonoBehaviour, IDamage
     [SerializeField] CharacterController controller;
     [SerializeField] LayerMask ignoreLayer;  // ignore layers for shooting  
 
-    [SerializeField] int HP;
+    [SerializeField] int HP = 100;
+    [SerializeField] int maxHP = 100;
+    [SerializeField] int flow = 30;
+    [SerializeField] int maxFlow = 100; 
     [SerializeField] int speed;
     [SerializeField] int sprintMod;
     [SerializeField] int JumpSpeed;
@@ -48,6 +51,13 @@ public class playerController : MonoBehaviour, IDamage
 
         movement();
         sprint();
+    }
+
+public void addFlow(int value)
+    {
+        flow += value; 
+        if(flow > maxFlow)
+            flow = maxFlow; 
     }
 
     void movement()
