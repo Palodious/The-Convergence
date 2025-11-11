@@ -169,4 +169,11 @@ public class playerController : MonoBehaviour, IDamage
         yield return new WaitForSeconds(0.1f);
         gamemanager.instance.playerDamagePanel.SetActive(false);
     }
+
+    // Add this property to expose HP for reading and writing
+    public int CurrentHP
+    {
+        get => HP;
+        set => HP = Mathf.Clamp(value, 0, maxHP);
+    }
 }
