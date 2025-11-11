@@ -17,9 +17,11 @@ public class enemyAI : MonoBehaviour, IDamage
     [SerializeField] Transform shootPOS;
 
     // Patrol features
-    [SerializeField] bool enablePatrol = false; // Toggle patrol on/off
+    [SerializeField] bool enablePatrol; // Toggle patrol on/off
     [SerializeField] Transform[] patrolPoints;  // List of patrol points
     [SerializeField] float patrolWaitTime; // Time to wait at each patrol point
+    // Adjustable player stopping distance (applies only when chasing the player)
+    [SerializeField] float playerStoppingDistance;
 
     // Lost sight features
     [SerializeField] float lostSightDuration; // Time before resuming patrol after losing sight
@@ -81,7 +83,11 @@ public class enemyAI : MonoBehaviour, IDamage
 
                     // Start random rotation only after fully stopped
                     if (enablePatrol && !isRotating && patrolPoints.Length > 0)
+                    {
+                        agent.stoppingDistance = 0;
+                        agent.SetDestination(patrolPoints[currentPatrolIndex].position);
                         StartCoroutine(RandomRotation());
+                    }
                 }
             }
         }
@@ -103,13 +109,14 @@ public class enemyAI : MonoBehaviour, IDamage
         {
             if (angleToPlayer <= FOV && hit.collider.CompareTag("Player"))
             {
-                agent.stoppingDistance = stoppingDistOrig;
+                // Apply the adjustable stopping distance only for the player
+                agent.stoppingDistance = playerStoppingDistance;
                 agent.SetDestination(gamemanager.instance.player.transform.position);
 
                 if (shootTimer >= shootRate)
                     shoot();
 
-                if (agent.remainingDistance <= stoppingDistOrig)
+                if (agent.remainingDistance <= agent.stoppingDistance)
                     faceTarget();
 
                 return true;
@@ -124,6 +131,9 @@ public class enemyAI : MonoBehaviour, IDamage
         // Only act when agent is fully stopped at patrol point
         if (!agent.pathPending && agent.remainingDistance <= agent.stoppingDistance)
         {
+            // Ensure patrol ignores stopping distance
+            agent.stoppingDistance = 0;
+
             patrolTimer += Time.deltaTime; // Increment timer for waiting at current point
 
             // Only rotate while waiting at the patrol point, not when moving
@@ -187,6 +197,10 @@ public class enemyAI : MonoBehaviour, IDamage
             playerInTrigger = false;
             canCurrentlySeePlayer = false;
             lostSightTimer = 0;
+
+            // Reset patrol stopping distance when leaving trigger
+            if (enablePatrol)
+                agent.stoppingDistance = 0;
         }
     }
 
