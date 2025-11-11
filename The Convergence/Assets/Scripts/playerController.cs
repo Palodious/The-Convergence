@@ -52,6 +52,11 @@ public class playerController : MonoBehaviour, IDamage
 
         movement();
         sprint();
+
+        if (Input.GetButton("Fire1") && shootTimer >= shootRate)
+        {
+            shoot();
+        }
     }
 
     void movement()
@@ -139,10 +144,16 @@ public class playerController : MonoBehaviour, IDamage
     {
         shootTimer = 0;
 
-        if (Physics.Raycast(Camera.main.transform.position, Camera.main.transform.forward, out RaycastHit hit, shootDist, ~ignoreLayer))
+        RaycastHit hit;
+        if (Physics.Raycast(Camera.main.transform.position, Camera.main.transform.forward, out hit, shootDist, ~ignoreLayer))
         {
+            Debug.Log(hit.collider.name);
+
             IDamage dmg = hit.collider.GetComponent<IDamage>();
-            if (dmg != null) dmg.takeDamage(Mathf.RoundToInt(shootDamage * damageBoost));
+            if (dmg != null)
+            {
+                dmg.takeDamage(shootDamage);
+            }
         }
     }
 

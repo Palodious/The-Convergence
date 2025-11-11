@@ -6,21 +6,18 @@ using UnityEngine.VFX;
 
 public class EffectsManager : MonoBehaviour
 {
-    public ObjectPool jumpPrepPool;
-    public ObjectPool jumpImpactPool;
-    public ObjectPool pulsePool;
-    public ObjectPool surgePool;
+    [SerializeField] ObjectPool jumpPrepPool;
+    [SerializeField] ObjectPool jumpImpactPool;
+    [SerializeField] ObjectPool pulsePool;
+    [SerializeField] ObjectPool surgePool;
 
-    [Header("Elemental Impact Pools")]
-    public ObjectPool electricPool;
-    public ObjectPool firePool;
-    public ObjectPool crystalPool;
-    public ObjectPool plasmaPool;
-    public ObjectPool icePool;
+    [SerializeField] ObjectPool electricPool;
+    [SerializeField] ObjectPool firePool;
+    [SerializeField] ObjectPool crystalPool;
+    [SerializeField] ObjectPool laserPool;
+    [SerializeField] ObjectPool icePool;
 
     public static EffectsManager Instance;
-
-    void Awake() => Instance = this;
 
     public GameObject PlayEffect(EffectType type, Vector3 position, ElementType element = ElementType.Neutral)
     {
@@ -41,14 +38,15 @@ public class EffectsManager : MonoBehaviour
                 effect = surgePool.GetObject();
                 break;
             case EffectType.ElementalImpact:
-                effect = GetElementalEffect(element);
+                effect = GetElementalEffect(element).GetObject();
                 break;
         }
 
         effect.transform.position = position;
         effect.SetActive(true);
-        return effect;
-    }
+        
+return effect;
+    }      
 
     ObjectPool GetElementalEffect(ElementType element)
     {
@@ -57,12 +55,12 @@ public class EffectsManager : MonoBehaviour
             ElementType.Electric => electricPool,
             ElementType.Fire => firePool,
             ElementType.Crystal => crystalPool,
-            ElementType.Plasma => plasmaPool,
+            ElementType.Laser => laserPool,
             ElementType.Ice => icePool,
-            _ => firePool
+            _ => electricPool
         };
     }
 
     public enum EffectType { JumpPrep, JumpImpact, PulseCast, SurgeCast, ElementalImpact }
-    public enum ElementType { Neutral, Electric, Fire, Crystal, Plasma, Ice }
+    public enum ElementType { Neutral, Electric, Fire, Crystal, Laser, Ice }
 }
