@@ -61,11 +61,12 @@ MonoBehaviour:
   projectile: {fileID: 4705637938062420806, guid: 006ca5450a142324ab16a3c205be62f8, type: 3}
   shootRate: 1
   shootPOS: {fileID: 1145263346601586257}
-  enablePatrol: 1
+  enablePatrol: 0
   patrolPoints:
   - {fileID: 0}
   - {fileID: 0}
   patrolWaitTime: 3
+  playerStoppingDistance: 0
   lostSightDuration: 3
   rotationSpeed: 5
   minRotationTime: 2
@@ -210,7 +211,7 @@ SphereCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Radius: 8
+  m_Radius: 15
   m_Center: {x: 0, y: 1.2, z: -0.028170496}
 --- !u!1 &3811137294867458809
 GameObject:
