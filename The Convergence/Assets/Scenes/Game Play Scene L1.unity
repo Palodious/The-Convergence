@@ -1108,6 +1108,11 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 7780446370811186591, guid: 8688f2c13a743f04ca775ad47e769339, type: 3}
   m_PrefabInstance: {fileID: 208570114}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &227154978 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 231393369061059247, guid: ec56b0bb9422c56459929cbd17ac7c29, type: 3}
+  m_PrefabInstance: {fileID: 717339529}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &252337241
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3346,7 +3351,10 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 231393369061059247, guid: ec56b0bb9422c56459929cbd17ac7c29, type: 3}
+      insertIndex: 1
+      addedObject: {fileID: 935969877}
   m_SourcePrefab: {fileID: 100100000, guid: ec56b0bb9422c56459929cbd17ac7c29, type: 3}
 --- !u!4 &742940595 stripped
 Transform:
@@ -3957,6 +3965,47 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 7013996230630769245, guid: ec56b0bb9422c56459929cbd17ac7c29, type: 3}
   m_PrefabInstance: {fileID: 717339529}
   m_PrefabAsset: {fileID: 0}
+--- !u!195 &935969875 stripped
+NavMeshAgent:
+  m_CorrespondingSourceObject: {fileID: 6695466469693188212, guid: ec56b0bb9422c56459929cbd17ac7c29, type: 3}
+  m_PrefabInstance: {fileID: 717339529}
+  m_PrefabAsset: {fileID: 0}
+--- !u!95 &935969876 stripped
+Animator:
+  m_CorrespondingSourceObject: {fileID: 33234137470420988, guid: ec56b0bb9422c56459929cbd17ac7c29, type: 3}
+  m_PrefabInstance: {fileID: 717339529}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &935969877
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 227154978}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 44ee4d4c1859c40489a1495141e43493, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::enemyAIMelee
+  agent: {fileID: 935969875}
+  anim: {fileID: 935969876}
+  model: {fileID: 1824614640}
+  headPos: {fileID: 1753651203}
+  HP: 50
+  FOV: 50
+  faceTargetSpeed: 125
+  roamDist: 10
+  roamPauseTime: 3
+  animTransSpeed: 8
+  meleePos: {fileID: 1763871066}
+  meleeEffect: {fileID: 8381296811460731990, guid: 9ffc8f2d2217d4a4482ba46879159b4d, type: 3}
+  meleeRange: 2
+  attackRate: 0.5
+  meleeDamage: 5
+  useAnimations: 1
+  usePatrol: 0
+  useRoam: 1
+  patrolPoints: []
 --- !u!1001 &969450510
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -5564,6 +5613,16 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 4000013703715314, guid: 95c00f442e3cf3643b2062e8e0d0bbd6, type: 3}
   m_PrefabInstance: {fileID: 1748154029}
   m_PrefabAsset: {fileID: 0}
+--- !u!4 &1753651203 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 2183833068258185400, guid: ec56b0bb9422c56459929cbd17ac7c29, type: 3}
+  m_PrefabInstance: {fileID: 717339529}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &1763871066 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 5061729502201397494, guid: ec56b0bb9422c56459929cbd17ac7c29, type: 3}
+  m_PrefabInstance: {fileID: 717339529}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1764236873
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -5814,6 +5873,11 @@ PrefabInstance:
 Transform:
   m_CorrespondingSourceObject: {fileID: 4000011758990698, guid: 9615d776614809e4890301d5377aeb9f, type: 3}
   m_PrefabInstance: {fileID: 1824558491}
+  m_PrefabAsset: {fileID: 0}
+--- !u!137 &1824614640 stripped
+SkinnedMeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 5772941054043659595, guid: ec56b0bb9422c56459929cbd17ac7c29, type: 3}
+  m_PrefabInstance: {fileID: 717339529}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1825271135
 PrefabInstance:
