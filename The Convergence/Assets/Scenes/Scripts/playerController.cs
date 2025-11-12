@@ -7,7 +7,7 @@ public class playerController : MonoBehaviour, IDamage
     [SerializeField] LayerMask ignoreLayer;  // ignore layers for shooting  
 
     [SerializeField] int HP;
-    public int speed;
+   public int speed;
     [SerializeField] int sprintMod;
     [SerializeField] int JumpSpeed;
     [SerializeField] int maxJumps;
@@ -183,5 +183,12 @@ public class playerController : MonoBehaviour, IDamage
         gamemanager.instance.playerDamagePanel.SetActive(true);
         yield return new WaitForSeconds(0.1f);
         gamemanager.instance.playerDamagePanel.SetActive(false);
+    }
+
+    // Add this property to expose HP for reading and writing
+    public int CurrentHP
+    {
+        get { return HP; }
+        set { HP = value; }
     }
 }
