@@ -22,8 +22,8 @@ public class enemyAI : MonoBehaviour, IDamage
     [SerializeField] float shootRate;
     [SerializeField] Transform shootPOS;
 
-    [Header("Roam Settings")]
-    [SerializeField] bool enableRoam;//Toggle roaming on/off in Inspector
+    [SerializeField] bool enableRoam; // Toggle roaming on/off in Inspector
+    [SerializeField] bool enableAnimation; // Toggle animation on/off in Inspector
 
     Color colorOrig;
 
@@ -37,7 +37,6 @@ public class enemyAI : MonoBehaviour, IDamage
     Vector3 playerDir;
     Vector3 startingPos;
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         colorOrig = model.material.color;
@@ -46,15 +45,17 @@ public class enemyAI : MonoBehaviour, IDamage
         startingPos = transform.position;
     }
 
-    // Update is called once per frame
     void Update()
     {
         shootTimer += Time.deltaTime;
 
-        float agentSpeedCur = agent.velocity.normalized.magnitude;
-        float agentSpeedAnim = anim.GetFloat("Speed");
-
-        anim.SetFloat("Speed", Mathf.Lerp(agentSpeedAnim, agentSpeedCur, Time.deltaTime * animTransSpeed));
+        // Only handle animation logic if animation is enabled
+        if (enableAnimation && anim != null)
+        {
+            float agentSpeedCur = agent.velocity.normalized.magnitude;
+            float agentSpeedAnim = anim.GetFloat("Speed");
+            anim.SetFloat("Speed", Mathf.Lerp(agentSpeedAnim, agentSpeedCur, Time.deltaTime * animTransSpeed));
+        }
 
         if (agent.remainingDistance < 0.01f)
             roamTimer += Time.deltaTime;
@@ -84,7 +85,7 @@ public class enemyAI : MonoBehaviour, IDamage
 
     void roam()
     {
-        if (!enableRoam) return; //Double check before setting a roam destination
+        if (!enableRoam) return; // Double check before setting a roam destination
 
         roamTimer = 0;
         agent.stoppingDistance = 0;
@@ -107,8 +108,6 @@ public class enemyAI : MonoBehaviour, IDamage
         RaycastHit hit;
         if (Physics.Raycast(headPos.position, playerDir, out hit))
         {
-            Debug.Log(hit.collider.name);
-
             if (angleToPlayer <= FOV && hit.collider.CompareTag("Player"))
             {
                 agent.SetDestination(gamemanager.instance.player.transform.position);
@@ -177,7 +176,10 @@ public class enemyAI : MonoBehaviour, IDamage
     void shoot()
     {
         shootTimer = 0;
-        anim.SetTrigger("Shoot");
+
+        // Only trigger shoot animation if enabled
+        if (enableAnimation && anim != null)
+            anim.SetTrigger("Shoot");
     }
 
     public void createProjectile()
