@@ -184,30 +184,26 @@ public class enemyAIMelee : MonoBehaviour, IDamage
         model.material.color = colorOrig;
     }
 
-    // trigger animation and apply damage if player is in range
-    void meleeAttack()
+    public void ApplyMeleeDamage()
     {
-        attackTimer = 0; // Reset cooldown
-
-        if (useAnimations && anim != null)
+        Collider[] hitColliders = Physics.OverlapSphere(meleePos.position, meleeRange);
+        foreach (var hit in hitColliders)
         {
-            anim.SetTrigger("Punch"); // Trigger melee animation
-        }
-        else
-        {
-            // Directly check for player collisions if no animation
-            Collider[] hitColliders = Physics.OverlapSphere(meleePos.position, meleeRange);
-            foreach (var hit in hitColliders)
+            if (hit.CompareTag("Player"))
             {
-                if (hit.CompareTag("Player"))
-                {
-                    gamemanager.instance.controller.takeDamage(meleeDamage);
+                gamemanager.instance.controller.takeDamage(meleeDamage);
 
-                    // Optional visual effect
-                    if (meleeEffect != null)
-                        Instantiate(meleeEffect, meleePos.position, Quaternion.identity);
-                }
+                if (meleeEffect != null)
+                    Instantiate(meleeEffect, meleePos.position, Quaternion.identity);
             }
         }
+    }
+
+    // trigger animation
+    void meleeAttack()
+    {
+        attackTimer = 0;
+        if (useAnimations && anim != null)
+            anim.SetTrigger("Punch");
     }
 }
