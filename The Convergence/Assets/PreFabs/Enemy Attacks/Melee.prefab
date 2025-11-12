@@ -10,8 +10,8 @@ GameObject:
   m_Component:
   - component: {fileID: 1738607507095524902}
   - component: {fileID: 2319576369867308630}
-  - component: {fileID: 3267621198302068481}
   - component: {fileID: 8579732027666981480}
+  - component: {fileID: -8466258491448768707}
   - component: {fileID: 860869067109196050}
   m_Layer: 0
   m_Name: Melee
@@ -53,27 +53,6 @@ MonoBehaviour:
   damageRate: 0.7
   speed: 32
   destroyTime: 1
---- !u!135 &3267621198302068481
-SphereCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1348919514364573612}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 1
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Radius: 0.15
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!54 &8579732027666981480
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -101,6 +80,27 @@ Rigidbody:
   m_Interpolate: 1
   m_Constraints: 0
   m_CollisionDetection: 1
+--- !u!65 &-8466258491448768707
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1348919514364573612}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1, y: 1, z: 1}
+  m_Center: {x: 0, y: 1, z: 0}
 --- !u!96 &860869067109196050
 TrailRenderer:
   serializedVersion: 3
