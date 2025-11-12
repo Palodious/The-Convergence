@@ -1653,7 +1653,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6524531788349714948}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0.78506476, z: -0, w: 0.6194137}
+  m_LocalRotation: {x: 0, y: -0.78506297, z: 0, w: 0.61941606}
   m_LocalPosition: {x: 1.4044342, y: 0, z: 139.79738}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -1682,16 +1682,17 @@ MonoBehaviour:
   model: {fileID: 4387108733598976577}
   headPos: {fileID: 8877277658983715043}
   weaponCol: {fileID: 0}
-  HP: 0
-  FOV: 0
-  faceTargetSpeed: 0
-  roamDist: 0
-  roamPauseTime: 0
-  animTransSpeed: 0
+  HP: 50
+  FOV: 50
+  faceTargetSpeed: 125
+  roamDist: 10
+  roamPauseTime: 3
+  animTransSpeed: 8
   projectile: {fileID: 0}
   shootRate: 0
   shootPOS: {fileID: 0}
-  enableRoam: 0
+  enableRoam: 1
+  enableAnimation: 1
 --- !u!95 &1812624569798325690
 Animator:
   serializedVersion: 7
@@ -1701,7 +1702,7 @@ Animator:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6524531788349714948}
   m_Enabled: 1
-  m_Avatar: {fileID: 9000000, guid: 2faa610713d3b3c439473daa55e8c60a, type: 3}
+  m_Avatar: {fileID: 9000000, guid: b5a084ca1008da340aa46e1ea1380ec5, type: 3}
   m_Controller: {fileID: 9100000, guid: c095eebc4642bb749a2c39ccb537d8d3, type: 2}
   m_CullingMode: 1
   m_UpdateMode: 0
