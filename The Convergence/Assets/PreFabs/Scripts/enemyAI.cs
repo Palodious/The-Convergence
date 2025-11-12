@@ -32,12 +32,17 @@ public class enemyAI : MonoBehaviour, IDamage
     [SerializeField] bool enableShooting; // Toggle shooting on/off in Inspector
     [SerializeField] float minShootRange = 6f; // Minimum distance required to shoot
 
+    [SerializeField] bool enableMelee; // Toggle melee on/off in Inspector
+    [SerializeField] float meleeRange = 3f; // Range to initiate melee attack
+    [SerializeField] float meleeRate = 1.5f; // Cooldown time between melee attacks
+
     Color colorOrig;
 
     bool playerInTrigger;
     bool waitingAtPatrolPoint;
 
     float shootTimer;
+    float meleeTimer;
     float roamTimer;
     float angleToPlayer;
     float stoppingDistOrig;
@@ -67,6 +72,7 @@ public class enemyAI : MonoBehaviour, IDamage
     void Update()
     {
         shootTimer += Time.deltaTime;
+        meleeTimer += Time.deltaTime;
 
         // Only handle animation logic if animation is enabled
         if (enableAnimation && anim != null)
@@ -158,14 +164,18 @@ public class enemyAI : MonoBehaviour, IDamage
             {
                 agent.SetDestination(gamemanager.instance.player.transform.position);
 
+                float distanceToPlayer = Vector3.Distance(transform.position, gamemanager.instance.player.transform.position);
+
                 // Check if shooting is enabled and player is within range
-                if (enableShooting && shootTimer >= shootRate)
+                if (enableShooting && shootTimer >= shootRate && distanceToPlayer >= minShootRange)
                 {
-                    float distanceToPlayer = Vector3.Distance(transform.position, gamemanager.instance.player.transform.position);
-                    if (distanceToPlayer >= minShootRange)
-                    {
-                        shoot();
-                    }
+                    shoot();
+                }
+
+                // Check if melee is enabled and player is within melee range
+                if (enableMelee && meleeTimer >= meleeRate && distanceToPlayer <= meleeRange)
+                {
+                    melee();
                 }
 
                 if (agent.remainingDistance <= stoppingDistOrig)
@@ -239,6 +249,15 @@ public class enemyAI : MonoBehaviour, IDamage
         // Only trigger shoot animation if enabled
         if (enableAnimation && anim != null)
             anim.SetTrigger("Shoot");
+    }
+
+    void melee()
+    {
+        meleeTimer = 0;
+
+        // Only trigger melee animation if enabled
+        if (enableAnimation && anim != null)
+            anim.SetTrigger("Punch");
     }
 
     public void createProjectile()
