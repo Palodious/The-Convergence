@@ -2387,7 +2387,6 @@ MonoBehaviour:
   anim: {fileID: 8201441315612774040}
   model: {fileID: 1991611240682663279}
   headPos: {fileID: 82154600832889266}
-  weaponCol: {fileID: 0}
   HP: 30
   FOV: 60
   faceTargetSpeed: 100
@@ -2397,18 +2396,7 @@ MonoBehaviour:
   projectile: {fileID: 4705637938062420806, guid: ff62b65117c527244a483945471f67d0, type: 3}
   shootRate: 0.8
   shootPOS: {fileID: 8256406151721584935}
-  enableRoam: 1
-  enableAnimation: 1
-  enablePatrol: 0
-  patrolPoints: []
-  patrolPauseTime: 2
-  enableShooting: 0
-  minShootRange: 6
-  enableMelee: 0
-  meleeRange: 3
-  meleeRate: 1.5
-  meleeObj: {fileID: 0}
-  meleePOS: {fileID: 0}
+  useAnimations: 0
 --- !u!195 &1413059786292185099
 NavMeshAgent:
   m_ObjectHideFlags: 0

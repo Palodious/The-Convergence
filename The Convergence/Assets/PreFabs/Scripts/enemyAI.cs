@@ -9,8 +9,6 @@ public class enemyAI : MonoBehaviour, IDamage
     [SerializeField] Renderer model;
     [SerializeField] Transform headPos;
 
-    [SerializeField] Collider weaponCol;
-
     [SerializeField] int HP;
     [SerializeField] int FOV;
     [SerializeField] int faceTargetSpeed;
@@ -22,38 +20,23 @@ public class enemyAI : MonoBehaviour, IDamage
     [SerializeField] float shootRate;
     [SerializeField] Transform shootPOS;
 
-    [SerializeField] bool enableRoam; // Toggle roaming on/off in Inspector
-    [SerializeField] bool enableAnimation; // Toggle animation on/off in Inspector
-
-    [SerializeField] bool enablePatrol; // Toggle patrol on/off in Inspector
-    [SerializeField] Transform[] patrolPoints; // Patrol points set in Inspector
-    [SerializeField] float patrolPauseTime; // Pause time between patrol points
-
-    [SerializeField] bool enableShooting; // Toggle shooting on/off in Inspector
-    [SerializeField] float minShootRange; // Minimum distance required to shoot
-
-    [SerializeField] bool enableMelee; // Toggle melee on/off in Inspector
-    [SerializeField] float meleeRange; // Range to initiate melee attack
-    [SerializeField] float meleeRate; // Cooldown time between melee attacks
-    [SerializeField] GameObject meleeObj; // Melee GameObject to spawn
-    [SerializeField] Transform meleePOS; // Melee position to spawn from
+    public bool useAnimations = true; // Toggle all animation logic on/off
+    public bool usePatrol = true;// Toggle patrol behavior
+    public bool useRoam = true;  // Toggle roaming behavior
 
     Color colorOrig;
-
+    float sightRange = 20f; // max distance enemy can see
     bool playerInTrigger;
-    bool waitingAtPatrolPoint;
-
     float shootTimer;
-    float meleeTimer;
     float roamTimer;
     float angleToPlayer;
     float stoppingDistOrig;
-    float patrolTimer;
-
-    int currentPatrolIndex;
-
     Vector3 playerDir;
     Vector3 startingPos;
+
+    // Optional patrol points set up as GameObjects in the scene
+    [SerializeField] Transform[] patrolPoints;
+    int patrolIndex = 0;
 
     void Start()
     {
@@ -62,75 +45,45 @@ public class enemyAI : MonoBehaviour, IDamage
         stoppingDistOrig = agent.stoppingDistance;
         startingPos = transform.position;
 
-        // Initialize patrol system if enabled and points exist
-        if (enablePatrol && patrolPoints != null && patrolPoints.Length > 0)
-        {
-            currentPatrolIndex = 0;
-            agent.stoppingDistance = 0;
-            agent.SetDestination(patrolPoints[currentPatrolIndex].position);
-        }
+        // Initialize patrol by setting the first patrol point as the destination
+        if (usePatrol && patrolPoints != null && patrolPoints.Length > 0)
+            agent.SetDestination(patrolPoints[patrolIndex].position);
     }
 
     void Update()
     {
         shootTimer += Time.deltaTime;
-        meleeTimer += Time.deltaTime;
 
-        // Only handle animation logic if animation is enabled
-        if (enableAnimation && anim != null)
+        if (useAnimations && anim != null)
         {
-            float agentSpeedCur = agent.velocity.normalized.magnitude;
+            float agentSpeedCur = agent.velocity.magnitude;
             float agentSpeedAnim = anim.GetFloat("Speed");
             anim.SetFloat("Speed", Mathf.Lerp(agentSpeedAnim, agentSpeedCur, Time.deltaTime * animTransSpeed));
         }
 
-        if (agent.remainingDistance < 0.01f)
-            roamTimer += Time.deltaTime;
+        bool playerVisible = canSeePlayer();
 
-        if (enablePatrol && patrolPoints != null && patrolPoints.Length > 0)
+        if (playerVisible)
         {
-            handlePatrol();
+            agent.SetDestination(gamemanager.instance.player.transform.position);
+
+            if (shootTimer >= shootRate)
+                shoot();
+
+            if (agent.remainingDistance <= stoppingDistOrig)
+                faceTarget();
         }
-        else if (enableRoam) // Only check roam if roaming is on
+        else
         {
-            if (playerInTrigger && !canSeePlayer())
-            {
+            if (useRoam) 
                 checkRoam();
-            }
-            else if (!playerInTrigger)
-            {
-                checkRoam();
-            }
-        }
-    }
-
-    // Handles patrol logic if enabled
-    void handlePatrol()
-    {
-        if (!enablePatrol || patrolPoints.Length == 0) return;
-
-        if (!waitingAtPatrolPoint && agent.remainingDistance <= agent.stoppingDistance + 0.1f)
-        {
-            waitingAtPatrolPoint = true;
-            patrolTimer = 0;
-        }
-
-        if (waitingAtPatrolPoint)
-        {
-            patrolTimer += Time.deltaTime;
-            if (patrolTimer >= patrolPauseTime)
-            {
-                waitingAtPatrolPoint = false;
-                currentPatrolIndex = (currentPatrolIndex + 1) % patrolPoints.Length;
-                agent.SetDestination(patrolPoints[currentPatrolIndex].position);
-            }
+            if (usePatrol) 
+                checkPatrol();
         }
     }
 
     void checkRoam()
     {
-        if (!enableRoam) return; // Prevent roaming logic if off
-
         if (agent.remainingDistance < 0.01f && roamTimer >= roamPauseTime)
         {
             roam();
@@ -139,8 +92,6 @@ public class enemyAI : MonoBehaviour, IDamage
 
     void roam()
     {
-        if (!enableRoam) return; // Double check before setting a roam destination
-
         roamTimer = 0;
         agent.stoppingDistance = 0;
 
@@ -152,42 +103,37 @@ public class enemyAI : MonoBehaviour, IDamage
         agent.SetDestination(hit.position);
     }
 
+    // Patrol logic
+    void checkPatrol()
+    {
+        // Exit if no patrol points are assigned
+        if (patrolPoints == null || patrolPoints.Length == 0) return;
+
+        // If agent reached current patrol point, go to the next one
+        if (agent.remainingDistance < 0.01f)
+        {
+            patrolIndex = (patrolIndex + 1) % patrolPoints.Length; // Loop back to first point
+            agent.SetDestination(patrolPoints[patrolIndex].position);
+        }
+    }
+
     bool canSeePlayer()
     {
-        playerDir = gamemanager.instance.player.transform.position - headPos.position;
+        Vector3 playerPos = gamemanager.instance.player.transform.position;
+        playerDir = playerPos - headPos.position;
         angleToPlayer = Vector3.Angle(playerDir, transform.forward);
 
-        Debug.DrawRay(headPos.position, playerDir);
+        if (playerDir.magnitude > sightRange) return false; // too far
 
         RaycastHit hit;
-        if (Physics.Raycast(headPos.position, playerDir, out hit))
+        if (Physics.Raycast(headPos.position, playerDir.normalized, out hit, sightRange))
         {
-            if (angleToPlayer <= FOV && hit.collider.CompareTag("Player"))
+            if (hit.collider.CompareTag("Player") && angleToPlayer <= FOV)
             {
-                agent.SetDestination(gamemanager.instance.player.transform.position);
-
-                float distanceToPlayer = Vector3.Distance(transform.position, gamemanager.instance.player.transform.position);
-
-                // Check if shooting is enabled and player is within range
-                if (enableShooting && shootTimer >= shootRate && distanceToPlayer >= minShootRange)
-                {
-                    shoot();
-                }
-
-                // Check if melee is enabled and player is within melee range
-                if (enableMelee && meleeTimer >= meleeRate && distanceToPlayer <= meleeRange)
-                {
-                    melee();
-                }
-
-                if (agent.remainingDistance <= stoppingDistOrig)
-                    faceTarget();
-
-                agent.stoppingDistance = stoppingDistOrig;
                 return true;
             }
         }
-        agent.stoppingDistance = 0;
+
         return false;
     }
 
@@ -200,9 +146,7 @@ public class enemyAI : MonoBehaviour, IDamage
     private void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("Player"))
-        {
             playerInTrigger = true;
-        }
     }
 
     private void OnTriggerExit(Collider other)
@@ -211,13 +155,6 @@ public class enemyAI : MonoBehaviour, IDamage
         {
             playerInTrigger = false;
             agent.stoppingDistance = 0;
-
-            // Resume patrol if enabled after player leaves trigger
-            if (enablePatrol && patrolPoints != null && patrolPoints.Length > 0)
-            {
-                waitingAtPatrolPoint = false;
-                agent.SetDestination(patrolPoints[currentPatrolIndex].position);
-            }
         }
     }
 
@@ -248,40 +185,18 @@ public class enemyAI : MonoBehaviour, IDamage
     {
         shootTimer = 0;
 
-        // Only trigger shoot animation if enabled
-        if (enableAnimation && anim != null)
+        if (useAnimations && anim != null)
+        {
             anim.SetTrigger("Shoot");
-    }
-
-    void melee()
-    {
-        meleeTimer = 0;
-
-        // Only trigger melee animation if enabled
-        if (enableAnimation && anim != null)
-            anim.SetTrigger("Punch");
+        }
+        else
+        {
+            createProjectile();
+        }
     }
 
     public void createProjectile()
     {
         Instantiate(projectile, shootPOS.position, transform.rotation);
-    }
-
-    public void createMelee()
-    {
-        if (meleeObj != null && meleePOS != null)
-        {
-            Instantiate(meleeObj, meleePOS.position, transform.rotation);
-        }
-    }
-
-    public void weaponColOn()
-    {
-        weaponCol.enabled = true;
-    }
-
-    public void weaponColOff()
-    {
-        weaponCol.enabled = false;
     }
 }

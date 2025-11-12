@@ -56,7 +56,6 @@ MonoBehaviour:
   anim: {fileID: 0}
   model: {fileID: 8040678228756557300}
   headPos: {fileID: 5804238826743989315}
-  weaponCol: {fileID: 0}
   HP: 10
   FOV: 60
   faceTargetSpeed: 100
@@ -66,7 +65,12 @@ MonoBehaviour:
   projectile: {fileID: 4705637938062420806, guid: 006ca5450a142324ab16a3c205be62f8, type: 3}
   shootRate: 1
   shootPOS: {fileID: 1145263346601586257}
-  enableRoam: 0
+  useAnimations: 0
+  usePatrol: 1
+  useRoam: 0
+  patrolPoints:
+  - {fileID: 0}
+  - {fileID: 0}
 --- !u!195 &4143625095129991600
 NavMeshAgent:
   m_ObjectHideFlags: 0
