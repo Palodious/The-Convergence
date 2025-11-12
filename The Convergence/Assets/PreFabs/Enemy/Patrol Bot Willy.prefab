@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 3803603855587236033}
   - component: {fileID: 2914004048708912450}
   - component: {fileID: 4143625095129991600}
+  - component: {fileID: 1511294767455078534}
   - component: {fileID: 6466027028239801714}
   - component: {fileID: 8040678228756557300}
   - component: {fileID: 7851797867239490862}
@@ -31,7 +32,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2804925484609231592}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.000000021855694, y: 0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 23.92096, y: 0.82, z: 1.51743}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -53,24 +54,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::enemyAI
   agent: {fileID: 4143625095129991600}
+  anim: {fileID: 1511294767455078534}
   model: {fileID: 8040678228756557300}
   headPos: {fileID: 5804238826743989315}
+  weaponCol: {fileID: 0}
   HP: 10
   FOV: 60
   faceTargetSpeed: 100
+  roamDist: 0
+  roamPauseTime: 0
+  animTransSpeed: 0
   projectile: {fileID: 4705637938062420806, guid: 006ca5450a142324ab16a3c205be62f8, type: 3}
   shootRate: 1
   shootPOS: {fileID: 1145263346601586257}
-  enablePatrol: 0
-  patrolPoints:
-  - {fileID: 0}
-  - {fileID: 0}
-  patrolWaitTime: 3
-  playerStoppingDistance: 0
-  lostSightDuration: 3
-  rotationSpeed: 5
-  minRotationTime: 2
-  maxRotationTime: 3
+  enableRoam: 0
 --- !u!195 &4143625095129991600
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -93,6 +90,28 @@ NavMeshAgent:
   m_BaseOffset: 0.8
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
+--- !u!95 &1511294767455078534
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2804925484609231592}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 0}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!33 &6466027028239801714
 MeshFilter:
   m_ObjectHideFlags: 0

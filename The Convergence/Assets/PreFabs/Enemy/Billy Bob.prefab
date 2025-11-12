@@ -1633,14 +1633,14 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7120352914101181611}
-  - component: {fileID: 881788272266410579}
+  - component: {fileID: 3555490286432400673}
   - component: {fileID: 1812624569798325690}
   - component: {fileID: 2324424663460985939}
   - component: {fileID: 2332684841701194133}
   - component: {fileID: 1361410338632812630}
   m_Layer: 0
   m_Name: Billy Bob
-  m_TagString: Untagged
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1653,8 +1653,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6524531788349714948}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 2.63296, y: 0, z: 13.9836}
+  m_LocalRotation: {x: -0, y: -0.78506476, z: -0, w: 0.6194137}
+  m_LocalPosition: {x: 1.4044342, y: 0, z: 139.79738}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -1664,8 +1664,8 @@ Transform:
   - {fileID: 5141642910558270159}
   - {fileID: 7008207851253595377}
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &881788272266410579
+  m_LocalEulerAnglesHint: {x: 0, y: -103.453, z: 0}
+--- !u!114 &3555490286432400673
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1674,26 +1674,24 @@ MonoBehaviour:
   m_GameObject: {fileID: 6524531788349714948}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fc7df65ffe027f54faa23740f895bd75, type: 3}
+  m_Script: {fileID: 11500000, guid: 5cd547001d36ab4498053ded28c9623a, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::enemyAIMelee
+  m_EditorClassIdentifier: Assembly-CSharp::enemyAI
   agent: {fileID: 2324424663460985939}
+  anim: {fileID: 1812624569798325690}
   model: {fileID: 4387108733598976577}
   headPos: {fileID: 8877277658983715043}
-  HP: 50
-  FOV: 50
-  faceTargetSpeed: 125
-  meleeObject: {fileID: 1348919514364573612, guid: 9ffc8f2d2217d4a4482ba46879159b4d, type: 3}
-  meleeRate: 0.5
-  meleePOS: {fileID: 7008207851253595377}
-  enablePatrol: 0
-  patrolPoints: []
-  patrolWaitTime: 0
-  playerStoppingDistance: 2
-  lostSightDuration: 0
-  rotationSpeed: 0
-  minRotationTime: 0
-  maxRotationTime: 0
+  weaponCol: {fileID: 0}
+  HP: 0
+  FOV: 0
+  faceTargetSpeed: 0
+  roamDist: 0
+  roamPauseTime: 0
+  animTransSpeed: 0
+  projectile: {fileID: 0}
+  shootRate: 0
+  shootPOS: {fileID: 0}
+  enableRoam: 0
 --- !u!95 &1812624569798325690
 Animator:
   serializedVersion: 7
@@ -1703,7 +1701,7 @@ Animator:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6524531788349714948}
   m_Enabled: 1
-  m_Avatar: {fileID: 9000000, guid: b55c397918b3f224da7cb1afd8d43990, type: 3}
+  m_Avatar: {fileID: 9000000, guid: 2faa610713d3b3c439473daa55e8c60a, type: 3}
   m_Controller: {fileID: 9100000, guid: 606f9e3db290a404ab08359831e7004b, type: 2}
   m_CullingMode: 1
   m_UpdateMode: 0

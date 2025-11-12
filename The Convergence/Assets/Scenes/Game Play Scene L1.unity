@@ -3009,6 +3009,7 @@ Transform:
   - {fileID: 2237817927586100655}
   - {fileID: 6123903371488581900}
   - {fileID: 804587881}
+  - {fileID: 5694897443985557296}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &684216410
@@ -3085,6 +3086,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Igor
       objectReference: {fileID: 0}
+    - target: {fileID: 3490707018037677810, guid: 2c2e3070894e4ba43b71d1dbab9f9aa4, type: 3}
+      propertyPath: anim
+      value: 
+      objectReference: {fileID: 888402004}
     - target: {fileID: 3510255467534488306, guid: 2c2e3070894e4ba43b71d1dbab9f9aa4, type: 3}
       propertyPath: m_LocalPosition.x
       value: -86.90451
@@ -3205,13 +3210,17 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 410831963}
     m_Modifications:
+    - target: {fileID: 1812624569798325690, guid: ec56b0bb9422c56459929cbd17ac7c29, type: 3}
+      propertyPath: m_Avatar
+      value: 
+      objectReference: {fileID: 9000000, guid: 07cfd655bf23cbc409ab05c4e0d2d549, type: 3}
     - target: {fileID: 6524531788349714948, guid: ec56b0bb9422c56459929cbd17ac7c29, type: 3}
       propertyPath: m_Name
       value: Billy Bob (6)
       objectReference: {fileID: 0}
     - target: {fileID: 7120352914101181611, guid: ec56b0bb9422c56459929cbd17ac7c29, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -18.953491
+      value: -17.57
       objectReference: {fileID: 0}
     - target: {fileID: 7120352914101181611, guid: ec56b0bb9422c56459929cbd17ac7c29, type: 3}
       propertyPath: m_LocalPosition.y
@@ -3219,7 +3228,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7120352914101181611, guid: ec56b0bb9422c56459929cbd17ac7c29, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 36.511814
+      value: 37.03
       objectReference: {fileID: 0}
     - target: {fileID: 7120352914101181611, guid: ec56b0bb9422c56459929cbd17ac7c29, type: 3}
       propertyPath: m_LocalRotation.w
@@ -3340,7 +3349,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7120352914101181611, guid: ec56b0bb9422c56459929cbd17ac7c29, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -61.353897
+      value: -55.41
       objectReference: {fileID: 0}
     - target: {fileID: 7120352914101181611, guid: ec56b0bb9422c56459929cbd17ac7c29, type: 3}
       propertyPath: m_LocalPosition.y
@@ -3348,7 +3357,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7120352914101181611, guid: ec56b0bb9422c56459929cbd17ac7c29, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 39.756912
+      value: 40.07
       objectReference: {fileID: 0}
     - target: {fileID: 7120352914101181611, guid: ec56b0bb9422c56459929cbd17ac7c29, type: 3}
       propertyPath: m_LocalRotation.w
@@ -3706,6 +3715,11 @@ PrefabInstance:
 Transform:
   m_CorrespondingSourceObject: {fileID: 4000011609285218, guid: c2028b62d7877e04194d5001429cff6b, type: 3}
   m_PrefabInstance: {fileID: 888303403}
+  m_PrefabAsset: {fileID: 0}
+--- !u!95 &888402004 stripped
+Animator:
+  m_CorrespondingSourceObject: {fileID: 2944604361103831847, guid: 2c2e3070894e4ba43b71d1dbab9f9aa4, type: 3}
+  m_PrefabInstance: {fileID: 695618046}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &911416397
 PrefabInstance:
@@ -4621,26 +4635,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 410831963}
     m_Modifications:
-    - target: {fileID: 2739205184487091905, guid: 1092da00cf9eb434bb17a704015faf06, type: 3}
-      propertyPath: m_Radius
-      value: 15
-      objectReference: {fileID: 0}
     - target: {fileID: 2804925484609231592, guid: 1092da00cf9eb434bb17a704015faf06, type: 3}
       propertyPath: m_Name
       value: Patrol Bot Willy
       objectReference: {fileID: 0}
-    - target: {fileID: 2914004048708912450, guid: 1092da00cf9eb434bb17a704015faf06, type: 3}
-      propertyPath: enablePatrol
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 2914004048708912450, guid: 1092da00cf9eb434bb17a704015faf06, type: 3}
-      propertyPath: 'patrolPoints.Array.data[0]'
-      value: 
-      objectReference: {fileID: 1865657838}
-    - target: {fileID: 2914004048708912450, guid: 1092da00cf9eb434bb17a704015faf06, type: 3}
-      propertyPath: 'patrolPoints.Array.data[1]'
-      value: 
-      objectReference: {fileID: 404633323}
     - target: {fileID: 3803603855587236033, guid: 1092da00cf9eb434bb17a704015faf06, type: 3}
       propertyPath: m_LocalPosition.x
       value: 1.023346
@@ -5385,7 +5383,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 2848341018535508805, guid: a428ce1e50984774c948c5fcb56de73b, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7100856668139556290, guid: a428ce1e50984774c948c5fcb56de73b, type: 3}
       propertyPath: m_IsActive
@@ -7187,12 +7185,12 @@ Transform:
   m_GameObject: {fileID: 1292271211264354311}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -193.9, y: 0, z: -14.2}
+  m_LocalPosition: {x: 4.9291077, y: 0, z: 12.61733}
   m_LocalScale: {x: 14.765987, y: 0, z: 16.745836}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 5182169914644854213}
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 672098999}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &6123903371488581899
 PrefabInstance:
@@ -7292,7 +7290,6 @@ SceneRoots:
   m_Roots:
   - {fileID: 1764236873}
   - {fileID: 2074850226}
-  - {fileID: 5694897443985557296}
   - {fileID: 634434778}
   - {fileID: 672098999}
   - {fileID: 410831963}

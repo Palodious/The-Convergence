@@ -2333,8 +2333,8 @@ GameObject:
   m_Component:
   - component: {fileID: 7780446370811186591}
   - component: {fileID: 7018091346755844777}
-  - component: {fileID: 6545463399618516984}
   - component: {fileID: 1413059786292185099}
+  - component: {fileID: 8201441315612774040}
   - component: {fileID: 8874947941210575979}
   - component: {fileID: 8722874740221831910}
   m_Layer: 0
@@ -2384,51 +2384,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::enemyAI
   agent: {fileID: 1413059786292185099}
+  anim: {fileID: 8201441315612774040}
   model: {fileID: 1991611240682663279}
   headPos: {fileID: 82154600832889266}
+  weaponCol: {fileID: 0}
   HP: 30
   FOV: 60
   faceTargetSpeed: 100
+  roamDist: 0
+  roamPauseTime: 0
+  animTransSpeed: 0
   projectile: {fileID: 4705637938062420806, guid: ff62b65117c527244a483945471f67d0, type: 3}
   shootRate: 0.8
   shootPOS: {fileID: 8256406151721584935}
-  enablePatrol: 1
-  patrolPoints: []
-  patrolWaitTime: 0
-  playerStoppingDistance: 0
-  lostSightDuration: 0
-  rotationSpeed: 0
-  minRotationTime: 0
-  maxRotationTime: 0
---- !u!111 &6545463399618516984
-Animation:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8961709419642420533}
-  m_Enabled: 1
-  serializedVersion: 4
-  m_Animation: {fileID: 7400000, guid: bc600cce01eb57a409f4e69025868a2c, type: 3}
-  m_Animations:
-  - {fileID: 7400000, guid: bc600cce01eb57a409f4e69025868a2c, type: 3}
-  - {fileID: 7400002, guid: bc600cce01eb57a409f4e69025868a2c, type: 3}
-  - {fileID: 7400004, guid: bc600cce01eb57a409f4e69025868a2c, type: 3}
-  - {fileID: 7400006, guid: bc600cce01eb57a409f4e69025868a2c, type: 3}
-  - {fileID: 7400008, guid: bc600cce01eb57a409f4e69025868a2c, type: 3}
-  - {fileID: 7400010, guid: bc600cce01eb57a409f4e69025868a2c, type: 3}
-  - {fileID: 7400014, guid: bc600cce01eb57a409f4e69025868a2c, type: 3}
-  - {fileID: 7400012, guid: bc600cce01eb57a409f4e69025868a2c, type: 3}
-  - {fileID: 7400016, guid: bc600cce01eb57a409f4e69025868a2c, type: 3}
-  - {fileID: 7400018, guid: bc600cce01eb57a409f4e69025868a2c, type: 3}
-  - {fileID: 7400020, guid: bc600cce01eb57a409f4e69025868a2c, type: 3}
-  - {fileID: 7400022, guid: bc600cce01eb57a409f4e69025868a2c, type: 3}
-  - {fileID: 7400024, guid: bc600cce01eb57a409f4e69025868a2c, type: 3}
-  m_WrapMode: 0
-  m_PlayAutomatically: 1
-  m_AnimatePhysics: 0
-  m_UpdateMode: 0
-  m_CullingType: 1
+  enableRoam: 0
 --- !u!195 &1413059786292185099
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -2451,6 +2420,28 @@ NavMeshAgent:
   m_BaseOffset: 0
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
+--- !u!95 &8201441315612774040
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8961709419642420533}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 0}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!136 &8874947941210575979
 CapsuleCollider:
   m_ObjectHideFlags: 0

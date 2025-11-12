@@ -22,6 +22,8 @@ public class enemyAI : MonoBehaviour, IDamage
     [SerializeField] float shootRate;
     [SerializeField] Transform shootPOS;
 
+    [Header("Roam Settings")]
+    [SerializeField] bool enableRoam;//Toggle roaming on/off in Inspector
 
     Color colorOrig;
 
@@ -42,7 +44,6 @@ public class enemyAI : MonoBehaviour, IDamage
         gamemanager.instance.updateGameGoal(1);
         stoppingDistOrig = agent.stoppingDistance;
         startingPos = transform.position;
-
     }
 
     // Update is called once per frame
@@ -58,18 +59,23 @@ public class enemyAI : MonoBehaviour, IDamage
         if (agent.remainingDistance < 0.01f)
             roamTimer += Time.deltaTime;
 
-        if (playerInTrigger && !canSeePlayer())
+        if (enableRoam) // Only check roam if roaming is on
         {
-            checkRoam();
-        }
-        else if (!playerInTrigger)
-        {
-            checkRoam();
+            if (playerInTrigger && !canSeePlayer())
+            {
+                checkRoam();
+            }
+            else if (!playerInTrigger)
+            {
+                checkRoam();
+            }
         }
     }
 
     void checkRoam()
     {
+        if (!enableRoam) return; // Prevent roaming logic if off
+
         if (agent.remainingDistance < 0.01f && roamTimer >= roamPauseTime)
         {
             roam();
@@ -78,6 +84,8 @@ public class enemyAI : MonoBehaviour, IDamage
 
     void roam()
     {
+        if (!enableRoam) return; //Double check before setting a roam destination
+
         roamTimer = 0;
         agent.stoppingDistance = 0;
 
