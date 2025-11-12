@@ -34,6 +34,7 @@ public class playerController : MonoBehaviour, IDamage
     bool isCrouching;  // crouch state  
     bool isGliding;    // glide state  
 
+
     // Modified by playerAbilities during surge
     [HideInInspector] public float damageBoost = 1f;
 
@@ -191,4 +192,13 @@ public class playerController : MonoBehaviour, IDamage
         get { return HP; }
         set { HP = value; }
     }
+
+    public int GetHP() => HP;
+    public void SetHP(int value)
+    {
+        HP = value;
+        updatePlayerUI();
+    }
+
+
 }

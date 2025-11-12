@@ -28,4 +28,15 @@ public class buttonFunction : MonoBehaviour
 #endif
     }
 
+    public void SaveNow()
+    {
+        gamemanager.instance.SaveGame();
+    }
+
+    public void LoadNow()
+    {
+        gamemanager.instance.LoadGame();
+    }
+
+
 }

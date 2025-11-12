@@ -5086,33 +5086,13 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 1311314886835929869, guid: a428ce1e50984774c948c5fcb56de73b, type: 3}
-      propertyPath: m_fontStyle
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 2848341018535508805, guid: a428ce1e50984774c948c5fcb56de73b, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 2924214983638416932, guid: a428ce1e50984774c948c5fcb56de73b, type: 3}
+    - target: {fileID: 7100856668139556290, guid: a428ce1e50984774c948c5fcb56de73b, type: 3}
       propertyPath: m_IsActive
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3942407118874708322, guid: a428ce1e50984774c948c5fcb56de73b, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
-      value: 
-      objectReference: {fileID: 1764236874}
-    - target: {fileID: 3942407118874708322, guid: a428ce1e50984774c948c5fcb56de73b, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: mainmenu
-      objectReference: {fileID: 0}
-    - target: {fileID: 3942407118874708322, guid: a428ce1e50984774c948c5fcb56de73b, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
-      value: buttonFunction, Assembly-CSharp
-      objectReference: {fileID: 0}
-    - target: {fileID: 3942407118874708322, guid: a428ce1e50984774c948c5fcb56de73b, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
-      value: UnityEngine.Object, UnityEngine
       objectReference: {fileID: 0}
     - target: {fileID: 8484307231927641011, guid: a428ce1e50984774c948c5fcb56de73b, type: 3}
       propertyPath: m_Name
@@ -5201,41 +5181,8 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 8497083674025545019, guid: a428ce1e50984774c948c5fcb56de73b, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1764236877}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a428ce1e50984774c948c5fcb56de73b, type: 3}
---- !u!114 &1764236874 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 6525188220533397474, guid: a428ce1e50984774c948c5fcb56de73b, type: 3}
-  m_PrefabInstance: {fileID: 1764236873}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1764236875}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 072896b7e9152904d94596630638460e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::buttonFunction
---- !u!1 &1764236875 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 8497083674025545019, guid: a428ce1e50984774c948c5fcb56de73b, type: 3}
-  m_PrefabInstance: {fileID: 1764236873}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &1764236877
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1764236875}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 16862492db33ac04d89b3dbee4149daf, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::MainMenu
-  firstLevelSceneName: 
-  optionsPanel: {fileID: 0}
 --- !u!1 &1787354765 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 1000011128243500, guid: 1ab69ec7f794b39429d78db38da5fbb6, type: 3}

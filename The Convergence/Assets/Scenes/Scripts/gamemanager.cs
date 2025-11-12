@@ -1,5 +1,6 @@
-using UnityEngine;
 using TMPro;
+using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class gamemanager : MonoBehaviour
@@ -10,6 +11,10 @@ public class gamemanager : MonoBehaviour
     [SerializeField] GameObject menuPause;
     [SerializeField] GameObject menuWin;
     [SerializeField] GameObject menuLose;
+
+    // Expose current objective count; make it tracked and accessible.
+    [SerializeField]private int gameGoalCount;
+
 
     public TMP_Text gameGoalCountText;
     public Image playerHPBar;
@@ -22,8 +27,6 @@ public class gamemanager : MonoBehaviour
     public bool isPaused;
 
     float timeScaleOrig;
-
-    int gameGoalCount;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Awake()
@@ -90,6 +93,62 @@ public class gamemanager : MonoBehaviour
         statePause();
         menuActive = menuLose;
         menuActive.SetActive(true);
+    }
+
+    // Save & Load system
+    public void SaveGame()
+    {
+        var d = new SaveSystem.SaveData
+        {
+            scene = SceneManager.GetActiveScene().name,
+            px = player.transform.position.x,
+            py = player.transform.position.y,
+            pz = player.transform.position.z,
+            playerHP = controller.GetHP(),
+            gameGoalCount = gameGoalCount
+        };
+        SaveSystem.Save(d);
+    }
+
+    public void LoadGame()
+    {
+        if (!SaveSystem.TryLoad(out var d)) { Debug.LogWarning("No save found."); return; }
+
+        // If we’re already in the right scene, just restore state, otherwise load, then restore.
+        if (SceneManager.GetActiveScene().name == d.scene)
+        {
+            RestoreState(d);
+        }
+        else
+        {
+            // Load scene, then restore after it’s ready.
+            StartCoroutine(LoadThenRestore(d));
+        }
+    }
+
+    System.Collections.IEnumerator LoadThenRestore(SaveSystem.SaveData d)
+    {
+        // Make sure we’re unpaused and input is live during the hop.
+        stateUnpause();
+        var op = SceneManager.LoadSceneAsync(d.scene);
+        while (!op.isDone) yield return null;
+
+        // Re-find references because scene changed.
+        player = GameObject.FindWithTag("Player");
+        controller = player.GetComponent<playerController>();
+
+        RestoreState(d);
+    }
+
+    void RestoreState(SaveSystem.SaveData d)
+    {
+        // Position the player & restore stats/UI.
+        player.transform.position = new Vector3(d.px, d.py, d.pz);
+        controller.SetHP(d.playerHP);
+
+        gameGoalCount = d.gameGoalCount;
+        if (gameGoalCountText != null)
+            gameGoalCountText.text = gameGoalCount.ToString("F0");
     }
 
 }
