@@ -1178,6 +1178,37 @@ Transform:
   - {fileID: 3822507302533134278}
   m_Father: {fileID: 8388148112864962676}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &4338067625717231893
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6892418374700145010}
+  m_Layer: 0
+  m_Name: Melee POS
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6892418374700145010
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4338067625717231893}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: 0.78506476, z: -0, w: 0.6194137}
+  m_LocalPosition: {x: -0.73755884, y: 1.3911529, z: -0.06652998}
+  m_LocalScale: {x: 0.7673552, y: 0.791327, z: 0.8850949}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 7120352914101181611}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &4457670598921407174
 GameObject:
   m_ObjectHideFlags: 0
@@ -1663,6 +1694,7 @@ Transform:
   - {fileID: 8122832280936350789}
   - {fileID: 5141642910558270159}
   - {fileID: 7008207851253595377}
+  - {fileID: 6892418374700145010}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: -103.453, z: 0}
 --- !u!114 &3555490286432400673
@@ -1693,6 +1725,16 @@ MonoBehaviour:
   shootPOS: {fileID: 0}
   enableRoam: 1
   enableAnimation: 1
+  enablePatrol: 0
+  patrolPoints: []
+  patrolPauseTime: 2
+  enableShooting: 0
+  minShootRange: 6
+  enableMelee: 0
+  meleeRange: 3
+  meleeRate: 1.5
+  meleeObj: {fileID: 1348919514364573612, guid: 9ffc8f2d2217d4a4482ba46879159b4d, type: 3}
+  meleePOS: {fileID: 6892418374700145010}
 --- !u!95 &1812624569798325690
 Animator:
   serializedVersion: 7
