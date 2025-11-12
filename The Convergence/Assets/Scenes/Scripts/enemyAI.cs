@@ -16,10 +16,6 @@ public class enemyAI : MonoBehaviour, IDamage
     [SerializeField] float shootRate;
     [SerializeField] Transform shootPOS;
 
-    // Patrol features
-    [SerializeField] bool enablePatrol; // Toggle patrol on/off
-    [SerializeField] Transform[] patrolPoints;  // List of patrol points
-    [SerializeField] float patrolWaitTime; // Time to wait at each patrol point
     // Adjustable player stopping distance (applies only when chasing the player)
     [SerializeField] float playerStoppingDistance;
 
@@ -34,9 +30,6 @@ public class enemyAI : MonoBehaviour, IDamage
     [SerializeField] float maxRotationTime;  // Maximum time to rotate
     bool isRotating; // Tracks if currently rotating
 
-    int currentPatrolIndex;
-    float patrolTimer;
-
     Color colorOrig;
     bool playerInTrigger;
 
@@ -50,13 +43,6 @@ public class enemyAI : MonoBehaviour, IDamage
         colorOrig = model.material.color;
         gamemanager.instance.updateGameGoal(1);
         stoppingDistOrig = agent.stoppingDistance;
-
-        // Start patrol if enabled and waypoints exist
-        if (enablePatrol && patrolPoints != null && patrolPoints.Length > 0)
-        {
-            agent.stoppingDistance = 0;
-            agent.SetDestination(patrolPoints[currentPatrolIndex].position);
-        }
     }
 
     void Update()
@@ -71,29 +57,17 @@ public class enemyAI : MonoBehaviour, IDamage
         }
         else if (playerInTrigger && !canSeePlayer())
         {
-            // Player is in range but not visible; start counting down to resume patrol
+            // Player is in range but not visible; start counting down
             if (canCurrentlySeePlayer)
             {
                 lostSightTimer += Time.deltaTime;
                 if (lostSightTimer >= lostSightDuration)
                 {
                     canCurrentlySeePlayer = false;
-                    playerInTrigger = false; // Stop chasing, resume patrol
+                    playerInTrigger = false; // Stop chasing
                     lostSightTimer = 0;
-
-                    // Start random rotation only after fully stopped
-                    if (enablePatrol && !isRotating && patrolPoints.Length > 0)
-                    {
-                        agent.stoppingDistance = 0;
-                        agent.SetDestination(patrolPoints[currentPatrolIndex].position);
-                        StartCoroutine(RandomRotation());
-                    }
                 }
             }
-        }
-        else if (enablePatrol && patrolPoints != null && patrolPoints.Length > 0)
-        {
-            Patrol(); // Run patrol when not chasing
         }
     }
 
@@ -125,57 +99,6 @@ public class enemyAI : MonoBehaviour, IDamage
         return false;
     }
 
-    // Handles moving between patrol points
-    void Patrol()
-    {
-        // Only act when agent is fully stopped at patrol point
-        if (!agent.pathPending && agent.remainingDistance <= agent.stoppingDistance)
-        {
-            // Ensure patrol ignores stopping distance
-            agent.stoppingDistance = 0;
-
-            patrolTimer += Time.deltaTime; // Increment timer for waiting at current point
-
-            // Only rotate while waiting at the patrol point, not when moving
-            if (!isRotating && patrolTimer < patrolWaitTime)
-            {
-                StartCoroutine(RandomRotation()); // Start random rotation coroutine
-            }
-
-            // Move to next patrol point after waiting
-            if (patrolTimer >= patrolWaitTime)
-            {
-                currentPatrolIndex = (currentPatrolIndex + 1) % patrolPoints.Length; // Loop through patrol points
-                agent.SetDestination(patrolPoints[currentPatrolIndex].position); // Move agent to next patrol point
-                patrolTimer = 0; // Reset wait timer
-            }
-        }
-    }
-
-    // Coroutine to smoothly rotate randomly while stopped
-    IEnumerator RandomRotation()
-    {
-        isRotating = true;
-
-        // Pick a random angle between 0 and 360 degrees
-        float randomAngle = Random.Range(0f, 360f);
-        Quaternion startRot = transform.rotation; // Current rotation
-        Quaternion endRot = Quaternion.Euler(0, randomAngle, 0); // Target random rotation
-
-        float rotationTime = Random.Range(minRotationTime, maxRotationTime);
-        float elapsed = 0f;
-
-        while (elapsed < rotationTime)
-        {
-            transform.rotation = Quaternion.Slerp(startRot, endRot, elapsed / rotationTime); // Smoothly rotate
-            elapsed += Time.deltaTime * rotationSpeed; // Increase elapsed based on rotation speed
-            yield return null;
-        }
-
-        transform.rotation = endRot; // Ensure final rotation matches exactly
-        isRotating = false;
-    }
-
     void faceTarget()
     {
         Quaternion rot = Quaternion.LookRotation(new Vector3(playerDir.x, 0, playerDir.z));
@@ -197,10 +120,6 @@ public class enemyAI : MonoBehaviour, IDamage
             playerInTrigger = false;
             canCurrentlySeePlayer = false;
             lostSightTimer = 0;
-
-            // Reset patrol stopping distance when leaving trigger
-            if (enablePatrol)
-                agent.stoppingDistance = 0;
         }
     }
 
