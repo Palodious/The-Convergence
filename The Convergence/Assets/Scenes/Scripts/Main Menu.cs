@@ -38,8 +38,23 @@ public class MainMenu : MonoBehaviour
         if (optionsPanel != null) optionsPanel.SetActive(false);
     }
 
-    // Called by Quit button
-    public void QuitGame()
+    public void ContinueGame()
+    {
+        if (!SaveSystem.TryLoad(out var d))
+        {
+            Debug.LogWarning("No save found.");
+            return;
+        }
+
+        // Tell the next scene to restore state.
+        SaveSystem.PendingLoad = true;
+
+        // Jump to saved scene.
+        SceneManager.LoadScene(d.scene);
+    }
+
+// Called by Quit button
+public void QuitGame()
     {
 #if UNITY_EDITOR
         UnityEditor.EditorApplication.isPlaying = false;

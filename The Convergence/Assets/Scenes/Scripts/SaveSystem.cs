@@ -3,6 +3,9 @@ using UnityEngine;
 
 public static class SaveSystem
 {
+
+    public static bool PendingLoad = false;
+
     private static string Path => System.IO.Path.Combine(Application.persistentDataPath, "savegame.json");
 
     [System.Serializable]

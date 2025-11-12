@@ -37,6 +37,13 @@ public class gamemanager : MonoBehaviour
         player = GameObject.FindWithTag("Player");
         controller = player.GetComponent<playerController>();
 
+        if (SaveSystem.PendingLoad)
+        {
+            SaveSystem.PendingLoad = false;
+            
+            // This will restore position/HP/objectives.
+            LoadGame();
+        }
     }
 
     // Update is called once per frame
