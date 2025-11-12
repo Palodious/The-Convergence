@@ -1,3 +1,4 @@
+// damage.cs
 using UnityEngine;
 using System.Collections;
 
@@ -14,7 +15,6 @@ public class damage : MonoBehaviour
 
     bool isDamaging;
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         if (type == damageType.moving || type == damageType.homing || type == damageType.melee)
@@ -28,7 +28,6 @@ public class damage : MonoBehaviour
         }
     }
 
-    // Update is called once per frame
     void Update()
     {
         if (type == damageType.homing)
