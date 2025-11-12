@@ -27,14 +27,14 @@ public class enemyAI : MonoBehaviour, IDamage
 
     [SerializeField] bool enablePatrol; // Toggle patrol on/off in Inspector
     [SerializeField] Transform[] patrolPoints; // Patrol points set in Inspector
-    [SerializeField] float patrolPauseTime = 2f; // Pause time between patrol points
+    [SerializeField] float patrolPauseTime; // Pause time between patrol points
 
     [SerializeField] bool enableShooting; // Toggle shooting on/off in Inspector
-    [SerializeField] float minShootRange = 6f; // Minimum distance required to shoot
+    [SerializeField] float minShootRange; // Minimum distance required to shoot
 
     [SerializeField] bool enableMelee; // Toggle melee on/off in Inspector
-    [SerializeField] float meleeRange = 3f; // Range to initiate melee attack
-    [SerializeField] float meleeRate = 1.5f; // Cooldown time between melee attacks
+    [SerializeField] float meleeRange; // Range to initiate melee attack
+    [SerializeField] float meleeRate; // Cooldown time between melee attacks
     [SerializeField] GameObject meleeObj; // Melee GameObject to spawn
     [SerializeField] Transform meleePOS; // Melee position to spawn from
 
