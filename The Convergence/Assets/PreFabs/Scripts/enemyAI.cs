@@ -35,6 +35,8 @@ public class enemyAI : MonoBehaviour, IDamage
     [SerializeField] bool enableMelee; // Toggle melee on/off in Inspector
     [SerializeField] float meleeRange = 3f; // Range to initiate melee attack
     [SerializeField] float meleeRate = 1.5f; // Cooldown time between melee attacks
+    [SerializeField] GameObject meleeObj; // Melee GameObject to spawn
+    [SerializeField] Transform meleePOS; // Melee position to spawn from
 
     Color colorOrig;
 
@@ -263,6 +265,14 @@ public class enemyAI : MonoBehaviour, IDamage
     public void createProjectile()
     {
         Instantiate(projectile, shootPOS.position, transform.rotation);
+    }
+
+    public void createMelee()
+    {
+        if (meleeObj != null && meleePOS != null)
+        {
+            Instantiate(meleeObj, meleePOS.position, transform.rotation);
+        }
     }
 
     public void weaponColOn()
