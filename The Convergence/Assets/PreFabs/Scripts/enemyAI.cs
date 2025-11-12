@@ -25,14 +25,25 @@ public class enemyAI : MonoBehaviour, IDamage
     [SerializeField] bool enableRoam; // Toggle roaming on/off in Inspector
     [SerializeField] bool enableAnimation; // Toggle animation on/off in Inspector
 
+    [SerializeField] bool enablePatrol; // Toggle patrol on/off in Inspector
+    [SerializeField] Transform[] patrolPoints; // Patrol points set in Inspector
+    [SerializeField] float patrolPauseTime = 2f; // Pause time between patrol points
+
+    [SerializeField] bool enableShooting; // Toggle shooting on/off in Inspector
+    [SerializeField] float minShootRange = 6f; // Minimum distance required to shoot
+
     Color colorOrig;
 
     bool playerInTrigger;
+    bool waitingAtPatrolPoint;
 
     float shootTimer;
     float roamTimer;
     float angleToPlayer;
     float stoppingDistOrig;
+    float patrolTimer;
+
+    int currentPatrolIndex;
 
     Vector3 playerDir;
     Vector3 startingPos;
@@ -43,6 +54,14 @@ public class enemyAI : MonoBehaviour, IDamage
         gamemanager.instance.updateGameGoal(1);
         stoppingDistOrig = agent.stoppingDistance;
         startingPos = transform.position;
+
+        // Initialize patrol system if enabled and points exist
+        if (enablePatrol && patrolPoints != null && patrolPoints.Length > 0)
+        {
+            currentPatrolIndex = 0;
+            agent.stoppingDistance = 0;
+            agent.SetDestination(patrolPoints[currentPatrolIndex].position);
+        }
     }
 
     void Update()
@@ -60,7 +79,11 @@ public class enemyAI : MonoBehaviour, IDamage
         if (agent.remainingDistance < 0.01f)
             roamTimer += Time.deltaTime;
 
-        if (enableRoam) // Only check roam if roaming is on
+        if (enablePatrol && patrolPoints != null && patrolPoints.Length > 0)
+        {
+            handlePatrol();
+        }
+        else if (enableRoam) // Only check roam if roaming is on
         {
             if (playerInTrigger && !canSeePlayer())
             {
@@ -69,6 +92,29 @@ public class enemyAI : MonoBehaviour, IDamage
             else if (!playerInTrigger)
             {
                 checkRoam();
+            }
+        }
+    }
+
+    // Handles patrol logic if enabled
+    void handlePatrol()
+    {
+        if (!enablePatrol || patrolPoints.Length == 0) return;
+
+        if (!waitingAtPatrolPoint && agent.remainingDistance <= agent.stoppingDistance + 0.1f)
+        {
+            waitingAtPatrolPoint = true;
+            patrolTimer = 0;
+        }
+
+        if (waitingAtPatrolPoint)
+        {
+            patrolTimer += Time.deltaTime;
+            if (patrolTimer >= patrolPauseTime)
+            {
+                waitingAtPatrolPoint = false;
+                currentPatrolIndex = (currentPatrolIndex + 1) % patrolPoints.Length;
+                agent.SetDestination(patrolPoints[currentPatrolIndex].position);
             }
         }
     }
@@ -112,10 +158,16 @@ public class enemyAI : MonoBehaviour, IDamage
             {
                 agent.SetDestination(gamemanager.instance.player.transform.position);
 
-                if (shootTimer >= shootRate)
+                // Check if shooting is enabled and player is within range
+                if (enableShooting && shootTimer >= shootRate)
                 {
-                    shoot();
+                    float distanceToPlayer = Vector3.Distance(transform.position, gamemanager.instance.player.transform.position);
+                    if (distanceToPlayer >= minShootRange)
+                    {
+                        shoot();
+                    }
                 }
+
                 if (agent.remainingDistance <= stoppingDistOrig)
                     faceTarget();
 
@@ -147,6 +199,13 @@ public class enemyAI : MonoBehaviour, IDamage
         {
             playerInTrigger = false;
             agent.stoppingDistance = 0;
+
+            // Resume patrol if enabled after player leaves trigger
+            if (enablePatrol && patrolPoints != null && patrolPoints.Length > 0)
+            {
+                waitingAtPatrolPoint = false;
+                agent.SetDestination(patrolPoints[currentPatrolIndex].position);
+            }
         }
     }
 
