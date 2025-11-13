@@ -2,21 +2,22 @@ using UnityEngine;
 
 public class PlatformAttach : MonoBehaviour
 {
-    public GameObject Player;
+    [SerializeField] string playerTag = "Player";
+    [SerializeField] Transform platform;
 
     private void OnTriggerEnter(Collider other)
     {
-        if(other.gameObject == Player)
+        if(other.gameObject.tag.Equals(playerTag))
         {
-            Player.transform.parent = transform;
+            other.gameObject.transform.parent = platform;
         }
     }
 
     private void OnTriggerExit(Collider other)
     {
-        if (other.gameObject == Player)
+        if (other.gameObject.tag.Equals(playerTag))
         {
-            Player.transform.parent = null;
+            other.gameObject.transform.parent = null;
         }
     }
 
