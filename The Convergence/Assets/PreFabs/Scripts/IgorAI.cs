@@ -1,4 +1,3 @@
-// IgorAI.cs
 using System.Collections;
 using UnityEngine;
 using UnityEngine.AI;
@@ -19,25 +18,41 @@ public class IgorAI : MonoBehaviour, IDamage
     [SerializeField] GameObject meleeObj;
 
     [SerializeField] int faceTargetSpeed;
+    [SerializeField] int roamDist;
+    [SerializeField] int roamPauseTime;
     [SerializeField] int animTransSpeed;
 
     Color originalColor;
 
     bool playerInTrigger;
+
     float meleeTimer;
+    float roamTimer;
+    float angleToPlayer;
+    float stoppingDistOrig;
 
     Vector3 playerDir;
-    float angleToPlayer;
+    Vector3 startingPos;
 
     void Start()
     {
         originalColor = model.material.color;
+        roamingSetup();
+    }
+
+    void roamingSetup()
+    {
         meleeTimer = meleeRate; // Ready to attack immediately
+        stoppingDistOrig = agent.stoppingDistance;
+        startingPos = transform.position;
     }
 
     void Update()
     {
         meleeTimer += Time.deltaTime;
+
+        if (agent.remainingDistance < 0.01f)
+            roamTimer += Time.deltaTime;
 
         if (playerInTrigger && CanSeePlayer())
         {
@@ -56,23 +71,46 @@ public class IgorAI : MonoBehaviour, IDamage
             if (agent.remainingDistance <= agent.stoppingDistance)
                 FaceTarget();
         }
-        else
+        else if (playerInTrigger && !CanSeePlayer())
         {
-            // Stop moving if player not detected
-            if (!agent.isStopped)
-            {
-                agent.isStopped = true;
-                anim.SetFloat("Speed", 0);
-            }
+            CheckRoam();
+        }
+        else if (!playerInTrigger)
+        {
+            CheckRoam();
         }
 
         UpdateAnimatorMovement();
     }
 
+    void CheckRoam()
+    {
+        if (agent.remainingDistance < 0.01f && roamTimer >= roamPauseTime)
+        {
+            Roam();
+        }
+    }
+
+    void Roam()
+    {
+        roamTimer = 0;
+        agent.stoppingDistance = 0;
+
+        Vector3 randomDirection = Random.insideUnitSphere * roamDist;
+        Vector3 roamPos = startingPos + randomDirection;
+
+        NavMeshHit hit;
+        if (NavMesh.SamplePosition(roamPos, out hit, roamDist, NavMesh.AllAreas))
+        {
+            agent.SetDestination(hit.position);
+        }
+    }
+
     void ChasePlayer()
     {
         agent.isStopped = false;
-        agent.SetDestination(gamemanager.instance.player.transform.position);
+        Vector3 targetPos = gamemanager.instance.player.transform.position;
+        agent.SetDestination(targetPos);
     }
 
     bool CanSeePlayer()
@@ -87,9 +125,13 @@ public class IgorAI : MonoBehaviour, IDamage
         {
             if (angleToPlayer <= 90 && hit.collider.CompareTag("Player"))
             {
+                agent.SetDestination(gamemanager.instance.player.transform.position);
+
+                agent.stoppingDistance = stoppingDistOrig;
                 return true;
             }
         }
+        agent.stoppingDistance = 0;
         return false;
     }
 
@@ -141,12 +183,13 @@ public class IgorAI : MonoBehaviour, IDamage
 
     private void OnTriggerExit(Collider other)
     {
-        if (other.CompareTag("Player"))
-        {
-            playerInTrigger = false;
-            agent.isStopped = true;
-            anim.SetFloat("Speed", 0);
-        }
+        if (!other.CompareTag("Player"))
+            return;
+
+        playerInTrigger = false;
+        agent.stoppingDistance = 0;
+        agent.isStopped = true;
+        anim.SetFloat("Speed", 0);
     }
 
     public void takeDamage(int amount)
@@ -173,7 +216,6 @@ public class IgorAI : MonoBehaviour, IDamage
     {
         anim.SetTrigger("Die");
         agent.isStopped = true;
-        // Disable colliders or other components as needed
         Destroy(gameObject, 4f);
     }
 }
