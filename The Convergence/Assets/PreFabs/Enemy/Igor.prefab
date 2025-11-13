@@ -55,7 +55,7 @@ NavMeshAgent:
   m_Acceleration: 8
   avoidancePriority: 50
   m_AngularSpeed: 120
-  m_StoppingDistance: 2
+  m_StoppingDistance: 3
   m_AutoTraverseOffMeshLink: 1
   m_AutoBraking: 1
   m_AutoRepath: 1
@@ -174,11 +174,13 @@ MonoBehaviour:
   headPos: {fileID: 780162373615375869}
   weaponCol: {fileID: 147650498104779796}
   HP: 150
-  meleeRange: 2
+  meleeRange: 3
   meleeRate: 1.5
   meleePOS: {fileID: 8056049982641180}
   meleeObj: {fileID: 8141465635410808698}
   faceTargetSpeed: 8
+  roamDist: 15
+  roamPauseTime: 3
   animTransSpeed: 8
 --- !u!1 &94551324773093178
 GameObject:
