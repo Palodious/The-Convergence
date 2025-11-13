@@ -20,7 +20,7 @@ public class IgorAI : MonoBehaviour, IDamage
     [SerializeField] int faceTargetSpeed;
     [SerializeField] int roamDist;
     [SerializeField] int roamPauseTime;
-    [SerializeField] int animTransSpeed;
+    [SerializeField] int animTranSpeed;
 
     Color originalColor;
 
@@ -52,7 +52,10 @@ public class IgorAI : MonoBehaviour, IDamage
     {
         meleeTimer += Time.deltaTime;
 
-        anim.SetFloat("Speed", agent.velocity.normalized.magnitude);
+        float agentSpeedCur = agent.velocity.normalized.magnitude;
+        float agentSpeedAnim = anim.GetFloat("Speed");
+
+        anim.SetFloat("Speed", Mathf.Lerp(agentSpeedAnim, agentSpeedCur, Time.deltaTime * animTranSpeed));
 
         if (agent.remainingDistance < 0.01f)
             roamTimer += Time.deltaTime;
@@ -146,7 +149,7 @@ public class IgorAI : MonoBehaviour, IDamage
     {
         float currentSpeed = agent.velocity.magnitude;
         float animSpeed = anim.GetFloat("Speed");
-        anim.SetFloat("Speed", Mathf.Lerp(animSpeed, currentSpeed, Time.deltaTime * animTransSpeed));
+        anim.SetFloat("Speed", Mathf.Lerp(animSpeed, currentSpeed, Time.deltaTime * animTranSpeed));
     }
 
     void MeleeAttack()
