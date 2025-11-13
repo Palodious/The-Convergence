@@ -127,8 +127,6 @@ public class IgorAI : MonoBehaviour, IDamage
             if (angleToPlayer <= 90 && hit.collider.CompareTag("Player"))
             {
                 agent.SetDestination(gamemanager.instance.player.transform.position);
-
-                agent.stoppingDistance = stoppingDistOrig;
                 return true;
             }
         }
@@ -196,6 +194,8 @@ public class IgorAI : MonoBehaviour, IDamage
     public void takeDamage(int amount)
     {
         HP -= amount;
+        agent.SetDestination(gamemanager.instance.player.transform.position);
+
         if (HP <= 0)
         {
             Die();
