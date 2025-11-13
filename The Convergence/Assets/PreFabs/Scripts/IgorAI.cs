@@ -52,6 +52,8 @@ public class IgorAI : MonoBehaviour, IDamage
     {
         meleeTimer += Time.deltaTime;
 
+        anim.SetFloat("Speed", agent.velocity.normalized.magnitude);
+
         if (agent.remainingDistance < 0.01f)
             roamTimer += Time.deltaTime;
 
