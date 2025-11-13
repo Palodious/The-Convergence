@@ -154,7 +154,7 @@ public class IgorAI : MonoBehaviour, IDamage
 
     void MeleeAttack()
     {
-        anim.SetTrigger("Attack");
+        anim.SetTrigger("Charge");
     }
 
     public void CreateMelee()
