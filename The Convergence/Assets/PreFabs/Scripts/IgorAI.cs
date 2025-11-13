@@ -38,6 +38,7 @@ public class IgorAI : MonoBehaviour, IDamage
     {
         originalColor = model.material.color;
         roamingSetup();
+        startingPos = transform.position;
     }
 
     void roamingSetup()
