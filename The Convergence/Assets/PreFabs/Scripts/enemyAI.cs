@@ -4,6 +4,15 @@ using UnityEngine.AI;
 
 public class enemyAI : MonoBehaviour, IDamage
 {
+    public enum EnemyType
+    {
+        Melee,
+        Shooter,
+        Hybrid
+    }
+
+    [SerializeField] EnemyType enemyType;
+
     [SerializeField] NavMeshAgent agent;
     [SerializeField] Animator anim;
     [SerializeField] Renderer model;
@@ -20,22 +29,29 @@ public class enemyAI : MonoBehaviour, IDamage
     [SerializeField] float shootRate;
     [SerializeField] Transform shootPOS;
 
+    [SerializeField] Transform meleePos; // Position from which melee attacks are measured
+    [SerializeField] GameObject meleeEffect;  // Optional visual effect for punches
+    [SerializeField] float meleeRange; // Distance at which enemy can hit player
+    [SerializeField] float attackRate;  // Cooldown between attacks
+    [SerializeField] int meleeDamage; // Damage per punch
+
     public bool useAnimations = true; // Toggle all animation logic on/off
-    public bool usePatrol = true;// Toggle patrol behavior
+    public bool usePatrol = true; // Toggle patrol behavior
     public bool useRoam = true;  // Toggle roaming behavior
+    public EnemyType EnemyTypeValue => enemyType;
 
     Color colorOrig;
     float sightRange = 20f; // max distance enemy can see
     bool playerInTrigger;
     float shootTimer;
+    float attackTimer;
     float roamTimer;
     float angleToPlayer;
     float stoppingDistOrig;
     Vector3 playerDir;
     Vector3 startingPos;
 
-    // Optional patrol points set up as GameObjects in the scene
-    [SerializeField] Transform[] patrolPoints;
+    [SerializeField] Transform[] patrolPoints; // Optional patrol points
     int patrolIndex = 0;
 
     void Start()
@@ -53,7 +69,10 @@ public class enemyAI : MonoBehaviour, IDamage
     void Update()
     {
         shootTimer += Time.deltaTime;
+        attackTimer += Time.deltaTime;
+        roamTimer += Time.deltaTime;
 
+        // Update movement animation speed if enabled
         if (useAnimations && anim != null)
         {
             float agentSpeedCur = agent.velocity.magnitude;
@@ -67,27 +86,35 @@ public class enemyAI : MonoBehaviour, IDamage
         {
             agent.SetDestination(gamemanager.instance.player.transform.position);
 
-            if (shootTimer >= shootRate)
+            float distanceToPlayer = Vector3.Distance(transform.position, gamemanager.instance.player.transform.position);
+
+            // Melee has priority
+            if (enemyType == EnemyType.Melee && distanceToPlayer <= meleeRange && attackTimer >= attackRate)
+                meleeAttack();
+            else if (enemyType == EnemyType.Shooter && shootTimer >= shootRate)
                 shoot();
+            else if (enemyType == EnemyType.Hybrid)
+            {
+                if (distanceToPlayer <= meleeRange && attackTimer >= attackRate)
+                    meleeAttack();
+                else if (shootTimer >= shootRate)
+                    shoot();
+            }
 
             if (agent.remainingDistance <= stoppingDistOrig)
                 faceTarget();
         }
         else
         {
-            if (useRoam) 
-                checkRoam();
-            if (usePatrol) 
-                checkPatrol();
+            if (useRoam) checkRoam();
+            if (usePatrol) checkPatrol();
         }
     }
 
     void checkRoam()
     {
         if (agent.remainingDistance < 0.01f && roamTimer >= roamPauseTime)
-        {
             roam();
-        }
     }
 
     void roam()
@@ -103,16 +130,13 @@ public class enemyAI : MonoBehaviour, IDamage
         agent.SetDestination(hit.position);
     }
 
-    // Patrol logic
     void checkPatrol()
     {
-        // Exit if no patrol points are assigned
         if (patrolPoints == null || patrolPoints.Length == 0) return;
 
-        // If agent reached current patrol point, go to the next one
         if (agent.remainingDistance < 0.01f)
         {
-            patrolIndex = (patrolIndex + 1) % patrolPoints.Length; // Loop back to first point
+            patrolIndex = (patrolIndex + 1) % patrolPoints.Length;
             agent.SetDestination(patrolPoints[patrolIndex].position);
         }
     }
@@ -129,9 +153,7 @@ public class enemyAI : MonoBehaviour, IDamage
         if (Physics.Raycast(headPos.position, playerDir.normalized, out hit, sightRange))
         {
             if (hit.collider.CompareTag("Player") && angleToPlayer <= FOV)
-            {
                 return true;
-            }
         }
 
         return false;
@@ -186,17 +208,36 @@ public class enemyAI : MonoBehaviour, IDamage
         shootTimer = 0;
 
         if (useAnimations && anim != null)
-        {
             anim.SetTrigger("Shoot");
-        }
         else
-        {
             createProjectile();
-        }
     }
 
     public void createProjectile()
     {
         Instantiate(projectile, shootPOS.position, transform.rotation);
+    }
+
+    void meleeAttack()
+    {
+        attackTimer = 0;
+
+        if (useAnimations && anim != null)
+            anim.SetTrigger("Punch");
+    }
+
+    public void ApplyMeleeDamage()
+    {
+        Collider[] hitColliders = Physics.OverlapSphere(meleePos.position, meleeRange);
+        foreach (var hit in hitColliders)
+        {
+            if (hit.CompareTag("Player"))
+            {
+                gamemanager.instance.controller.takeDamage(meleeDamage);
+
+                if (meleeEffect != null)
+                    Instantiate(meleeEffect, meleePos.position, Quaternion.identity);
+            }
+        }
     }
 }
