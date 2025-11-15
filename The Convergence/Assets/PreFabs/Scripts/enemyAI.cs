@@ -224,6 +224,8 @@ public class enemyAI : MonoBehaviour, IDamage
 
         if (useAnimations && anim != null)
             anim.SetTrigger("Punch");
+        else if (useAnimations && anim != null)
+            anim.SetTrigger("Claw");
     }
 
     public void ApplyMeleeDamage()
