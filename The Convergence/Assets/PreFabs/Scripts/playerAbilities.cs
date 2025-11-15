@@ -70,44 +70,33 @@ public class PlayerAbilities : MonoBehaviour
     IEnumerator RiftPulse()
     {
         pulseTimer = 0;
-        
-        // use electricity/lightning effect with pulse
-        const string ELEMENT_TYPE = "Lightning"; 
-        Color electricColor = new Color(0.2f, 0.7f, 1f);   // Bright cyan-blue for color effect
-        string pulseVFXName = "PulseCast";
-        string sfxEvent = ELEMENT_TYPE;
+        GameObject pulseVFX = EffectsManager.Instance.Create("PulseCast", transform.position);
+        SetEffectColor(pulseVFX, new Color(0.2f, 0.7f, 1f)); // Electric blue
 
-        //create pulse effect
-        GameObject pulseVFX = EffectsManager.Instance.Create(pulseVFXName, transform.position);
-        SetEffectColor(pulseVFX, electricColor);
+        SFXManager.Instance.PlaySound("PulseCast");
+        SFXManager.Instance.PlayElementSound("Lightning"); // Or use a unique "RiftPulse" SFX later
 
-        // play sound effect
-        SFXManager.Instance.PlaySound("PulseCast"); // Charging up sound
-        SFXManager.Instance.PlayElementSound(sfxEvent); //lightning zap sound
-
-        float totalRange = pulseRange;
-        int totalDamage = pulseDamage;
-
-        Collider[] hits = Physics.OverlapSphere(transform.position, totalRange, enemyMask);
+        Collider[] hits = Physics.OverlapSphere(transform.position, pulseRange, enemyMask);
         foreach (Collider hit in hits)
         {
             // Deal damage
             IDamage dmg = hit.GetComponent<IDamage>();
             if (dmg != null)
             {
-                dmg.takeDamage(totalDamage);
+                dmg.takeDamage(pulseDamage);
+
+                // Spawn lightning impact
+                EffectsManager.Instance.Create("Lightning", hit.transform.position);
             }
 
             // Apply knockback
             Rigidbody rb = hit.GetComponent<Rigidbody>();
             if (rb != null)
             {
-                Vector3 direction = (hit.transform.position - transform.position).normalized;
-                direction += Vector3.up * 0.2f; // Slight lift for air effect
-                rb.AddForce(direction * 5f, ForceMode.Impulse);
+                Vector3 knockDir = (hit.transform.position - transform.position).normalized;
+                knockDir += Vector3.up * 0.3f; // Lift for stagger
+                rb.AddForce(knockDir * 6f, ForceMode.Impulse);
             }
-
-            EffectsManager.Instance.Create("PulseCast", transform.position);
         }
 
         yield return null;
