@@ -25,6 +25,11 @@ public class buttonFunction : MonoBehaviour
         gamemanager.instance.playerScript.respawnPlayer();
         gamemanager.instance.stateUnpause();
     }
+    public void loadLevel(int lvl)
+    {
+        SceneManager.LoadScene(lvl);
+        gamemanager.instance.stateUnpause();
+    }
 
 
 }
