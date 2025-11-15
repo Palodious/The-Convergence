@@ -19,4 +19,12 @@ public class checkpoint : MonoBehaviour
             StartCoroutine(feedback());
         }
     }
+    IEnumerator feedback()
+    {
+        model.material.color = Color.red;
+        gamemanager.instance.checkpointPopup.SetActive(true);
+        yield return new WaitForSeconds(0.5f);
+        gamemanager.instance.checkpointPopup.SetActive(false);
+        model.material.color = colorOrig;
+    }
 }
