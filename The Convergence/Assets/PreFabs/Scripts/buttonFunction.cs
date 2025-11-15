@@ -12,30 +12,23 @@ public class buttonFunction : MonoBehaviour
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
         gamemanager.instance.stateUnpause();
     }
-
-    public void mainmenu()
-    {
-        gamemanager.instance.stateUnpause();
-        SceneManager.LoadScene("Main Menu");
-    }
-
     public void quit()
     {
 #if UNITY_EDITOR
         UnityEditor.EditorApplication.isPlaying = false;
 #else
-        Application.Quit();
+   Application.Quit();
 #endif
     }
-
-    public void SaveNow()
+    public void respawnPlayer()
     {
-        gamemanager.instance.SaveGame();
+        gamemanager.instance.playerScript.respawnPlayer();
+        gamemanager.instance.stateUnpause();
     }
-
-    public void LoadNow()
+    public void loadLevel(int lvl)
     {
-        gamemanager.instance.LoadGame();
+        SceneManager.LoadScene(lvl);
+        gamemanager.instance.stateUnpause();
     }
 
 
