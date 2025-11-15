@@ -22,7 +22,7 @@ public class gamemanager : MonoBehaviour
     public GameObject playerDamagePanel;
 
     public GameObject player;
-    public playerController controller;
+    public playerController playerScript;
 
     public bool isPaused;
 
