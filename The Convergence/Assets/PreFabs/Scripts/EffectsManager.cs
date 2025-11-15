@@ -4,105 +4,92 @@ using System.Collections.Generic;
 public class EffectsManager : MonoBehaviour
 {
     public static EffectsManager Instance;
-    public class EffectSetup
+
+    [System.Serializable]
+    public class EffectEntry
     {
-        [SerializeField] public string effectName;
-        [SerializeField] public GameObject prefab;
-        [SerializeField] public int poolSize = 5;
-    }
-    public class ElementEffectSetup
-    {
-        [SerializeField] public string elementType;
-        [SerializeField] public GameObject prefab;
-        [SerializeField] public int poolSize = 10;
+        public string key;     
+        public GameObject prefab;
+        public int poolSize = 5;
     }
 
-    //general game effects
-    public EffectSetup[] effects;
+    [SerializeField] private List<EffectEntry> effects = new List<EffectEntry>();
 
-   // element effects
-    public ElementEffectSetup[] elementEffects;
-
-    Dictionary<string, ObjectPool> effectPools = new Dictionary<string, ObjectPool>();
-    Dictionary<string, ObjectPool> elementPools = new Dictionary<string, ObjectPool>();
+    private Dictionary<string, ObjectPool> effectPools = new Dictionary<string, ObjectPool>();
 
     void Awake()
     {
         if (Instance == null)
         {
             Instance = this;
+            InitializePools();
         }
         else
         {
             Destroy(gameObject);
-            return;
         }
-
-        SetupPools();
     }
 
-    void SetupPools()
+    void InitializePools()
     {
-        // Setup general effect pools
-        foreach (EffectSetup setup in effects)
+        foreach (EffectEntry entry in effects)
         {
-            GameObject poolObj = new GameObject(setup.effectName + "_Pool");
-            poolObj.transform.SetParent(transform);
+            if (string.IsNullOrEmpty(entry.key))
+            {
+                Debug.LogWarning("[EffectsManager] Missing key for effect: {entry.prefab.name}");
+                continue;
+            }
 
+            if (entry.prefab == null)
+            {
+                Debug.LogError("[EffectsManager] Missing prefab for effect: {entry.key}");
+                continue;
+            }
+
+            // Create a pool holder
+            GameObject poolObj = new GameObject("Pool_{entry.key}");
+            poolObj.transform.SetParent(transform);
             ObjectPool pool = poolObj.AddComponent<ObjectPool>();
-            pool.prefab = setup.prefab;
-            pool.poolSize = setup.poolSize;
+            pool.prefab = entry.prefab;
+            pool.poolSize = entry.poolSize;
             pool.Initialize();
 
-            effectPools.Add(setup.effectName, pool);
-        }
-
-        // Setup element effect pools
-        foreach (ElementEffectSetup setup in elementEffects)
-        {
-            GameObject poolObj = new GameObject(setup.elementType + "_Pool");
-            poolObj.transform.SetParent(transform);
-
-            ObjectPool pool = poolObj.AddComponent<ObjectPool>();
-            pool.prefab = setup.prefab;
-            pool.poolSize = setup.poolSize;
-            pool.Initialize();
-
-            elementPools.Add(setup.elementType, pool);
+            effectPools[entry.key] = pool;
         }
     }
 
-    public GameObject CreateEffect(string effectName, Vector3 position)
+
+    /// Creates an effect at position. Returns GameObject tov modify it 
+    public GameObject Create(string effectKey, Vector3 position, Quaternion? rotation = null)
     {
-        if (effectPools.ContainsKey(effectName))
+        if (!effectPools.ContainsKey(effectKey))
         {
-            GameObject effect = effectPools[effectName].GetFromPool();
+            Debug.LogWarning("[EffectsManager] Effect not found: {effectKey}");
+            return null;
+        }
+
+        GameObject effect = effectPools[effectKey].GetFromPool();
+        if (effect != null)
+        {
             effect.transform.position = position;
+            effect.transform.rotation = rotation ?? Quaternion.identity;
             effect.SetActive(true);
-            return effect;
         }
 
-        Debug.LogWarning("Effect not found: " + effectName);
-        return null;
+        return effect;
     }
 
-    public GameObject CreateElementEffect(string elementType, Vector3 position)
+    public GameObject Create(string effectKey, Vector3 position, Quaternion rotation)
     {
-        if (elementPools.ContainsKey(elementType))
-        {
-            GameObject effect = elementPools[elementType].GetFromPool();
-            effect.transform.position = position;
-            effect.SetActive(true);
-            return effect;
-        }
-
-        Debug.LogWarning("Element effect not found: " + elementType);
-        return null;
+        return Create(effectKey, position, (Quaternion)rotation);
     }
 
-    public void ReturnEffect(GameObject effect)
+    //return to pool
+  
+    public void Return(GameObject effect)
     {
-        // Check all pools
+        if (effect == null) return;
+
         foreach (ObjectPool pool in effectPools.Values)
         {
             if (pool.BelongsToPool(effect))
@@ -112,13 +99,6 @@ public class EffectsManager : MonoBehaviour
             }
         }
 
-        foreach (ObjectPool pool in elementPools.Values)
-        {
-            if (pool.BelongsToPool(effect))
-            {
-                pool.ReturnToPool(effect);
-                return;
-            }
-        }
+        Debug.LogWarning("[EffectsManager] Tried to return object not in any pool: {effect.name}");
     }
 }
