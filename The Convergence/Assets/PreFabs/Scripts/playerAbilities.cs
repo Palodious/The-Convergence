@@ -4,7 +4,6 @@ using UnityEngine;
 public class PlayerAbilities : MonoBehaviour
 {
     [SerializeField] playerController controller;
-    [SerializeField] PlayerSpecialization specialization;
     [SerializeField] CharacterController charController;
 
  //rift Pulse
@@ -66,44 +65,37 @@ public class PlayerAbilities : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.F) && jumpTimer >= jumpCooldown)
             StartCoroutine(RiftJump());
-
-        if (Input.GetKeyDown(KeyCode.Tab))
-            specialization.CycleElement();
     }
 
     IEnumerator RiftPulse()
     {
         pulseTimer = 0;
+        GameObject pulseVFX = EffectsManager.Instance.Create("PulseCast", transform.position);
+        SetEffectColor(pulseVFX, new Color(0.2f, 0.7f, 1f)); // Electric blue
 
-        Element currentElement = specialization.GetCurrentElement();
-
-        // Create pulse effect
-        GameObject pulseVFX = EffectsManager.Instance.CreateEffect("PulseCast", transform.position);
-        SetEffectColor(pulseVFX, currentElement.color);
-
-        // Play sound
         SFXManager.Instance.PlaySound("PulseCast");
+        SFXManager.Instance.PlayElementSound("Lightning"); // Or use a unique "RiftPulse" SFX later
 
-        // Calculate damage with element bonus
-        float modifiedRange = pulseRange * currentElement.areaScale;
-        int totalDamage = pulseDamage + currentElement.damageBonus;
-
-        // Hit enemies
-        Collider[] hits = Physics.OverlapSphere(transform.position, modifiedRange, enemyMask);
+        Collider[] hits = Physics.OverlapSphere(transform.position, pulseRange, enemyMask);
         foreach (Collider hit in hits)
         {
+            // Deal damage
             IDamage dmg = hit.GetComponent<IDamage>();
             if (dmg != null)
             {
-                dmg.takeDamage(totalDamage);
+                dmg.takeDamage(pulseDamage);
 
-                // Create element impact
-                EffectsManager.Instance.CreateElementEffect(
-                    currentElement.elementType,
-                    hit.transform.position
-                );
+                // Spawn lightning impact
+                EffectsManager.Instance.Create("Lightning", hit.transform.position);
+            }
 
-                SFXManager.Instance.PlayElementSound(currentElement.elementType);
+            // Apply knockback
+            Rigidbody rb = hit.GetComponent<Rigidbody>();
+            if (rb != null)
+            {
+                Vector3 knockDir = (hit.transform.position - transform.position).normalized;
+                knockDir += Vector3.up * 0.3f; // Lift for stagger
+                rb.AddForce(knockDir * 6f, ForceMode.Impulse);
             }
         }
 
@@ -116,7 +108,7 @@ public class PlayerAbilities : MonoBehaviour
         isSurging = true;
 
         // Create surge effect (follows player)
-        surgeEffect = EffectsManager.Instance.CreateEffect("Surge", transform.position);
+        surgeEffect = EffectsManager.Instance.Create("Surge", transform.position);
         surgeEffect.transform.SetParent(transform);
 
         // Play sounds
@@ -139,7 +131,7 @@ public class PlayerAbilities : MonoBehaviour
         // Stop effects
         SFXManager.Instance.StopLoopSound();
         if (surgeEffect != null)
-            EffectsManager.Instance.ReturnEffect(surgeEffect);
+            EffectsManager.Instance.Return(surgeEffect);
     }
 
     IEnumerator RiftJump()
@@ -147,7 +139,7 @@ public class PlayerAbilities : MonoBehaviour
         jumpTimer = 0;
 
         // Create prep effect
-        GameObject prepEffect = EffectsManager.Instance.CreateEffect("JumpPrep", transform.position);
+        GameObject prepEffect = EffectsManager.Instance.Create("JumpPrep", transform.position);
         SFXManager.Instance.PlaySound("JumpPrep");
 
         yield return new WaitForSeconds(jumpPrepTime);
@@ -161,11 +153,11 @@ public class PlayerAbilities : MonoBehaviour
         charController.enabled = true;
 
         // Create impact effect
-        EffectsManager.Instance.CreateEffect("JumpImpact", transform.position);
+        EffectsManager.Instance.Create("JumpImpact", transform.position);
         SFXManager.Instance.PlaySound("JumpImpact");
 
         // Clean up prep effect
-        EffectsManager.Instance.ReturnEffect(prepEffect);
+        EffectsManager.Instance.Return(prepEffect);
     }
 
     Vector3 GetSafeJumpPosition()
