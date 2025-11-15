@@ -35,6 +35,8 @@ public class enemyAI : MonoBehaviour, IDamage
     [SerializeField] float attackRate;  // Cooldown between attacks
     [SerializeField] int meleeDamage; // Damage per punch
 
+    [SerializeField] int shootDamage; // Damage dealt by shooting
+
     public bool useAnimations = true; // Toggle all animation logic on/off
     public bool usePatrol = true; // Toggle patrol behavior
     public bool useRoam = true;  // Toggle roaming behavior
@@ -208,7 +210,7 @@ public class enemyAI : MonoBehaviour, IDamage
         shootTimer = 0;
 
         if (useAnimations && anim != null)
-            anim.SetTrigger("Shoot");
+            anim.SetTrigger("Fire");   // Fire animation for shooting
         else
             createProjectile();
     }
@@ -239,6 +241,22 @@ public class enemyAI : MonoBehaviour, IDamage
 
                 if (meleeEffect != null)
                     Instantiate(meleeEffect, meleePos.position, Quaternion.identity);
+            }
+        }
+    }
+
+    public void ApplyShootDamage()
+    {
+        // Raycast forward from shoot position just like a projectile would travel
+        float shootDist = 100f;  // max effective shoot distance
+
+        RaycastHit hit;
+        if (Physics.Raycast(shootPOS.position, shootPOS.forward, out hit, shootDist))
+        {
+            if (hit.collider.CompareTag("Player"))
+            {
+                // Deal damage to the player
+                gamemanager.instance.controller.takeDamage(shootDamage);
             }
         }
     }
