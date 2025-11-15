@@ -59,7 +59,7 @@ public class enemyAI : MonoBehaviour, IDamage
     void Start()
     {
         colorOrig = model.material.color;
-        gamemanager.instance.updateGameGoal(1);
+        //gamemanager.instance.updateGameGoal(1);
         stoppingDistOrig = agent.stoppingDistance;
         startingPos = transform.position;
 
@@ -237,7 +237,7 @@ public class enemyAI : MonoBehaviour, IDamage
         {
             if (hit.CompareTag("Player"))
             {
-                gamemanager.instance.controller.takeDamage(meleeDamage);
+                gamemanager.instance.playerScript.takeDamage(meleeDamage);
 
                 if (meleeEffect != null)
                     Instantiate(meleeEffect, meleePos.position, Quaternion.identity);
@@ -256,7 +256,7 @@ public class enemyAI : MonoBehaviour, IDamage
             if (hit.collider.CompareTag("Player"))
             {
                 // Deal damage to the player
-                gamemanager.instance.controller.takeDamage(shootDamage);
+                gamemanager.instance.playerScript.takeDamage(shootDamage);
             }
         }
     }

@@ -35,7 +35,7 @@ public class gamemanager : MonoBehaviour
         timeScaleOrig = Time.timeScale;
 
         player = GameObject.FindWithTag("Player");
-        controller = player.GetComponent<playerController>();
+        playerScript = player.GetComponent<playerController>();
 
         if (SaveSystem.PendingLoad)
         {
@@ -70,7 +70,7 @@ public class gamemanager : MonoBehaviour
         Time.timeScale = 0;
         Cursor.visible = true;
         Cursor.lockState = CursorLockMode.None;
-        controller.enabled = false; //
+        playerScript.enabled = false; //
     }
     public void stateUnpause()
     {
@@ -80,7 +80,7 @@ public class gamemanager : MonoBehaviour
         Cursor.lockState = CursorLockMode.Locked;
         menuActive.SetActive(false);
         menuActive = null;
-        controller.enabled = true; //
+        playerScript.enabled = true; //
     }
     public void updateGameGoal(int amount)
     {
@@ -111,7 +111,7 @@ public class gamemanager : MonoBehaviour
             px = player.transform.position.x,
             py = player.transform.position.y,
             pz = player.transform.position.z,
-            playerHP = controller.GetHP(),
+            playerHP = playerScript.GetHP(),
             gameGoalCount = gameGoalCount
         };
         SaveSystem.Save(d);
@@ -142,7 +142,7 @@ public class gamemanager : MonoBehaviour
 
         // Re-find references because scene changed.
         player = GameObject.FindWithTag("Player");
-        controller = player.GetComponent<playerController>();
+        playerScript = player.GetComponent<playerController>();
 
         RestoreState(d);
     }
@@ -151,7 +151,7 @@ public class gamemanager : MonoBehaviour
     {
         // Position the player & restore stats/UI.
         player.transform.position = new Vector3(d.px, d.py, d.pz);
-        controller.SetHP(d.playerHP);
+        playerScript.SetHP(d.playerHP);
 
         gameGoalCount = d.gameGoalCount;
         if (gameGoalCountText != null)
