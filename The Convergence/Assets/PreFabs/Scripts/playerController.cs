@@ -1,7 +1,7 @@
 using UnityEngine;
 using System.Collections;
 
-public class playerController : MonoBehaviour, IDamage
+public class playerController : MonoBehaviour, IDamage, IPickup
 {
     [SerializeField] CharacterController controller;
     [SerializeField] LayerMask ignoreLayer;  // ignore layers for shooting  
@@ -200,5 +200,8 @@ public class playerController : MonoBehaviour, IDamage
         updatePlayerUI();
     }
 
-
+    public void getGunStats(gunStats gun)
+    {
+        throw new System.NotImplementedException();
+    }
 }
