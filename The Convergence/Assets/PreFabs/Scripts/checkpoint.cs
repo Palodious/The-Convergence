@@ -11,5 +11,12 @@ public class checkpoint : MonoBehaviour
     {
         colorOrig = model.material.color;
     }
-
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("Player") && gamemanager.instance.playerSpawnPos.transform.position != transform.position)
+        {
+            gamemanager.instance.playerSpawnPos.transform.position = transform.position;
+            StartCoroutine(feedback());
+        }
+    }
 }
