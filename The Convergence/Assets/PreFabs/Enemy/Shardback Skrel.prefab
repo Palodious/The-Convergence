@@ -13,8 +13,8 @@ GameObject:
   - component: {fileID: 6259301409843038931}
   - component: {fileID: 2944604361103831847}
   - component: {fileID: 6341937592716510173}
-  - component: {fileID: 6344055414067477109}
   - component: {fileID: 735974453800423067}
+  - component: {fileID: 7547763350091668695}
   m_Layer: 6
   m_Name: Shardback Skrel
   m_TagString: Enemy
@@ -30,7 +30,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 57039665892410063}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -250.19, y: 0, z: 43.159}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -64,12 +64,12 @@ MonoBehaviour:
   roamDist: 10
   roamPauseTime: 3
   animTransSpeed: 8
-  projectile: {fileID: 0}
-  shootRate: 0
+  projectile: {fileID: 4705637938062420806, guid: ff62b65117c527244a483945471f67d0, type: 3}
+  shootRate: 0.5
   shootPOS: {fileID: 0}
   meleePos: {fileID: 394857611963867582}
   meleeEffect: {fileID: 8381296811460731990, guid: 9ffc8f2d2217d4a4482ba46879159b4d, type: 3}
-  meleeRange: 3
+  meleeRange: 5
   attackRate: 0.5
   meleeDamage: 5
   shootDamage: 0
@@ -142,29 +142,6 @@ SphereCollider:
   serializedVersion: 3
   m_Radius: 20
   m_Center: {x: 0, y: 1.5, z: 0.5}
---- !u!136 &6344055414067477109
-CapsuleCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 57039665892410063}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 8
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 503
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 1
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Radius: 0.72
-  m_Height: 3.06
-  m_Direction: 1
-  m_Center: {x: -0.02, y: 1.36, z: 0.41}
 --- !u!54 &735974453800423067
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -192,6 +169,27 @@ Rigidbody:
   m_Interpolate: 1
   m_Constraints: 126
   m_CollisionDetection: 3
+--- !u!135 &7547763350091668695
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 57039665892410063}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Radius: 1
+  m_Center: {x: 0, y: 1.5, z: 0.5}
 --- !u!1 &94551324773093178
 GameObject:
   m_ObjectHideFlags: 0
