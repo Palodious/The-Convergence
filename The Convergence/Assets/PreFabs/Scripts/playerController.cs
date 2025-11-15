@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public class playerController : MonoBehaviour, IDamage, IPickup
 {
@@ -7,7 +8,7 @@ public class playerController : MonoBehaviour, IDamage, IPickup
     [SerializeField] LayerMask ignoreLayer;  // ignore layers for shooting  
 
     [SerializeField] int HP;
-   public int speed;
+    public int speed;
     [SerializeField] int sprintMod;
     [SerializeField] int JumpSpeed;
     [SerializeField] int maxJumps;
@@ -34,9 +35,14 @@ public class playerController : MonoBehaviour, IDamage, IPickup
     bool isCrouching;  // crouch state  
     bool isGliding;    // glide state  
 
-
     // Modified by playerAbilities during surge
     [HideInInspector] public float damageBoost = 1f;
+
+    // ---------------- ADDITIONS FROM SECOND SCRIPT ----------------
+    [SerializeField] List<gunStats> gunList = new List<gunStats>();
+    [SerializeField] GameObject gunModel;
+    int gunListPos;
+    // --------------------------------------------------------------
 
     void Start()
     {
@@ -45,6 +51,8 @@ public class playerController : MonoBehaviour, IDamage, IPickup
         originalSpeed = speed;
 
         updatePlayerUI(); // fill HP bar at start
+
+        respawnPlayer();
     }
 
     void Update()
@@ -67,9 +75,15 @@ public class playerController : MonoBehaviour, IDamage, IPickup
         else
         {
             if (isGliding)
-                playerVel.y = Mathf.Max(playerVel.y - glideGravity * Time.deltaTime, -glideGravity);
+            {
+                // FIXED GLIDE — smooth slow descent instead of dropping
+                float targetFallSpeed = -glideGravity;
+                playerVel.y = Mathf.Lerp(playerVel.y, targetFallSpeed, Time.deltaTime * 2f);
+            }
             else
+            {
                 playerVel.y -= gravity * Time.deltaTime;
+            }
         }
 
         // Movement
@@ -96,6 +110,8 @@ public class playerController : MonoBehaviour, IDamage, IPickup
         {
             shoot();
         }
+
+        selectGun();
     }
 
     void sprint()
@@ -138,7 +154,7 @@ public class playerController : MonoBehaviour, IDamage, IPickup
         if (!controller.isGrounded && !isGliding)
         {
             isGliding = true;
-            playerVel.y = -1f;  // little downward push to start  
+            playerVel.y = -0.5f;  // softer start  
         }
     }
 
@@ -161,6 +177,9 @@ public class playerController : MonoBehaviour, IDamage, IPickup
             {
                 dmg.takeDamage(Mathf.RoundToInt(shootDamage * damageBoost));
             }
+
+            if (gunList.Count > 0)
+                Instantiate(gunList[gunListPos].hitEffect, hit.point, Quaternion.identity);
         }
     }
 
@@ -170,7 +189,7 @@ public class playerController : MonoBehaviour, IDamage, IPickup
         updatePlayerUI();
         StartCoroutine(screenFlashDamage());
 
-        if (HP <= 0) gamemanager.instance.youLose();  // game over  
+        if (HP <= 0) gamemanager.instance.youLose();
     }
 
     public void updatePlayerUI()
@@ -186,7 +205,6 @@ public class playerController : MonoBehaviour, IDamage, IPickup
         gamemanager.instance.playerDamagePanel.SetActive(false);
     }
 
-    // Add this property to expose HP for reading and writing
     public int CurrentHP
     {
         get { return HP; }
@@ -200,13 +218,76 @@ public class playerController : MonoBehaviour, IDamage, IPickup
         updatePlayerUI();
     }
 
-    public void getGunStats(gunStats gun)
-    {
-        throw new System.NotImplementedException();
-    }
-
+    // ----------------------------------------------------------
+    // UNIVERSAL PICKUP HANDLING
+    // ----------------------------------------------------------
     public void GetItem(ScriptableObject item)
     {
-        throw new System.NotImplementedException();
+        // Gun pickup
+        if (item is gunStats gun)
+        {
+            getGunStats(gun);
+            return;
+        }
+
+        // Medkit pickup
+        if (item is medkitStats medkit)
+        {
+            HP += medkit.healAmount;
+
+            if (HP > HPOrig)
+                HP = HPOrig;
+
+            updatePlayerUI();
+            return;
+        }
+
+        Debug.LogWarning("Picked up unknown item: " + item.name);
+    }
+
+    // Existing gun pickup method
+    public void getGunStats(gunStats gun)
+    {
+        gunList.Add(gun);
+        gunListPos = gunList.Count - 1;
+        changeGun();
+    }
+
+    void changeGun()
+    {
+        if (gunList.Count == 0) return;
+
+        shootDamage = gunList[gunListPos].shootDamage;
+        shootDist = gunList[gunListPos].shootDist;
+        shootRate = gunList[gunListPos].shootRate;
+
+        gunModel.GetComponent<MeshFilter>().sharedMesh =
+            gunList[gunListPos].gunModel.GetComponent<MeshFilter>().sharedMesh;
+
+        gunModel.GetComponent<MeshRenderer>().sharedMaterial =
+            gunList[gunListPos].gunModel.GetComponent<MeshRenderer>().sharedMaterial;
+    }
+
+    void selectGun()
+    {
+        if (gunList.Count == 0) return;
+
+        if (Input.GetAxis("Mouse ScrollWheel") > 0 && gunListPos < gunList.Count - 1)
+        {
+            gunListPos++;
+            changeGun();
+        }
+        else if (Input.GetAxis("Mouse ScrollWheel") < 0 && gunListPos > 0)
+        {
+            gunListPos--;
+            changeGun();
+        }
+    }
+
+    public void respawnPlayer()
+    {
+        controller.transform.position = gamemanager.instance.playerSpawnPos.transform.position;
+        HP = HPOrig;
+        updatePlayerUI();
     }
 }
