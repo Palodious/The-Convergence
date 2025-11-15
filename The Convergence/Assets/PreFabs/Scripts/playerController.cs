@@ -204,4 +204,9 @@ public class playerController : MonoBehaviour, IDamage, IPickup
     {
         throw new System.NotImplementedException();
     }
+
+    public void GetItem(ScriptableObject item)
+    {
+        throw new System.NotImplementedException();
+    }
 }
