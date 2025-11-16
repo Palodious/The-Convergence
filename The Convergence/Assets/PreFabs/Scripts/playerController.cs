@@ -5,25 +5,25 @@ using System.Collections.Generic;
 public class playerController : MonoBehaviour, IDamage, IPickup
 {
     [SerializeField] CharacterController controller;
-    [SerializeField] LayerMask ignoreLayer;  // ignore layers for shooting  
+    [SerializeField] LayerMask ignoreLayer;
 
     [SerializeField] int HP;
     public int speed;
     [SerializeField] int sprintMod;
     [SerializeField] int JumpSpeed;
     [SerializeField] int maxJumps;
-    [SerializeField] int gravity;  // gravity applied each frame  
+    [SerializeField] int gravity;
 
     [SerializeField] int shootDamage;
     [SerializeField] int shootDist;
-    [SerializeField] float shootRate;  // time between shots  
+    [SerializeField] float shootRate;
 
     [SerializeField] float glideGravity;  // lower gravity while gliding  
     [SerializeField] float crouchSpeedMod;
     [SerializeField] float crouchHeight;
 
-    float originalHeight;  // remember height for uncrouch  
-    int originalSpeed;     // store original speed  
+    float originalHeight;// remember height for uncrouch  
+    int originalSpeed; // store original speed  
 
     Vector3 moveDir;
     Vector3 playerVel;
@@ -33,16 +33,18 @@ public class playerController : MonoBehaviour, IDamage, IPickup
     float shootTimer;
 
     bool isCrouching;  // crouch state  
-    bool isGliding;    // glide state  
+    bool isGliding;// glide state  
 
-    // Modified by playerAbilities during surge
     [HideInInspector] public float damageBoost = 1f;
 
-    // ---------------- ADDITIONS FROM SECOND SCRIPT ----------------
     [SerializeField] List<gunStats> gunList = new List<gunStats>();
     [SerializeField] GameObject gunModel;
     int gunListPos;
-    // --------------------------------------------------------------
+
+    // Inventory medkit system
+    medkitStats storedMedkit;// holds a medkit if storeInInventory = true
+    bool medkitReady = true; // cooldown ready state
+    float medkitCooldownTimer = 0f; // cooldown countdown timer
 
     void Start()
     {
@@ -62,11 +64,17 @@ public class playerController : MonoBehaviour, IDamage, IPickup
 
         movement();
         sprint();
+
+        // handle medkit cooldown timer
+        HandleMedkitCooldown();
+
+        // press H to use stored medkit
+        if (Input.GetKeyDown(KeyCode.H))
+            UseStoredMedkit();
     }
 
     void movement()
     {
-        // Ground check
         if (controller.isGrounded)
         {
             if (playerVel.y < 0) playerVel.y = -2f;
@@ -76,7 +84,6 @@ public class playerController : MonoBehaviour, IDamage, IPickup
         {
             if (isGliding)
             {
-                // FIXED GLIDE — smooth slow descent instead of dropping
                 float targetFallSpeed = -glideGravity;
                 playerVel.y = Mathf.Lerp(playerVel.y, targetFallSpeed, Time.deltaTime * 2f);
             }
@@ -86,19 +93,15 @@ public class playerController : MonoBehaviour, IDamage, IPickup
             }
         }
 
-        // Movement
         moveDir = Input.GetAxis("Horizontal") * transform.right + Input.GetAxis("Vertical") * transform.forward;
         controller.Move(moveDir * speed * Time.deltaTime);
 
-        // Jump
         jump();
         controller.Move(playerVel * Time.deltaTime);
 
-        // Crouch
         if (Input.GetKey(KeyCode.C)) crouch();
         else uncrouch();
 
-        // Glide
         if (!controller.isGrounded)
         {
             if (Input.GetKeyDown(KeyCode.G)) StartGlide();
@@ -154,7 +157,7 @@ public class playerController : MonoBehaviour, IDamage, IPickup
         if (!controller.isGrounded && !isGliding)
         {
             isGliding = true;
-            playerVel.y = -0.5f;  // softer start  
+            playerVel.y = -0.5f;
         }
     }
 
@@ -218,34 +221,32 @@ public class playerController : MonoBehaviour, IDamage, IPickup
         updatePlayerUI();
     }
 
-    // ----------------------------------------------------------
-    // UNIVERSAL PICKUP HANDLING
-    // ----------------------------------------------------------
     public void GetItem(ScriptableObject item)
     {
-        // Gun pickup
         if (item is gunStats gun)
         {
             getGunStats(gun);
             return;
         }
 
-        // Medkit pickup
-        if (item is medkitStats medkit)
+        // Medkit handler
+        if (item is medkitStats med)
         {
-            HP += medkit.healAmount;
+            if (!med.storeInInventory)
+            {
+                HP += med.healAmount;
+                if (HP > HPOrig) HP = HPOrig;
+                updatePlayerUI();
+                return;
+            }
 
-            if (HP > HPOrig)
-                HP = HPOrig;
-
-            updatePlayerUI();
+            storedMedkit = med; //Store medkit for later use
             return;
         }
 
         Debug.LogWarning("Picked up unknown item: " + item.name);
     }
 
-    // Existing gun pickup method
     public void getGunStats(gunStats gun)
     {
         gunList.Add(gun);
@@ -282,6 +283,34 @@ public class playerController : MonoBehaviour, IDamage, IPickup
             gunListPos--;
             changeGun();
         }
+    }
+
+    //cooldown logic
+    void HandleMedkitCooldown()
+    {
+        if (!medkitReady)
+        {
+            medkitCooldownTimer -= Time.deltaTime;
+
+            if (medkitCooldownTimer <= 0)
+                medkitReady = true;
+        }
+    }
+
+    // use stored medkit
+    void UseStoredMedkit()
+    {
+        if (storedMedkit == null) return;
+        if (!medkitReady) return;
+
+        HP += storedMedkit.healAmount;
+        if (HP > HPOrig) HP = HPOrig;
+        updatePlayerUI();
+
+        medkitReady = false;
+        medkitCooldownTimer = storedMedkit.cooldown;
+
+        storedMedkit = null; // medkit destroyed after use
     }
 
     public void restart()
