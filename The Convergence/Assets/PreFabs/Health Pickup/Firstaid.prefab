@@ -9,6 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7662795685685551258}
+  - component: {fileID: 9176254319009809263}
   - component: {fileID: 6771271470848012095}
   - component: {fileID: 8799071388816186357}
   - component: {fileID: 4841101535872662594}
@@ -27,13 +28,26 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6997583091466156576}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0.96592575, z: -0, w: -0.25881952}
+  m_LocalRotation: {x: -0, y: -0.9659257, z: 0, w: -0.25881952}
   m_LocalPosition: {x: 0.4330125, y: 1, z: 2.5000005}
   m_LocalScale: {x: 5, y: 5, z: 5}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 1950, z: 0}
+--- !u!114 &9176254319009809263
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6997583091466156576}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 244c509d4d1a3cc4da4c49227f8920c9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::medkitPickup
+  medkit: {fileID: 0}
 --- !u!33 &6771271470848012095
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -109,5 +123,5 @@ SphereCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Radius: 0.068394355
+  m_Radius: 0.1
   m_Center: {x: 0, y: 0.068398155, z: 0}
