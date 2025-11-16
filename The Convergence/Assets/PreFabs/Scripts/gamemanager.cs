@@ -39,8 +39,6 @@ public class gamemanager : MonoBehaviour
         player = GameObject.FindWithTag("Player");
         playerScript = player.GetComponent<playerController>();
 
-        playerSpawnPos = GameObject.FindWithTag("Player Spawn Pos");
-
         if (SaveSystem.PendingLoad)
         {
             SaveSystem.PendingLoad = false;
