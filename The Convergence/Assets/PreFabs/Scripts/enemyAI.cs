@@ -222,7 +222,7 @@ public class enemyAI : MonoBehaviour, IDamage
         }
         else
         {
-            createProjectile(); // fallback if no animations
+            createProjectile(); // If no animations
         }
     }
 
@@ -239,7 +239,7 @@ public class enemyAI : MonoBehaviour, IDamage
         {
             anim.SetTrigger("Punch");
 
-            // ApplyMeleeDamage() should also be called via Animation Event
+            // ApplyMeleeDamage() needs to be called via Animation Event
         }
         else
         {
@@ -260,5 +260,14 @@ public class enemyAI : MonoBehaviour, IDamage
                     Instantiate(meleeEffect, meleePos.position, Quaternion.identity);
             }
         }
+    }
+
+    public void SetPatrolPoints(Transform[] points)
+    {
+        patrolPoints = points;
+        patrolIndex = 0;
+
+        if (usePatrol && patrolPoints != null && patrolPoints.Length > 0)
+            agent.SetDestination(patrolPoints[0].position);
     }
 }

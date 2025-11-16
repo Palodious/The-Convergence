@@ -7,6 +7,9 @@ public class spawner : MonoBehaviour
     [SerializeField] float spawnRate;
     [SerializeField] Transform[] spawnPos;
 
+    [Header("Optional Patrol Points")]
+    [SerializeField] Transform[] patrolPoints; // Enemies can use patrol points
+
     int spawnCount;
     float spawnTimer;
 
@@ -42,7 +45,19 @@ public class spawner : MonoBehaviour
 
     void spawn()
     {
-        Instantiate(objectToSpawn, spawnPos[Random.Range(0, spawnPos.Length)].transform.position, Quaternion.identity);
+        GameObject newObj = Instantiate(
+            objectToSpawn,
+            spawnPos[Random.Range(0, spawnPos.Length)].transform.position,
+            Quaternion.identity
+        );
+
+        // Assign patrol points if enemyAI is present
+        enemyAI ai = newObj.GetComponent<enemyAI>();
+        if (ai != null && patrolPoints != null && patrolPoints.Length > 0)
+        {
+            ai.SetPatrolPoints(patrolPoints);
+        }
+
         spawnCount++;
         spawnTimer = 0;
     }
