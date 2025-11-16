@@ -44,7 +44,7 @@ public class enemyAI : MonoBehaviour, IDamage
 
     Color colorOrig;
     float sightRange = 20f; // max distance enemy can see
-    public bool playerInTrigger;
+    bool playerInTrigger;
     float shootTimer;
     float attackTimer;
     float roamTimer;
@@ -211,6 +211,8 @@ public class enemyAI : MonoBehaviour, IDamage
 
         if (useAnimations && anim != null)
             anim.SetTrigger("Fire");   // Fire animation for shooting
+        else if (useAnimations && anim != null)
+            anim.SetTrigger("Venom");
         else
             createProjectile();
     }
