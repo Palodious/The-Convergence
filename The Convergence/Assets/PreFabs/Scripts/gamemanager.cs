@@ -18,9 +18,8 @@ public class gamemanager : MonoBehaviour
 
     public TMP_Text gameGoalCountText;
     public Image playerHPBar;
-    public Image playerFlowBar;
     public GameObject playerDamagePanel;
-    public GameObject playerSpawnPos;
+    public GameObject spawnPoint;
     public GameObject checkpointPopup;
 
     public GameObject player;
@@ -38,6 +37,7 @@ public class gamemanager : MonoBehaviour
 
         player = GameObject.FindWithTag("Player");
         playerScript = player.GetComponent<playerController>();
+        spawnPoint = GameObject.FindWithTag("Spawn Point");
 
         if (SaveSystem.PendingLoad)
         {
