@@ -154399,6 +154399,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 2198682085582701513, guid: 90e596fc3a9567b4c8d42d0523a13f19, type: 3}
+      propertyPath: m_Mesh
+      value: 
+      objectReference: {fileID: 0}
     - target: {fileID: 2376811500745352790, guid: 90e596fc3a9567b4c8d42d0523a13f19, type: 3}
       propertyPath: m_Name
       value: Player
@@ -315695,8 +315699,8 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 1019330326}
   - {fileID: 525153910}
+  - {fileID: 1019330326}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1362420590
@@ -371357,7 +371361,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 6997583091466156576, guid: bd6cd2d02618a8447829870f6e45c3e0, type: 3}
       propertyPath: m_Name
-      value: Firstaid
+      value: medkit
       objectReference: {fileID: 0}
     - target: {fileID: 7662795685685551258, guid: bd6cd2d02618a8447829870f6e45c3e0, type: 3}
       propertyPath: m_LocalPosition.x
@@ -416894,7 +416898,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 7737003220555997043, guid: aaa1892fd6e9ac942a8535102152cdd4, type: 3}
       propertyPath: m_Name
-      value: Firstaid_2
+      value: medkit_2
       objectReference: {fileID: 0}
     - target: {fileID: 9101700142822186300, guid: aaa1892fd6e9ac942a8535102152cdd4, type: 3}
       propertyPath: m_LocalPosition.x
@@ -484767,7 +484771,7 @@ Transform:
   m_GameObject: {fileID: 7342545380322101755}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.123, y: -0.221, z: 0.334}
+  m_LocalPosition: {x: 0.127, y: -0.221, z: 0.334}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
