@@ -10,6 +10,7 @@ public class medkitPickup : MonoBehaviour
 
         if (pik != null)
         {
+            // Player decides whether it's instant heal or stored medkit
             pik.GetItem(medkit);
             Destroy(gameObject);
         }
