@@ -12,15 +12,18 @@ public class gamemanager : MonoBehaviour
     [SerializeField] GameObject menuWin;
     [SerializeField] GameObject menuLose;
 
+
     // Expose current objective count; make it tracked and accessible.
     [SerializeField]private int gameGoalCount;
 
 
     public TMP_Text gameGoalCountText;
-    public Image playerHPBar;
-    public GameObject playerDamagePanel;
-    public GameObject spawnPoint;
-    public GameObject checkpointPopup;
+    [SerializeField] public Image playerHPBar;
+    [SerializeField] public GameObject playerDamagePanel;
+    [SerializeField] public GameObject spawnPoint;
+    [SerializeField] public GameObject checkpointPopup;
+    [SerializeField] public GameObject surgeOverlay;
+
 
     public GameObject player;
     public playerController playerScript;

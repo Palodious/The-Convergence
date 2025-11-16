@@ -37,6 +37,24 @@ public class ObjectPool : MonoBehaviour
 
     public void ReturnToPool(GameObject obj)
     {
+        if (obj == null)
+        {
+            Debug.LogWarning("ObjectPool: Attempted to return null object.");
+            return;
+        }
+
+        if (!allObjects.Contains(obj))
+        {
+            Debug.LogWarning($"ObjectPool: Attempted to return {obj.name} which doesn't belong to this pool.");
+            return;
+        }
+
+        if (available.Contains(obj))
+        {
+            Debug.LogWarning($"ObjectPool: {obj.name} already in pool. Double-return?");
+            return;
+        }
+
         obj.SetActive(false);
         obj.transform.SetParent(transform);
         available.Enqueue(obj);

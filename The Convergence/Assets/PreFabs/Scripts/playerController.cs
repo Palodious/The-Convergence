@@ -36,13 +36,12 @@ public class playerController : MonoBehaviour, IDamage, IPickup
     bool isGliding;    // glide state  
 
     // Modified by playerAbilities during surge
-    [HideInInspector] public float damageBoost = 1f;
+    [HideInInspector] public float damageBoost = 3f;
 
-    // ---------------- ADDITIONS FROM SECOND SCRIPT ----------------
+ 
     [SerializeField] List<gunStats> gunList = new List<gunStats>();
     [SerializeField] GameObject gunModel;
     int gunListPos;
-    // --------------------------------------------------------------
 
     void Start()
     {
@@ -218,9 +217,7 @@ public class playerController : MonoBehaviour, IDamage, IPickup
         updatePlayerUI();
     }
 
-    // ----------------------------------------------------------
     // UNIVERSAL PICKUP HANDLING
-    // ----------------------------------------------------------
     public void GetItem(ScriptableObject item)
     {
         // Gun pickup

@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class PlayerAbilities : MonoBehaviour
 {
@@ -12,7 +13,7 @@ public class PlayerAbilities : MonoBehaviour
     [SerializeField] float pulseCooldown = 2.5f;
 
   //rift surge
-    [SerializeField] float surgeDuration = 5f;
+    [SerializeField] float surgeDuration = 30f;
     [SerializeField] float surgeDamageBoost = 1.5f;
     [SerializeField] float surgeCooldown = 10f;
 
@@ -134,34 +135,77 @@ public class PlayerAbilities : MonoBehaviour
 
     IEnumerator RiftSurge()
     {
+        if (surgeTimer < surgeCooldown) yield break;
+
         surgeTimer = 0;
         isSurging = true;
 
-        // Create surge effect (follows player)
-        surgeEffect = EffectsManager.Instance.Create("Surge", transform.position);
-        surgeEffect.transform.SetParent(transform);
+        //Apply damage boost
+        controller.damageBoost = surgeDamageBoost;
+        Debug.Log("RIFT SURGE STARTED! Damage ×{surgeDamageBoost} for {surgeDuration:F0}s");
 
-        // Play sounds
+        if (gamemanager.instance.surgeOverlay != null)
+        {
+            gamemanager.instance.surgeOverlay.SetActive(true);
+            Image overlayImage = gamemanager.instance.surgeOverlay.GetComponent<Image>();
+            if (overlayImage != null)
+            {
+                overlayImage.tintColor = new Color(0.2f, 0.6f, 1f, 0.3f); // Light blue tint
+            }
+        }
+        else
+        {
+            Debug.LogWarning("surgeOverlay is not assigned in gamemanager");
+        }
+
+        //Play sounds
         SFXManager.Instance.PlaySound("SurgeStart");
         SFXManager.Instance.PlayLoopSound("SurgeLoop");
 
-        // Apply buff
-        controller.damageBoost = surgeDamageBoost;
+        //Spawn persistent VFX (won't auto-return)
+        surgeEffect = EffectsManager.Instance.Create("Surge", transform.position);
+        if (surgeEffect != null)
+        {
+            surgeEffect.transform.SetParent(transform);
+            surgeEffect.transform.localPosition = Vector3.zero;
+            surgeEffect.transform.localRotation = Quaternion.identity;
+        }
 
-        yield return new WaitForSeconds(surgeDuration);
+        // Wait full duration
+        float elapsed = 0f;
+        while (elapsed < surgeDuration)
+        {
+            //add screen pulse every few seconds
+            yield return new WaitForEndOfFrame();
+            elapsed += Time.deltaTime;
+        }
 
         EndSurge();
     }
 
     void EndSurge()
     {
+        if (!isSurging) return;
+
         isSurging = false;
         controller.damageBoost = 1f;
 
-        // Stop effects
+        if (gamemanager.instance.surgeOverlay != null)
+        {
+            gamemanager.instance.surgeOverlay.SetActive(false);
+        }
+
+        //Stop audio
         SFXManager.Instance.StopLoopSound();
+
+        //Return VFX
         if (surgeEffect != null)
+        {
             EffectsManager.Instance.Return(surgeEffect);
+            surgeEffect = null;
+        }
+
+        Debug.Log("Rift Surge ENDED — damage boost removed");
     }
 
     IEnumerator RiftJump()
