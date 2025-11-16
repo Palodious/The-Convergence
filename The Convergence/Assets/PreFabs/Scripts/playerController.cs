@@ -66,8 +66,8 @@ public class playerController : MonoBehaviour, IDamage, IPickup
         HandleMedkitCooldown();
 
         // press H to use stored medkit
-        if (Input.GetKeyDown(KeyCode.H))
-            UseStoredMedkit();
+      //  if (Input.GetKeyDown(KeyCode.H))
+       //     UseStoredMedkit();
     }
 
     void movement()
@@ -229,16 +229,16 @@ public class playerController : MonoBehaviour, IDamage, IPickup
         // Medkit handler
         if (item is medkitStats med)
         {
-            if (!med.storeInInventory)
-            {
+            //if (!med.storeInInventory)
+            //{
                 HP += med.healAmount;
                 if (HP > HPOrig) HP = HPOrig;
                 updatePlayerUI();
                 return;
-            }
+            //}
 
-            storedMedkit = med; //Store medkit for later use
-            return;
+           // storedMedkit = med; //Store medkit for later use
+           // return;
         }
 
         Debug.LogWarning("Picked up unknown item: " + item.name);
@@ -295,20 +295,20 @@ public class playerController : MonoBehaviour, IDamage, IPickup
     }
 
     // use stored medkit
-    void UseStoredMedkit()
-    {
-        if (storedMedkit == null) return;
-        if (!medkitReady) return;
+    //void UseStoredMedkit()
+    //{
+    //    if (storedMedkit == null) return;
+    //    if (!medkitReady) return;
+    //
+    //  HP += storedMedkit.healAmount;
+    //    if (HP > HPOrig) HP = HPOrig;
+    //    updatePlayerUI();
 
-        HP += storedMedkit.healAmount;
-        if (HP > HPOrig) HP = HPOrig;
-        updatePlayerUI();
-
-        medkitReady = false;
-        medkitCooldownTimer = storedMedkit.cooldown;
-
-        storedMedkit = null; // medkit destroyed after use
-    }
+    //    medkitReady = false;
+    //    medkitCooldownTimer = storedMedkit.cooldown;
+    //
+    //    storedMedkit = null; // medkit destroyed after use
+    //}
 
     public void respawn()
     {
