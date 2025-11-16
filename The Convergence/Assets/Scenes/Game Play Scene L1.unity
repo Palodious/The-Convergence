@@ -5025,6 +5025,11 @@ Transform:
   - {fileID: 1333873419}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: -90, y: 0, z: 0}
+--- !u!4 &27882394 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 8134648957674596171, guid: e0dbd797383f16544bebff13f998dc17, type: 3}
+  m_PrefabInstance: {fileID: 1221800447694196447}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &32039564
 GameObject:
   m_ObjectHideFlags: 0
@@ -483169,6 +483174,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: -5986845687129777933, guid: e0dbd797383f16544bebff13f998dc17, type: 3}
+      propertyPath: spawnPos.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: -5986845687129777933, guid: e0dbd797383f16544bebff13f998dc17, type: 3}
+      propertyPath: 'spawnPos.Array.data[0]'
+      value: 
+      objectReference: {fileID: 27882394}
     - target: {fileID: 7993714650583370632, guid: e0dbd797383f16544bebff13f998dc17, type: 3}
       propertyPath: m_Name
       value: Enemy Spawner
