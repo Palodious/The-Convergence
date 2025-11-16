@@ -13,7 +13,6 @@ public class PlayerAbilities : MonoBehaviour
 
   //rift surge
     [SerializeField] float surgeDuration = 5f;
-    [SerializeField] float surgeSpeedBoost = 1.5f;
     [SerializeField] float surgeDamageBoost = 1.5f;
     [SerializeField] float surgeCooldown = 10f;
 
