@@ -54,7 +54,7 @@ public class playerController : MonoBehaviour, IDamage, IPickup
 
         updatePlayerUI(); // fill HP bar at start
 
-        restart();
+        respawn();
     }
 
     void Update()
@@ -313,7 +313,7 @@ public class playerController : MonoBehaviour, IDamage, IPickup
         storedMedkit = null; // medkit destroyed after use
     }
 
-    public void restart()
+    public void respawn()
     {
         controller.transform.position = gamemanager.instance.spawnPoint.transform.position;
         HP = HPOrig;

@@ -20,9 +20,9 @@ public class buttonFunction : MonoBehaviour
    Application.Quit();
 #endif
     }
-    public void respawnPlayer()
+    public void respawn()
     {
-        gamemanager.instance.playerScript.restart();
+        gamemanager.instance.playerScript.respawn();
         gamemanager.instance.stateUnpause();
     }
     public void loadLevel(int lvl)
