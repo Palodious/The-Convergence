@@ -45,7 +45,7 @@ public class enemyAI : MonoBehaviour, IDamage
 
     Color colorOrig;
     float sightRange = 20f; // max distance enemy can see
-    public bool playerInTrigger;
+    bool playerInTrigger;
     float shootTimer;
     float attackTimer;
     float roamTimer;
