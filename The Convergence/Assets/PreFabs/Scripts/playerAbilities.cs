@@ -100,6 +100,37 @@ public class PlayerAbilities : MonoBehaviour
 
         yield return null;
     }
+    private void CreateChainLightning(Vector3 start, Vector3 end)
+    {
+        GameObject arc = EffectsManager.Instance.Create("ChainLightning", start);
+
+        if (arc == null) return;
+         
+        // Try to set LineRenderer or Transform to stretch between points
+        LineRenderer lr = arc.GetComponent<LineRenderer>();
+        if (lr != null)
+        {
+            lr.positionCount = 2;
+            lr.SetPosition(0, start);
+            lr.SetPosition(1, end);
+        }
+        else
+        {
+            // Fallback: use transform forward or just let prefab handle it
+            arc.transform.LookAt(end);
+            Vector3 scale = arc.transform.localScale;
+            scale.z = Vector3.Distance(start, end);
+            arc.transform.localScale = scale;
+        }
+
+        // Auto-return after 0.15 seconds (duration of VFX)
+        StartCoroutine(ReturnAfterDelay(arc, 0.15f));
+    }
+    private IEnumerator ReturnAfterDelay(GameObject effect, float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        EffectsManager.Instance.Return(effect);
+    }
 
     IEnumerator RiftSurge()
     {
