@@ -23,7 +23,7 @@ public class enemyAI : MonoBehaviour, IDamage
     [SerializeField] int faceTargetSpeed;
     [SerializeField] int roamDist;
     [SerializeField] int roamPauseTime;
-    [SerializeField] int animTransSpeed;
+    [SerializeField] float animTransSpeed;
 
     [SerializeField] GameObject projectile;
     [SerializeField] float shootRate;
@@ -36,6 +36,7 @@ public class enemyAI : MonoBehaviour, IDamage
     [SerializeField] int meleeDamage; // Damage per punch
 
     [SerializeField] int shootDamage; // Damage dealt by shooting
+    [SerializeField] float shootStoppingDistance = 10f; // Distance shooter stops at to fire
 
     public bool useAnimations = true; // Toggle all animation logic on/off
     public bool usePatrol = true; // Toggle patrol behavior
@@ -44,14 +45,14 @@ public class enemyAI : MonoBehaviour, IDamage
 
     Color colorOrig;
     float sightRange = 20f; // max distance enemy can see
-    bool playerInTrigger;
+    public bool playerInTrigger;
     float shootTimer;
     float attackTimer;
     float roamTimer;
     float angleToPlayer;
-    float stoppingDistOrig;
     Vector3 playerDir;
     Vector3 startingPos;
+    float stoppingDistOrig;
 
     [SerializeField] Transform[] patrolPoints; // Optional patrol points
     int patrolIndex = 0;
@@ -59,7 +60,6 @@ public class enemyAI : MonoBehaviour, IDamage
     void Start()
     {
         colorOrig = model.material.color;
-        //gamemanager.instance.updateGameGoal(1);
         stoppingDistOrig = agent.stoppingDistance;
         startingPos = transform.position;
 
@@ -86,6 +86,12 @@ public class enemyAI : MonoBehaviour, IDamage
 
         if (playerVisible)
         {
+            // Set stopping distance for shooters, else keep original
+            if (enemyType == EnemyType.Shooter || enemyType == EnemyType.Hybrid)
+                agent.stoppingDistance = shootStoppingDistance;
+            else
+                agent.stoppingDistance = stoppingDistOrig;
+
             agent.SetDestination(gamemanager.instance.player.transform.position);
 
             float distanceToPlayer = Vector3.Distance(transform.position, gamemanager.instance.player.transform.position);
@@ -93,21 +99,23 @@ public class enemyAI : MonoBehaviour, IDamage
             // Melee has priority
             if (enemyType == EnemyType.Melee && distanceToPlayer <= meleeRange && attackTimer >= attackRate)
                 meleeAttack();
-            else if (enemyType == EnemyType.Shooter && shootTimer >= shootRate)
+            else if (enemyType == EnemyType.Shooter && shootTimer >= shootRate && distanceToPlayer <= shootStoppingDistance)
                 shoot();
             else if (enemyType == EnemyType.Hybrid)
             {
                 if (distanceToPlayer <= meleeRange && attackTimer >= attackRate)
                     meleeAttack();
-                else if (shootTimer >= shootRate)
+                else if (shootTimer >= shootRate && distanceToPlayer <= shootStoppingDistance)
                     shoot();
             }
 
-            if (agent.remainingDistance <= stoppingDistOrig)
+            // Face the player when close enough
+            if (agent.remainingDistance <= agent.stoppingDistance)
                 faceTarget();
         }
         else
         {
+            // Roam or patrol if player is not visible
             if (useRoam) checkRoam();
             if (usePatrol) checkPatrol();
         }
@@ -208,13 +216,14 @@ public class enemyAI : MonoBehaviour, IDamage
     void shoot()
     {
         shootTimer = 0;
-
         if (useAnimations && anim != null)
-            anim.SetTrigger("Fire");   // Fire animation for shooting
-        else if (useAnimations && anim != null)
+        {
             anim.SetTrigger("Venom");
+        }
         else
-            createProjectile();
+        {
+            createProjectile(); // fallback if no animations
+        }
     }
 
     public void createProjectile()
@@ -227,9 +236,15 @@ public class enemyAI : MonoBehaviour, IDamage
         attackTimer = 0;
 
         if (useAnimations && anim != null)
+        {
             anim.SetTrigger("Punch");
-        else if (useAnimations && anim != null)
-            anim.SetTrigger("Claw");
+
+            // ApplyMeleeDamage() should also be called via Animation Event
+        }
+        else
+        {
+            ApplyMeleeDamage();
+        }
     }
 
     public void ApplyMeleeDamage()
@@ -243,22 +258,6 @@ public class enemyAI : MonoBehaviour, IDamage
 
                 if (meleeEffect != null)
                     Instantiate(meleeEffect, meleePos.position, Quaternion.identity);
-            }
-        }
-    }
-
-    public void ApplyShootDamage()
-    {
-        // Raycast forward from shoot position just like a projectile would travel
-        float shootDist = 100f;  // max effective shoot distance
-
-        RaycastHit hit;
-        if (Physics.Raycast(shootPOS.position, shootPOS.forward, out hit, shootDist))
-        {
-            if (hit.collider.CompareTag("Player"))
-            {
-                // Deal damage to the player
-                gamemanager.instance.playerScript.takeDamage(shootDamage);
             }
         }
     }
