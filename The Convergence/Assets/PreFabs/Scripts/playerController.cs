@@ -52,7 +52,7 @@ public class playerController : MonoBehaviour, IDamage, IPickup
 
         updatePlayerUI(); // fill HP bar at start
 
-        respawnPlayer();
+        restart();
     }
 
     void Update()
@@ -284,9 +284,9 @@ public class playerController : MonoBehaviour, IDamage, IPickup
         }
     }
 
-    public void respawnPlayer()
+    public void restart()
     {
-        controller.transform.position = gamemanager.instance.playerSpawnPos.transform.position;
+        controller.transform.position = gamemanager.instance.spawnPoint.transform.position;
         HP = HPOrig;
         updatePlayerUI();
     }

@@ -22,7 +22,7 @@ public class buttonFunction : MonoBehaviour
     }
     public void respawnPlayer()
     {
-        gamemanager.instance.playerScript.respawnPlayer();
+        gamemanager.instance.playerScript.restart();
         gamemanager.instance.stateUnpause();
     }
     public void loadLevel(int lvl)
