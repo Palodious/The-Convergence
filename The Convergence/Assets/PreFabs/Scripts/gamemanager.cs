@@ -20,13 +20,14 @@ public class gamemanager : MonoBehaviour
     public TMP_Text gameGoalCountText;
     [SerializeField] public Image playerHPBar;
     [SerializeField] public GameObject playerDamagePanel;
-    [SerializeField] public GameObject spawnPoint;
     [SerializeField] public GameObject checkpointPopup;
     [SerializeField] public GameObject surgeOverlay;
+    public GameObject spawnPoint;
 
 
     public GameObject player;
     public playerController playerScript;
+    
 
     public bool isPaused;
 

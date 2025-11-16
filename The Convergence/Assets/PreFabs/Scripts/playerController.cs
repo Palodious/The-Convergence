@@ -51,9 +51,6 @@ public class playerController : MonoBehaviour, IDamage, IPickup
         HPOrig = HP;
         originalHeight = controller.height;
         originalSpeed = speed;
-
-        updatePlayerUI(); // fill HP bar at start
-
         respawn();
     }
 
