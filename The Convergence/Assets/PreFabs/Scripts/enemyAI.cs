@@ -115,9 +115,22 @@ public class enemyAI : MonoBehaviour, IDamage
         }
         else
         {
-            // Roam or patrol if player is not visible
-            if (useRoam) checkRoam();
-            if (usePatrol) checkPatrol();
+            // Reset stopping distance when not chasing player
+            agent.stoppingDistance = 0;
+
+            // If we're not currently moving or need to start roaming/patrolling
+            if (agent.remainingDistance < 0.01f)
+            {
+                if (useRoam)
+                    checkRoam();
+                else if (usePatrol)
+                    checkPatrol();
+            }
+            // If we have patrol points and should be patrolling, make sure we have a destination
+            else if (usePatrol && patrolPoints != null && patrolPoints.Length > 0 && !agent.hasPath)
+            {
+                checkPatrol();
+            }
         }
     }
 
