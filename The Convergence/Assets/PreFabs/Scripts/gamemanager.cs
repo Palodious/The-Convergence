@@ -164,4 +164,8 @@ public class gamemanager : MonoBehaviour
             gameGoalCountText.text = gameGoalCount.ToString("F0");
     }
 
+    public int GetGameGoalCount()
+    {
+        return gameGoalCount;
+    }
 }
