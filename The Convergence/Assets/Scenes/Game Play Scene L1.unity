@@ -229727,6 +229727,28 @@ Transform:
   - {fileID: 557641306}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: -90, y: 0, z: 0}
+--- !u!114 &1035053638 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5599188795804682408, guid: a428ce1e50984774c948c5fcb56de73b, type: 3}
+  m_PrefabInstance: {fileID: 2011096332716312902}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9085046f02f69544eb97fd06b6048fe2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Toggle
+--- !u!114 &1035053639 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3173959448922781917, guid: a428ce1e50984774c948c5fcb56de73b, type: 3}
+  m_PrefabInstance: {fileID: 2011096332716312902}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7b743370ac3e4ec2a1668f5455a8ef8a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TMP_Dropdown
 --- !u!1 &1043386997
 GameObject:
   m_ObjectHideFlags: 0
@@ -378981,6 +379003,17 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!114 &1597098870 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2530338185507729817, guid: a428ce1e50984774c948c5fcb56de73b, type: 3}
+  m_PrefabInstance: {fileID: 2011096332716312902}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2011096332716312905}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cd064701d094ba24498ce4d1f3bdfffc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::OptionsAudio
 --- !u!1 &1608025321
 GameObject:
   m_ObjectHideFlags: 0
@@ -480788,13 +480821,49 @@ PrefabInstance:
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
       value: gamemanager, Assembly-CSharp
       objectReference: {fileID: 0}
+    - target: {fileID: 3173959448922781917, guid: a428ce1e50984774c948c5fcb56de73b, type: 3}
+      propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.size
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3173959448922781917, guid: a428ce1e50984774c948c5fcb56de73b, type: 3}
+      propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 11500000, guid: 77fe02842d4ed174fa2700b28a5126f3, type: 3}
+    - target: {fileID: 3573989020609425326, guid: a428ce1e50984774c948c5fcb56de73b, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3573989020609425326, guid: a428ce1e50984774c948c5fcb56de73b, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_Mode
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 3573989020609425326, guid: a428ce1e50984774c948c5fcb56de73b, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
-      objectReference: {fileID: 2011096332716312904}
+      objectReference: {fileID: 2011096332716312909}
+    - target: {fileID: 3573989020609425326, guid: a428ce1e50984774c948c5fcb56de73b, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_Target
+      value: 
+      objectReference: {fileID: 1597098870}
+    - target: {fileID: 3573989020609425326, guid: a428ce1e50984774c948c5fcb56de73b, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 3573989020609425326, guid: a428ce1e50984774c948c5fcb56de73b, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: 
+      value: ApplyVideoSettings
+      objectReference: {fileID: 0}
+    - target: {fileID: 3573989020609425326, guid: a428ce1e50984774c948c5fcb56de73b, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_MethodName
+      value: ApplySettingsNow
+      objectReference: {fileID: 0}
+    - target: {fileID: 3573989020609425326, guid: a428ce1e50984774c948c5fcb56de73b, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_TargetAssemblyTypeName
+      value: OptionsAudio, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 3573989020609425326, guid: a428ce1e50984774c948c5fcb56de73b, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
       objectReference: {fileID: 0}
     - target: {fileID: 3599963134259374750, guid: a428ce1e50984774c948c5fcb56de73b, type: 3}
       propertyPath: m_IsActive
@@ -481028,6 +481097,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 2465651444508939157, guid: a428ce1e50984774c948c5fcb56de73b, type: 3}
       insertIndex: -1
       addedObject: {fileID: 2011096332716312907}
+    - targetCorrespondingSourceObject: {fileID: 1683825679008558499, guid: a428ce1e50984774c948c5fcb56de73b, type: 3}
+      insertIndex: 1
+      addedObject: {fileID: 2011096332716312909}
   m_SourcePrefab: {fileID: 100100000, guid: a428ce1e50984774c948c5fcb56de73b, type: 3}
 --- !u!114 &2011096332716312903 stripped
 MonoBehaviour:
@@ -481073,7 +481145,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 16862492db33ac04d89b3dbee4149daf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MainMenu
-  firstLevelSceneName: Level1
+  firstLevelSceneName: Main Menu
   optionsPanel: {fileID: 2011096332716312905}
 --- !u!114 &2011096332716312908
 MonoBehaviour:
@@ -481087,6 +481159,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 072896b7e9152904d94596630638460e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::buttonFunction
+--- !u!114 &2011096332716312909
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2011096332716312905}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 77fe02842d4ed174fa2700b28a5126f3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::OptionsResolution
+  resolutionDropdown: {fileID: 1035053639}
+  fullscreenToggle: {fileID: 1035053638}
 --- !u!23 &2049593483120286277
 MeshRenderer:
   m_ObjectHideFlags: 0
