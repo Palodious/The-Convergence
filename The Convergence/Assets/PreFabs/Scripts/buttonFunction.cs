@@ -30,6 +30,10 @@ public class buttonFunction : MonoBehaviour
         SceneManager.LoadScene(lvl);
         gamemanager.instance.stateUnpause();
     }
-
+    public void mainMenu()
+    {
+        Time.timeScale = 1f;
+        SceneManager.LoadScene("Main Menu");
+    }
 
 }

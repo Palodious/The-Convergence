@@ -330,8 +330,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8246615592745068247}
-  - component: {fileID: 153569688467573191}
   - component: {fileID: 1514407422154342191}
+  - component: {fileID: 153569688467573191}
   - component: {fileID: 6062106471785785413}
   - component: {fileID: 1070738087611285613}
   - component: {fileID: 5481825770018972665}
@@ -367,6 +367,41 @@ Transform:
   - {fileID: 1760454856240617829}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: -181.076, z: 0}
+--- !u!114 &1514407422154342191
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1097812780897078631}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5cd547001d36ab4498053ded28c9623a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::enemyAI
+  enemyType: 2
+  agent: {fileID: 6062106471785785413}
+  anim: {fileID: 153569688467573191}
+  model: {fileID: 7134337905388027283}
+  headPos: {fileID: 8304003598513859998}
+  HP: 60
+  FOV: 80
+  faceTargetSpeed: 125
+  roamDist: 10
+  roamPauseTime: 3
+  animTransSpeed: 8
+  projectile: {fileID: 4705637938062420806, guid: ff62b65117c527244a483945471f67d0, type: 3}
+  shootRate: 0.5
+  shootPOS: {fileID: 5405681285831218590}
+  meleePos: {fileID: 0}
+  meleeEffect: {fileID: 0}
+  meleeRange: 0
+  attackRate: 0
+  meleeDamage: 0
+  useAnimations: 1
+  usePatrol: 0
+  useRoam: 1
+  patrolPoints: []
 --- !u!95 &153569688467573191
 Animator:
   serializedVersion: 7
@@ -389,43 +424,6 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
---- !u!114 &1514407422154342191
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1097812780897078631}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5cd547001d36ab4498053ded28c9623a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::enemyAI
-  enemyType: 1
-  agent: {fileID: 6062106471785785413}
-  anim: {fileID: 153569688467573191}
-  model: {fileID: 7134337905388027283}
-  headPos: {fileID: 8304003598513859998}
-  HP: 60
-  FOV: 80
-  faceTargetSpeed: 125
-  roamDist: 10
-  roamPauseTime: 3
-  animTransSpeed: 8
-  projectile: {fileID: 4705637938062420806, guid: ff62b65117c527244a483945471f67d0, type: 3}
-  shootRate: 0.5
-  shootPOS: {fileID: 5405681285831218590}
-  meleePos: {fileID: 0}
-  meleeEffect: {fileID: 0}
-  meleeRange: 0
-  attackRate: 0
-  meleeDamage: 0
-  shootDamage: 5
-  shootRange: 6
-  useAnimations: 1
-  usePatrol: 0
-  useRoam: 1
-  patrolPoints: []
 --- !u!195 &6062106471785785413
 NavMeshAgent:
   m_ObjectHideFlags: 0

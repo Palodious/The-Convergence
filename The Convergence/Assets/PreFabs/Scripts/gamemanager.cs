@@ -11,7 +11,9 @@ public class gamemanager : MonoBehaviour
     [SerializeField] GameObject menuPause;
     [SerializeField] GameObject menuWin;
     [SerializeField] GameObject menuLose;
+    [SerializeField] GameObject menuOptions;
 
+    GameObject previousMenu;
 
     // Expose current objective count; make it tracked and accessible.
     [SerializeField]private int gameGoalCount;
@@ -136,6 +138,44 @@ public class gamemanager : MonoBehaviour
         {
             // Load scene, then restore after it’s ready.
             StartCoroutine(LoadThenRestore(d));
+        }
+    }
+
+    public void OpenOptionsMenu()
+    {
+        if (menuOptions == null)
+        {
+            Debug.LogWarning("menuOptions not assigned on gamemanager.");
+            return;
+        }
+
+        // Remember the menu we came from (pause/win/lose)
+        previousMenu = menuActive;
+
+        if (previousMenu != null)
+            previousMenu.SetActive(false);
+
+        menuOptions.SetActive(true);
+        menuActive = menuOptions;
+    }
+
+    public void CloseOptionsMenu()
+    {
+        if (menuOptions == null) return;
+
+        menuOptions.SetActive(false);
+
+        // If we came from another menu, go back to it
+        if (previousMenu != null)
+        {
+            menuActive = previousMenu;
+            previousMenu.SetActive(true);
+            previousMenu = null;
+        }
+        else
+        {
+            // If Options was opened with no previous menu, just unpause back to game
+            stateUnpause();
         }
     }
 
