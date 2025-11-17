@@ -35,9 +35,6 @@ public class enemyAI : MonoBehaviour, IDamage
     [SerializeField] float attackRate;  // Cooldown between attacks
     [SerializeField] int meleeDamage; // Damage per punch
 
-    [SerializeField] int shootDamage; // Damage dealt by shooting
-    [SerializeField] float shootRange; // Distance shooter stops at to fire
-
     public bool useAnimations = true; // Toggle all animation logic on/off
     public bool usePatrol = true; // Toggle patrol behavior
     public bool useRoam = true;  // Toggle roaming behavior
@@ -88,7 +85,7 @@ public class enemyAI : MonoBehaviour, IDamage
         {
             // Set stopping distance for shooters, else keep original
             if (enemyType == EnemyType.Shooter || enemyType == EnemyType.Hybrid)
-                agent.stoppingDistance = shootRange;
+                agent.stoppingDistance = stoppingDistOrig;
             else
                 agent.stoppingDistance = stoppingDistOrig;
 
@@ -99,13 +96,13 @@ public class enemyAI : MonoBehaviour, IDamage
             // Melee has priority
             if (enemyType == EnemyType.Melee && distanceToPlayer <= meleeRange && attackTimer >= attackRate)
                 meleeAttack();
-            else if (enemyType == EnemyType.Shooter && shootTimer >= shootRate && distanceToPlayer <= shootRange)
+            else if (enemyType == EnemyType.Shooter && shootTimer >= shootRate)
                 shoot();
             else if (enemyType == EnemyType.Hybrid)
             {
                 if (distanceToPlayer <= meleeRange && attackTimer >= attackRate)
                     meleeAttack();
-                else if (shootTimer >= shootRate && distanceToPlayer <= shootRange)
+                else if (shootTimer >= shootRate)
                     shoot();
             }
 
