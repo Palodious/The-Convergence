@@ -13,10 +13,10 @@ GameObject:
   - component: {fileID: 1993101440778996551}
   - component: {fileID: 1394799381658555603}
   - component: {fileID: 4252870047961289092}
-  - component: {fileID: 6754583074911825944}
-  - component: {fileID: 6749394431512991551}
+  - component: {fileID: 347082111702409345}
+  - component: {fileID: 4343394384234889254}
   m_Layer: 0
-  m_Name: Flame Thrower
+  m_Name: Fire Ball
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -52,9 +52,9 @@ MonoBehaviour:
   type: 0
   rb: {fileID: 1394799381658555603}
   damageAmount: 5
-  damageRate: 0.5
+  damageRate: 0.35
   speed: 32
-  destroyTime: 1
+  destroyTime: 3
 --- !u!135 &1993101440778996551
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -173,17 +173,17 @@ TrailRenderer:
       m_RotationOrder: 4
     colorGradient:
       serializedVersion: 2
-      key0: {r: 0.9607843, g: 0.91574126, b: 0.14901958, a: 1}
-      key1: {r: 0.9607844, g: 0.4666667, b: 0.14901961, a: 1}
-      key2: {r: 0.9764151, g: 0, b: 0, a: 0}
+      key0: {r: 0.9386792, g: 0.40112978, b: 0.030994143, a: 1}
+      key1: {r: 0.9386792, g: 0.40112978, b: 0.030994143, a: 1}
+      key2: {r: 0, g: 0, b: 0, a: 0}
       key3: {r: 0, g: 0, b: 0, a: 0}
       key4: {r: 0, g: 0, b: 0, a: 0}
       key5: {r: 0, g: 0, b: 0, a: 0}
       key6: {r: 0, g: 0, b: 0, a: 0}
       key7: {r: 0, g: 0, b: 0, a: 0}
-      ctime0: 96
-      ctime1: 31997
-      ctime2: 65535
+      ctime0: 0
+      ctime1: 65535
+      ctime2: 0
       ctime3: 0
       ctime4: 0
       ctime5: 0
@@ -199,7 +199,7 @@ TrailRenderer:
       atime7: 0
       m_Mode: 0
       m_ColorSpace: 0
-      m_NumColorKeys: 3
+      m_NumColorKeys: 2
       m_NumAlphaKeys: 2
     numCornerVertices: 0
     numCapVertices: 0
@@ -213,7 +213,7 @@ TrailRenderer:
   m_Autodestruct: 0
   m_Emitting: 1
   m_ApplyActiveColorSpace: 1
---- !u!108 &6754583074911825944
+--- !u!108 &347082111702409345
 Light:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -223,7 +223,7 @@ Light:
   m_Enabled: 1
   serializedVersion: 11
   m_Type: 2
-  m_Color: {r: 0.9607844, g: 0.67058825, b: 0.14901961, a: 1}
+  m_Color: {r: 0.97647065, g: 0, b: 0, a: 1}
   m_Intensity: 1
   m_Range: 10
   m_SpotAngle: 30
@@ -278,7 +278,7 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
---- !u!114 &6749394431512991551
+--- !u!114 &4343394384234889254
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
