@@ -456,6 +456,7 @@ GameObject:
   m_Component:
   - component: {fileID: 731150277405340863}
   - component: {fileID: 820459225288069657}
+  - component: {fileID: 8018269725157110695}
   m_Layer: 0
   m_Name: ShotGun_C (1)
   m_TagString: Untagged
@@ -510,6 +511,19 @@ SphereCollider:
   serializedVersion: 3
   m_Radius: 0.5
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &8018269725157110695
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4233496786522066490}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1360eccb0862d3f4eb2c46f2d7ca93dd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::gunPickup
+  gun: {fileID: 0}
 --- !u!1 &4267945332695043869
 GameObject:
   m_ObjectHideFlags: 0
