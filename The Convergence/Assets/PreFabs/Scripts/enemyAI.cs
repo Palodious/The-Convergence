@@ -139,43 +139,53 @@ public class enemyAI : MonoBehaviour, IDamage
     {
         Vector3 playerPos = gamemanager.instance.player.transform.position;
         playerDir = playerPos - headPos.position;
-        angleToPlayer = Vector3.Angle(playerDir, transform.forward);
+        float distanceToPlayer = playerDir.magnitude;
 
-        if (playerDir.magnitude > sightRange)
+        // Check distance first
+        if (distanceToPlayer > sightRange)
         {
             agent.stoppingDistance = 0;
-            return false; // too far
+            return false;
         }
 
+        // Check FOV
+        angleToPlayer = Vector3.Angle(playerDir, transform.forward);
+        if (angleToPlayer > FOV)
+        {
+            agent.stoppingDistance = 0;
+            return false;
+        }
+
+        // Raycast for line-of-sight only
         RaycastHit hit;
         if (Physics.Raycast(headPos.position, playerDir.normalized, out hit, sightRange))
         {
-            if (hit.collider.CompareTag("Player") && angleToPlayer <= FOV)
+            if (hit.collider.CompareTag("Player"))
             {
-                agent.SetDestination(gamemanager.instance.player.transform.position);
+                agent.SetDestination(playerPos);
+                agent.stoppingDistance = stoppingDistOrig;
 
-                // Set stopping distance for shooters, else keep original
-                if (enemyType == EnemyType.Shooter || enemyType == EnemyType.Hybrid)
-                    agent.stoppingDistance = stoppingDistOrig;
-                else
-                    agent.stoppingDistance = stoppingDistOrig;
-
-                float distanceToPlayer = Vector3.Distance(transform.position, gamemanager.instance.player.transform.position);
-
-                // Melee has priority
-                if (enemyType == EnemyType.Melee && distanceToPlayer <= meleeRange && attackTimer >= attackRate)
-                    meleeAttack();
-                else if (enemyType == EnemyType.Shooter && shootTimer >= shootRate)
-                    shoot();
-                else if (enemyType == EnemyType.Hybrid)
+                // Attack logic handled separately
+                switch (enemyType)
                 {
-                    if (distanceToPlayer <= meleeRange && attackTimer >= attackRate)
-                        meleeAttack();
-                    else if (shootTimer >= shootRate)
-                        shoot();
+                    case EnemyType.Melee:
+                        if (distanceToPlayer <= meleeRange && attackTimer >= attackRate)
+                            meleeAttack();
+                        break;
+
+                    case EnemyType.Shooter:
+                        if (shootTimer >= shootRate)
+                            shoot();
+                        break;
+
+                    case EnemyType.Hybrid:
+                        if (distanceToPlayer <= meleeRange && attackTimer >= attackRate)
+                            meleeAttack();
+                        else if (shootTimer >= shootRate)
+                            shoot();
+                        break;
                 }
 
-                // Face the player when close enough
                 if (agent.remainingDistance <= agent.stoppingDistance)
                     faceTarget();
 
