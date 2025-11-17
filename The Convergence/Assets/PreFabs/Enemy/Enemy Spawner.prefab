@@ -72,6 +72,7 @@ MonoBehaviour:
   spawnRate: 0.5
   spawnPos:
   - {fileID: 8134648957674596171}
+  patrolPoints: []
 --- !u!1 &8538758037223728410
 GameObject:
   m_ObjectHideFlags: 0
@@ -81,7 +82,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8134648957674596171}
-  - component: {fileID: 4493498307390946691}
   m_Layer: 0
   m_Name: Enemy Spawn - Pos 1
   m_TagString: Untagged
@@ -104,20 +104,3 @@ Transform:
   m_Children: []
   m_Father: {fileID: 8264715056014712113}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &4493498307390946691
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8538758037223728410}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f6e47971b24414849b52fa8ab36084d3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::spawner
-  objectToSpawn: {fileID: 2804925484609231592, guid: 1092da00cf9eb434bb17a704015faf06, type: 3}
-  spawnAmount: 1
-  spawnRate: 0.5
-  spawnPos:
-  - {fileID: 8134648957674596171}
