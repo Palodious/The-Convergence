@@ -78,11 +78,11 @@ public class enemyAI : MonoBehaviour, IDamage
             anim.SetFloat("Speed", Mathf.Lerp(agentSpeedAnim, agentSpeedCur, Time.deltaTime * animTransSpeed));
         }
 
-        // Track roam timer only when not moving (like smaller script)
+        // Track roam timer only when not moving
         if (agent.remainingDistance < 0.01f)
             roamTimer += Time.deltaTime;
 
-        // Use playerInTrigger as primary condition like smaller script - more efficient flow
+        // Use playerInTrigger as primary condition
         if (playerInTrigger && !canSeePlayer())
         {
             checkRoamOrPatrol();
@@ -95,7 +95,7 @@ public class enemyAI : MonoBehaviour, IDamage
 
     void checkRoamOrPatrol()
     {
-        // Combined roaming and patrol check like smaller script's efficiency
+        // Combined roaming and patrol check
         if (agent.remainingDistance < 0.01f && roamTimer >= roamPauseTime)
         {
             if (useRoam)
