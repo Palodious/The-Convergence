@@ -39,7 +39,7 @@ public class ObjectPool : MonoBehaviour
     {
         if (obj == null)
         {
-            Debug.LogWarning("ObjectPool: Attempted to return null object.");
+            Debug.LogWarning($"ObjectPool: Attempted to return null object.");
             return;
         }
 

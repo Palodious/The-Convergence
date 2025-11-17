@@ -36,18 +36,18 @@ public class EffectsManager : MonoBehaviour
         {
             if (string.IsNullOrEmpty(entry.key))
             {
-                Debug.LogWarning("[EffectsManager] Missing key for effect: {entry.prefab.name}");
+                Debug.LogWarning($"[EffectsManager] Missing key for effect: {entry.prefab.name}");
                 continue;
             }
 
             if (entry.prefab == null)
             {
-                Debug.LogError("[EffectsManager] Missing prefab for effect: {entry.key}");
+                Debug.LogError($"[EffectsManager] Missing prefab for effect: {entry.key}");
                 continue;
             }
 
             // Create a pool holder
-            GameObject poolObj = new GameObject("Pool_{entry.key}");
+            GameObject poolObj = new GameObject($"Pool_{entry.key}");
             poolObj.transform.SetParent(transform);
             ObjectPool pool = poolObj.AddComponent<ObjectPool>();
             pool.prefab = entry.prefab;
@@ -64,7 +64,7 @@ public class EffectsManager : MonoBehaviour
     {
         if (!effectPools.ContainsKey(effectKey))
         {
-            Debug.LogWarning("[EffectsManager] Effect not found: {effectKey}");
+            Debug.LogWarning($"[EffectsManager] Effect not found: {effectKey}");
             return null;
         }
 
@@ -99,6 +99,6 @@ public class EffectsManager : MonoBehaviour
             }
         }
 
-        Debug.LogWarning("[EffectsManager] Tried to return object not in any pool: {effect.name}");
+        Debug.LogWarning($"[EffectsManager] Tried to return object not in any pool: {effect.name}");
     }
 }

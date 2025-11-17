@@ -1,6 +1,6 @@
 using System.Collections;
 using UnityEngine;
-using UnityEngine.UIElements;
+using UnityEngine.UI;
 
 public class PlayerAbilities : MonoBehaviour
 {
@@ -142,15 +142,15 @@ public class PlayerAbilities : MonoBehaviour
 
         //Apply damage boost
         controller.damageBoost = surgeDamageBoost;
-        Debug.Log("RIFT SURGE STARTED! Damage ×{surgeDamageBoost} for {surgeDuration:F0}s");
+        Debug.Log($"RIFT SURGE STARTED! Damage ×{surgeDamageBoost} for {surgeDuration:F0}s"); // Fixed string interpolation
 
         if (gamemanager.instance.surgeOverlay != null)
         {
             gamemanager.instance.surgeOverlay.SetActive(true);
-            Image overlayImage = gamemanager.instance.surgeOverlay.GetComponent<Image>();
+            Image overlayImage = gamemanager.instance.surgeOverlay.GetComponent<Image>(); // Now correctly uses UnityEngine.UI.Image
             if (overlayImage != null)
             {
-                overlayImage.tintColor = new Color(0.2f, 0.6f, 1f, 0.3f); // Light blue tint
+                overlayImage.color = new Color(0.2f, 0.6f, 1f, 0.3f); // Changed from .tintColor to .color
             }
         }
         else
@@ -162,7 +162,7 @@ public class PlayerAbilities : MonoBehaviour
         SFXManager.Instance.PlaySound("SurgeStart");
         SFXManager.Instance.PlayLoopSound("SurgeLoop");
 
-        //Spawn persistent VFX (won't auto-return)
+        //Spawn persistent VFX
         surgeEffect = EffectsManager.Instance.Create("Surge", transform.position);
         if (surgeEffect != null)
         {
@@ -172,13 +172,7 @@ public class PlayerAbilities : MonoBehaviour
         }
 
         // Wait full duration
-        float elapsed = 0f;
-        while (elapsed < surgeDuration)
-        {
-            //add screen pulse every few seconds
-            yield return new WaitForEndOfFrame();
-            elapsed += Time.deltaTime;
-        }
+        yield return new WaitForSeconds(surgeDuration); // Simplified - no need for manual elapsed time tracking
 
         EndSurge();
     }
@@ -205,12 +199,14 @@ public class PlayerAbilities : MonoBehaviour
             surgeEffect = null;
         }
 
-        Debug.Log("Rift Surge ENDED — damage boost removed");
+        Debug.Log($"Rift Surge ENDED — damage boost removed");
     }
 
     IEnumerator RiftJump()
     {
         jumpTimer = 0;
+
+        Debug.Log($"Rift Jump STARTED - Prep phase");
 
         // Create prep effect
         GameObject prepEffect = EffectsManager.Instance.Create("JumpPrep", transform.position);
@@ -219,53 +215,60 @@ public class PlayerAbilities : MonoBehaviour
         yield return new WaitForSeconds(jumpPrepTime);
 
         // Get safe position
-        Vector3 targetPos = GetSafeJumpPosition();
+        Vector3 targetPos = SafeJumpPosition();
+        Debug.Log($"Jumping from {transform.position} to {targetPos} (Distance: {Vector3.Distance(transform.position, targetPos):F2}m)");
 
-        // Teleport
-        charController.enabled = false;
-        transform.position = targetPos;
-        charController.enabled = true;
+        // Teleport using CharacterController.Move instead of disabling
+        Vector3 displacement = targetPos - transform.position;
+        charController.Move(displacement);
 
         // Create impact effect
         EffectsManager.Instance.Create("JumpImpact", transform.position);
         SFXManager.Instance.PlaySound("JumpImpact");
 
-        // Clean up prep effect
-        EffectsManager.Instance.Return(prepEffect);
+        // Clean up prep effect (if it still exists and hasn't auto-returned)
+        if (prepEffect != null && prepEffect.activeInHierarchy)
+        {
+            EffectsManager.Instance.Return(prepEffect);
+        }
+
+        Debug.Log($"Rift Jump COMPLETE");
     }
 
-    Vector3 GetSafeJumpPosition()
+    Vector3 SafeJumpPosition()
     {
-        Vector3 startPos = transform.position;
+        Vector3 startPos = transform.position + Vector3.up * 0.5f; // Start slightly above ground
         Vector3 direction = transform.forward;
         float safeDistance = jumpDistance;
 
         float radius = charController.radius;
         float height = charController.height;
 
-        // Check at different heights
-        float[] testHeights = { 0.1f, height / 2f, height - 0.1f };
+        Debug.Log($"Checking jump path: Direction={direction}, MaxDistance={jumpDistance}");
 
-        foreach (float testHeight in testHeights)
+        // Single SphereCast from center of character
+        if (Physics.SphereCast(startPos, radius, direction, out RaycastHit hit, jumpDistance, environmentMask))
         {
-            Vector3 testPoint = startPos + Vector3.up * testHeight;
-
-            if (Physics.SphereCast(testPoint, radius, direction, out RaycastHit hit, jumpDistance, environmentMask))
-            {
-                if (hit.distance < safeDistance)
-                    safeDistance = hit.distance - radius;
-            }
+            safeDistance = Mathf.Max(0, hit.distance - radius - 0.5f); // Buffer of 0.5m
+            Debug.Log($"Obstacle detected at {hit.distance:F2}m. Safe distance: {safeDistance:F2}m");
         }
-
-        // Safety buffer
-        safeDistance = Mathf.Max(0, safeDistance - 0.2f);
+        else
+        {
+            Debug.Log($"No obstacles - full distance jump");
+        }
 
         Vector3 finalPos = startPos + direction * safeDistance;
 
-        // Snap to ground
-        if (Physics.Raycast(finalPos + Vector3.up * 0.5f, Vector3.down, out RaycastHit groundHit, 1f, environmentMask))
+        // Ground check - cast down from target position
+        if (Physics.Raycast(finalPos + Vector3.up * 2f, Vector3.down, out RaycastHit groundHit, 5f, environmentMask))
         {
-            finalPos = groundHit.point;
+            finalPos.y = groundHit.point.y; // Snap to ground level
+            Debug.Log($"Snapped to ground at Y={finalPos.y}");
+        }
+        else
+        {
+            Debug.LogWarning($"No ground detected at jump target! Keeping original Y position");
+            finalPos.y = transform.position.y; // Fallback to current height
         }
 
         return finalPos;
