@@ -11,6 +11,7 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
         Hybrid
     }
 
+    [Header("----- Components -----")]
     [SerializeField] EnemyType enemyType;
 
     [SerializeField] NavMeshAgent agent;
@@ -18,23 +19,27 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
     [SerializeField] Renderer model;
     [SerializeField] Transform headPos;
 
-    [SerializeField] int HP;
-    [SerializeField] int FOV;
-    [SerializeField] int faceTargetSpeed;
-    [SerializeField] int roamDist;
-    [SerializeField] int roamPauseTime;
-    [SerializeField] float animTransSpeed;
+    [Header("----- Stats -----")]
+    [Range(1, 500)][SerializeField] int HP;
+    [Range(1, 180)][SerializeField] int FOV;
+    [Range(1, 20)][SerializeField] int faceTargetSpeed;
+    [Range(1, 50)][SerializeField] int roamDist;
+    [Range(0, 20)][SerializeField] int roamPauseTime;
+    [Range(0.1f, 20f)][SerializeField] float animTransSpeed;
 
+    [Header("----- Shooter Settings -----")]
     [SerializeField] GameObject projectile;
-    [SerializeField] float shootRate;
+    [Range(0.05f, 5f)][SerializeField] float shootRate;
     [SerializeField] Transform shootPOS;
 
+    [Header("----- Melee Settings -----")]
     [SerializeField] Transform meleePos; // Position from which melee attacks are measured
     [SerializeField] GameObject meleeEffect;  // Optional visual effect for punches
-    [SerializeField] float meleeRange; // Distance at which enemy can hit player
-    [SerializeField] float attackRate;  // Cooldown between attacks
-    [SerializeField] int meleeDamage; // Damage per punch
+    [Range(0.1f, 5f)][SerializeField] float meleeRange; // Distance at which enemy can hit player
+    [Range(0.1f, 5f)][SerializeField] float attackRate;  // Cooldown between attacks
+    [Range(1, 200)][SerializeField] int meleeDamage; // Damage per punch
 
+    [Header("----- Behavior Toggles -----")]
     public bool useAnimations = true; // Toggle all animation logic on/off
     public bool usePatrol = true; // Toggle patrol behavior
     public bool useRoam = true;  // Toggle roaming behavior
@@ -51,6 +56,7 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
     Vector3 startingPos;
     float stoppingDistOrig;
 
+    [Header("----- Patrol Settings -----")]
     [SerializeField] Transform[] patrolPoints; // Optional patrol points
     int patrolIndex = 0;
 
