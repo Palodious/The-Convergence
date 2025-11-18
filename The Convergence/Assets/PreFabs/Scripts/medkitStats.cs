@@ -1,13 +1,10 @@
 using UnityEngine;
 
-[CreateAssetMenu]
+[CreateAssetMenu(menuName = "Items/Medkit")]
 public class medkitStats : ScriptableObject
 {
-    [Range(10, 200)] public int healAmount;
+    [Range(10, 200)]
+    public int healAmount = 50;
 
-    //If true, medkit is stored in inventory instead of instant use
-    public bool storeInInventory = false;
-
-    // Only used if storeInInventory = true
-    public float cooldown = 5f;
+    public GameObject useEffect; // Optional particle effect
 }
