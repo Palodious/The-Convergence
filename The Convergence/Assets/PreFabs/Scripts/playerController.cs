@@ -318,17 +318,29 @@ public class playerController : MonoBehaviour, IDamage, IPickup
 
     void selectGun()
     {
-        if (gunList.Count == 0) return;
+        if (gunList.Count < 2) return;
 
-        if (Input.GetAxis("Mouse ScrollWheel") > 0 && gunListPos < gunList.Count - 1)
+        float scroll = Input.GetAxis("Mouse ScrollWheel");
+
+      
+        if (scroll > 0f)
         {
-            gunListPos++;
-            changeGun();
+          
+            if (gunListPos < gunList.Count - 1)
+            {
+                gunListPos++;
+                changeGun();
+            }
         }
-        else if (Input.GetAxis("Mouse ScrollWheel") < 0 && gunListPos > 0)
+       
+        else if (scroll < 0f)
         {
-            gunListPos--;
-            changeGun();
+           
+            if (gunListPos > 0)
+            {
+                gunListPos--;
+                changeGun();
+            }
         }
     }
 
