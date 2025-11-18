@@ -128,8 +128,6 @@ public class PlayerAbilities : MonoBehaviour
 
     IEnumerator RiftSurge()
     {
-        if (surgeTimer < surgeCooldown) yield break;
-
         surgeTimer = 0;
         isSurging = true;
         controller.damageBoost = surgeDamageBoost;

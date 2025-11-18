@@ -231,38 +231,24 @@ public class playerController : MonoBehaviour, IDamage, IPickup
 
         if (item is medkitStats med)
         {
-            // Instant heal when picking up medkit
-            HP += med.healAmount;
-            if (HP > HPOrig) HP = HPOrig;
-
-            updatePlayerUI();
-
-            // Optional: Play heal effect if assigned
-            if (med.useEffect != null)
-                Instantiate(med.useEffect, transform.position, Quaternion.identity);
+            // Auto-use medkit on pickup
+            UseMedkitFromPickup(med);
+            return;
         }
 
         Debug.LogWarning("Picked up unknown item: " + item.name);
-
     }
     // New method for instant medkit use from pickup
     public void UseMedkitFromPickup(medkitStats medkit)
     {
-        if (!canUseMedkit) return;
-
         int healAmount = medkit.healAmount;
         HP += healAmount;
         if (HP > HPOrig) HP = HPOrig;
 
         updatePlayerUI();
 
-        // Start cooldown
-        canUseMedkit = false;
-        medkitCooldown = medkitUseCooldown;
-
         Debug.Log($"Used medkit! Healed {healAmount} HP. Current HP: {HP}/{HPOrig}");
 
-        // Play heal effect if available
         if (medkit.useEffect != null)
             Instantiate(medkit.useEffect, transform.position, Quaternion.identity);
     }
@@ -345,22 +331,6 @@ public class playerController : MonoBehaviour, IDamage, IPickup
             changeGun();
         }
     }
-
-    // use stored medkit
-    //void UseStoredMedkit()
-    //{
-    //    if (storedMedkit == null) return;
-    //    if (!medkitReady) return;
-    //
-    //  HP += storedMedkit.healAmount;
-    //    if (HP > HPOrig) HP = HPOrig;
-    //    updatePlayerUI();
-
-    //    medkitReady = false;
-    //    medkitCooldownTimer = storedMedkit.cooldown;
-    //
-    //    storedMedkit = null; // medkit destroyed after use
-    //}
 
     public void respawn()
     {
