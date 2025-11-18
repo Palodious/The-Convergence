@@ -350,4 +350,54 @@ public class playerController : MonoBehaviour, IDamage, IPickup
         HP = HPOrig;
         updatePlayerUI();
     }
+
+    [System.Serializable]
+    public class PlayerControllerSaveData
+    {
+        public int hp;
+        public bool isCrouching;
+        public bool isGliding;
+        public bool canUseMedkit;
+        public float medkitCooldown;
+    }
+
+    // Called by SaveManager via ISaveable to capture this component’s state.
+    public PlayerControllerSaveData CaptureState()
+    {
+        return new PlayerControllerSaveData
+        {
+            hp = HP,
+            isCrouching = this.isCrouching,
+            isGliding = this.isGliding,
+            canUseMedkit = this.canUseMedkit,
+            medkitCooldown = this.medkitCooldown
+        };
+    }
+
+    // Called by SaveManager via ISaveable to restore this component’s state.
+    public void RestoreState(object state)
+    {
+        var data = state as PlayerControllerSaveData;
+        if (data == null) return;
+
+        HP = data.hp;
+        isCrouching = data.isCrouching;
+        isGliding = data.isGliding;
+        canUseMedkit = data.canUseMedkit;
+        medkitCooldown = data.medkitCooldown;
+
+        // Fix controller height / speed based on crouch state.
+        if (isCrouching)
+        {
+            controller.height = crouchHeight;
+            speed = Mathf.RoundToInt(originalSpeed * crouchSpeedMod);
+        }
+        else
+        {
+            controller.height = originalHeight;
+            speed = originalSpeed;
+        }
+
+        updatePlayerUI();
+    }
 }

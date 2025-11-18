@@ -1,7 +1,8 @@
-using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using TMPro;
+using System.Collections;
 
 public class gamemanager : MonoBehaviour
 {
@@ -16,7 +17,7 @@ public class gamemanager : MonoBehaviour
     GameObject previousMenu;
 
     // Expose current objective count; make it tracked and accessible.
-    [SerializeField]private int gameGoalCount;
+    [SerializeField] private int gameGoalCount;
 
 
     public TMP_Text gameGoalCountText;
@@ -29,7 +30,8 @@ public class gamemanager : MonoBehaviour
 
     public GameObject player;
     public playerController playerScript;
-    
+
+    private bool objectivesInitialized = false;
 
     public bool isPaused;
 
@@ -42,16 +44,10 @@ public class gamemanager : MonoBehaviour
         timeScaleOrig = Time.timeScale;
 
         player = GameObject.FindWithTag("Player");
-        playerScript = player.GetComponent<playerController>();
-        spawnPoint = GameObject.FindWithTag("Spawn Point");
+        if (player != null)
+            playerScript = player.GetComponent<playerController>();
 
-        if (SaveSystem.PendingLoad)
-        {
-            SaveSystem.PendingLoad = false;
-            
-            // This will restore position/HP/objectives.
-            LoadGame();
-        }
+        spawnPoint = GameObject.FindWithTag("Spawn Point");
     }
 
     // Update is called once per frame
@@ -70,15 +66,16 @@ public class gamemanager : MonoBehaviour
                 stateUnpause();
             }
         }
-
     }
+
     public void statePause()
     {
         isPaused = true;
         Time.timeScale = 0;
         Cursor.visible = true;
         Cursor.lockState = CursorLockMode.None;
-        playerScript.enabled = false; //
+        if (playerScript != null)
+            playerScript.enabled = false;
     }
     public void stateUnpause()
     {
@@ -86,59 +83,104 @@ public class gamemanager : MonoBehaviour
         Time.timeScale = timeScaleOrig;
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
-        menuActive.SetActive(false);
-        menuActive = null;
-        playerScript.enabled = true; //
+        if (menuActive != null)
+        {
+            menuActive.SetActive(false);
+            menuActive = null;
+        }
+
+        if (playerScript != null)
+            playerScript.enabled = true;
     }
+
     public void updateGameGoal(int amount)
     {
         gameGoalCount += amount;
-        gameGoalCountText.text = gameGoalCount.ToString("F0");
 
-        if(gameGoalCount <= 0)
+        // If we're adding goals, mark that the objective system is active.
+        if (amount > 0)
+            objectivesInitialized = true;
+
+        if (gameGoalCountText != null)
+            gameGoalCountText.text = gameGoalCount.ToString("F0");
+
+        // Only allow winning if we actually had objectives.
+        if (objectivesInitialized && gameGoalCount <= 0)
         {
             // You win!!!
             statePause();
             menuActive = menuWin;
-            menuActive.SetActive(true);
+            if (menuActive != null)
+                menuActive.SetActive(true);
         }
     }
-    public void youLose() 
-    { 
+    public void youLose()
+    {
         statePause();
         menuActive = menuLose;
-        menuActive.SetActive(true);
+        if (menuActive != null)
+            menuActive.SetActive(true);
     }
 
     // Save & Load system
     public void SaveGame()
     {
-        var d = new SaveSystem.SaveData
+        if (SaveManager.Instance == null)
         {
-            scene = SceneManager.GetActiveScene().name,
-            px = player.transform.position.x,
-            py = player.transform.position.y,
-            pz = player.transform.position.z,
-            playerHP = playerScript.GetHP(),
-            gameGoalCount = gameGoalCount
-        };
-        SaveSystem.Save(d);
+            Debug.LogWarning("SaveGame called but SaveManager.Instance is null. Make sure SaveManager is in the scene.");
+            return;
+        }
+
+        if (player == null || playerScript == null)
+        {
+            Debug.LogWarning("SaveGame called but player/playerScript is null.");
+            return;
+        }
+
+        SaveManager.Instance.Save(player, playerScript.GetHP(), gameGoalCount);
     }
 
     public void LoadGame()
     {
-        if (!SaveSystem.TryLoad(out var d)) { Debug.LogWarning("No save found."); return; }
+        if (SaveManager.Instance == null)
+        {
+            Debug.LogWarning("LoadGame called but SaveManager.Instance is null. Make sure SaveManager is in the scene.");
+            return;
+        }
 
-        // If we’re already in the right scene, just restore state, otherwise load, then restore.
-        if (SceneManager.GetActiveScene().name == d.scene)
+        StartCoroutine(LoadGameRoutine());
+    }
+
+    private IEnumerator LoadGameRoutine()
+    {
+        if (!SaveManager.Instance.TryLoad(out SaveData data))
         {
-            RestoreState(d);
+            Debug.LogWarning("No save file found.");
+            yield break;
         }
-        else
-        {
-            // Load scene, then restore after it’s ready.
-            StartCoroutine(LoadThenRestore(d));
-        }
+
+        // Let SaveManager rebuild the scene based on the save.
+        yield return SaveManager.Instance.LoadAndRestore(data, null);
+
+        // Re-hook references after the world is restored.
+        player = GameObject.FindWithTag("Player");
+        if (player != null)
+            playerScript = player.GetComponent<playerController>();
+
+        spawnPoint = GameObject.FindWithTag("Spawn Point");
+
+        // Restore player / objective values from the save.
+        if (playerScript != null)
+            playerScript.SetHP(data.playerHP);
+
+        gameGoalCount = data.gameGoalCount;
+        if (gameGoalCountText != null)
+            gameGoalCountText.text = gameGoalCount.ToString("F0");
+    }
+
+    public int GetGameGoalCount()
+    {
+        return gameGoalCount;
     }
 
     public void OpenOptionsMenu()
@@ -177,35 +219,5 @@ public class gamemanager : MonoBehaviour
             // If Options was opened with no previous menu, just unpause back to game
             stateUnpause();
         }
-    }
-
-    System.Collections.IEnumerator LoadThenRestore(SaveSystem.SaveData d)
-    {
-        // Make sure we’re unpaused and input is live during the hop.
-        stateUnpause();
-        var op = SceneManager.LoadSceneAsync(d.scene);
-        while (!op.isDone) yield return null;
-
-        // Re-find references because scene changed.
-        player = GameObject.FindWithTag("Player");
-        playerScript = player.GetComponent<playerController>();
-
-        RestoreState(d);
-    }
-
-    void RestoreState(SaveSystem.SaveData d)
-    {
-        // Position the player & restore stats/UI.
-        player.transform.position = new Vector3(d.px, d.py, d.pz);
-        playerScript.SetHP(d.playerHP);
-
-        gameGoalCount = d.gameGoalCount;
-        if (gameGoalCountText != null)
-            gameGoalCountText.text = gameGoalCount.ToString("F0");
-    }
-
-    public int GetGameGoalCount()
-    {
-        return gameGoalCount;
     }
 }
