@@ -2,7 +2,7 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.AI;
 
-public class enemyAI : MonoBehaviour, IDamage
+public class enemyAI : MonoBehaviour, IDamage, ISaveable
 {
     public enum EnemyType
     {
@@ -175,14 +175,14 @@ public class enemyAI : MonoBehaviour, IDamage
 
                     case EnemyType.Shooter:
                         if (shootTimer >= shootRate)
-                            shoot();
+                            Shoot();
                         break;
 
                     case EnemyType.Hybrid:
                         if (distanceToPlayer <= meleeRange && attackTimer >= attackRate)
                             meleeAttack();
                         else if (shootTimer >= shootRate)
-                            shoot();
+                            Shoot();
                         break;
                 }
 
@@ -241,7 +241,7 @@ public class enemyAI : MonoBehaviour, IDamage
         model.material.color = colorOrig;
     }
 
-    void shoot()
+    void Shoot()
     {
         shootTimer = 0;
         if (useAnimations && anim != null)
@@ -297,5 +297,42 @@ public class enemyAI : MonoBehaviour, IDamage
 
         if (usePatrol && patrolPoints != null && patrolPoints.Length > 0)
             agent.SetDestination(patrolPoints[0].position);
+    }
+
+    // Implement ISaveable so each enemy can save and restore its important state.
+    [System.Serializable]
+    private struct EnemyState
+    {
+        public int hp;
+        public Vector3 pos;
+    }
+
+    // This is called by my SaveManager when building a save file.
+    public object CaptureState()
+    {
+        return new EnemyState
+        {
+            hp = HP,
+            pos = transform.position
+        };
+    }
+
+    // This is called when loading. I warp the NavMeshAgent ,if I have one, and restore HP.
+    public void RestoreState(object state)
+    {
+        EnemyState s = (EnemyState)state;
+
+        if (agent != null)
+            agent.Warp(s.pos);
+        else
+            transform.position = s.pos;
+
+        HP = s.hp;
+
+        if (anim != null)
+        {
+            anim.Rebind();
+            anim.Update(0f);
+        }
     }
 }
