@@ -10,7 +10,7 @@ public class EffectsManager : MonoBehaviour
     {
         public string key;     
         public GameObject prefab;
-        public int poolSize = 5;
+       [Range(3, 10)] public int poolSize = 5;
     }
 
     [SerializeField] private List<EffectEntry> effects = new List<EffectEntry>();

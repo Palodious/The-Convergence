@@ -8,18 +8,18 @@ public class PlayerAbilities : MonoBehaviour
     [SerializeField] CharacterController charController;
 
     // Rift Pulse
-    [SerializeField] int pulseDamage = 25;
-    [SerializeField] float pulseRange = 6f;
-    [SerializeField] float pulseCooldown = 2.5f;
+    [Range (10, 50)] int pulseDamage;
+    [Range (3, 15)] float pulseRange;
+    [Range (1, 8)] float pulseCooldown;
 
     // Rift Surge
-    [SerializeField] float surgeDuration = 30f;
-    [SerializeField] float surgeDamageBoost = 1.5f;
-    [SerializeField] float surgeCooldown = 10f;
+    [Range (10, 50)] float surgeDuration;
+    [Range (1.5f, 5)] float surgeDamageBoost;
+    [Range (5, 20)] float surgeCooldown;
 
     // Rift Jump
-    [SerializeField] float jumpDistance = 15f;
-    [SerializeField] float jumpCooldown = 3f;
+    [Range (10, 25)] float jumpDistance;
+    [Range (2, 10)] float jumpCooldown;
 
     // Layer masks
     [SerializeField] LayerMask enemyMask;
