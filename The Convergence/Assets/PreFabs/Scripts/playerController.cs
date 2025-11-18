@@ -7,20 +7,20 @@ public class playerController : MonoBehaviour, IDamage, IPickup
     [SerializeField] CharacterController controller;
     [SerializeField] LayerMask ignoreLayer;
 
-    [SerializeField] int HP;
-    public int speed;
-    [SerializeField] int sprintMod;
-    [SerializeField] int JumpSpeed;
-    [SerializeField] int maxJumps;
-    [SerializeField] int gravity;
+    [Range (30, 100)][SerializeField] int HP;
+    [Range (7, 20)]public int speed;
+    [Range (2, 4)][SerializeField] int sprintMod;
+    [Range (5, 20)][SerializeField] int JumpSpeed;
+    [Range (1, 3)][SerializeField] int maxJumps;
+    [Range (20, 40)][SerializeField] int gravity;
 
-    [SerializeField] int shootDamage;
-    [SerializeField] int shootDist;
-    [SerializeField] float shootRate;
+    [Range (5,25)] int shootDamage;
+    [Range (7, 200)] int shootDist;
+    [Range (1, 5)] float shootRate;
 
-    [SerializeField] float glideGravity;  // lower gravity while gliding  
-    [SerializeField] float crouchSpeedMod;
-    [SerializeField] float crouchHeight;
+    [Range (20,40)][SerializeField] float glideGravity;  // lower gravity while gliding  
+    [Range (0.1f, 1)][SerializeField] float crouchSpeedMod;
+    [Range (0.1f, 1)][SerializeField] float crouchHeight;
 
     float originalHeight;// remember height for uncrouch  
     int originalSpeed; // store original speed  
@@ -35,7 +35,7 @@ public class playerController : MonoBehaviour, IDamage, IPickup
     bool isCrouching;  // crouch state  
     bool isGliding;// glide state  
 
-    [HideInInspector] public float damageBoost = 1f;
+    [Range (1, 5)][HideInInspector] public float damageBoost = 1f;
 
     [SerializeField] List<gunStats> gunList = new List<gunStats>();
     [SerializeField] GameObject gunModel;
@@ -44,8 +44,9 @@ public class playerController : MonoBehaviour, IDamage, IPickup
    
     // Instant medkit use system
     private bool canUseMedkit = true;
-    private float medkitCooldown = 0f;
-    [SerializeField] private float medkitUseCooldown = 5f; // Cooldown between medkit uses
+    [Range (0, 5)]private float medkitCooldown = 0f;
+   
+    [Range (0, 10)][SerializeField] private float medkitUseCooldown = 5f; // Cooldown between medkit uses
     void Start()
     {
         HPOrig = HP;

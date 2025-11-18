@@ -73,7 +73,7 @@ public class PlayerAbilities : MonoBehaviour
         SetEffectColor(pulseVFX, new Color(0.2f, 0.7f, 1f)); // Electric blue
 
         SFXManager.Instance.PlaySound("PulseCast");
-        SFXManager.Instance.PlaySound("Lightning"); // Changed from PlayElementSound
+        SFXManager.Instance.PlaySound("Lightning");
 
         Collider[] hits = Physics.OverlapSphere(transform.position, pulseRange, enemyMask);
         foreach (Collider hit in hits)
