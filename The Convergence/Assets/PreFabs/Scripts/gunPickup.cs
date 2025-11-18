@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections;
 
 public class gunPickup : MonoBehaviour
 {
@@ -12,7 +13,13 @@ public class gunPickup : MonoBehaviour
         {
             gun.ammoCur = gun.ammoMax;
             pik.GetItem(gun);
-            Destroy(gameObject);
+            StartCoroutine(DelayedDestroy());
         }
+    }
+
+    IEnumerator DelayedDestroy()
+    {
+        yield return null;
+        Destroy(gameObject);
     }
 }
