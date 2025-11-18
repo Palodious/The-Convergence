@@ -18,7 +18,10 @@ public class spawner : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        gamemanager.instance.updateGameGoal(spawnAmount);
+        if (spawnAmount > 0)
+        {
+            gamemanager.instance.updateGameGoal(spawnAmount);
+        }
     }
 
     // Update is called once per frame

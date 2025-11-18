@@ -31,6 +31,7 @@ public class gamemanager : MonoBehaviour
     public GameObject player;
     public playerController playerScript;
 
+    private bool objectivesInitialized = false;
 
     public bool isPaused;
 
@@ -94,10 +95,17 @@ public class gamemanager : MonoBehaviour
 
     public void updateGameGoal(int amount)
     {
+        gameGoalCount += amount;
+
+        // If we're adding goals, mark that the objective system is active.
+        if (amount > 0)
+            objectivesInitialized = true;
+
         if (gameGoalCountText != null)
             gameGoalCountText.text = gameGoalCount.ToString("F0");
 
-        if (gameGoalCount <= 0)
+        // Only allow winning if we actually had objectives.
+        if (objectivesInitialized && gameGoalCount <= 0)
         {
             // You win!!!
             statePause();
