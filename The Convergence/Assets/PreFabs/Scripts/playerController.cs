@@ -259,11 +259,18 @@ public class playerController : MonoBehaviour, IDamage, IPickup
         shootDist = gunList[gunListPos].shootDist;
         shootRate = gunList[gunListPos].shootRate;
 
-        gunModel.GetComponent<MeshFilter>().sharedMesh =
-            gunList[gunListPos].gunModel.GetComponent<MeshFilter>().sharedMesh;
+        for (int i = gunModel.transform.childCount - 1; i >= 0; i--)
+        {
+            
+            Destroy(gunModel.transform.GetChild(i).gameObject);
+        }
 
-        gunModel.GetComponent<MeshRenderer>().sharedMaterial =
-            gunList[gunListPos].gunModel.GetComponent<MeshRenderer>().sharedMaterial;
+        
+        GameObject newGunModel = Instantiate(gunList[gunListPos].gunModel, gunModel.transform);
+
+        
+        newGunModel.transform.localPosition = Vector3.zero;
+        newGunModel.transform.localRotation = Quaternion.identity;
     }
 
     void selectGun()
