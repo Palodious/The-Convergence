@@ -289,8 +289,20 @@ public class playerController : MonoBehaviour, IDamage, IPickup
     }
     public void getGunStats(gunStats gun)
     {
-        gunList.Add(gun);
-        gunListPos = gunList.Count - 1;
+        if (gunList.Contains(gun))
+        {
+            Debug.Log($"Already carrying {gun.name}. Switching to it instead of adding.");
+
+            
+            gunListPos = gunList.IndexOf(gun);
+        }
+        else
+        {
+            Debug.Log($"Adding new gun: {gun.name}");
+            gunList.Add(gun);
+            gunListPos = gunList.Count - 1;
+        }
+
         changeGun();
     }
 
@@ -302,13 +314,20 @@ public class playerController : MonoBehaviour, IDamage, IPickup
         shootDist = gunList[gunListPos].shootDist;
         shootRate = gunList[gunListPos].shootRate;
 
-        for (int i = gunModel.transform.childCount - 1; i >= 0; i--)
+        Transform[] children = new Transform[gunModel.transform.childCount];
+        for (int i = 0; i < gunModel.transform.childCount; i++)
         {
-            
-            Destroy(gunModel.transform.GetChild(i).gameObject);
+            children[i] = gunModel.transform.GetChild(i);
         }
 
-        
+       
+        foreach (Transform child in children)
+        {
+            
+            Destroy(child.gameObject);
+        }
+
+
         GameObject newGunModel = Instantiate(gunList[gunListPos].gunModel, gunModel.transform);
 
         
@@ -322,27 +341,26 @@ public class playerController : MonoBehaviour, IDamage, IPickup
 
         float scroll = Input.GetAxis("Mouse ScrollWheel");
 
-      
-        if (scroll > 0f)
+
+        if (scroll > 0f || scroll < 0f)
         {
-          
-            if (gunListPos < gunList.Count - 1)
+            
+
+            if (scroll > 0f)
             {
-                gunListPos++;
-                changeGun();
+                gunListPos = (gunListPos + 1) % gunList.Count;
             }
-        }
-       
-        else if (scroll < 0f)
-        {
-           
-            if (gunListPos > 0)
+            else 
             {
-                gunListPos--;
-                changeGun();
+                gunListPos = (gunListPos - 1 + gunList.Count) % gunList.Count;
             }
+
+
+            changeGun();
         }
     }
+
+     
 
     public void respawn()
     {
