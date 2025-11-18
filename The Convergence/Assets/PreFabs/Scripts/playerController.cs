@@ -41,11 +41,11 @@ public class playerController : MonoBehaviour, IDamage, IPickup
     [SerializeField] GameObject gunModel;
     int gunListPos;
 
-    // Inventory medkit system
-    medkitStats storedMedkit;// holds a medkit if storeInInventory = true
-    bool medkitReady = true; // cooldown ready state
-    float medkitCooldownTimer = 0f; // cooldown countdown timer
-
+   
+    // Instant medkit use system
+    private bool canUseMedkit = true;
+    private float medkitCooldown = 0f;
+    [SerializeField] private float medkitUseCooldown = 5f; // Cooldown between medkit uses
     void Start()
     {
         HPOrig = HP;
@@ -65,9 +65,12 @@ public class playerController : MonoBehaviour, IDamage, IPickup
         // handle medkit cooldown timer
         HandleMedkitCooldown();
 
-        // press H to use stored medkit
-      //  if (Input.GetKeyDown(KeyCode.H))
-       //     UseStoredMedkit();
+        // Debug medkit use with H key
+        if (Input.GetKeyDown(KeyCode.H) && canUseMedkit)
+        {
+            // For testing - create a temporary medkit
+          UseMedkitInstantly(50); // Heal 50 HP
+        }
     }
 
     void movement()
@@ -226,24 +229,78 @@ public class playerController : MonoBehaviour, IDamage, IPickup
             return;
         }
 
-        // Medkit handler
         if (item is medkitStats med)
         {
-            //if (!med.storeInInventory)
-            //{
-                HP += med.healAmount;
-                if (HP > HPOrig) HP = HPOrig;
-                updatePlayerUI();
-                return;
-            //}
+            // Instant heal when picking up medkit
+            HP += med.healAmount;
+            if (HP > HPOrig) HP = HPOrig;
 
-           // storedMedkit = med; //Store medkit for later use
-           // return;
+            updatePlayerUI();
+
+            // Optional: Play heal effect if assigned
+            if (med.useEffect != null)
+                Instantiate(med.useEffect, transform.position, Quaternion.identity);
         }
 
         Debug.LogWarning("Picked up unknown item: " + item.name);
+
+    }
+    // New method for instant medkit use from pickup
+    public void UseMedkitFromPickup(medkitStats medkit)
+    {
+        if (!canUseMedkit) return;
+
+        int healAmount = medkit.healAmount;
+        HP += healAmount;
+        if (HP > HPOrig) HP = HPOrig;
+
+        updatePlayerUI();
+
+        // Start cooldown
+        canUseMedkit = false;
+        medkitCooldown = medkitUseCooldown;
+
+        Debug.Log($"Used medkit! Healed {healAmount} HP. Current HP: {HP}/{HPOrig}");
+
+        // Play heal effect if available
+        if (medkit.useEffect != null)
+            Instantiate(medkit.useEffect, transform.position, Quaternion.identity);
+    }
+    // Public method for instant medkit use with specified heal amount
+    public void UseMedkitInstantly(int healAmount)
+    {
+        if (!canUseMedkit) return;
+
+        HP += healAmount;
+        if (HP > HPOrig) HP = HPOrig;
+
+        updatePlayerUI();
+
+        // Start cooldown
+        canUseMedkit = false;
+        medkitCooldown = medkitUseCooldown;
+
+        Debug.Log($"Used medkit! Healed {healAmount} HP. Current HP: {HP}/{HPOrig}");
+    }
+    // Handle medkit cooldown
+    public void HandleMedkitCooldown()
+    {
+        if (!canUseMedkit)
+        {
+            medkitCooldown -= Time.deltaTime;
+            if (medkitCooldown <= 0f)
+            {
+                canUseMedkit = true;
+                medkitCooldown = 0f;
+            }
+        }
     }
 
+    // Check if medkit can be used
+    public bool CanUseMedkit()
+    {
+        return canUseMedkit && HP < HPOrig;
+    }
     public void getGunStats(gunStats gun)
     {
         gunList.Add(gun);
@@ -286,18 +343,6 @@ public class playerController : MonoBehaviour, IDamage, IPickup
         {
             gunListPos--;
             changeGun();
-        }
-    }
-
-    //cooldown logic
-    void HandleMedkitCooldown()
-    {
-        if (!medkitReady)
-        {
-            medkitCooldownTimer -= Time.deltaTime;
-
-            if (medkitCooldownTimer <= 0)
-                medkitReady = true;
         }
     }
 

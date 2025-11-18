@@ -6,13 +6,14 @@ public class medkitPickup : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        IPickup pik = other.GetComponent<IPickup>();
-
-        if (pik != null)
+        if (other.CompareTag("Player"))
         {
-            // Player decides whether it's instant heal or stored medkit
-            pik.GetItem(medkit);
-            Destroy(gameObject);
+            IPickup pickup = other.GetComponent<IPickup>();
+            if (pickup != null)
+            {
+                pickup.GetItem(medkit);
+                Destroy(gameObject);
+            }
         }
     }
 }
