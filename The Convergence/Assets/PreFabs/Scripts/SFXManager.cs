@@ -1,38 +1,32 @@
-using UnityEngine;
+﻿using UnityEngine;
 using System.Collections.Generic;
 
 public class SFXManager : MonoBehaviour
 {
     public static SFXManager Instance;
 
+    [System.Serializable]
     public class Sound
     {
-        [SerializeField] public string soundName;
-        [SerializeField] public AudioClip clip;
+        public string soundName;
+        public AudioClip clip;
     }
-    public class ElementSound
-    {
-        [SerializeField] public string elementType;
-        [SerializeField] public AudioClip clip;
-    }
-    //general game sounds
+
+    [Header("General Game Sounds")]
     [SerializeField] public Sound[] sounds;
 
-    //element sounds
-    [SerializeField] public ElementSound[] elementSounds;
-
-    //audio sources
+    [Header("Audio Sources")]
     [SerializeField] public AudioSource sfxSource;
     [SerializeField] public AudioSource loopSource;
 
     Dictionary<string, AudioClip> soundDict = new Dictionary<string, AudioClip>();
-    Dictionary<string, AudioClip> elementDict = new Dictionary<string, AudioClip>();
 
     void Awake()
     {
         if (Instance == null)
         {
             Instance = this;
+            DontDestroyOnLoad(gameObject); // Optional: persist across scenes
         }
         else
         {
@@ -47,13 +41,20 @@ public class SFXManager : MonoBehaviour
     {
         foreach (Sound s in sounds)
         {
-            soundDict.Add(s.soundName, s.clip);
+            if (!string.IsNullOrEmpty(s.soundName) && s.clip != null)
+            {
+                if (!soundDict.ContainsKey(s.soundName))
+                {
+                    soundDict.Add(s.soundName, s.clip);
+                }
+                else
+                {
+                    Debug.LogWarning($"[SFXManager] Duplicate sound name: {s.soundName}");
+                }
+            }
         }
 
-        foreach (ElementSound es in elementSounds)
-        {
-            elementDict.Add(es.elementType, es.clip);
-        }
+        Debug.Log($"[SFXManager] Loaded {soundDict.Count} sounds");
     }
 
     public void PlaySound(string soundName)
@@ -64,7 +65,7 @@ public class SFXManager : MonoBehaviour
         }
         else
         {
-            Debug.LogWarning("Sound not found: " + soundName);
+            Debug.LogWarning($"[SFXManager] Sound not found: {soundName}");
         }
     }
 
@@ -76,22 +77,17 @@ public class SFXManager : MonoBehaviour
             loopSource.loop = true;
             loopSource.Play();
         }
+        else
+        {
+            Debug.LogWarning($"[SFXManager] Loop sound not found: {soundName}");
+        }
     }
 
     public void StopLoopSound()
     {
-        loopSource.Stop();
-    }
-
-    public void PlayElementSound(string elementType)
-    {
-        if (elementDict.ContainsKey(elementType))
+        if (loopSource != null && loopSource.isPlaying)
         {
-            sfxSource.PlayOneShot(elementDict[elementType]);
-        }
-        else
-        {
-            Debug.LogWarning("Element sound not found: " + elementType);
+            loopSource.Stop();
         }
     }
 }

@@ -20,7 +20,6 @@ public class PlayerAbilities : MonoBehaviour
     // Rift Jump
     [SerializeField] float jumpDistance = 15f;
     [SerializeField] float jumpCooldown = 3f;
-    [SerializeField] float jumpPrepTime = 0.3f;
 
     // Layer masks
     [SerializeField] LayerMask enemyMask;
@@ -74,7 +73,7 @@ public class PlayerAbilities : MonoBehaviour
         SetEffectColor(pulseVFX, new Color(0.2f, 0.7f, 1f)); // Electric blue
 
         SFXManager.Instance.PlaySound("PulseCast");
-        SFXManager.Instance.PlayElementSound("Lightning");
+        SFXManager.Instance.PlaySound("Lightning"); // Changed from PlayElementSound
 
         Collider[] hits = Physics.OverlapSphere(transform.position, pulseRange, enemyMask);
         foreach (Collider hit in hits)
@@ -178,7 +177,7 @@ public class PlayerAbilities : MonoBehaviour
             surgeEffect = null;
         }
 
-        Debug.Log($"Rift Surge ENDED — damage boost removed");
+        Debug.Log("Rift Surge ENDED — damage boost removed");
     }
 
     IEnumerator RiftJump()
@@ -186,56 +185,38 @@ public class PlayerAbilities : MonoBehaviour
         jumpTimer = 0;
         isJumping = true;
 
-        Debug.Log($"Rift Jump STARTED - Prep phase");
+        Debug.Log("Rift Jump STARTED");
 
-        GameObject prepEffect = EffectsManager.Instance.Create("JumpPrep", transform.position);
+        Vector3 startPos = transform.position;
+        Vector3 targetPos = transform.position + transform.forward * jumpDistance;
+
+        GameObject prepEffect = EffectsManager.Instance.Create("JumpPrep", startPos);
         SFXManager.Instance.PlaySound("JumpPrep");
 
-        yield return new WaitForSeconds(jumpPrepTime);
-
-        Vector3 targetPos = SafeJumpPosition();
-        Debug.Log($"Jumping from {transform.position} to {targetPos} (Distance: {Vector3.Distance(transform.position, targetPos):F2}m)");
-
-        // Temporarily disable controller to safely teleport
-        charController.enabled = false;
-        transform.position = targetPos;
-        charController.enabled = true;
-
-        EffectsManager.Instance.Create("JumpImpact", transform.position);
-        SFXManager.Instance.PlaySound("JumpImpact");
-
-        if (prepEffect != null && prepEffect.activeInHierarchy)
-            EffectsManager.Instance.Return(prepEffect);
-
-        isJumping = false;
-        Debug.Log($"Rift Jump COMPLETE");
-    }
-
-    Vector3 SafeJumpPosition()
-    {
-        Vector3 startPos = transform.position + Vector3.up * 0.5f;
-        Vector3 direction = transform.forward;
-        float safeDistance = jumpDistance;
-
-        float radius = charController.radius;
-
-        if (Physics.SphereCast(startPos, radius, direction, out RaycastHit hit, jumpDistance, environmentMask))
+        if (charController != null)
         {
-            safeDistance = Mathf.Max(0, hit.distance - radius - 0.5f);
+            charController.enabled = false;
+            transform.position = targetPos;
+            charController.enabled = true;
+        }
+        else
+        {
+            transform.position = targetPos;
         }
 
-        Vector3 finalPos = startPos + direction * safeDistance;
+        EffectsManager.Instance.Create("JumpImpact", targetPos);
+        SFXManager.Instance.PlaySound("JumpImpact");
 
-        if (Physics.Raycast(finalPos + Vector3.up * 2f, Vector3.down, out RaycastHit groundHit, 5f, environmentMask))
-            finalPos.y = groundHit.point.y;
-        else
-            finalPos.y = transform.position.y;
+        isJumping = false;
+        Debug.Log($"Rift Jump COMPLETE - Jumped {Vector3.Distance(startPos, targetPos):F2}m");
 
-        return finalPos;
+        yield return null;
     }
 
     void SetEffectColor(GameObject effect, Color color)
     {
+        if (effect == null) return;
+
         ParticleSystem ps = effect.GetComponent<ParticleSystem>();
         if (ps != null)
         {
