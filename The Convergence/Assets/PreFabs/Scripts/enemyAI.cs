@@ -175,14 +175,14 @@ public class enemyAI : MonoBehaviour, IDamage
 
                     case EnemyType.Shooter:
                         if (shootTimer >= shootRate)
-                            shoot();
+                            Shoot();
                         break;
 
                     case EnemyType.Hybrid:
                         if (distanceToPlayer <= meleeRange && attackTimer >= attackRate)
                             meleeAttack();
                         else if (shootTimer >= shootRate)
-                            shoot();
+                            Shoot();
                         break;
                 }
 
@@ -241,7 +241,7 @@ public class enemyAI : MonoBehaviour, IDamage
         model.material.color = colorOrig;
     }
 
-    void shoot()
+    void Shoot()
     {
         shootTimer = 0;
         if (useAnimations && anim != null)
