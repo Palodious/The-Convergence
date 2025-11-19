@@ -75,9 +75,12 @@ public class playerController : MonoBehaviour, IDamage, IPickup
 
     void Update()
     {
+        if (!gamemanager.instance.isPaused)
+        { 
         Debug.DrawRay(Camera.main.transform.position, Camera.main.transform.forward * shootDist, Color.red);
         shootTimer += Time.deltaTime;
         movement();
+        }
 
         sprint();
 
