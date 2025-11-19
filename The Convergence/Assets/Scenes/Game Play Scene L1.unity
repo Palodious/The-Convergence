@@ -319,7 +319,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 553773926}
-  - component: {fileID: 553773927}
   m_Layer: 0
   m_Name: Patrol Points
   m_TagString: Untagged
@@ -352,20 +351,6 @@ Transform:
   - {fileID: 2697651621397853197}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &553773927
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 553773925}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2595f0efb17706340b65de4d7e322ddc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::SaveEntity
-  id: 7fc6dd0614fb4d7da9703c52a2c19ee4
-  prefabKey: 
 --- !u!1001 &592065228
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -507,30 +492,8 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 2376811500745352790, guid: 90e596fc3a9567b4c8d42d0523a13f19, type: 3}
-      insertIndex: 1
-      addedObject: {fileID: 634434780}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 90e596fc3a9567b4c8d42d0523a13f19, type: 3}
---- !u!1 &634434779 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 2376811500745352790, guid: 90e596fc3a9567b4c8d42d0523a13f19, type: 3}
-  m_PrefabInstance: {fileID: 634434778}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &634434780
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 634434779}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2595f0efb17706340b65de4d7e322ddc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::SaveEntity
-  id: d2e0e0c8d9d44b9e88d22439f34b4d75
-  prefabKey: 
 --- !u!82 &634434781 stripped
 AudioSource:
   m_CorrespondingSourceObject: {fileID: 7718343463253732154, guid: 90e596fc3a9567b4c8d42d0523a13f19, type: 3}
@@ -620,7 +583,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1361145685}
-  - component: {fileID: 1361145686}
   m_Layer: 0
   m_Name: Pickup Items
   m_TagString: Untagged
@@ -650,20 +612,6 @@ Transform:
   - {fileID: 6583718628363352442}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1361145686
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1361145684}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2595f0efb17706340b65de4d7e322ddc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::SaveEntity
-  id: 0d85d2cf67f44ddcb808d49e992646ed
-  prefabKey: 
 --- !u!4 &1370978449 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7896408581984568182, guid: 7260ae7f160450846a446f21e5bdd374, type: 3}
@@ -3736,6 +3684,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: -2643443844795300686, guid: 81ab76d98f42ecb418b28890fc46f136, type: 3}
+      propertyPath: id
+      value: afd0587582ba4336a0ce7c550e3bf0ad
+      objectReference: {fileID: 0}
     - target: {fileID: 2488024665633400697, guid: 81ab76d98f42ecb418b28890fc46f136, type: 3}
       propertyPath: m_LocalPosition.x
       value: -193
@@ -3780,7 +3732,8 @@ PrefabInstance:
       propertyPath: m_Name
       value: Enemy Spawn
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: -2643443844795300686, guid: 81ab76d98f42ecb418b28890fc46f136, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
@@ -5544,6 +5497,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: -4120644185554120257, guid: 9fece0eeb6bf21a47be625896bee55d6, type: 3}
+      propertyPath: id
+      value: bb6eb7adc465434db09b79b4be65472f
+      objectReference: {fileID: 0}
     - target: {fileID: 3259630004105229835, guid: 9fece0eeb6bf21a47be625896bee55d6, type: 3}
       propertyPath: m_Name
       value: Enemy Spawn
@@ -5596,7 +5553,8 @@ PrefabInstance:
       propertyPath: 'patrolPoints.Array.data[1]'
       value: 
       objectReference: {fileID: 2697651621397853197}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: -4120644185554120257, guid: 9fece0eeb6bf21a47be625896bee55d6, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
@@ -6280,6 +6238,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: -1957895369996856706, guid: f83957e4784ae7b48a0fd4525f346eef, type: 3}
+      propertyPath: id
+      value: 1adcafd65e364265aaa966f533c28a5e
+      objectReference: {fileID: 0}
     - target: {fileID: 1209136574509288662, guid: f83957e4784ae7b48a0fd4525f346eef, type: 3}
       propertyPath: m_Name
       value: Boss/Door Spawn
@@ -6328,7 +6290,8 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: -1957895369996856706, guid: f83957e4784ae7b48a0fd4525f346eef, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
@@ -13338,11 +13301,16 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7211523608063754905, guid: d0616d55a735dc641ac876093e9fe182, type: 3}
+      propertyPath: id
+      value: d2aa1ca097574f28aebf6f624f926bc7
+      objectReference: {fileID: 0}
     - target: {fileID: 7786725740829778079, guid: d0616d55a735dc641ac876093e9fe182, type: 3}
       propertyPath: m_Name
       value: Spawn Point
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 7211523608063754905, guid: d0616d55a735dc641ac876093e9fe182, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
