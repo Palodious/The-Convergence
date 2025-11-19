@@ -52,6 +52,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5cd547001d36ab4498053ded28c9623a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::enemyAI
+  ignoreLayer:
+    serializedVersion: 2
+    m_Bits: 128
   enemyType: 1
   agent: {fileID: 4143625095129991600}
   anim: {fileID: 0}
@@ -60,19 +63,16 @@ MonoBehaviour:
   HP: 50
   FOV: 60
   faceTargetSpeed: 100
-  roamDist: 0
+  roamDist: 1
   roamPauseTime: 0
-  animTransSpeed: 0
+  animTransSpeed: 0.1
   projectile: {fileID: 4705637938062420806, guid: 006ca5450a142324ab16a3c205be62f8, type: 3}
   shootRate: 0.35
   shootPOS: {fileID: 1145263346601586257}
   meleePos: {fileID: 0}
-  meleeEffect: {fileID: 0}
-  meleeRange: 0
-  attackRate: 0
-  meleeDamage: 0
-  shootDamage: 0
-  shootRange: 6
+  meleeDamage: {fileID: 0}
+  meleeRange: 0.1
+  attackRate: 0.1
   useAnimations: 0
   usePatrol: 1
   useRoam: 0

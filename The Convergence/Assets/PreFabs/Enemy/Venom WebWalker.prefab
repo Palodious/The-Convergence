@@ -972,6 +972,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5cd547001d36ab4498053ded28c9623a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::enemyAI
+  ignoreLayer:
+    serializedVersion: 2
+    m_Bits: 128
   enemyType: 1
   agent: {fileID: 3096817051044307051}
   anim: {fileID: 3235738258623578902}
@@ -987,10 +990,9 @@ MonoBehaviour:
   shootRate: 0.5
   shootPOS: {fileID: 4789375531671913399}
   meleePos: {fileID: 0}
-  meleeEffect: {fileID: 0}
-  meleeRange: 0
-  attackRate: 0
-  meleeDamage: 0
+  meleeDamage: {fileID: 0}
+  meleeRange: 0.1
+  attackRate: 0.1
   useAnimations: 1
   usePatrol: 0
   useRoam: 1

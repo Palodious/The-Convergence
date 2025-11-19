@@ -13,9 +13,9 @@ GameObject:
   - component: {fileID: 4885936041389375818}
   - component: {fileID: 3742390820324965150}
   - component: {fileID: 3602420343227451859}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Melee
-  m_TagString: Untagged
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -49,6 +49,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::damage
   type: 1
   rb: {fileID: 3742390820324965150}
+  ignoreLayer:
+    serializedVersion: 2
+    m_Bits: 0
   damageAmount: 2
   damageRate: 1
   speed: 2

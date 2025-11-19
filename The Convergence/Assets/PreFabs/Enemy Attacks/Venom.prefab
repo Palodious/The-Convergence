@@ -51,6 +51,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::damage
   type: 0
   rb: {fileID: 1394799381658555603}
+  ignoreLayer:
+    serializedVersion: 2
+    m_Bits: 0
   damageAmount: 2
   damageRate: 0.8
   speed: 32
@@ -224,7 +227,7 @@ Light:
   serializedVersion: 11
   m_Type: 2
   m_Color: {r: 0.19607845, g: 0.5529412, b: 0.023529414, a: 1}
-  m_Intensity: 1
+  m_Intensity: 3
   m_Range: 10
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208

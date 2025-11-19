@@ -1351,6 +1351,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5cd547001d36ab4498053ded28c9623a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::enemyAI
+  ignoreLayer:
+    serializedVersion: 2
+    m_Bits: 2048
   enemyType: 0
   agent: {fileID: 4121909897967337052}
   anim: {fileID: 3692946239600984159}
@@ -1363,14 +1366,12 @@ MonoBehaviour:
   roamPauseTime: 3
   animTransSpeed: 8
   projectile: {fileID: 0}
-  shootRate: 0
+  shootRate: 0.1
   shootPOS: {fileID: 0}
   meleePos: {fileID: 332039800384393569}
-  meleeEffect: {fileID: 8381296811460731990, guid: 9ffc8f2d2217d4a4482ba46879159b4d, type: 3}
+  meleeDamage: {fileID: 0}
   meleeRange: 2
   attackRate: 0.5
-  meleeDamage: 5
-  shootDamage: 0
   useAnimations: 1
   usePatrol: 0
   useRoam: 1

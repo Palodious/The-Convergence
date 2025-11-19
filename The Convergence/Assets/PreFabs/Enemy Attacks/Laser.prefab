@@ -15,9 +15,9 @@ GameObject:
   - component: {fileID: 4252870047961289092}
   - component: {fileID: 347082111702409345}
   - component: {fileID: 4343394384234889254}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Laser
-  m_TagString: Untagged
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -51,6 +51,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::damage
   type: 0
   rb: {fileID: 1394799381658555603}
+  ignoreLayer:
+    serializedVersion: 2
+    m_Bits: 128
   damageAmount: 5
   damageRate: 0.35
   speed: 32
@@ -224,7 +227,7 @@ Light:
   serializedVersion: 11
   m_Type: 2
   m_Color: {r: 0.97647065, g: 0, b: 0, a: 1}
-  m_Intensity: 1
+  m_Intensity: 3
   m_Range: 10
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
