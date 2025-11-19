@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 2944604361103831847}
   - component: {fileID: 6341937592716510173}
   - component: {fileID: 9125279815646710173}
+  - component: {fileID: 84809219704961556}
   m_Layer: 6
   m_Name: Shardback Skrel
   m_TagString: Enemy
@@ -52,6 +53,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5cd547001d36ab4498053ded28c9623a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::enemyAI
+  ignoreLayer:
+    serializedVersion: 2
+    m_Bits: 0
   enemyType: 0
   agent: {fileID: 6259301409843038931}
   anim: {fileID: 2944604361103831847}
@@ -67,13 +71,27 @@ MonoBehaviour:
   shootRate: 0.5
   shootPOS: {fileID: 3537618708243308596}
   meleePos: {fileID: 394857611963867582}
-  meleeEffect: {fileID: 8381296811460731990, guid: 9ffc8f2d2217d4a4482ba46879159b4d, type: 3}
+  meleeDamage: {fileID: 0}
   meleeRange: 5
   attackRate: 0.5
-  meleeDamage: 5
   useAnimations: 1
   usePatrol: 0
   useRoam: 1
+  aud: {fileID: 84809219704961556}
+  audStep:
+  - {fileID: 8300000, guid: 74e965204ec59744a8a9151c39bb0608, type: 3}
+  audStepVol: 0.5
+  audHurt:
+  - {fileID: 8300000, guid: eb2d69f25d744ba4a9ef6c9563078c85, type: 3}
+  audHurtVol: 0.5
+  audShoot: []
+  audShootVol: 0
+  audMelee:
+  - {fileID: 8300000, guid: 65f8912a6f857334392200929d5c69a9, type: 3}
+  audMeleeVol: 0.5
+  audDeath:
+  - {fileID: 8300000, guid: caab710de492e3644bfc8211c20052ea, type: 3}
+  audDeathVol: 0.5
   patrolPoints: []
 --- !u!195 &6259301409843038931
 NavMeshAgent:
@@ -163,6 +181,103 @@ CapsuleCollider:
   m_Height: 4
   m_Direction: 1
   m_Center: {x: -0.2, y: 1, z: 0.3}
+--- !u!82 &84809219704961556
+AudioSource:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 57039665892410063}
+  m_Enabled: 1
+  serializedVersion: 4
+  OutputAudioMixerGroup: {fileID: 0}
+  m_audioClip: {fileID: 0}
+  m_Resource: {fileID: 0}
+  m_PlayOnAwake: 0
+  m_Volume: 0.5
+  m_Pitch: 1
+  Loop: 0
+  Mute: 0
+  Spatialize: 0
+  SpatializePostEffects: 0
+  Priority: 128
+  DopplerLevel: 1
+  MinDistance: 1
+  MaxDistance: 500
+  Pan2D: 0
+  rolloffMode: 0
+  BypassEffects: 0
+  BypassListenerEffects: 0
+  BypassReverbZones: 0
+  rolloffCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  panLevelCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  spreadCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  reverbZoneMixCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
 --- !u!1 &94551324773093178
 GameObject:
   m_ObjectHideFlags: 0

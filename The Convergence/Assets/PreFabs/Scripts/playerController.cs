@@ -34,6 +34,8 @@ public class playerController : MonoBehaviour, IDamage, IPickup
     [Range(0, 1)][SerializeField] float audJumpVol;
     [SerializeField] AudioClip[] audHurt;
     [Range(0, 1)][SerializeField] float audHurtVol;
+    [SerializeField] AudioClip audMedkit;      // Sound for using a medkit
+    [Range(0, 1)][SerializeField] float audMedkitVol = 1f; // Volume for medkit use
 
     public int ShootDamage => shootDamage;
     float originalHeight; // remember height for uncrouch  
@@ -287,19 +289,13 @@ public class playerController : MonoBehaviour, IDamage, IPickup
 
         if (medkit.useEffect != null)
             Instantiate(medkit.useEffect, transform.position, Quaternion.identity);
-    }
 
-    public void UseMedkitInstantly(int healAmount)
-    {
-        if (!canUseMedkit) return;
-
-        HP += healAmount;
-        if (HP > HPOrig) HP = HPOrig;
-
-        updatePlayerUI();
-
-        canUseMedkit = false;
-        medkitCooldown = medkitUseCooldown;
+        // Play medkit audio
+        if (audMedkit != null)
+        {
+            aud.pitch = Random.Range(0.95f, 1.05f); // slight pitch variation
+            aud.PlayOneShot(audMedkit, audMedkitVol);
+        }
     }
 
     public void HandleMedkitCooldown()
