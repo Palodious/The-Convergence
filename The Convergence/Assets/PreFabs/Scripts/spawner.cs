@@ -2,17 +2,17 @@ using UnityEngine;
 
 public class spawner : MonoBehaviour
 {
-    [Header("~=~= Spawn Settings =~=~")]
     [SerializeField] GameObject objectToSpawn;
-    [Range(1, 100)][SerializeField] int spawnAmount;
-    [Range(0.1f, 60f)][SerializeField] float spawnRate;
+    [SerializeField] int spawnAmount;
+    [SerializeField] float spawnRate;
     [SerializeField] Transform[] spawnPos;
 
-    [Header("~=~= Optional Patrol Points =~=~")]
+    [Header("Optional Patrol Points")]
     [SerializeField] Transform[] patrolPoints; // Enemies can use patrol points
 
     int spawnCount;
     float spawnTimer;
+
     bool startSpawning;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -35,9 +35,9 @@ public class spawner : MonoBehaviour
             {
                 spawn();
             }
+
         }
     }
-
     private void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("Player"))
