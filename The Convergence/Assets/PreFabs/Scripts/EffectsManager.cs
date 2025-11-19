@@ -8,7 +8,7 @@ public class EffectsManager : MonoBehaviour
     [System.Serializable]
     public class EffectEntry
     {
-        public string key;     
+        public string key;
         public GameObject prefab;
         public int poolSize = 5;
     }
@@ -58,8 +58,7 @@ public class EffectsManager : MonoBehaviour
         }
     }
 
-
-    /// Creates an effect at position. Returns GameObject tov modify it 
+    // Creates an effect at position. Returns GameObject to modify it
     public GameObject Create(string effectKey, Vector3 position, Quaternion? rotation = null)
     {
         if (!effectPools.ContainsKey(effectKey))
@@ -84,8 +83,7 @@ public class EffectsManager : MonoBehaviour
         return Create(effectKey, position, (Quaternion)rotation);
     }
 
-    //return to pool
-  
+    // Return effect to pool
     public void Return(GameObject effect)
     {
         if (effect == null) return;

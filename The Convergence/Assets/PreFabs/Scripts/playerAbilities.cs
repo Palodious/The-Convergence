@@ -2,167 +2,137 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class PlayerAbilities : MonoBehaviour
+public class playerAbilities : MonoBehaviour
 {
+    [Header("~=~= References =~=~")]
     [SerializeField] playerController controller;
     [SerializeField] CharacterController charController;
-
-    [Header("~=~= Rift Pulse =~=~")]
-    [Range(1, 200)][SerializeField] int pulseDamage = 25;
-    [Range(1, 50)][SerializeField] float pulseRange = 6f;
-    [Range(0.1f, 30f)][SerializeField] float pulseCooldown = 2.5f;
+    [SerializeField] AudioSource audioSource;
 
     [Header("~=~= Rift Surge =~=~")]
-    [Range(0.1f, 60f)][SerializeField] float surgeDuration = 30f;
-    [Range(1f, 10f)][SerializeField] float surgeDamageBoost = 1.5f;
-    [Range(0.1f, 60f)][SerializeField] float surgeCooldown = 10f;
+    [Range(1f, 60f)][SerializeField] float surgeDuration = 5f;
+    [Range(0.1f, 5f)][SerializeField] float surgeDamageBoost = 2f;
+    [Range(0.1f, 30f)][SerializeField] float surgeCooldown = 8f;
+    [SerializeField] GameObject surgeEffectPrefab;
 
     [Header("~=~= Rift Jump =~=~")]
-    [Range(1f, 50f)][SerializeField] float jumpDistance = 15f;
-    [Range(0.1f, 30f)][SerializeField] float jumpCooldown = 3f;
+    [Range(1f, 50f)][SerializeField] float jumpDistance = 8f;
+    [Range(0.1f, 30f)][SerializeField] float jumpCooldown = 6f;
+    [SerializeField] ParticleSystem jumpEffect;
+    [SerializeField] AudioClip jumpSound;
 
-    [Header("~=~= Layer Masks =~=~")]
-    [SerializeField] LayerMask enemyMask;
-    [SerializeField] LayerMask environmentMask;
-    [SerializeField] LayerMask ignoreLayer;
-
-    [Header("~=~= Timers (Internal State) =~=~")]
-    float pulseTimer;
-    float surgeTimer;
+    [Header("~=~= Internal State (Do Not Edit) =~=~")]
+    float surgeEndTime;
     float jumpTimer;
+    bool canSurge = true;
+    bool canJump = true;
+    bool isSurging = false;
+    bool isJumping = false;
+    int originalDamage;
+    GameObject activeSurgeEffect;
 
-    [Header("~=~= Ability States =~=~")]
-    public bool isSurging;
-    public bool isJumping;
-    GameObject surgeEffect;
+    void Awake()
+    {
+        if (controller == null) controller = GetComponent<playerController>();
+        if (charController == null) charController = GetComponent<CharacterController>();
+        if (audioSource == null) audioSource = GetComponent<AudioSource>();
+    }
 
     void Start()
     {
-        if (controller == null)
-            controller = GetComponent<playerController>();
-        if (charController == null)
-            charController = GetComponent<CharacterController>();
-
-        pulseTimer = pulseCooldown;
-        surgeTimer = surgeCooldown;
         jumpTimer = jumpCooldown;
+
+        if (controller != null)
+        {
+            originalDamage = controller.ShootDamage;
+        }
     }
 
     void Update()
     {
-        // Update timers
-        pulseTimer += Time.deltaTime;
-        surgeTimer += Time.deltaTime;
         jumpTimer += Time.deltaTime;
 
+        if (isSurging && Time.time >= surgeEndTime) EndSurge();
+
         // Input handling
-        if (Input.GetKeyDown(KeyCode.Q) && pulseTimer >= pulseCooldown)
-            StartCoroutine(RiftPulse());
+        if (Input.GetKeyDown(KeyCode.E) && canSurge)
+            TryActivateSurge();
 
-        if (Input.GetKeyDown(KeyCode.E) && surgeTimer >= surgeCooldown)
-            StartCoroutine(RiftSurge());
-
-        if (Input.GetKeyDown(KeyCode.F) && jumpTimer >= jumpCooldown)
-            StartCoroutine(RiftJump());
+        if (Input.GetKeyDown(KeyCode.F) && canJump)
+            TryActivateJump();
     }
 
-    IEnumerator RiftPulse()
+    void TryActivateSurge()
     {
-        pulseTimer = 0;
-
-        GameObject pulseVFX = EffectsManager.Instance.Create("PulseCast", transform.position);
-        SetEffectColor(pulseVFX, new Color(0.2f, 0.7f, 1f)); // Electric blue
-
-        SFXManager.Instance.PlaySound("PulseCast");
-        SFXManager.Instance.PlaySound("Lightning"); // Changed from PlayElementSound
-
-        Collider[] hits = Physics.OverlapSphere(transform.position, pulseRange, enemyMask & ~ignoreLayer);
-        foreach (Collider hit in hits)
-        {
-            IDamage dmg = hit.GetComponent<IDamage>();
-            if (dmg != null)
-            {
-                dmg.takeDamage(Mathf.RoundToInt(pulseDamage * controller.damageBoost));
-                EffectsManager.Instance.Create("Lightning", hit.transform.position);
-            }
-
-            Rigidbody rb = hit.GetComponent<Rigidbody>();
-            if (rb != null)
-            {
-                Vector3 knockDir = (hit.transform.position - transform.position).normalized + Vector3.up * 0.3f;
-                rb.AddForce(knockDir * 6f, ForceMode.Impulse);
-            }
-        }
-
-        yield return null;
+        if (!canSurge) return;
+        StartCoroutine(RiftSurge());
     }
 
     IEnumerator RiftSurge()
     {
-        surgeTimer = 0;
+        canSurge = false;
         isSurging = true;
+        surgeEndTime = Time.time + surgeDuration;
+
+        // Create surge effect
+        if (surgeEffectPrefab != null)
+        {
+            activeSurgeEffect = Instantiate(surgeEffectPrefab, transform.position, Quaternion.identity);
+            activeSurgeEffect.transform.SetParent(transform);
+        }
+
+        // Apply damage boost
         controller.damageBoost = surgeDamageBoost;
 
-        Debug.Log($"RIFT SURGE STARTED! Damage ×{surgeDamageBoost} for {surgeDuration:F0}s");
-
-        if (gamemanager.instance.surgeOverlay != null)
-        {
-            gamemanager.instance.surgeOverlay.SetActive(true);
-            Image overlayImage = gamemanager.instance.surgeOverlay.GetComponent<Image>();
-            if (overlayImage != null)
-                overlayImage.color = new Color(0.2f, 0.6f, 1f, 0.3f);
-        }
-
-        SFXManager.Instance.PlaySound("SurgeStart");
-        SFXManager.Instance.PlayLoopSound("SurgeLoop");
-
-        surgeEffect = EffectsManager.Instance.Create("Surge", transform.position);
-        if (surgeEffect != null)
-        {
-            surgeEffect.transform.SetParent(transform);
-            surgeEffect.transform.localPosition = Vector3.zero;
-            surgeEffect.transform.localRotation = Quaternion.identity;
-        }
-
         yield return new WaitForSeconds(surgeDuration);
-
         EndSurge();
+
+        yield return new WaitForSeconds(surgeCooldown);
+        canSurge = true;
     }
 
     void EndSurge()
     {
         if (!isSurging) return;
-
         isSurging = false;
-        controller.damageBoost = 1f;
 
-        if (gamemanager.instance.surgeOverlay != null)
-            gamemanager.instance.surgeOverlay.SetActive(false);
-
-        SFXManager.Instance.StopLoopSound();
-
-        if (surgeEffect != null)
+        // Reset stats
+        if (controller != null)
         {
-            EffectsManager.Instance.Return(surgeEffect);
-            surgeEffect = null;
+            controller.damageBoost = 1f;
         }
 
-        Debug.Log("Rift Surge ENDED — damage boost removed");
+        // Clean up effects
+        if (activeSurgeEffect != null)
+        {
+            EffectsManager.Instance.Return(activeSurgeEffect);
+            activeSurgeEffect = null;
+        }
+    }
+
+    void TryActivateJump()
+    {
+        if (!canJump) return;
+        StartCoroutine(RiftJump());
     }
 
     IEnumerator RiftJump()
     {
-        jumpTimer = 0;
+        canJump = false;
         isJumping = true;
-
-        Debug.Log("Rift Jump STARTED");
 
         Vector3 startPos = transform.position;
         Vector3 targetPos = transform.position + transform.forward * jumpDistance;
 
-        GameObject prepEffect = EffectsManager.Instance.Create("JumpPrep", startPos);
-        SFXManager.Instance.PlaySound("JumpPrep");
+        // Jump prep effect
+        if (jumpEffect != null)
+            Instantiate(jumpEffect, startPos, Quaternion.identity);
 
+        // Jump sound
+        if (audioSource != null && jumpSound != null)
+            audioSource.PlayOneShot(jumpSound);
+
+        // Move player
         if (charController != null)
         {
             charController.enabled = false;
@@ -174,24 +144,13 @@ public class PlayerAbilities : MonoBehaviour
             transform.position = targetPos;
         }
 
-        EffectsManager.Instance.Create("JumpImpact", targetPos);
-        SFXManager.Instance.PlaySound("JumpImpact");
+        // Jump impact effect
+        if (jumpEffect != null)
+            Instantiate(jumpEffect, targetPos, Quaternion.identity);
 
         isJumping = false;
-        Debug.Log($"Rift Jump COMPLETE - Jumped {Vector3.Distance(startPos, targetPos):F2}m");
 
-        yield return null;
-    }
-
-    void SetEffectColor(GameObject effect, Color color)
-    {
-        if (effect == null) return;
-
-        ParticleSystem ps = effect.GetComponent<ParticleSystem>();
-        if (ps != null)
-        {
-            var main = ps.main;
-            main.startColor = color;
-        }
+        yield return new WaitForSeconds(jumpCooldown);
+        canJump = true;
     }
 }

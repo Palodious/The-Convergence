@@ -26,6 +26,7 @@ public class playerController : MonoBehaviour, IDamage, IPickup
     [Range(0.1f, 1f)][SerializeField] float crouchSpeedMod;
     [Range(0.1f, 5f)][SerializeField] float crouchHeight;
 
+    public int ShootDamage => shootDamage;
     float originalHeight;// remember height for uncrouch  
     int originalSpeed; // store original speed  
 
