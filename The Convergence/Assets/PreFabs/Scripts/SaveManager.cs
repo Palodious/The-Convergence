@@ -40,6 +40,9 @@ public class SaveManager : MonoBehaviour
 {
     public static SaveManager Instance { get; private set; }
 
+    // Set to true by the Main Menu Continue button before loading a saved scene.
+    public static bool PendingLoad = false;
+
     // This is where my save file gets written. Unity gives me a platform-safe path.
     string SavePath => Path.Combine(Application.persistentDataPath, "savegame.json");
 
@@ -107,6 +110,11 @@ public class SaveManager : MonoBehaviour
         data = JsonUtility.FromJson<SaveData>(File.ReadAllText(SavePath));
         return data != null;
     }
+    public bool HasSave()
+    {
+        return File.Exists(SavePath);
+    }
+
 
     // This coroutine handles the actual world reconstruction when I load a save.
     public System.Collections.IEnumerator LoadAndRestore(SaveData data, Func<string, GameObject> spawnByKey)

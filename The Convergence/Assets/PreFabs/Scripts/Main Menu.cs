@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class MainMenu : MonoBehaviour
 {
@@ -9,6 +10,8 @@ public class MainMenu : MonoBehaviour
     [Header("Panels")]
     [SerializeField] GameObject optionsPanel;
 
+    [SerializeField] private Button continueButton;
+
     void Awake()
     {
         // Just in case you came here from a paused game scene
@@ -17,13 +20,50 @@ public class MainMenu : MonoBehaviour
         Cursor.lockState = CursorLockMode.None;
     }
 
+    void Start()
+    {
+        RefreshContinueButtonState();
+    }
+
+    public void RefreshContinueButtonState()
+    {
+        if (SaveManager.Instance == null)
+        {
+            continueButton.interactable = false;
+            return;
+        }
+
+        // Gray-out unless there is actually a save file
+        continueButton.interactable = SaveManager.Instance.HasSave();
+    }
+
     // Called by Start Game button
     public void StartGame()
     {
-        if (!string.IsNullOrEmpty(firstLevelSceneName))
-            SceneManager.LoadScene(firstLevelSceneName);
-        else
-            Debug.LogError("First level scene name not set on MainMenu.");
+        SceneManager.LoadScene(firstLevelSceneName);
+    }
+
+    // Called by Continue button – only works if a save exists
+    public void ContinueGame()
+    {
+        if (SaveManager.Instance == null)
+        {
+            Debug.LogWarning("Continue pressed but no SaveManager in the Main Menu scene.");
+            return;
+        }
+
+        SaveData data;
+        if (!SaveManager.Instance.TryLoad(out data))
+        {
+            Debug.LogWarning("Continue pressed but no save file found.");
+            return;
+        }
+
+        // Tell the next scene's gamemanager to auto-load on Awake.
+        SaveManager.PendingLoad = true;
+
+        // Load whatever scene was saved.
+        SceneManager.LoadScene(data.scene);
     }
 
     // Called by Options button
