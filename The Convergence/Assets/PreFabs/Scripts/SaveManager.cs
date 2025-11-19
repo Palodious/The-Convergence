@@ -167,6 +167,21 @@ public class SaveManager : MonoBehaviour
                 var payload = JsonUtility.FromJson(c.json, payloadType);
                 comp.RestoreState(payload);
             }
+            if (!string.IsNullOrEmpty(data.playerId))
+            {
+                if (existing.TryGetValue(data.playerId, out var playerGo) && playerGo != null)
+                {
+                    playerGo.transform.SetPositionAndRotation(data.playerPos, data.playerRot);
+                }
+            }
+            else
+            {
+                var taggedPlayer = GameObject.FindWithTag("Player");
+                if (taggedPlayer != null)
+                {
+                    taggedPlayer.transform.SetPositionAndRotation(data.playerPos, data.playerRot);
+                }
+            }
         }
     }
 }
