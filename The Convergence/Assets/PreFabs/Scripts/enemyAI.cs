@@ -40,6 +40,7 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
     [SerializeField] GameObject meleeDamage; // GameObject with damage.cs attached
     [Range(0.1f, 10f)][SerializeField] float meleeRange; // Distance at which enemy can hit player
     [Range(0.1f, 10f)][SerializeField] float attackRate;  // Cooldown between attacks
+    [Range(1, 50)][SerializeField] int meleeDamageAmount = 10;
 
     [Header("~=~= Behavior Toggles =~=~")]
     public bool useAnimations = true; // Toggle all animation logic on/off
@@ -314,14 +315,20 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
 
     public void ApplyMeleeDamage()
     {
+        // Check all colliders in range
         Collider[] hitColliders = Physics.OverlapSphere(meleePos.position, meleeRange, ~ignoreLayer);
 
         foreach (var hit in hitColliders)
         {
+            // Look for objects implementing IDamage
             IDamage dmgTarget = hit.GetComponent<IDamage>();
-            if (dmgTarget != null && meleeDamage != null)
+            if (dmgTarget != null)
             {
-                Instantiate(meleeDamage, meleePos.position, Quaternion.identity);
+                dmgTarget.takeDamage(meleeDamageAmount); // Apply damage
+
+                // Optional: spawn visual effect
+                if (meleeDamage != null)
+                    Instantiate(meleeDamage, hit.transform.position, Quaternion.identity);
             }
         }
     }

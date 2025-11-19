@@ -122,7 +122,22 @@ public class playerAbilities : MonoBehaviour
         isJumping = true;
 
         Vector3 startPos = transform.position;
-        Vector3 targetPos = transform.position + transform.forward * jumpDistance;
+        Vector3 targetPos = startPos + transform.forward * jumpDistance;
+
+        // Collider check
+        float playerRadius = charController != null ? charController.radius : 0.5f;
+        float playerHeight = charController != null ? charController.height : 2f;
+
+        // Use a capsule check to see if the target position is free
+        Vector3 point1 = targetPos + Vector3.up * (playerHeight / 2 - playerRadius);
+        Vector3 point2 = targetPos + Vector3.up * playerRadius;
+        if (Physics.CheckCapsule(point1, point2, playerRadius))
+        {
+            // Obstacle in the way, cancel jump
+            Debug.Log("Jump blocked by obstacle!");
+            isJumping = false;
+            yield break;
+        }
 
         // Jump prep effect
         if (jumpEffect != null)
@@ -132,7 +147,7 @@ public class playerAbilities : MonoBehaviour
         if (audioSource != null && jumpSound != null)
             audioSource.PlayOneShot(jumpSound);
 
-        // Move player
+        // Teleport player
         if (charController != null)
         {
             charController.enabled = false;

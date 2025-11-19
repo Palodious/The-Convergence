@@ -80,7 +80,7 @@ public class playerController : MonoBehaviour, IDamage, IPickup
         Debug.DrawRay(Camera.main.transform.position, Camera.main.transform.forward * shootDist, Color.red);
         shootTimer += Time.deltaTime;
         movement();
-        }
+    }
 
         sprint();
 
