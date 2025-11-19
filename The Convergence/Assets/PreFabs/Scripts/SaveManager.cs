@@ -63,7 +63,12 @@ public class SaveManager : MonoBehaviour
         };
 
         // Loop through every SaveEntity in the scene (active and inactive) and grab their data.
-        foreach (var se in FindObjectsOfType<SaveEntity>(true))
+        var saveEntities = UnityEngine.Object.FindObjectsByType<SaveEntity>(
+    FindObjectsInactive.Include,
+    FindObjectsSortMode.None
+);
+
+        foreach (var se in saveEntities)
         {
             var record = new EntityRecord
             {
@@ -127,7 +132,16 @@ public class SaveManager : MonoBehaviour
         }
 
         // Get all SaveEntities currently in the scene and build a quick lookup by ID.
-        var existing = FindObjectsOfType<SaveEntity>(true).ToDictionary(x => x.Id, x => x.gameObject);
+        var saveEntities = UnityEngine.Object.FindObjectsByType<SaveEntity>(
+    FindObjectsInactive.Include,
+    FindObjectsSortMode.None
+);
+
+        var existing = saveEntities.ToDictionary(
+            x => x.Id,
+            x => x.gameObject
+        );
+
 
         // Destroy anything that wasn’t in the saved file (it was dead or collected).
         foreach (var kv in existing.ToList())
