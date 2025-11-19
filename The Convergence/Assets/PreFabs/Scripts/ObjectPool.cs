@@ -4,7 +4,7 @@ using System.Collections.Generic;
 public class ObjectPool : MonoBehaviour
 {
     [SerializeField] public GameObject prefab;
-    [Range(3, 10)] public int poolSize = 10;
+    [SerializeField] public int poolSize = 10;
 
     Queue<GameObject> available = new Queue<GameObject>();
     List<GameObject> allObjects = new List<GameObject>();

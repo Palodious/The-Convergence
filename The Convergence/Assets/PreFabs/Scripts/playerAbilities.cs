@@ -8,18 +8,18 @@ public class PlayerAbilities : MonoBehaviour
     [SerializeField] CharacterController charController;
 
     // Rift Pulse
-    [Range (10, 50)] int pulseDamage;
-    [Range (3, 15)] float pulseRange;
-    [Range (1, 8)] float pulseCooldown;
+    [SerializeField] int pulseDamage = 25;
+    [SerializeField] float pulseRange = 6f;
+    [SerializeField] float pulseCooldown = 2.5f;
 
     // Rift Surge
-    [Range (10, 50)] float surgeDuration;
-    [Range (1.5f, 5)] float surgeDamageBoost;
-    [Range (5, 20)] float surgeCooldown;
+    [SerializeField] float surgeDuration = 30f;
+    [SerializeField] float surgeDamageBoost = 1.5f;
+    [SerializeField] float surgeCooldown = 10f;
 
     // Rift Jump
-    [Range (10, 25)] float jumpDistance;
-    [Range (2, 10)] float jumpCooldown;
+    [SerializeField] float jumpDistance = 15f;
+    [SerializeField] float jumpCooldown = 3f;
 
     // Layer masks
     [SerializeField] LayerMask enemyMask;
@@ -73,7 +73,7 @@ public class PlayerAbilities : MonoBehaviour
         SetEffectColor(pulseVFX, new Color(0.2f, 0.7f, 1f)); // Electric blue
 
         SFXManager.Instance.PlaySound("PulseCast");
-        SFXManager.Instance.PlaySound("Lightning");
+        SFXManager.Instance.PlaySound("Lightning"); // Changed from PlayElementSound
 
         Collider[] hits = Physics.OverlapSphere(transform.position, pulseRange, enemyMask);
         foreach (Collider hit in hits)
