@@ -10,7 +10,7 @@ public class MainMenu : MonoBehaviour
     [Header("Panels")]
     [SerializeField] GameObject optionsPanel;
 
-    [SerializeField] private buttonFunction continueButton;
+    [SerializeField] private Button continueButton;
     void Start()
     {
         RefreshContinueButtonState();
