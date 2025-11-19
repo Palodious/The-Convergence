@@ -4,23 +4,27 @@ using System.Collections.Generic;
 
 public class playerController : MonoBehaviour, IDamage, IPickup
 {
+    [Header("~=~= Components =~=~")]
     [SerializeField] CharacterController controller;
     [SerializeField] LayerMask ignoreLayer;
 
-    [SerializeField] int HP;
-    public int speed;
-    [SerializeField] int sprintMod;
-    [SerializeField] int JumpSpeed;
-    [SerializeField] int maxJumps;
-    [SerializeField] int gravity;
+    [Header("~=~= Player Stats =~=~")]
+    [Range(1, 1000)][SerializeField] int HP;
+    [Range(1, 50)] public int speed;
+    [Range(1, 10)][SerializeField] int sprintMod;
+    [Range(1, 50)][SerializeField] int JumpSpeed;
+    [Range(1, 10)][SerializeField] int maxJumps;
+    [Range(1, 50)][SerializeField] int gravity;
 
-    [SerializeField] int shootDamage;
-    [SerializeField] int shootDist;
-    [SerializeField] float shootRate;
+    [Header("~=~= Shooting =~=~")]
+    [Range(1, 100)][SerializeField] int shootDamage;
+    [Range(1, 100)][SerializeField] int shootDist;
+    [Range(0.01f, 5f)][SerializeField] float shootRate;
 
-    [SerializeField] float glideGravity;  // lower gravity while gliding  
-    [SerializeField] float crouchSpeedMod;
-    [SerializeField] float crouchHeight;
+    [Header("~=~= Movement Modifiers =~=~")]
+    [Range(0.1f, 50f)][SerializeField] float glideGravity;
+    [Range(0.1f, 1f)][SerializeField] float crouchSpeedMod;
+    [Range(0.1f, 5f)][SerializeField] float crouchHeight;
 
     float originalHeight;// remember height for uncrouch  
     int originalSpeed; // store original speed  
@@ -37,15 +41,16 @@ public class playerController : MonoBehaviour, IDamage, IPickup
 
     [HideInInspector] public float damageBoost = 1f;
 
+    [Header("~=~= Guns =~=~")]
     [SerializeField] List<gunStats> gunList = new List<gunStats>();
     [SerializeField] GameObject gunModel;
     int gunListPos;
 
-   
-    // Instant medkit use system
+    [Header("~=~= Medkit Settings =~=~")]
     private bool canUseMedkit = true;
     private float medkitCooldown = 0f;
-    [SerializeField] private float medkitUseCooldown = 5f; // Cooldown between medkit uses
+    [Range(0.1f, 60f)][SerializeField] private float medkitUseCooldown = 5f; // Cooldown between medkit uses
+
     void Start()
     {
         HPOrig = HP;
@@ -56,10 +61,11 @@ public class playerController : MonoBehaviour, IDamage, IPickup
 
     void Update()
     {
+
         Debug.DrawRay(Camera.main.transform.position, Camera.main.transform.forward * shootDist, Color.red);
         shootTimer += Time.deltaTime;
-
         movement();
+
         sprint();
 
         // handle medkit cooldown timer

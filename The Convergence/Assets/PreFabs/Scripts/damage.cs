@@ -1,19 +1,27 @@
-// damage.cs
 using UnityEngine;
 using System.Collections;
 
 public class damage : MonoBehaviour
 {
-    enum damageType { moving, melee, DOT, homing }
-    [SerializeField] damageType type;
-    [SerializeField] Rigidbody rb;
+    private enum damageType { moving, melee, DOT, homing }
 
-    [SerializeField] int damageAmount;
-    [SerializeField] float damageRate;
-    [SerializeField] int speed;
-    [SerializeField] int destroyTime;
+    [Header("~=~= Damage Type =~=~")]
+    [SerializeField] private damageType type;
 
-    bool isDamaging;
+    [Header("~=~= Physics =~=~")]
+    [SerializeField] private Rigidbody rb;
+    [SerializeField] private LayerMask ignoreLayer;
+
+    [Header("~=~= Damage Settings =~=~")]
+    [Range(1, 20)][SerializeField] private int damageAmount;
+    [Range(0.1f, 20f)][SerializeField] private float damageRate;
+
+    [Header("~=~= Movement & Lifetime =~=~")]
+    [Range(1, 50)][SerializeField] private int speed;
+    [Range(1, 20)][SerializeField] private int destroyTime;
+
+    private bool isDamaging;
+
 
     void Start()
     {
@@ -41,11 +49,16 @@ public class damage : MonoBehaviour
         if (other.isTrigger)
             return;
 
+        // Skip if layer should not be damaged
+        if (((1 << other.gameObject.layer) & ignoreLayer) != 0)
+            return;
+
         IDamage dmg = other.GetComponent<IDamage>();
         if (dmg != null && type != damageType.DOT)
         {
             dmg.takeDamage(damageAmount);
         }
+
         if (type == damageType.moving || type == damageType.homing)
         {
             Destroy(gameObject);
@@ -55,6 +68,10 @@ public class damage : MonoBehaviour
     private void OnTriggerStay(Collider other)
     {
         if (other.isTrigger)
+            return;
+
+        // Skip if layer should not be damaged
+        if (((1 << other.gameObject.layer) & ignoreLayer) != 0)
             return;
 
         IDamage dmg = other.GetComponent<IDamage>();

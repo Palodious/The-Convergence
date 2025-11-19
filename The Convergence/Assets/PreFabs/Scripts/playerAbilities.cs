@@ -7,30 +7,31 @@ public class PlayerAbilities : MonoBehaviour
     [SerializeField] playerController controller;
     [SerializeField] CharacterController charController;
 
-    // Rift Pulse
-    [SerializeField] int pulseDamage = 25;
-    [SerializeField] float pulseRange = 6f;
-    [SerializeField] float pulseCooldown = 2.5f;
+    [Header("~=~= Rift Pulse =~=~")]
+    [Range(1, 200)][SerializeField] int pulseDamage = 25;
+    [Range(1, 50)][SerializeField] float pulseRange = 6f;
+    [Range(0.1f, 30f)][SerializeField] float pulseCooldown = 2.5f;
 
-    // Rift Surge
-    [SerializeField] float surgeDuration = 30f;
-    [SerializeField] float surgeDamageBoost = 1.5f;
-    [SerializeField] float surgeCooldown = 10f;
+    [Header("~=~= Rift Surge =~=~")]
+    [Range(0.1f, 60f)][SerializeField] float surgeDuration = 30f;
+    [Range(1f, 10f)][SerializeField] float surgeDamageBoost = 1.5f;
+    [Range(0.1f, 60f)][SerializeField] float surgeCooldown = 10f;
 
-    // Rift Jump
-    [SerializeField] float jumpDistance = 15f;
-    [SerializeField] float jumpCooldown = 3f;
+    [Header("~=~= Rift Jump =~=~")]
+    [Range(1f, 50f)][SerializeField] float jumpDistance = 15f;
+    [Range(0.1f, 30f)][SerializeField] float jumpCooldown = 3f;
 
-    // Layer masks
+    [Header("~=~= Layer Masks =~=~")]
     [SerializeField] LayerMask enemyMask;
     [SerializeField] LayerMask environmentMask;
+    [SerializeField] LayerMask ignoreLayer;
 
-    // Timers
+    [Header("~=~= Timers (Internal State) =~=~")]
     float pulseTimer;
     float surgeTimer;
     float jumpTimer;
 
-    // Ability states
+    [Header("~=~= Ability States =~=~")]
     public bool isSurging;
     public bool isJumping;
     GameObject surgeEffect;
@@ -75,7 +76,7 @@ public class PlayerAbilities : MonoBehaviour
         SFXManager.Instance.PlaySound("PulseCast");
         SFXManager.Instance.PlaySound("Lightning"); // Changed from PlayElementSound
 
-        Collider[] hits = Physics.OverlapSphere(transform.position, pulseRange, enemyMask);
+        Collider[] hits = Physics.OverlapSphere(transform.position, pulseRange, enemyMask & ~ignoreLayer);
         foreach (Collider hit in hits)
         {
             IDamage dmg = hit.GetComponent<IDamage>();
@@ -94,35 +95,6 @@ public class PlayerAbilities : MonoBehaviour
         }
 
         yield return null;
-    }
-
-    private void CreateChainLightning(Vector3 start, Vector3 end)
-    {
-        GameObject arc = EffectsManager.Instance.Create("ChainLightning", start);
-        if (arc == null) return;
-
-        LineRenderer lr = arc.GetComponent<LineRenderer>();
-        if (lr != null)
-        {
-            lr.positionCount = 2;
-            lr.SetPosition(0, start);
-            lr.SetPosition(1, end);
-        }
-        else
-        {
-            arc.transform.LookAt(end);
-            Vector3 scale = arc.transform.localScale;
-            scale.z = Vector3.Distance(start, end);
-            arc.transform.localScale = scale;
-        }
-
-        StartCoroutine(ReturnAfterDelay(arc, 0.15f));
-    }
-
-    private IEnumerator ReturnAfterDelay(GameObject effect, float delay)
-    {
-        yield return new WaitForSeconds(delay);
-        EffectsManager.Instance.Return(effect);
     }
 
     IEnumerator RiftSurge()

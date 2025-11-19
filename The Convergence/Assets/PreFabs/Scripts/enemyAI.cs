@@ -11,37 +11,45 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
         Hybrid
     }
 
+    [Header("~=~= Layers =~=~")]
+    [SerializeField] LayerMask ignoreLayer;
+    [Header("~=~= Enemy Type =~=~")]
     [SerializeField] EnemyType enemyType;
 
+    [Header("~=~= Components =~=~")]
     [SerializeField] NavMeshAgent agent;
     [SerializeField] Animator anim;
     [SerializeField] Renderer model;
     [SerializeField] Transform headPos;
 
-    [SerializeField] int HP;
-    [SerializeField] int FOV;
-    [SerializeField] int faceTargetSpeed;
-    [SerializeField] int roamDist;
-    [SerializeField] int roamPauseTime;
-    [SerializeField] float animTransSpeed;
+    [Header("~=~= Stats =~=~")]
+    [Range(1, 100)][SerializeField] int HP;
+    [Range(1, 360)][SerializeField] int FOV;
+    [Range(1, 360)][SerializeField] int faceTargetSpeed;
+    [Range(1, 50)][SerializeField] int roamDist;
+    [Range(0, 10)][SerializeField] int roamPauseTime;
+    [Range(0.1f, 10f)][SerializeField] float animTransSpeed;
 
+    [Header("~=~= Shooter Settings =~=~")]
     [SerializeField] GameObject projectile;
-    [SerializeField] float shootRate;
+    [Range(0.1f, 10f)][SerializeField] float shootRate;
     [SerializeField] Transform shootPOS;
 
-    [SerializeField] Transform meleePos; // Position from which melee attacks are measured
-    [SerializeField] GameObject meleeEffect;  // Optional visual effect for punches
-    [SerializeField] float meleeRange; // Distance at which enemy can hit player
-    [SerializeField] float attackRate;  // Cooldown between attacks
-    [SerializeField] int meleeDamage; // Damage per punch
+    [Header("~=~= Melee Settings =~=~")]
+    [SerializeField] Transform meleePos;// Position from which melee attacks are measured
+    [SerializeField] GameObject meleeDamage; // GameObject with damage.cs attached
+    [Range(0.1f, 10f)][SerializeField] float meleeRange; // Distance at which enemy can hit player
+    [Range(0.1f, 10f)][SerializeField] float attackRate;  // Cooldown between attacks
 
+    [Header("~=~= Behavior Toggles =~=~")]
     public bool useAnimations = true; // Toggle all animation logic on/off
     public bool usePatrol = true; // Toggle patrol behavior
-    public bool useRoam = true;  // Toggle roaming behavior
+    public bool useRoam = true; // Toggle roaming behavior
+
     public EnemyType EnemyTypeValue => enemyType;
 
     Color colorOrig;
-    float sightRange = 20f; // max distance enemy can see
+    float sightRange = 20f;
     bool playerInTrigger;
     float shootTimer;
     float attackTimer;
@@ -51,6 +59,7 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
     Vector3 startingPos;
     float stoppingDistOrig;
 
+    [Header("~=~= Patrol Points =~=~")]
     [SerializeField] Transform[] patrolPoints; // Optional patrol points
     int patrolIndex = 0;
 
@@ -277,15 +286,18 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
 
     public void ApplyMeleeDamage()
     {
-        Collider[] hitColliders = Physics.OverlapSphere(meleePos.position, meleeRange);
+        // Find all colliders in melee range, ignoring the enemy's own layer
+        Collider[] hitColliders = Physics.OverlapSphere(meleePos.position, meleeRange, ~ignoreLayer);
+
         foreach (var hit in hitColliders)
         {
-            if (hit.CompareTag("Player"))
+            IDamage dmgTarget = hit.GetComponent<IDamage>();
+            if (dmgTarget != null)
             {
-                gamemanager.instance.playerScript.takeDamage(meleeDamage);
-
-                if (meleeEffect != null)
-                    Instantiate(meleeEffect, meleePos.position, Quaternion.identity);
+                if (meleeDamage != null)
+                {
+                    GameObject dmgObj = Instantiate(meleeDamage, meleePos.position, Quaternion.identity);
+                }
             }
         }
     }
