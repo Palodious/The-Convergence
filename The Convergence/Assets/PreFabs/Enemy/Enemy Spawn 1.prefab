@@ -222,6 +222,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4070105055624633129}
   - component: {fileID: 2212196293343114493}
+  - component: {fileID: -4120644185554120257}
   m_Layer: 0
   m_Name: Enemy Spawn 1
   m_TagString: Untagged
@@ -245,7 +246,6 @@ Transform:
   - {fileID: 5948560898164858670}
   - {fileID: 4636763775321830537}
   - {fileID: 8547357065225917029}
-  - {fileID: 7256811329746432073}
   - {fileID: 1370973792179307392}
   - {fileID: 6104698710079465937}
   - {fileID: 3852576899071307547}
@@ -272,81 +272,20 @@ SphereCollider:
   serializedVersion: 3
   m_Radius: 10
   m_Center: {x: 0, y: 0, z: 0}
---- !u!1 &3688822977536124416
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 7256811329746432073}
-  - component: {fileID: 9097142309799138714}
-  - component: {fileID: 2936814015018632992}
-  m_Layer: 0
-  m_Name: Whisp Spawn
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &7256811329746432073
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3688822977536124416}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.19, y: -0.19, z: -0.3}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 2403497705604143457}
-  m_Father: {fileID: 4070105055624633129}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &9097142309799138714
+--- !u!114 &-4120644185554120257
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3688822977536124416}
+  m_GameObject: {fileID: 3259630004105229835}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f6e47971b24414849b52fa8ab36084d3, type: 3}
+  m_Script: {fileID: 11500000, guid: 2595f0efb17706340b65de4d7e322ddc, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::spawner
-  objectToSpawn: {fileID: 2804925484609231592, guid: 1092da00cf9eb434bb17a704015faf06, type: 3}
-  spawnAmount: 1
-  spawnRate: 0.5
-  spawnPos:
-  - {fileID: 2403497705604143457}
-  patrolPoints:
-  - {fileID: 2293378774600795993, guid: e6d32f98eb1ddfe49b1d5469cba662b2, type: 3}
-  - {fileID: 3303818874225773481, guid: 0d1777f593c754342943c6229f271ffe, type: 3}
---- !u!135 &2936814015018632992
-SphereCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3688822977536124416}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 1
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Radius: 10
-  m_Center: {x: 0, y: 0, z: 0}
+  m_EditorClassIdentifier: Assembly-CSharp::SaveEntity
+  id: 15ad464992ca4c0191615d5b6691005c
+  prefabKey: 
 --- !u!1 &4174258446341536695
 GameObject:
   m_ObjectHideFlags: 0
@@ -469,8 +408,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::spawner
   objectToSpawn: {fileID: 4229121175722213460, guid: ec56b0bb9422c56459929cbd17ac7c29, type: 3}
-  spawnAmount: 1
-  spawnRate: 0.5
+  spawnAmount: 2
+  spawnRate: 1
   spawnPos:
   - {fileID: 1212040565535114736}
   patrolPoints: []
@@ -542,7 +481,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::spawner
   objectToSpawn: {fileID: 8723845815909595680, guid: 1ad4135258a19f943918ea26d375d481, type: 3}
-  spawnAmount: 5
+  spawnAmount: 6
   spawnRate: 0.5
   spawnPos:
   - {fileID: 3253127501297678793}
@@ -691,8 +630,8 @@ MonoBehaviour:
   spawnPos:
   - {fileID: 1251633077615465463}
   patrolPoints:
-  - {fileID: 7875236671911851873, guid: cdb789e1ec6cd2e4c99aca1b5f1abbb4, type: 3}
-  - {fileID: 2697651621821698399, guid: 335daf6648798a141838681d9bb3b961, type: 3}
+  - {fileID: 3204405046851344042, guid: 6163b3fe2761e8047bde0e9a5d2860f0, type: 3}
+  - {fileID: 4266776669560378470, guid: eaca1366bed676140b90d8dd094fe795, type: 3}
 --- !u!135 &8098263639071567334
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -767,59 +706,6 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!1 &7708811103437363163
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 2403497705604143457}
-  - component: {fileID: 7124347648585810367}
-  m_Layer: 0
-  m_Name: Pos
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &2403497705604143457
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7708811103437363163}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -38.10999, y: -0.13, z: 59.25}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 7256811329746432073}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!65 &7124347648585810367
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7708811103437363163}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &7838988103708893664
 GameObject:
   m_ObjectHideFlags: 0
@@ -872,8 +758,8 @@ MonoBehaviour:
   spawnPos:
   - {fileID: 544001149163091917}
   patrolPoints:
-  - {fileID: 3204405046851344042, guid: 6163b3fe2761e8047bde0e9a5d2860f0, type: 3}
-  - {fileID: 4266776669560378470, guid: eaca1366bed676140b90d8dd094fe795, type: 3}
+  - {fileID: 7875236671911851873, guid: cdb789e1ec6cd2e4c99aca1b5f1abbb4, type: 3}
+  - {fileID: 2697651621821698399, guid: 335daf6648798a141838681d9bb3b961, type: 3}
 --- !u!135 &4881774519035382375
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -942,8 +828,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::spawner
   objectToSpawn: {fileID: 4229121175722213460, guid: ec56b0bb9422c56459929cbd17ac7c29, type: 3}
-  spawnAmount: 1
-  spawnRate: 0.5
+  spawnAmount: 2
+  spawnRate: 1
   spawnPos:
   - {fileID: 2908650448591085025}
   patrolPoints: []

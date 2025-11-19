@@ -246,6 +246,17 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 50, y: -30, z: 0}
+--- !u!114 &430810600 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1364965146786961893, guid: 180fb47de8c698242a68e1042150a92a, type: 3}
+  m_PrefabInstance: {fileID: 3482923602021476029}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 16862492db33ac04d89b3dbee4149daf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MainMenu
 --- !u!1 &961739749
 GameObject:
   m_ObjectHideFlags: 0
@@ -470,6 +481,26 @@ PrefabInstance:
     - target: {fileID: 1312250292013561285, guid: 180fb47de8c698242a68e1042150a92a, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3489707329933666401, guid: 180fb47de8c698242a68e1042150a92a, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3489707329933666401, guid: 180fb47de8c698242a68e1042150a92a, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 430810600}
+    - target: {fileID: 3489707329933666401, guid: 180fb47de8c698242a68e1042150a92a, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: ContinueGame
+      objectReference: {fileID: 0}
+    - target: {fileID: 3489707329933666401, guid: 180fb47de8c698242a68e1042150a92a, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: MainMenu, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 3489707329933666401, guid: 180fb47de8c698242a68e1042150a92a, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
       objectReference: {fileID: 0}
     - target: {fileID: 9125129174176606463, guid: 180fb47de8c698242a68e1042150a92a, type: 3}
       propertyPath: m_Name
