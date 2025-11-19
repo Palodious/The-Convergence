@@ -56,6 +56,8 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
     [Range(0, 1)][SerializeField] float audShootVol;
     [SerializeField] AudioClip[] audMelee;
     [Range(0, 1)][SerializeField] float audMeleeVol;
+    [SerializeField] AudioClip[] audDeath; // <-- NEW: Death audio
+    [Range(0, 1)][SerializeField] float audDeathVol;
 
     public EnemyType EnemyTypeValue => enemyType;
 
@@ -253,13 +255,18 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
         HP -= amount;
         agent.SetDestination(gamemanager.instance.player.transform.position);
 
+        // Play hurt audio
         if (audHurt.Length > 0 && aud != null)
             aud.PlayOneShot(audHurt[Random.Range(0, audHurt.Length)], audHurtVol);
 
         if (HP <= 0)
         {
+            // Play death audio before destroying
+            if (audDeath.Length > 0 && aud != null)
+                aud.PlayOneShot(audDeath[Random.Range(0, audDeath.Length)], audDeathVol);
+
             gamemanager.instance.updateGameGoal(-1);
-            Destroy(gameObject);
+            Destroy(gameObject, 0.1f); // short delay ensures sound can start
         }
         else
         {
@@ -277,6 +284,7 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
     void Shoot()
     {
         shootTimer = 0;
+
         if (audShoot.Length > 0 && aud != null)
             aud.PlayOneShot(audShoot[Random.Range(0, audShoot.Length)], audShootVol);
 
