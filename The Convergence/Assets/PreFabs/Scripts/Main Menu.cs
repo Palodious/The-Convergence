@@ -11,6 +11,10 @@ public class MainMenu : MonoBehaviour
     [SerializeField] GameObject optionsPanel;
 
     [SerializeField] private Button continueButton;
+    void Start()
+    {
+        RefreshContinueButtonState();
+    }
 
     void Awake()
     {
@@ -20,21 +24,28 @@ public class MainMenu : MonoBehaviour
         Cursor.lockState = CursorLockMode.None;
     }
 
-    void Start()
-    {
-        RefreshContinueButtonState();
-    }
-
     public void RefreshContinueButtonState()
     {
+        // 1) If we forgot to wire the button, fail safely.
+        if (continueButton == null)
+        {
+            Debug.LogWarning("MainMenu: continueButton is not assigned in the Inspector.");
+            return;
+        }
+
+        // 2) If there is no SaveManager in this scene, disable the button.
         if (SaveManager.Instance == null)
         {
             continueButton.interactable = false;
             return;
         }
 
-        // Gray-out unless there is actually a save file
-        continueButton.interactable = SaveManager.Instance.HasSave();
+        // 3) Check if a valid save exists.
+        SaveData tmp;
+        bool hasValidSave = SaveManager.Instance.TryLoad(out tmp);
+
+        // Gray-out unless there is actually a loadable save.
+        continueButton.interactable = hasValidSave;
     }
 
     // Called by Start Game button

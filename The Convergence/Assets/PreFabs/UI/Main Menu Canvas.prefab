@@ -581,9 +581,21 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 8504613801583842213}
+      - m_Target: {fileID: 375471928824145403}
         m_TargetAssemblyTypeName: OptionsResolution, Assembly-CSharp
         m_MethodName: ApplyVideoSettings
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 4365239009860361163}
+        m_TargetAssemblyTypeName: OptionsAudio, Assembly-CSharp
+        m_MethodName: ApplySettingsNow
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -1168,6 +1180,7 @@ GameObject:
   - component: {fileID: 1364965146786961893}
   - component: {fileID: 5770927380290597285}
   - component: {fileID: 8504613801583842213}
+  - component: {fileID: 1489666660440318301}
   m_Layer: 5
   m_Name: MainMenuManager
   m_TagString: Untagged
@@ -1208,6 +1221,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MainMenu
   firstLevelSceneName: Game Play Scene L1
   optionsPanel: {fileID: 4950978916373194430}
+  continueButton: {fileID: 3489707329933666401}
 --- !u!114 &5770927380290597285
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1234,6 +1248,33 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::optionsResolution
   resolutionDropdown: {fileID: 3554799491308538406}
   fullscreenToggle: {fileID: 675038901698704767}
+--- !u!114 &1489666660440318301
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2655731385771824049}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0bbf4f30addb6f647b4a11ab45f02ae0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::gamemanager
+  menuActive: {fileID: 0}
+  menuPause: {fileID: 0}
+  menuWin: {fileID: 0}
+  menuLose: {fileID: 0}
+  menuOptions: {fileID: 0}
+  gameGoalCount: 0
+  gameGoalCountText: {fileID: 0}
+  playerHPBar: {fileID: 0}
+  playerDamagePanel: {fileID: 0}
+  checkpointPopup: {fileID: 0}
+  surgeOverlay: {fileID: 0}
+  spawnPoint: {fileID: 0}
+  player: {fileID: 0}
+  playerScript: {fileID: 0}
+  isPaused: 0
 --- !u!1 &2734654328457425519
 GameObject:
   m_ObjectHideFlags: 0
@@ -1478,6 +1519,54 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!1 &3258294467433082358
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7421227559118076398}
+  - component: {fileID: 6483690925917516767}
+  m_Layer: 5
+  m_Name: SaveManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &7421227559118076398
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3258294467433082358}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1312250292013561285}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 100, y: 100}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &6483690925917516767
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3258294467433082358}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 225121c939eee154884d5321301eefed, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SaveManager
 --- !u!1 &3265025113589122130
 GameObject:
   m_ObjectHideFlags: 0
@@ -1581,7 +1670,7 @@ GameObject:
   - component: {fileID: 2896842862659291488}
   - component: {fileID: 3489707329933666401}
   m_Layer: 5
-  m_Name: Load Game
+  m_Name: Continue Game
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1604,8 +1693,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0}
   m_AnchorMax: {x: 0.5, y: 0}
-  m_AnchoredPosition: {x: 168, y: -214}
-  m_SizeDelta: {x: 190, y: 30}
+  m_AnchoredPosition: {x: 318, y: -214}
+  m_SizeDelta: {x: 250, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &6135162960227678829
 CanvasRenderer:
@@ -1684,14 +1773,14 @@ MonoBehaviour:
     m_PressedTrigger: Pressed
     m_SelectedTrigger: Selected
     m_DisabledTrigger: Disabled
-  m_Interactable: 1
+  m_Interactable: 0
   m_TargetGraphic: {fileID: 2896842862659291488}
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 5770927380290597285}
-        m_TargetAssemblyTypeName: buttonFunction, Assembly-CSharp
-        m_MethodName: LoadNow
+      - m_Target: {fileID: 1364965146786961893}
+        m_TargetAssemblyTypeName: MainMenu, Assembly-CSharp
+        m_MethodName: ContinueGame
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -2571,6 +2660,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5745861215012600107}
+  - component: {fileID: 375471928824145403}
   - component: {fileID: 4365239009860361163}
   - component: {fileID: 7356371457059218487}
   - component: {fileID: 7601280220298022003}
@@ -2608,6 +2698,20 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &375471928824145403
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4950978916373194430}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 77fe02842d4ed174fa2700b28a5126f3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::OptionsResolution
+  resolutionDropdown: {fileID: 3554799491308538406}
+  fullscreenToggle: {fileID: 675038901698704767}
 --- !u!114 &4365239009860361163
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4140,6 +4244,7 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2564884825986698028}
+  - {fileID: 7421227559118076398}
   - {fileID: 7222978586016861400}
   - {fileID: 453800916764389155}
   - {fileID: 5745861215012600107}
@@ -4278,7 +4383,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Load Game
+  m_text: Continue Game
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}

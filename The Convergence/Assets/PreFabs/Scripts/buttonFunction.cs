@@ -9,6 +9,7 @@ public class buttonFunction : MonoBehaviour
     }
     public void restart()
     {
+        Time.timeScale = 1f;
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
         gamemanager.instance.stateUnpause();
     }
@@ -27,6 +28,7 @@ public class buttonFunction : MonoBehaviour
     }
     public void loadLevel(int lvl)
     {
+        Time.timeScale = 1f;
         SceneManager.LoadScene(lvl);
         gamemanager.instance.stateUnpause();
     }

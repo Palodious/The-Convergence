@@ -48,7 +48,10 @@ public class gamemanager : MonoBehaviour
             playerScript = player.GetComponent<playerController>();
 
         spawnPoint = GameObject.FindWithTag("Spawn Point");
+    }
 
+    private void Start()
+    {
         // If we came here via Main Menu's Continue, auto-load the save.
         if (SaveManager.PendingLoad)
         {
