@@ -26,8 +26,17 @@ public class playerController : MonoBehaviour, IDamage, IPickup
     [Range(0.1f, 1f)][SerializeField] float crouchSpeedMod;
     [Range(0.1f, 5f)][SerializeField] float crouchHeight;
 
+    [Header("~=~= Audio =~=~")]
+    [SerializeField] AudioSource aud;
+    [SerializeField] AudioClip[] audStep;
+    [Range(0, 1)][SerializeField] float audStepVol;
+    [SerializeField] AudioClip[] audJump;
+    [Range(0, 1)][SerializeField] float audJumpVol;
+    [SerializeField] AudioClip[] audHurt;
+    [Range(0, 1)][SerializeField] float audHurtVol;
+
     public int ShootDamage => shootDamage;
-    float originalHeight;// remember height for uncrouch  
+    float originalHeight; // remember height for uncrouch  
     int originalSpeed; // store original speed  
 
     Vector3 moveDir;
@@ -38,7 +47,9 @@ public class playerController : MonoBehaviour, IDamage, IPickup
     float shootTimer;
 
     bool isCrouching;  // crouch state  
-    bool isGliding;// glide state  
+    bool isGliding;    // glide state  
+    bool isSprinting;
+    bool isPlayingStep;
 
     [HideInInspector] public float damageBoost = 1f;
 
@@ -62,7 +73,6 @@ public class playerController : MonoBehaviour, IDamage, IPickup
 
     void Update()
     {
-
         Debug.DrawRay(Camera.main.transform.position, Camera.main.transform.forward * shootDist, Color.red);
         shootTimer += Time.deltaTime;
         movement();
@@ -71,13 +81,6 @@ public class playerController : MonoBehaviour, IDamage, IPickup
 
         // handle medkit cooldown timer
         HandleMedkitCooldown();
-
-        // Debug medkit use with H key
-        if (Input.GetKeyDown(KeyCode.H) && canUseMedkit)
-        {
-            // For testing - create a temporary medkit
-          UseMedkitInstantly(50); // Heal 50 HP
-        }
     }
 
     void movement()
@@ -86,6 +89,12 @@ public class playerController : MonoBehaviour, IDamage, IPickup
         {
             if (playerVel.y < 0) playerVel.y = -2f;
             jumpCount = 0;
+
+            // play footstep audio if moving
+            if (moveDir.normalized.magnitude > 0.3f && isPlayingStep)
+            {
+                StartCoroutine(playStep());
+            }
         }
         else
         {
@@ -124,10 +133,21 @@ public class playerController : MonoBehaviour, IDamage, IPickup
         selectGun();
     }
 
+    IEnumerator playStep()
+    {
+        isPlayingStep = true;
+        aud.PlayOneShot(audStep[Random.Range(0, audStep.Length)], audStepVol);
+
+        if (isSprinting) yield return new WaitForSeconds(0.3f);
+        else yield return new WaitForSeconds(0.5f);
+
+        isPlayingStep = false;
+    }
+
     void sprint()
     {
-        if (Input.GetButtonDown("Sprint")) speed *= sprintMod;
-        else if (Input.GetButtonUp("Sprint")) speed /= sprintMod;
+        if (Input.GetButtonDown("Sprint")) { speed *= sprintMod; isSprinting = true; }
+        else if (Input.GetButtonUp("Sprint")) { speed /= sprintMod; isSprinting = false; }
     }
 
     void jump()
@@ -136,6 +156,8 @@ public class playerController : MonoBehaviour, IDamage, IPickup
         {
             playerVel.y = JumpSpeed;
             jumpCount++;
+            aud.pitch = Random.Range(0.9f, 1.1f);
+            aud.PlayOneShot(audJump[Random.Range(0, audJump.Length)], audJumpVol);
         }
     }
 
@@ -177,6 +199,13 @@ public class playerController : MonoBehaviour, IDamage, IPickup
     {
         shootTimer = 0;
 
+        if (gunList.Count > 0)
+        {
+            aud.pitch = Random.Range(0.9f, 1.1f);
+            gunStats gunPos = gunList[gunListPos];
+            aud.PlayOneShot(gunPos.shootSound[Random.Range(0, gunPos.shootSound.Length)], gunPos.shootSoundVol);
+        }
+
         RaycastHit hit;
         if (Physics.Raycast(Camera.main.transform.position, Camera.main.transform.forward, out hit, shootDist, ~ignoreLayer))
         {
@@ -198,6 +227,9 @@ public class playerController : MonoBehaviour, IDamage, IPickup
         HP -= amount;
         updatePlayerUI();
         StartCoroutine(screenFlashDamage());
+
+        aud.pitch = Random.Range(0.9f, 1.1f);
+        aud.PlayOneShot(audHurt[Random.Range(0, audHurt.Length)], audHurtVol);
 
         if (HP <= 0) gamemanager.instance.youLose();
     }
@@ -238,14 +270,13 @@ public class playerController : MonoBehaviour, IDamage, IPickup
 
         if (item is medkitStats med)
         {
-            // Auto-use medkit on pickup
             UseMedkitFromPickup(med);
             return;
         }
 
         Debug.LogWarning("Picked up unknown item: " + item.name);
     }
-    // New method for instant medkit use from pickup
+
     public void UseMedkitFromPickup(medkitStats medkit)
     {
         int healAmount = medkit.healAmount;
@@ -254,12 +285,10 @@ public class playerController : MonoBehaviour, IDamage, IPickup
 
         updatePlayerUI();
 
-        Debug.Log($"Used medkit! Healed {healAmount} HP. Current HP: {HP}/{HPOrig}");
-
         if (medkit.useEffect != null)
             Instantiate(medkit.useEffect, transform.position, Quaternion.identity);
     }
-    // Public method for instant medkit use with specified heal amount
+
     public void UseMedkitInstantly(int healAmount)
     {
         if (!canUseMedkit) return;
@@ -269,13 +298,10 @@ public class playerController : MonoBehaviour, IDamage, IPickup
 
         updatePlayerUI();
 
-        // Start cooldown
         canUseMedkit = false;
         medkitCooldown = medkitUseCooldown;
-
-        Debug.Log($"Used medkit! Healed {healAmount} HP. Current HP: {HP}/{HPOrig}");
     }
-    // Handle medkit cooldown
+
     public void HandleMedkitCooldown()
     {
         if (!canUseMedkit)
@@ -289,23 +315,19 @@ public class playerController : MonoBehaviour, IDamage, IPickup
         }
     }
 
-    // Check if medkit can be used
     public bool CanUseMedkit()
     {
         return canUseMedkit && HP < HPOrig;
     }
+
     public void getGunStats(gunStats gun)
     {
         if (gunList.Contains(gun))
         {
-            Debug.Log($"Already carrying {gun.name}. Switching to it instead of adding.");
-
-            
             gunListPos = gunList.IndexOf(gun);
         }
         else
         {
-            Debug.Log($"Adding new gun: {gun.name}");
             gunList.Add(gun);
             gunListPos = gunList.Count - 1;
         }
@@ -327,17 +349,12 @@ public class playerController : MonoBehaviour, IDamage, IPickup
             children[i] = gunModel.transform.GetChild(i);
         }
 
-       
         foreach (Transform child in children)
         {
-            
             Destroy(child.gameObject);
         }
 
-
         GameObject newGunModel = Instantiate(gunList[gunListPos].gunModel, gunModel.transform);
-
-        
         newGunModel.transform.localPosition = Vector3.zero;
         newGunModel.transform.localRotation = Quaternion.identity;
     }
@@ -348,26 +365,20 @@ public class playerController : MonoBehaviour, IDamage, IPickup
 
         float scroll = Input.GetAxis("Mouse ScrollWheel");
 
-
         if (scroll > 0f || scroll < 0f)
         {
-            
-
             if (scroll > 0f)
             {
                 gunListPos = (gunListPos + 1) % gunList.Count;
             }
-            else 
+            else
             {
                 gunListPos = (gunListPos - 1 + gunList.Count) % gunList.Count;
             }
 
-
             changeGun();
         }
     }
-
-     
 
     public void respawn()
     {
@@ -386,7 +397,6 @@ public class playerController : MonoBehaviour, IDamage, IPickup
         public float medkitCooldown;
     }
 
-    // Called by SaveManager via ISaveable to capture this component’s state.
     public PlayerControllerSaveData CaptureState()
     {
         return new PlayerControllerSaveData
@@ -399,7 +409,6 @@ public class playerController : MonoBehaviour, IDamage, IPickup
         };
     }
 
-    // Called by SaveManager via ISaveable to restore this component’s state.
     public void RestoreState(object state)
     {
         var data = state as PlayerControllerSaveData;
@@ -411,7 +420,6 @@ public class playerController : MonoBehaviour, IDamage, IPickup
         canUseMedkit = data.canUseMedkit;
         medkitCooldown = data.medkitCooldown;
 
-        // Fix controller height / speed based on crouch state.
         if (isCrouching)
         {
             controller.height = crouchHeight;

@@ -46,6 +46,17 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
     public bool usePatrol = true; // Toggle patrol behavior
     public bool useRoam = true; // Toggle roaming behavior
 
+    [Header("~=~= Audio =~=~")]
+    [SerializeField] AudioSource aud;
+    [SerializeField] AudioClip[] audStep;
+    [Range(0, 1)][SerializeField] float audStepVol;
+    [SerializeField] AudioClip[] audHurt;
+    [Range(0, 1)][SerializeField] float audHurtVol;
+    [SerializeField] AudioClip[] audShoot;
+    [Range(0, 1)][SerializeField] float audShootVol;
+    [SerializeField] AudioClip[] audMelee;
+    [Range(0, 1)][SerializeField] float audMeleeVol;
+
     public EnemyType EnemyTypeValue => enemyType;
 
     Color colorOrig;
@@ -63,6 +74,8 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
     [SerializeField] Transform[] patrolPoints; // Optional patrol points
     int patrolIndex = 0;
 
+    bool isPlayingStep;
+
     void Start()
     {
         colorOrig = model.material.color;
@@ -78,6 +91,12 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
     {
         shootTimer += Time.deltaTime;
         attackTimer += Time.deltaTime;
+
+        // Play footsteps if moving
+        if (agent.velocity.magnitude > 0.1f && !isPlayingStep)
+        {
+            StartCoroutine(playStep());
+        }
 
         // Update movement animation speed if enabled
         if (useAnimations && anim != null)
@@ -102,9 +121,19 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
         }
     }
 
+    IEnumerator playStep()
+    {
+        isPlayingStep = true;
+        if (audStep.Length > 0 && aud != null)
+        {
+            aud.PlayOneShot(audStep[Random.Range(0, audStep.Length)], audStepVol);
+        }
+        yield return new WaitForSeconds(0.5f); // step rate
+        isPlayingStep = false;
+    }
+
     void checkRoamOrPatrol()
     {
-        // Combined roaming and patrol check
         if (agent.remainingDistance < 0.01f && roamTimer >= roamPauseTime)
         {
             if (useRoam)
@@ -112,8 +141,6 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
             else if (usePatrol)
                 checkPatrol();
         }
-
-        // If we have patrol points and should be patrolling, make sure we have a destination
         else if (usePatrol && patrolPoints != null && patrolPoints.Length > 0 && !agent.hasPath)
         {
             checkPatrol();
@@ -150,14 +177,12 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
         playerDir = playerPos - headPos.position;
         float distanceToPlayer = playerDir.magnitude;
 
-        // Check distance first
         if (distanceToPlayer > sightRange)
         {
             agent.stoppingDistance = 0;
             return false;
         }
 
-        // Check FOV
         angleToPlayer = Vector3.Angle(playerDir, transform.forward);
         if (angleToPlayer > FOV)
         {
@@ -165,7 +190,6 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
             return false;
         }
 
-        // Raycast for line-of-sight only
         RaycastHit hit;
         if (Physics.Raycast(headPos.position, playerDir.normalized, out hit, sightRange))
         {
@@ -174,19 +198,16 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
                 agent.SetDestination(playerPos);
                 agent.stoppingDistance = stoppingDistOrig;
 
-                // Attack logic handled separately
                 switch (enemyType)
                 {
                     case EnemyType.Melee:
                         if (distanceToPlayer <= meleeRange && attackTimer >= attackRate)
                             meleeAttack();
                         break;
-
                     case EnemyType.Shooter:
                         if (shootTimer >= shootRate)
                             Shoot();
                         break;
-
                     case EnemyType.Hybrid:
                         if (distanceToPlayer <= meleeRange && attackTimer >= attackRate)
                             meleeAttack();
@@ -232,6 +253,9 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
         HP -= amount;
         agent.SetDestination(gamemanager.instance.player.transform.position);
 
+        if (audHurt.Length > 0 && aud != null)
+            aud.PlayOneShot(audHurt[Random.Range(0, audHurt.Length)], audHurtVol);
+
         if (HP <= 0)
         {
             gamemanager.instance.updateGameGoal(-1);
@@ -253,14 +277,13 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
     void Shoot()
     {
         shootTimer = 0;
+        if (audShoot.Length > 0 && aud != null)
+            aud.PlayOneShot(audShoot[Random.Range(0, audShoot.Length)], audShootVol);
+
         if (useAnimations && anim != null)
-        {
             anim.SetTrigger("Shoot");
-        }
         else
-        {
-            createProjectile(); // If no animations
-        }
+            createProjectile();
     }
 
     public void createProjectile()
@@ -272,32 +295,25 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
     {
         attackTimer = 0;
 
-        if (useAnimations && anim != null)
-        {
-            anim.SetTrigger("Punch");
+        if (audMelee.Length > 0 && aud != null)
+            aud.PlayOneShot(audMelee[Random.Range(0, audMelee.Length)], audMeleeVol);
 
-            // ApplyMeleeDamage() needs to be called via Animation Event
-        }
+        if (useAnimations && anim != null)
+            anim.SetTrigger("Punch");
         else
-        {
             ApplyMeleeDamage();
-        }
     }
 
     public void ApplyMeleeDamage()
     {
-        // Find all colliders in melee range, ignoring the enemy's own layer
         Collider[] hitColliders = Physics.OverlapSphere(meleePos.position, meleeRange, ~ignoreLayer);
 
         foreach (var hit in hitColliders)
         {
             IDamage dmgTarget = hit.GetComponent<IDamage>();
-            if (dmgTarget != null)
+            if (dmgTarget != null && meleeDamage != null)
             {
-                if (meleeDamage != null)
-                {
-                    GameObject dmgObj = Instantiate(meleeDamage, meleePos.position, Quaternion.identity);
-                }
+                Instantiate(meleeDamage, meleePos.position, Quaternion.identity);
             }
         }
     }
@@ -311,7 +327,6 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
             agent.SetDestination(patrolPoints[0].position);
     }
 
-    // Implement ISaveable so each enemy can save and restore its important state.
     [System.Serializable]
     private struct EnemyState
     {
@@ -319,7 +334,6 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
         public Vector3 pos;
     }
 
-    // This is called by my SaveManager when building a save file.
     public object CaptureState()
     {
         return new EnemyState
@@ -329,7 +343,6 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
         };
     }
 
-    // This is called when loading. I warp the NavMeshAgent ,if I have one, and restore HP.
     public void RestoreState(object state)
     {
         EnemyState s = (EnemyState)state;
