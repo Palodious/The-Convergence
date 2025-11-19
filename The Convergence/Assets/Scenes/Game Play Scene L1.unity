@@ -300,6 +300,11 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 4266776669560378470, guid: eaca1366bed676140b90d8dd094fe795, type: 3}
   m_PrefabInstance: {fileID: 452225508223732517}
   m_PrefabAsset: {fileID: 0}
+--- !u!82 &535494176 stripped
+AudioSource:
+  m_CorrespondingSourceObject: {fileID: 7718343463253732154, guid: 90e596fc3a9567b4c8d42d0523a13f19, type: 3}
+  m_PrefabInstance: {fileID: 634434778}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &553773925
 GameObject:
   m_ObjectHideFlags: 0
@@ -495,6 +500,10 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 10
       objectReference: {fileID: 0}
+    - target: {fileID: 5386695453824410145, guid: 90e596fc3a9567b4c8d42d0523a13f19, type: 3}
+      propertyPath: aud
+      value: 
+      objectReference: {fileID: 535494176}
     - target: {fileID: 5386695453824410145, guid: 90e596fc3a9567b4c8d42d0523a13f19, type: 3}
       propertyPath: audMedkit
       value: 
@@ -5852,6 +5861,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MainMenu
   firstLevelSceneName: Main Menu
   optionsPanel: {fileID: 2011096332716312905}
+  continueButton: {fileID: 0}
 --- !u!114 &2011096332716312908
 MonoBehaviour:
   m_ObjectHideFlags: 0
