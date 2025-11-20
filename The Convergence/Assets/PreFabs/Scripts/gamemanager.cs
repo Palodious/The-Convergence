@@ -182,9 +182,15 @@ public class gamemanager : MonoBehaviour
 
         // Restore player / objective values from the save.
         if (playerScript != null)
-            playerScript.SetHP(data.playerHP);
 
-        playerScript.RestoreGunVisual(data.playerGunIndex);
+        {
+            playerScript.SetHP(data.playerHP);
+            playerScript.RestoreGunVisual(data.playerGunIndex);
+        }
+        else
+        {
+            Debug.LogWarning("LoadGameRoutine: playerScript is null after load.");
+        }
 
         gameGoalCount = data.gameGoalCount;
         if (gameGoalCountText != null)

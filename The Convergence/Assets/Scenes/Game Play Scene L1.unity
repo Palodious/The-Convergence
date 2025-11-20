@@ -477,6 +477,26 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5386695453824410145, guid: 90e596fc3a9567b4c8d42d0523a13f19, type: 3}
+      propertyPath: audStepVol
+      value: 0.15
+      objectReference: {fileID: 0}
+    - target: {fileID: 5386695453824410145, guid: 90e596fc3a9567b4c8d42d0523a13f19, type: 3}
+      propertyPath: gunList.Array.size
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 5386695453824410145, guid: 90e596fc3a9567b4c8d42d0523a13f19, type: 3}
+      propertyPath: 'gunList.Array.data[0]'
+      value: 
+      objectReference: {fileID: 11400000, guid: e4a596252ddd867448cb8a98803cad63, type: 2}
+    - target: {fileID: 5386695453824410145, guid: 90e596fc3a9567b4c8d42d0523a13f19, type: 3}
+      propertyPath: 'gunList.Array.data[1]'
+      value: 
+      objectReference: {fileID: 11400000, guid: c147004ed0afc7544a357b2c7dd41b55, type: 2}
+    - target: {fileID: 5386695453824410145, guid: 90e596fc3a9567b4c8d42d0523a13f19, type: 3}
+      propertyPath: 'gunList.Array.data[2]'
+      value: 
+      objectReference: {fileID: 11400000, guid: 9c7e12c69d50f724894ce8d954df12dd, type: 2}
     - target: {fileID: 5817784705791301817, guid: 90e596fc3a9567b4c8d42d0523a13f19, type: 3}
       propertyPath: id
       value: c570f1df759a4430bf25552c3230999f
@@ -484,7 +504,10 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 2376811500745352790, guid: 90e596fc3a9567b4c8d42d0523a13f19, type: 3}
+      insertIndex: 6
+      addedObject: {fileID: 1218292264}
   m_SourcePrefab: {fileID: 100100000, guid: 90e596fc3a9567b4c8d42d0523a13f19, type: 3}
 --- !u!1001 &812060846
 PrefabInstance:
@@ -560,6 +583,25 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 2880066801963658504, guid: 63b017899aae5ff4aa43b538ad0e287c, type: 3}
   m_PrefabInstance: {fileID: 1864160428}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1218292257 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2376811500745352790, guid: 90e596fc3a9567b4c8d42d0523a13f19, type: 3}
+  m_PrefabInstance: {fileID: 634434778}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1218292264
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1218292257}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2595f0efb17706340b65de4d7e322ddc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SaveEntity
+  id: 65e93b0a9bce4fcb810ff637d6cca3af
+  prefabKey: 
 --- !u!1 &1361145684
 GameObject:
   m_ObjectHideFlags: 0
