@@ -265,6 +265,22 @@ public class playerController : MonoBehaviour, IDamage, IPickup
         updatePlayerUI();
     }
 
+    // Expose which gun slot I'm using so the save system can store it.
+    public int GetCurrentGunIndex()
+    {
+        return gunListPos;
+    }
+
+    // After loading, call this to rebuild the visual gun model.
+    public void RestoreGunVisual(int index)
+    {
+        if (gunList == null || gunList.Count == 0)
+            return;
+
+        gunListPos = Mathf.Clamp(index, 0, gunList.Count - 1);
+        changeGun();
+    }
+
     public void GetItem(ScriptableObject item)
     {
         if (item is gunStats gun)

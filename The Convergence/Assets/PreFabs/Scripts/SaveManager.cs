@@ -31,6 +31,7 @@ public class SaveData
     public Quaternion playerRot;
     public int playerHP;
     public int gameGoalCount;
+    public int playerGunIndex;
     public List<EntityRecord> entities = new();
 }
 
@@ -51,6 +52,9 @@ public class SaveManager : MonoBehaviour
     // This creates a new SaveData file, fills it with info, and writes it to disk.
     public void Save(GameObject player, int playerHP, int gameGoalCount)
     {
+
+        var pc = player.GetComponent<playerController>();
+
         // Start by saving core game info like player data and the current scene.
         var data = new SaveData
         {
