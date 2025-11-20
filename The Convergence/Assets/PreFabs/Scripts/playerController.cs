@@ -201,6 +201,8 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
 
     void shoot()
     {
+        if (gunList.Count == 0) return;
+
         shootTimer = 0;
 
         if (gunList.Count > 0)
