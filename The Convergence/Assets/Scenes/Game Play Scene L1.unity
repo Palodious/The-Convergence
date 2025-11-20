@@ -119,6 +119,25 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &138486130 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6577229939747542559, guid: 90e596fc3a9567b4c8d42d0523a13f19, type: 3}
+  m_PrefabInstance: {fileID: 634434778}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &138486132
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 138486130}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2595f0efb17706340b65de4d7e322ddc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SaveEntity
+  id: c570f1df759a4430bf25552c3230999f
+  prefabKey: 
 --- !u!1001 &157906522
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -501,7 +520,10 @@ PrefabInstance:
     - {fileID: -5576764915473032702, guid: 90e596fc3a9567b4c8d42d0523a13f19, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 6577229939747542559, guid: 90e596fc3a9567b4c8d42d0523a13f19, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 138486132}
   m_SourcePrefab: {fileID: 100100000, guid: 90e596fc3a9567b4c8d42d0523a13f19, type: 3}
 --- !u!82 &634434781 stripped
 AudioSource:
@@ -567,7 +589,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3563017330958320772, guid: 5ec6d5f46ebc54348ba5517a99b20633, type: 3}
       propertyPath: id
-      value: 715d484cd4ee42b39a772e7d2de83d25
+      value: 15c5b41f2c464ca090f04bfd338ce532
       objectReference: {fileID: 0}
     - target: {fileID: 5950267001763509478, guid: 5ec6d5f46ebc54348ba5517a99b20633, type: 3}
       propertyPath: m_Name
