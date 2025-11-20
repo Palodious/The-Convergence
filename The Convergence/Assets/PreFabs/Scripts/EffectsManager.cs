@@ -10,12 +10,16 @@ public class EffectsManager : MonoBehaviour
     {
         public string key;
         public GameObject prefab;
-        public int poolSize = 5;
+       [Range(1, 10)] public int poolSize;
+        public AudioClip soundEffect;
+        [Range(0f, 1f)]public float volume = 1f;
     }
 
     [SerializeField] private List<EffectEntry> effects = new List<EffectEntry>();
+    [SerializeField] private AudioSource audioSource;
 
     private Dictionary<string, ObjectPool> effectPools = new Dictionary<string, ObjectPool>();
+    private Dictionary<string, EffectEntry> effectData = new Dictionary<string, EffectEntry>();
 
     void Awake()
     {
@@ -32,11 +36,17 @@ public class EffectsManager : MonoBehaviour
 
     void InitializePools()
     {
+        if (audioSource == null)
+        {
+            audioSource = gameObject.AddComponent<AudioSource>();
+            audioSource.playOnAwake = false;
+        }
+
         foreach (EffectEntry entry in effects)
         {
             if (string.IsNullOrEmpty(entry.key))
             {
-                Debug.LogWarning($"[EffectsManager] Missing key for effect: {entry.prefab.name}");
+                Debug.LogWarning($"[EffectsManager] Missing key for effect: {entry.prefab?.name}");
                 continue;
             }
 
@@ -46,7 +56,7 @@ public class EffectsManager : MonoBehaviour
                 continue;
             }
 
-            // Create a pool holder
+            // Create pool
             GameObject poolObj = new GameObject($"Pool_{entry.key}");
             poolObj.transform.SetParent(transform);
             ObjectPool pool = poolObj.AddComponent<ObjectPool>();
@@ -55,10 +65,13 @@ public class EffectsManager : MonoBehaviour
             pool.Initialize();
 
             effectPools[entry.key] = pool;
+            effectData[entry.key] = entry;
+
+            Debug.Log($"[EffectsManager] Initialized pool for: {entry.key}");
         }
     }
 
-    // Creates an effect at position. Returns GameObject to modify it
+    // Creates an effect at position.
     public GameObject Create(string effectKey, Vector3 position, Quaternion? rotation = null)
     {
         if (!effectPools.ContainsKey(effectKey))
@@ -73,6 +86,11 @@ public class EffectsManager : MonoBehaviour
             effect.transform.position = position;
             effect.transform.rotation = rotation ?? Quaternion.identity;
             effect.SetActive(true);
+
+            if (effectData[effectKey].soundEffect != null)
+            {
+                audioSource.PlayOneShot(effectData[effectKey].soundEffect, effectData[effectKey].volume);
+            }
         }
 
         return effect;
@@ -80,7 +98,7 @@ public class EffectsManager : MonoBehaviour
 
     public GameObject Create(string effectKey, Vector3 position, Quaternion rotation)
     {
-        return Create(effectKey, position, (Quaternion)rotation);
+        return Create(effectKey, position, (Quaternion?)rotation);
     }
 
     // Return effect to pool
