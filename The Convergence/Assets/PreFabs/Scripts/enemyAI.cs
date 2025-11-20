@@ -23,7 +23,7 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
     [SerializeField] Transform headPos;
 
     [Header("~=~= Stats =~=~")]
-    [Range(1, 100)][SerializeField] int HP;
+    [Range(1, 300)][SerializeField] int HP;
     [Range(1, 360)][SerializeField] int FOV;
     [Range(1, 360)][SerializeField] int faceTargetSpeed;
     [Range(1, 50)][SerializeField] int roamDist;
@@ -40,7 +40,7 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
     [SerializeField] GameObject meleeDamage; // GameObject with damage.cs attached
     [Range(0.1f, 10f)][SerializeField] float meleeRange; // Distance at which enemy can hit player
     [Range(0.1f, 10f)][SerializeField] float attackRate;  // Cooldown between attacks
-    [Range(1, 50)][SerializeField] int meleeDamageAmount = 10;
+    [Range(1, 50)][SerializeField] int meleeDamageAmount;
 
     [Header("~=~= Behavior Toggles =~=~")]
     public bool useAnimations = true; // Toggle all animation logic on/off

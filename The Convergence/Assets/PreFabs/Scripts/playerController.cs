@@ -80,8 +80,9 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
         Debug.DrawRay(Camera.main.transform.position, Camera.main.transform.forward * shootDist, Color.red);
         shootTimer += Time.deltaTime;
         movement();
-        sprint();
         }
+
+        sprint();
 
         // handle medkit cooldown timer
         HandleMedkitCooldown();
