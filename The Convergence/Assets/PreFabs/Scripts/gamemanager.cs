@@ -189,6 +189,7 @@ public class gamemanager : MonoBehaviour
         gameGoalCount = data.gameGoalCount;
         if (gameGoalCountText != null)
             gameGoalCountText.text = gameGoalCount.ToString("F0");
+        stateUnpause();
     }
 
     public int GetGameGoalCount()

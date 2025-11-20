@@ -632,7 +632,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3810211579639045497}
-  - component: {fileID: -5576764915473032702}
   - component: {fileID: 5386695453824410145}
   - component: {fileID: 1451797627688218683}
   - component: {fileID: 2198682085582701513}
@@ -663,20 +662,6 @@ Transform:
   - {fileID: 4188849065707242032}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 40.789, z: 0}
---- !u!114 &-5576764915473032702
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2376811500745352790}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2595f0efb17706340b65de4d7e322ddc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::SaveEntity
-  id: b3dbd9e2f21a4773ad3415ef07cb5210
-  prefabKey: 
 --- !u!114 &5386695453824410145
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -708,7 +693,7 @@ MonoBehaviour:
   aud: {fileID: 7718343463253732154}
   audStep:
   - {fileID: 8300000, guid: 8d9dbfa323a4f6248897aa3230469e61, type: 3}
-  audStepVol: 0.5
+  audStepVol: 0.2
   audJump:
   - {fileID: 8300000, guid: 57da31a052bcb9f4bab4d8b3e62edb3c, type: 3}
   audJumpVol: 0.5
@@ -734,16 +719,23 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::playerAbilities
   controller: {fileID: 5386695453824410145}
-  charController: {fileID: 0}
-  audioSource: {fileID: 0}
-  surgeDuration: 5
-  surgeDamageBoost: 2
+  charController: {fileID: 1546805672535400636}
+  pulseDamage: 20
+  pulseRange: 6
+  pulseCooldown: 4
+  surgeDuration: 15
+  surgeDamageBoost: 2.5
   surgeCooldown: 8
-  surgeEffectPrefab: {fileID: 0}
-  jumpDistance: 8
-  jumpCooldown: 6
-  jumpEffect: {fileID: 0}
-  jumpSound: {fileID: 0}
+  jumpDistance: 15
+  jumpCooldown: 5
+  enemyMask:
+    serializedVersion: 2
+    m_Bits: 64
+  environmentMask:
+    serializedVersion: 2
+    m_Bits: 1
+  isSurging: 0
+  isJumping: 0
 --- !u!33 &2198682085582701513
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -1405,6 +1397,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4475732015081521006}
+  - component: {fileID: 5817784705791301817}
   m_Layer: 10
   m_Name: Gun Model
   m_TagString: Untagged
@@ -1442,6 +1435,20 @@ Transform:
   - {fileID: 2371039904051858267}
   m_Father: {fileID: 4188849065707242032}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &5817784705791301817
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6577229939747542559}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2595f0efb17706340b65de4d7e322ddc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SaveEntity
+  id: 
+  prefabKey: 
 --- !u!1 &6778595801531823199
 GameObject:
   m_ObjectHideFlags: 0
