@@ -23,7 +23,8 @@ public class gamemanager : MonoBehaviour
     public TMP_Text gameGoalCountText;
     [SerializeField] public Image playerHPBar;
     [SerializeField] public GameObject playerDamagePanel;
-    [SerializeField] public GameObject checkpointPopup;
+    public GameObject checkpointPopup;
+    public GameObject bossDoorPopup;
     [SerializeField] public GameObject surgeOverlay;
     public GameObject spawnPoint;
 

@@ -8,7 +8,9 @@ public class bossDoor : MonoBehaviour
     {
         if (gamemanager.instance.GetGameGoalCount() <= 1 && doorToDestroy != null)
         {
+            gamemanager.instance.bossDoorPopup.SetActive(true);
             Destroy(doorToDestroy);
+            gamemanager.instance.bossDoorPopup.SetActive(false);
         }
     }
 }
