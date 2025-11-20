@@ -63,7 +63,8 @@ public class SaveManager : MonoBehaviour
             playerPos = player.transform.position,
             playerRot = player.transform.rotation,
             playerHP = playerHP,
-            gameGoalCount = gameGoalCount
+            gameGoalCount = gameGoalCount,
+            playerGunIndex = pc != null ? pc.GetCurrentGunIndex() : 0
         };
 
         // Loop through every SaveEntity in the scene (active and inactive) and grab their data.
