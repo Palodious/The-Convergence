@@ -360,7 +360,11 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
 
     public void RestoreState(object state)
     {
-        EnemyState s = (EnemyState)state;
+        if (state is not EnemyState s)
+        {
+            Debug.LogError($"enemyAI.RestoreState: expected EnemyState, got {state?.GetType()} on {name}");
+            return;
+        }
 
         if (agent != null)
             agent.Warp(s.pos);

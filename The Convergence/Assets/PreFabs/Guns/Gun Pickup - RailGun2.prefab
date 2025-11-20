@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 432306247956405416}
   - component: {fileID: 8250585121332943591}
   - component: {fileID: 2975043904287070710}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Cylinder.007
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -100,7 +100,7 @@ GameObject:
   - component: {fileID: 8271146640681732292}
   - component: {fileID: 5823542482811980910}
   - component: {fileID: 2608730744010930336}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Cylinder.011
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -189,7 +189,7 @@ GameObject:
   - component: {fileID: 7328880162063716740}
   - component: {fileID: 7369503508634353788}
   - component: {fileID: 2095215838414318243}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Cylinder.010
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -278,7 +278,7 @@ GameObject:
   - component: {fileID: 2508860603973792692}
   - component: {fileID: 8505911417116538055}
   - component: {fileID: 3803665939050908410}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Cylinder.001
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -367,7 +367,7 @@ GameObject:
   - component: {fileID: 9062490978368618144}
   - component: {fileID: 4393180995882550843}
   - component: {fileID: 3131540342414884457}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Cylinder.009
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -456,7 +456,7 @@ GameObject:
   - component: {fileID: 8467640757538059868}
   - component: {fileID: 511066208844752618}
   - component: {fileID: 4024212504483713346}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Cube.007
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -545,7 +545,8 @@ GameObject:
   - component: {fileID: 940126913429668078}
   - component: {fileID: 8088150622896018779}
   - component: {fileID: 1328778819628163611}
-  m_Layer: 0
+  - component: {fileID: -8073947940549532826}
+  m_Layer: 10
   m_Name: Gun Pickup - RailGun2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -612,6 +613,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::gunPickup
   gun: {fileID: 11400000, guid: c147004ed0afc7544a357b2c7dd41b55, type: 2}
+--- !u!114 &-8073947940549532826
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5805082395274130021}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2595f0efb17706340b65de4d7e322ddc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SaveEntity
+  id: 
+  prefabKey: 
 --- !u!1 &6689138152786035156
 GameObject:
   m_ObjectHideFlags: 0
@@ -623,7 +638,7 @@ GameObject:
   - component: {fileID: 378031208434157376}
   - component: {fileID: 7794468017403097773}
   - component: {fileID: 1440318467340197883}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Cube.005
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -712,7 +727,7 @@ GameObject:
   - component: {fileID: 2795683580515484319}
   - component: {fileID: 7481437371899110439}
   - component: {fileID: 392745654923180636}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Cube.004
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -801,7 +816,7 @@ GameObject:
   - component: {fileID: 6324253347313291117}
   - component: {fileID: 7926210334159108768}
   - component: {fileID: 2536575050369441533}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Cube.006
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -890,7 +905,7 @@ GameObject:
   - component: {fileID: 6303622523938414307}
   - component: {fileID: 1935633249630887027}
   - component: {fileID: 7201097407818433128}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Cylinder.004
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -985,7 +1000,7 @@ GameObject:
   - component: {fileID: 4901524881841619593}
   - component: {fileID: 1238261633956192493}
   - component: {fileID: 6318386606936442770}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Cylinder.003
   m_TagString: Untagged
   m_Icon: {fileID: 0}

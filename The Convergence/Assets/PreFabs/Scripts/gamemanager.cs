@@ -162,7 +162,7 @@ public class gamemanager : MonoBehaviour
         StartCoroutine(LoadGameRoutine());
     }
 
-    private IEnumerator LoadGameRoutine()
+    IEnumerator LoadGameRoutine()
     {
         if (!SaveManager.Instance.TryLoad(out SaveData data))
         {
@@ -183,6 +183,8 @@ public class gamemanager : MonoBehaviour
         // Restore player / objective values from the save.
         if (playerScript != null)
             playerScript.SetHP(data.playerHP);
+
+        playerScript.RestoreGunVisual(data.playerGunIndex);
 
         gameGoalCount = data.gameGoalCount;
         if (gameGoalCountText != null)

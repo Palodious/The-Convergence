@@ -265,6 +265,22 @@ public class playerController : MonoBehaviour, IDamage, IPickup
         updatePlayerUI();
     }
 
+    // Expose which gun slot I'm using so the save system can store it.
+    public int GetCurrentGunIndex()
+    {
+        return gunListPos;
+    }
+
+    // After loading, call this to rebuild the visual gun model.
+    public void RestoreGunVisual(int index)
+    {
+        if (gunList == null || gunList.Count == 0)
+            return;
+
+        gunListPos = Mathf.Clamp(index, 0, gunList.Count - 1);
+        changeGun();
+    }
+
     public void GetItem(ScriptableObject item)
     {
         if (item is gunStats gun)
@@ -394,6 +410,7 @@ public class playerController : MonoBehaviour, IDamage, IPickup
         public bool isGliding;
         public bool canUseMedkit;
         public float medkitCooldown;
+        public int gunListPos;
     }
 
     public PlayerControllerSaveData CaptureState()
@@ -404,7 +421,8 @@ public class playerController : MonoBehaviour, IDamage, IPickup
             isCrouching = this.isCrouching,
             isGliding = this.isGliding,
             canUseMedkit = this.canUseMedkit,
-            medkitCooldown = this.medkitCooldown
+            medkitCooldown = this.medkitCooldown,
+            gunListPos = this.gunListPos
         };
     }
 
@@ -419,7 +437,14 @@ public class playerController : MonoBehaviour, IDamage, IPickup
         canUseMedkit = data.canUseMedkit;
         medkitCooldown = data.medkitCooldown;
 
-        if (isCrouching)
+        // Restore gun selection and rebuild the gun model
+        if (gunList != null && gunList.Count > 0)
+        {
+            gunListPos = Mathf.Clamp(data.gunListPos, 0, gunList.Count - 1);
+            changeGun();
+        }
+
+            if (isCrouching)
         {
             controller.height = crouchHeight;
             speed = Mathf.RoundToInt(originalSpeed * crouchSpeedMod);

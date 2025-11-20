@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3510255467534488306}
-  - component: {fileID: 7351813024457598394}
+  - component: {fileID: -6428111837077187111}
   - component: {fileID: 1767553958635133344}
   - component: {fileID: 6259301409843038931}
   - component: {fileID: 2944604361103831847}
@@ -42,7 +42,7 @@ Transform:
   - {fileID: 8056049982641180}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &7351813024457598394
+--- !u!114 &-6428111837077187111
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -54,7 +54,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2595f0efb17706340b65de4d7e322ddc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SaveEntity
-  id: 15778f4e3c014978b8ed1951b0a1d4ca
+  id: 
   prefabKey: 
 --- !u!114 &1767553958635133344
 MonoBehaviour:
@@ -70,7 +70,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::enemyAI
   ignoreLayer:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 2048
   enemyType: 0
   agent: {fileID: 6259301409843038931}
   anim: {fileID: 2944604361103831847}
