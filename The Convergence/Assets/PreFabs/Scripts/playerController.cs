@@ -2,7 +2,7 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 
-public class playerController : MonoBehaviour, IDamage, IPickup
+public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
 {
     [Header("~=~= Components =~=~")]
     [SerializeField] CharacterController controller;
@@ -80,9 +80,8 @@ public class playerController : MonoBehaviour, IDamage, IPickup
         Debug.DrawRay(Camera.main.transform.position, Camera.main.transform.forward * shootDist, Color.red);
         shootTimer += Time.deltaTime;
         movement();
-    }
-
         sprint();
+        }
 
         // handle medkit cooldown timer
         HandleMedkitCooldown();
@@ -96,7 +95,7 @@ public class playerController : MonoBehaviour, IDamage, IPickup
             jumpCount = 0;
 
             // play footstep audio if moving
-            if (moveDir.normalized.magnitude > 0.3f && isPlayingStep)
+            if (moveDir.normalized.magnitude > 0.3f && !isPlayingStep)
             {
                 StartCoroutine(playStep());
             }
@@ -247,9 +246,19 @@ public class playerController : MonoBehaviour, IDamage, IPickup
 
     IEnumerator screenFlashDamage()
     {
-        gamemanager.instance.playerDamagePanel.SetActive(true);
+        var gm = gamemanager.instance;
+        if (gm == null || gm.playerDamagePanel == null)
+            yield break;
+
+        var panel = gm.playerDamagePanel;
+
+        if (panel != null)
+            panel.SetActive(true);
+
         yield return new WaitForSeconds(0.1f);
-        gamemanager.instance.playerDamagePanel.SetActive(false);
+
+        if (panel != null)
+            panel.SetActive(false);
     }
 
     public int CurrentHP
@@ -412,6 +421,9 @@ public class playerController : MonoBehaviour, IDamage, IPickup
         public float medkitCooldown;
         public int gunListPos;
     }
+
+    object ISaveable.CaptureState() => CaptureState();
+    void ISaveable.RestoreState(object state) => RestoreState(state);
 
     public PlayerControllerSaveData CaptureState()
     {
