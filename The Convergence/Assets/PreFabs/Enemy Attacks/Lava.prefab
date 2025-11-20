@@ -50,10 +50,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::damage
   type: 1
   rb: {fileID: 7363115700190341839}
-  damageAmount: 0
-  damageRate: 0
-  speed: 0
-  destroyTime: 0
+  ignoreLayer:
+    serializedVersion: 2
+    m_Bits: 0
+  damageAmount: 1
+  damageRate: 0.1
+  speed: 1
+  destroyTime: 1
 --- !u!33 &1433572888171949173
 MeshFilter:
   m_ObjectHideFlags: 0
