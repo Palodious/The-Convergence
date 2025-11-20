@@ -16,7 +16,7 @@ GameObject:
   - component: {fileID: 6252746052606412807}
   m_Layer: 0
   m_Name: medkit
-  m_TagString: Untagged
+  m_TagString: Medkit
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -29,7 +29,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5997954717989436325}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0.96592575, z: -0, w: -0.25881952}
+  m_LocalRotation: {x: -0, y: -0.9659257, z: 0, w: -0.25881952}
   m_LocalPosition: {x: 15.13765, y: -0.000019026724, z: 10.777573}
   m_LocalScale: {x: 5, y: 5, z: 5}
   m_ConstrainProportionsScale: 0
@@ -48,7 +48,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2595f0efb17706340b65de4d7e322ddc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SaveEntity
-  id: 68c5f6555e1d4649acfa543ffd9580e2
+  id: 
   prefabKey: 
 --- !u!114 &9211608102039389903
 MonoBehaviour:
@@ -62,7 +62,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 244c509d4d1a3cc4da4c49227f8920c9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::medkitPickup
-  medkit: {fileID: 11400000, guid: 741f2d48dbf1b564398bc4198f08cfb7, type: 2}
+  medkit: {fileID: 11400000, guid: 9b45a87e5451e0c49afcbf9331e41d4f, type: 2}
 --- !u!33 &1972418033787881870
 MeshFilter:
   m_ObjectHideFlags: 0
