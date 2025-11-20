@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &5230761482608860627
+--- !u!1 &8216002615045189913
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,8 +8,8 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 8903827831039265941}
-  - component: {fileID: 1233736366372325253}
+  - component: {fileID: 4483153208491372317}
+  - component: {fileID: 8885296602218767975}
   m_Layer: 0
   m_Name: EffectsManager
   m_TagString: Untagged
@@ -17,28 +17,28 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &8903827831039265941
+--- !u!4 &4483153208491372317
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5230761482608860627}
+  m_GameObject: {fileID: 8216002615045189913}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -142.23227, y: 0, z: -89.37756}
+  m_LocalPosition: {x: -160.10245, y: 0, z: -79.09014}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1233736366372325253
+--- !u!114 &8885296602218767975
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5230761482608860627}
+  m_GameObject: {fileID: 8216002615045189913}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c02bd07a123634b44bc45da6cda3a4db, type: 3}
@@ -71,7 +71,7 @@ MonoBehaviour:
     soundEffect: {fileID: 8300000, guid: 53a94199c0be37f47ac8a3be45e84c7d, type: 3}
     volume: 0
   - key: SurgeEnd
-    prefab: {fileID: 6526302276393259002, guid: f9d9793366789ae48a7e1b0692763acc, type: 3}
+    prefab: {fileID: 0}
     poolSize: 1
     soundEffect: {fileID: 8300000, guid: dfe0a944577aedb41ae0e6b66c2a0d93, type: 3}
     volume: 0.7
