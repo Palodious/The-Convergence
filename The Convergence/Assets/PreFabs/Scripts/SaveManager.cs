@@ -120,7 +120,6 @@ public class SaveManager : MonoBehaviour
         return File.Exists(SavePath);
     }
 
-
     // This coroutine handles the actual world reconstruction when I load a save.
     public System.Collections.IEnumerator LoadAndRestore(SaveData data, Func<string, GameObject> spawnByKey)
     {
@@ -132,16 +131,38 @@ public class SaveManager : MonoBehaviour
         }
 
         // Get all SaveEntities currently in the scene and build a quick lookup by ID.
+        // Get all SaveEntities currently in the scene and build a quick lookup by ID.
         var saveEntities = UnityEngine.Object.FindObjectsByType<SaveEntity>(
-    FindObjectsInactive.Include,
-    FindObjectsSortMode.None
-);
-
-        var existing = saveEntities.ToDictionary(
-            x => x.Id,
-            x => x.gameObject
+            FindObjectsInactive.Include,
+            FindObjectsSortMode.None
         );
 
+        // Build the dictionary manually so I can detect duplicates safely.
+        var existing = new Dictionary<string, GameObject>();
+
+        foreach (var se in saveEntities)
+        {
+            if (se == null) continue;
+
+            var id = se.Id;
+
+            if (string.IsNullOrEmpty(id))
+            {
+                Debug.LogWarning($"SaveManager: Found SaveEntity on {se.gameObject.name} with EMPTY id. Skipping it.");
+                continue;
+            }
+
+            if (existing.ContainsKey(id))
+            {
+                Debug.LogWarning(
+                    $"SaveManager: Duplicate SaveEntity id '{id}' found on {se.gameObject.name} " +
+                    $"and {existing[id].name}. Keeping the first, ignoring this one."
+                );
+                continue;
+            }
+
+            existing.Add(id, se.gameObject);
+        }
 
         // Destroy anything that wasn’t in the saved file (it was dead or collected).
         foreach (var kv in existing.ToList())
@@ -173,14 +194,27 @@ public class SaveManager : MonoBehaviour
             {
                 var t = Type.GetType(c.typeName);
                 if (t == null) continue;
+
                 var comp = go.GetComponent(t) as ISaveable;
                 if (comp == null) continue;
 
-                // Deserialize the saved data back into the right type.
-                var payloadType = comp.GetType().GetMethod("CaptureState").ReturnType;
+                // Ask the component what type it actually saves as.
+                var sample = comp.CaptureState();
+                if (sample == null)
+                {
+                    Debug.LogWarning($"SaveManager: CaptureState() on {t.Name} returned null during load. Skipping.");
+                    continue;
+                }
+
+                var payloadType = sample.GetType();
+
+                // Deserialize JSON into that exact type.
                 var payload = JsonUtility.FromJson(c.json, payloadType);
+
+                // Hand the strongly-typed payload back to the component.
                 comp.RestoreState(payload);
             }
+
             if (!string.IsNullOrEmpty(data.playerId))
             {
                 if (existing.TryGetValue(data.playerId, out var playerGo) && playerGo != null)

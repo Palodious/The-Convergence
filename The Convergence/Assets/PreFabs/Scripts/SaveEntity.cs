@@ -1,41 +1,60 @@
-using UnityEngine;
+using System;
 using System.Collections.Generic;
+using UnityEditor;
+using UnityEngine;
 
 // I put this on anything in the scene that I want the SaveManager to track.
 // It gives each object a unique ID so the save file can match records back to real objects.
 [ExecuteAlways]    // I want this to run in edit mode too so IDs stay unique while levels are built.
 public class SaveEntity : MonoBehaviour
 {
-    [SerializeField, HideInInspector]
-    private string id;
+    [SerializeField] private string id;
 
-    // This is an optional key I use so the SaveManager can spawn a prefab if this entity doesn't exist in the scene yet.
+    // This is an optional key I use so the SaveManager can spawn a prefab
+    // if this entity doesn't exist in the scene yet.
     public string prefabKey;
 
     // Public read-only wrapper so other scripts (and SaveManager during normal access) can see the ID.
     public string Id => id;
 
-    // This is an editor-only lookup I use to detect duplicate IDs in the current scene.
-    // It never goes into builds with any overhead other than a simple dictionary.
-    private static readonly Dictionary<string, SaveEntity> editorLookup = new();
+    // Editor-only lookup so I can enforce uniqueness while building levels.
+#if UNITY_EDITOR
+    static readonly Dictionary<string, SaveEntity> editorLookup = new Dictionary<string, SaveEntity>();
+#endif
 
-    // OnValidate runs whenever something changes in the inspector, I duplicate an object, or scripts recompile.
-    // I use it to keep IDs unique while leels are being built.
     void OnValidate()
     {
-        // I only care about edit-time uniqueness checks here.
+        #if UNITY_EDITOR
         if (Application.isPlaying)
             return;
 
-        // If I don't have an ID yet, or this ID is already used by some other SaveEntity, I generate a new one.
-        if (string.IsNullOrEmpty(id) || !IsUniqueInEditor(id))
+        // If it's a PREFAB ASSET in the Project window, I do NOT want an ID. No sir.
+        // I want all IDs to be generated on scene instances / clones.
+        if (PrefabUtility.IsPartOfPrefabAsset(this))
         {
-            id = System.Guid.NewGuid().ToString("N");   // I use a GUID so collisions are basically impossible.
+            // Make sure the prefab asset itself stays blank.
+            if (!string.IsNullOrEmpty(id))
+            {
+                id = string.Empty;
+            }
+            return;
         }
 
-        // Track this instance in my editor lookup so I can spot duplicates.
-        editorLookup[id] = this;
+        // If I don't have an ID yet, or the current one collides with another object,
+        // generate a new GUID until it's unique.
+        if (string.IsNullOrEmpty(id) || !IsUniqueInEditor(id))
+        {
+            id = Guid.NewGuid().ToString("N");
+        }
+
+        {
+            // Track this instance in my editor lookup so I can spot duplicates.
+            editorLookup[id] = this;
+        }
+#endif
     }
+
+#if UNITY_EDITOR
 
     // This helper checks if a candidate ID is unique among all SaveEntity instances in the editor.
     bool IsUniqueInEditor(string candidate)
@@ -55,11 +74,15 @@ public class SaveEntity : MonoBehaviour
     // I clean up the lookup so I don't keep stale references around in the editor.
     void OnDestroy()
     {
-        if (editorLookup.TryGetValue(id, out var existing) && existing == this)
+        if (!Application.isPlaying && !string.IsNullOrEmpty(id))
         {
-            editorLookup.Remove(id);
+            if (editorLookup.TryGetValue(id, out var existing) && existing == this)
+            {
+                editorLookup.Remove(id);
+            }
         }
     }
+#endif
 
     // Awake runs both in play mode and (because of ExecuteAlways) sometimes in the editor.
     // Here I make sure that at runtime I never end up with an empty ID.
@@ -69,7 +92,8 @@ public class SaveEntity : MonoBehaviour
         // I generate one so this object can still be tracked correctly in the save file.
         if (string.IsNullOrEmpty(id))
         {
-            id = System.Guid.NewGuid().ToString("N");
+            id = Guid.NewGuid().ToString("N");
+
         }
     }
 }
