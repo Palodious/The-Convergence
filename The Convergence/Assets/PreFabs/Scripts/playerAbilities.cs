@@ -150,12 +150,21 @@ public class PlayerAbilities : MonoBehaviour
         jumpTimer = 0;
         isJumping = true;
 
-        Debug.Log("Rift Jump STARTED");
-
         Vector3 startPos = transform.position;
-        Vector3 targetPos = transform.position + transform.forward * jumpDistance;
+        Vector3 direction = transform.forward;
+        float distance = jumpDistance;
 
-        GameObject prepEffect = EffectsManager.Instance.Create("JumpPrep", startPos);
+        // Raycast to detect obstacles
+        if (Physics.Raycast(startPos, direction, out RaycastHit hit, distance, environmentMask))
+        {
+            // Stop just before the obstacle, reduce distance
+            distance = hit.distance - 0.2f; // small offset so we don’t get stuck in the wall
+        }
+
+        Vector3 targetPos = startPos + direction * distance;
+
+        // Visual
+        EffectsManager.Instance.Create("JumpPrep", startPos);
 
         if (charController != null)
         {
@@ -164,15 +173,12 @@ public class PlayerAbilities : MonoBehaviour
             charController.enabled = true;
         }
         else
-        {
             transform.position = targetPos;
-        }
 
         EffectsManager.Instance.Create("JumpImpact", targetPos);
 
         isJumping = false;
-        Debug.Log($"Rift Jump COMPLETE - Jumped {Vector3.Distance(startPos, targetPos):F2}m");
-
+        Debug.Log($"Rift Jump COMPLETE - Jumped {distance:F2}m");
         yield return null;
     }
 
