@@ -7,6 +7,7 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
     [Header("~=~= Components =~=~")]
     [SerializeField] CharacterController controller;
     [SerializeField] LayerMask ignoreLayer;
+    public Animator animator; // Added for IK
 
     [Header("~=~= Player Stats =~=~")]
     [Range(1, 1000)][SerializeField] int HP;
@@ -34,8 +35,8 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
     [Range(0, 1)][SerializeField] float audJumpVol;
     [SerializeField] AudioClip[] audHurt;
     [Range(0, 1)][SerializeField] float audHurtVol;
-    [SerializeField] AudioClip audMedkit;      // Sound for using a medkit
-    [Range(0, 1)][SerializeField] float audMedkitVol = 1f; // Volume for medkit use
+    [SerializeField] AudioClip audMedkit;
+    [Range(0, 1)][SerializeField] float audMedkitVol = 1f;
 
     public int ShootDamage => shootDamage;
     float originalHeight; // remember height for uncrouch  
@@ -63,39 +64,54 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
     [Header("~=~= Medkit Settings =~=~")]
     private bool canUseMedkit = true;
     private float medkitCooldown = 0f;
-    [Range(0.1f, 60f)][SerializeField] private float medkitUseCooldown = 5f; // Cooldown between medkit uses
+    [Range(0.1f, 60f)][SerializeField] private float medkitUseCooldown = 5f;
+
+    [Header("~=~= Right Hand IK ~=~")]
+    public Transform rightHandIKTarget;
 
     void Start()
     {
+        // Defensive: if controller is missing try to get it
+        if (controller == null)
+        {
+            controller = GetComponent<CharacterController>();
+            if (controller == null)
+                Debug.LogWarning("playerController: CharacterController not assigned or found.");
+        }
+
         HPOrig = HP;
-        originalHeight = controller.height;
+        originalHeight = (controller != null) ? controller.height : 2f;
         originalSpeed = speed;
         respawn();
     }
 
     void Update()
     {
-        if (!gamemanager.instance.isPaused)
-        { 
-        Debug.DrawRay(Camera.main.transform.position, Camera.main.transform.forward * shootDist, Color.red);
-        shootTimer += Time.deltaTime;
-        movement();
+        // Defensive: skip gameplay update when gamemanager not present
+        if (gamemanager.instance == null || !gamemanager.instance.isPaused)
+        {
+            // safe DrawRay
+            if (Camera.main != null)
+                Debug.DrawRay(Camera.main.transform.position, Camera.main.transform.forward * shootDist, Color.red);
+
+            shootTimer += Time.deltaTime;
+            movement();
         }
 
         sprint();
 
-        // handle medkit cooldown timer
         HandleMedkitCooldown();
     }
 
     void movement()
     {
+        if (controller == null) return;
+
         if (controller.isGrounded)
         {
             if (playerVel.y < 0) playerVel.y = -2f;
             jumpCount = 0;
 
-            // play footstep audio if moving
             if (moveDir.normalized.magnitude > 0.3f && !isPlayingStep)
             {
                 StartCoroutine(playStep());
@@ -136,10 +152,22 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
         }
 
         selectGun();
+
+        // Animator parameters for movement / IK
+        if (animator != null)
+        {
+            animator.SetFloat("Speed", moveDir.magnitude);
+            animator.SetBool("IsGrounded", controller.isGrounded);
+        }
     }
 
     IEnumerator playStep()
     {
+        if (aud == null || audStep == null || audStep.Length == 0)
+        {
+            yield break;
+        }
+
         isPlayingStep = true;
         aud.PlayOneShot(audStep[Random.Range(0, audStep.Length)], audStepVol);
 
@@ -161,14 +189,17 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
         {
             playerVel.y = JumpSpeed;
             jumpCount++;
-            aud.pitch = Random.Range(0.9f, 1.1f);
-            aud.PlayOneShot(audJump[Random.Range(0, audJump.Length)], audJumpVol);
+            if (aud != null && audJump != null && audJump.Length > 0)
+            {
+                aud.pitch = Random.Range(0.9f, 1.1f);
+                aud.PlayOneShot(audJump[Random.Range(0, audJump.Length)], audJumpVol);
+            }
         }
     }
 
     void crouch()
     {
-        if (!isCrouching)
+        if (!isCrouching && controller != null)
         {
             isCrouching = true;
             controller.height = crouchHeight;
@@ -178,7 +209,7 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
 
     void uncrouch()
     {
-        if (isCrouching)
+        if (isCrouching && controller != null)
         {
             isCrouching = false;
             controller.height = originalHeight;
@@ -188,7 +219,7 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
 
     void StartGlide()
     {
-        if (!controller.isGrounded && !isGliding)
+        if (controller != null && !controller.isGrounded && !isGliding)
         {
             isGliding = true;
             playerVel.y = -0.5f;
@@ -202,95 +233,52 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
 
     void shoot()
     {
-        if (gunList.Count == 0) return;
+        if (gunList == null || gunList.Count == 0) return;
+        if (Camera.main == null) return;
 
         shootTimer = 0;
 
         if (gunList.Count > 0)
         {
-            aud.pitch = Random.Range(0.9f, 1.1f);
-            gunStats gunPos = gunList[gunListPos];
-            aud.PlayOneShot(gunPos.shootSound[Random.Range(0, gunPos.shootSound.Length)], gunPos.shootSoundVol);
+            if (aud != null)
+            {
+                aud.pitch = Random.Range(0.9f, 1.1f);
+                var snds = gunList[gunListPos].shootSound;
+                if (snds != null && snds.Length > 0) aud.PlayOneShot(snds[Random.Range(0, snds.Length)], gunList[gunListPos].shootSoundVol);
+            }
         }
 
         RaycastHit hit;
         if (Physics.Raycast(Camera.main.transform.position, Camera.main.transform.forward, out hit, shootDist, ~ignoreLayer))
         {
-            Debug.Log(hit.collider.name);
-
             IDamage dmg = hit.collider.GetComponent<IDamage>();
             if (dmg != null)
             {
                 dmg.takeDamage(Mathf.RoundToInt(shootDamage * damageBoost));
             }
 
-            if (gunList.Count > 0)
+            if (gunList.Count > 0 && gunList[gunListPos].hitEffect != null)
                 Instantiate(gunList[gunListPos].hitEffect, hit.point, Quaternion.identity);
         }
     }
 
-    public void takeDamage(int amount)
+    // --- MEDKIT SYSTEM ---
+    public void HandleMedkitCooldown()
     {
-        HP -= amount;
-        updatePlayerUI();
-        StartCoroutine(screenFlashDamage());
-
-        aud.pitch = Random.Range(0.9f, 1.1f);
-        aud.PlayOneShot(audHurt[Random.Range(0, audHurt.Length)], audHurtVol);
-
-        if (HP <= 0) gamemanager.instance.youLose();
+        if (!canUseMedkit)
+        {
+            medkitCooldown -= Time.deltaTime;
+            if (medkitCooldown <= 0f)
+            {
+                canUseMedkit = true;
+                medkitCooldown = 0f;
+            }
+        }
     }
 
-    public void updatePlayerUI()
+    public bool CanUseMedkit()
     {
-        if (gamemanager.instance.playerHPBar != null)
-            gamemanager.instance.playerHPBar.fillAmount = (float)HP / HPOrig;
-    }
-
-    IEnumerator screenFlashDamage()
-    {
-        var gm = gamemanager.instance;
-        if (gm == null || gm.playerDamagePanel == null)
-            yield break;
-
-        var panel = gm.playerDamagePanel;
-
-        if (panel != null)
-            panel.SetActive(true);
-
-        yield return new WaitForSeconds(0.1f);
-
-        if (panel != null)
-            panel.SetActive(false);
-    }
-
-    public int CurrentHP
-    {
-        get { return HP; }
-        set { HP = value; }
-    }
-
-    public int GetHP() => HP;
-    public void SetHP(int value)
-    {
-        HP = value;
-        updatePlayerUI();
-    }
-
-    // Expose which gun slot I'm using so the save system can store it.
-    public int GetCurrentGunIndex()
-    {
-        return gunListPos;
-    }
-
-    // After loading, call this to rebuild the visual gun model.
-    public void RestoreGunVisual(int index)
-    {
-        if (gunList == null || gunList.Count == 0)
-            return;
-
-        gunListPos = Mathf.Clamp(index, 0, gunList.Count - 1);
-        changeGun();
+        return canUseMedkit && HP < HPOrig;
     }
 
     public void GetItem(ScriptableObject item)
@@ -312,6 +300,7 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
 
     public void UseMedkitFromPickup(medkitStats medkit)
     {
+        if (medkit == null) return;
         int healAmount = medkit.healAmount;
         HP += healAmount;
         if (HP > HPOrig) HP = HPOrig;
@@ -321,34 +310,59 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
         if (medkit.useEffect != null)
             Instantiate(medkit.useEffect, transform.position, Quaternion.identity);
 
-        // Play medkit audio
-        if (audMedkit != null)
+        if (audMedkit != null && aud != null)
         {
-            aud.pitch = Random.Range(0.95f, 1.05f); // slight pitch variation
+            aud.pitch = Random.Range(0.95f, 1.05f);
             aud.PlayOneShot(audMedkit, audMedkitVol);
         }
     }
 
-    public void HandleMedkitCooldown()
+    public void takeDamage(int amount)
     {
-        if (!canUseMedkit)
+        HP -= amount;
+        updatePlayerUI();
+        StartCoroutine(screenFlashDamage());
+
+        if (aud != null && audHurt != null && audHurt.Length > 0)
         {
-            medkitCooldown -= Time.deltaTime;
-            if (medkitCooldown <= 0f)
-            {
-                canUseMedkit = true;
-                medkitCooldown = 0f;
-            }
+            aud.pitch = Random.Range(0.9f, 1.1f);
+            aud.PlayOneShot(audHurt[Random.Range(0, audHurt.Length)], audHurtVol);
+        }
+
+        if (HP <= 0)
+        {
+            if (gamemanager.instance != null) gamemanager.instance.youLose();
         }
     }
 
-    public bool CanUseMedkit()
+    public void updatePlayerUI()
     {
-        return canUseMedkit && HP < HPOrig;
+        if (gamemanager.instance != null && gamemanager.instance.playerHPBar != null)
+            gamemanager.instance.playerHPBar.fillAmount = (float)HP / HPOrig;
     }
 
+    IEnumerator screenFlashDamage()
+    {
+        var gm = gamemanager.instance;
+        if (gm == null || gm.playerDamagePanel == null)
+            yield break;
+
+        var panel = gm.playerDamagePanel;
+
+        if (panel != null)
+            panel.SetActive(true);
+
+        yield return new WaitForSeconds(0.1f);
+
+        if (panel != null)
+            panel.SetActive(false);
+    }
+
+    // --- GUN SYSTEM ---
     public void getGunStats(gunStats gun)
     {
+        if (gun == null) return;
+
         if (gunList.Contains(gun))
         {
             gunListPos = gunList.IndexOf(gun);
@@ -364,7 +378,7 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
 
     void changeGun()
     {
-        if (gunList.Count == 0) return;
+        if (gunList == null || gunList.Count == 0 || gunModel == null) return;
 
         shootDamage = gunList[gunListPos].shootDamage;
         shootDist = gunList[gunListPos].shootDist;
@@ -381,14 +395,17 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
             Destroy(child.gameObject);
         }
 
-        GameObject newGunModel = Instantiate(gunList[gunListPos].gunModel, gunModel.transform);
-        newGunModel.transform.localPosition = Vector3.zero;
-        newGunModel.transform.localRotation = Quaternion.identity;
+        if (gunList[gunListPos].gunModel != null)
+        {
+            GameObject newGunModel = Instantiate(gunList[gunListPos].gunModel, gunModel.transform);
+            newGunModel.transform.localPosition = Vector3.zero;
+            newGunModel.transform.localRotation = Quaternion.identity;
+        }
     }
 
     void selectGun()
     {
-        if (gunList.Count < 2) return;
+        if (gunList == null || gunList.Count < 2) return;
 
         float scroll = Input.GetAxis("Mouse ScrollWheel");
 
@@ -409,7 +426,15 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
 
     public void respawn()
     {
-        controller.transform.position = gamemanager.instance.spawnPoint.transform.position;
+        if (controller != null && gamemanager.instance != null && gamemanager.instance.spawnPoint != null)
+        {
+            controller.transform.position = gamemanager.instance.spawnPoint.transform.position;
+        }
+        else if (gamemanager.instance != null && gamemanager.instance.spawnPoint != null)
+        {
+            transform.position = gamemanager.instance.spawnPoint.transform.position;
+        }
+
         HP = HPOrig;
         updatePlayerUI();
     }
@@ -452,24 +477,51 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
         canUseMedkit = data.canUseMedkit;
         medkitCooldown = data.medkitCooldown;
 
-        // Restore gun selection and rebuild the gun model
         if (gunList != null && gunList.Count > 0)
         {
             gunListPos = Mathf.Clamp(data.gunListPos, 0, gunList.Count - 1);
             changeGun();
         }
 
-            if (isCrouching)
+        if (isCrouching && controller != null)
         {
             controller.height = crouchHeight;
             speed = Mathf.RoundToInt(originalSpeed * crouchSpeedMod);
         }
-        else
+        else if (controller != null)
         {
             controller.height = originalHeight;
             speed = originalSpeed;
         }
 
         updatePlayerUI();
+    }
+
+    // Exposed helpers used by save manager or other systems
+    public int GetHP() => HP;
+    public void SetHP(int value)
+    {
+        HP = value;
+        updatePlayerUI();
+    }
+
+    public int GetCurrentGunIndex()
+    {
+        return gunListPos;
+    }
+
+    public void RestoreGunVisual(int index)
+    {
+        if (gunList == null || gunList.Count == 0) return;
+
+        gunListPos = Mathf.Clamp(index, 0, gunList.Count - 1);
+        changeGun();
+    }
+
+    // Optionally expose CurrentHP property (kept for compatibility)
+    public int CurrentHP
+    {
+        get { return HP; }
+        set { HP = value; }
     }
 }
