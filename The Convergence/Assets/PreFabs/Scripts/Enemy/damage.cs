@@ -7,6 +7,7 @@ public class damage : MonoBehaviour
 
     [Header("~=~= Damage Type =~=~")]
     [SerializeField] private damageType type;
+    [SerializeField] private GameObject dotPrefab;
 
     [Header("~=~= Physics =~=~")]
     [SerializeField] private Rigidbody rb;
@@ -61,9 +62,27 @@ public class damage : MonoBehaviour
 
         if (type == damageType.moving || type == damageType.homing)
         {
-            Destroy(gameObject);
+            if (dmg != null)
+            {
+                Destroy(gameObject);
+            }
+            // If it hit something NOT damaging (like the environment/ground) AND we have a DOT prefab...
+            else if (dotPrefab != null)
+            {
+                // 1. Spawn the DOT object (the Acid Pool) at this location.
+                Instantiate(dotPrefab, transform.position, Quaternion.identity);
+
+                // 2. Destroy the original projectile.
+                Destroy(gameObject);
+            }
+            // If we hit something non-damaging but have no DOT prefab, just destroy the projectile.
+            else
+            {
+                Destroy(gameObject);
+            }
         }
     }
+    
 
     private void OnTriggerStay(Collider other)
     {
