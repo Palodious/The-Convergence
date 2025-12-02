@@ -389,8 +389,22 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
 
         if (agent.remainingDistance < 0.01f)
         {
-            patrolIndex = (patrolIndex + 1) % patrolPoints.Length;
-            agent.SetDestination(patrolPoints[patrolIndex].position);
+            int safety = patrolPoints.Length;
+            do
+            {
+                patrolIndex = (patrolIndex + 1) % patrolPoints.Length;
+                safety--;
+            }
+            while (safety > 0 && patrolPoints[patrolIndex] == null);
+
+            if (patrolPoints[patrolIndex] != null)
+            {
+                agent.SetDestination(patrolPoints[patrolIndex].position);
+            }
+            else
+            {
+                Debug.LogWarning($"enemyAI on {name} has only null patrolPoints.");
+            }
         }
     }
 
@@ -629,17 +643,35 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
     {
         public int hp;
         public Vector3 pos;
+        public Vector3 startingPos;
+        public float roamTimer;
+        public int patrolIndex;
+        public bool hasDestination;
+        public Vector3 destination;
         public bool isTurretActive;//save turret state
     }
 
     public object CaptureState()
     {
-        return new EnemyState
+        var state = new EnemyState
         {
             hp = HP,
             pos = transform.position,
-            isTurretActive = isTurretActive //save turret state
+            isTurretActive = isTurretActive, //save turret state
+            startingPos = startingPos,
+            roamTimer = roamTimer,
+            patrolIndex = patrolIndex,
+            hasDestination = false,
+            destination = Vector3.zero
         };
+
+        if (agent != null && agent.hasPath)
+        {
+            state.hasDestination = true;
+            state.destination = agent.destination;
+        }
+
+        return state;
     }
 
     public void RestoreState(object state)
@@ -650,14 +682,34 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
             return;
         }
 
+        // 1. Restore position first
         if (agent != null)
             agent.Warp(s.pos);
         else
             transform.position = s.pos;
 
+        // 2. Restore combat state
         HP = s.hp;
         isTurretActive = s.isTurretActive;// save turret state
 
+        // 3. Restore roam / patrol internals
+        startingPos = s.startingPos;
+        roamTimer = s.roamTimer;
+
+        // Only clamp patrolIndex if we actually have patrol points
+        if (patrolPoints != null && patrolPoints.Length > 0)
+            patrolIndex = Mathf.Clamp(s.patrolIndex, 0, patrolPoints.Length - 1);
+        else
+            patrolIndex = 0;
+
+        // 4. Restore movement destination (if it was valid when saved)
+        if (agent != null && s.hasDestination)
+        {
+            // We trust the saved destination because it came from agent.destination.
+            agent.SetDestination(s.destination);
+        }
+
+        // 5. Clean up animation state
         if (anim != null)
         {
             anim.Rebind();

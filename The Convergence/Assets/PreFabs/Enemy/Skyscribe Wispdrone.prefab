@@ -75,6 +75,7 @@ MonoBehaviour:
   anim: {fileID: 0}
   model: {fileID: 8040678228756557300}
   headPos: {fileID: 5804238826743989315}
+  turretHead: {fileID: 0}
   HP: 50
   FOV: 60
   faceTargetSpeed: 100
@@ -89,6 +90,19 @@ MonoBehaviour:
   meleeRange: 0.1
   attackRate: 0.1
   meleeDamageAmount: 10
+  enableTurretMode: 0
+  turretRotationAxes: []
+  turretRotationSpeed: 5
+  idleRotationSpeed: 10
+  minHorizontalAngle: -45
+  maxHorizontalAngle: 45
+  minVerticalAngle: -20
+  maxVerticalAngle: 20
+  independentVerticalRotation: 0
+  useBurstFire: 0
+  bulletsPerBurst: 3
+  timeBetweenBurstShots: 0.1
+  timeBetweenBursts: 1
   useAnimations: 0
   usePatrol: 1
   useRoam: 0

@@ -173,12 +173,12 @@ public class gamemanager : MonoBehaviour
             yield break;
         }
 
-        Func<string, GameObject> spawnFunc = null;
+        System.Func<string, GameObject> spawnFunc = null;
         if (prefabRegistry != null)
             spawnFunc = prefabRegistry.SpawnByKey;
 
         // Let SaveManager rebuild the scene based on the save.
-        yield return SaveManager.Instance.LoadAndRestore(data, null);
+        yield return SaveManager.Instance.LoadAndRestore(data, spawnFunc);
 
         // Re-hook references after the world is restored.
         player = GameObject.FindWithTag("Player");
@@ -202,6 +202,7 @@ public class gamemanager : MonoBehaviour
         gameGoalCount = data.gameGoalCount;
         if (gameGoalCountText != null)
             gameGoalCountText.text = gameGoalCount.ToString("F0");
+
         stateUnpause();
     }
 

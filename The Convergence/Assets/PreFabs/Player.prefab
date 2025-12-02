@@ -637,6 +637,7 @@ GameObject:
   - component: {fileID: 2198682085582701513}
   - component: {fileID: 7798961591021303539}
   - component: {fileID: 1546805672535400636}
+  - component: {fileID: 4522564509629319291}
   - component: {fileID: 7428072697084982492}
   - component: {fileID: 7718343463253732154}
   m_Layer: 3
@@ -678,6 +679,7 @@ MonoBehaviour:
   ignoreLayer:
     serializedVersion: 2
     m_Bits: 264
+  animator: {fileID: 0}
   HP: 50
   speed: 10
   sprintMod: 2
@@ -693,7 +695,7 @@ MonoBehaviour:
   aud: {fileID: 7718343463253732154}
   audStep:
   - {fileID: 8300000, guid: 8d9dbfa323a4f6248897aa3230469e61, type: 3}
-  audStepVol: 0.2
+  audStepVol: 0.1
   audJump:
   - {fileID: 8300000, guid: 57da31a052bcb9f4bab4d8b3e62edb3c, type: 3}
   audJumpVol: 0.5
@@ -706,6 +708,7 @@ MonoBehaviour:
   gunList: []
   gunModel: {fileID: 6577229939747542559}
   medkitUseCooldown: 5
+  rightHandIKTarget: {fileID: 0}
 --- !u!114 &1451797627688218683
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -817,6 +820,20 @@ CharacterController:
   m_SkinWidth: 0.08
   m_MinMoveDistance: 0.001
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &4522564509629319291
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2376811500745352790}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2595f0efb17706340b65de4d7e322ddc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SaveEntity
+  id: 
+  prefabKey: 
 --- !u!136 &7428072697084982492
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -1397,7 +1414,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4475732015081521006}
-  - component: {fileID: 5817784705791301817}
   m_Layer: 10
   m_Name: Gun Model
   m_TagString: Untagged
@@ -1435,20 +1451,6 @@ Transform:
   - {fileID: 2371039904051858267}
   m_Father: {fileID: 4188849065707242032}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &5817784705791301817
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6577229939747542559}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2595f0efb17706340b65de4d7e322ddc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::SaveEntity
-  id: 
-  prefabKey: 
 --- !u!1 &6778595801531823199
 GameObject:
   m_ObjectHideFlags: 0
@@ -1549,7 +1551,7 @@ GameObject:
   - component: {fileID: 8504606956662401063}
   - component: {fileID: 838258364950298144}
   - component: {fileID: 2689408840607343651}
-  m_Layer: 3
+  m_Layer: 10
   m_Name: Gun Cam
   m_TagString: Untagged
   m_Icon: {fileID: 0}
