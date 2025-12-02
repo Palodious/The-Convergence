@@ -1293,7 +1293,7 @@ GameObject:
   - component: {fileID: -3369015551279475159}
   m_Layer: 6
   m_Name: Sylvaron the Thornlord
-  m_TagString: Untagged
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1328,7 +1328,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SaveEntity
   id: 
-  prefabKey: 
+  prefabKey: SylvaronThornlord
 --- !u!95 &2945122484482902244
 Animator:
   serializedVersion: 7
@@ -1371,7 +1371,7 @@ MonoBehaviour:
   anim: {fileID: 2945122484482902244}
   model: {fileID: 7419846994572779004}
   headPos: {fileID: 5488979014532795326}
-  HP: 100
+  HP: 300
   FOV: 80
   faceTargetSpeed: 150
   roamDist: 15

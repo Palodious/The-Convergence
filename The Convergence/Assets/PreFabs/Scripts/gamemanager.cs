@@ -1,8 +1,9 @@
+using System;
+using System.Collections;
+using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
-using TMPro;
-using System.Collections;
 
 public class gamemanager : MonoBehaviour
 {
@@ -19,11 +20,13 @@ public class gamemanager : MonoBehaviour
     // Expose current objective count; make it tracked and accessible.
     [SerializeField] private int gameGoalCount;
 
+    [SerializeField] private PrefabRegistry prefabRegistry;
 
     public TMP_Text gameGoalCountText;
     [SerializeField] public Image playerHPBar;
     [SerializeField] public GameObject playerDamagePanel;
-    [SerializeField] public GameObject checkpointPopup;
+    public GameObject checkpointPopup;
+    public GameObject bossDoorPopup;
     [SerializeField] public GameObject surgeOverlay;
     public GameObject spawnPoint;
 
@@ -170,6 +173,10 @@ public class gamemanager : MonoBehaviour
             yield break;
         }
 
+        Func<string, GameObject> spawnFunc = null;
+        if (prefabRegistry != null)
+            spawnFunc = prefabRegistry.SpawnByKey;
+
         // Let SaveManager rebuild the scene based on the save.
         yield return SaveManager.Instance.LoadAndRestore(data, null);
 
@@ -182,13 +189,20 @@ public class gamemanager : MonoBehaviour
 
         // Restore player / objective values from the save.
         if (playerScript != null)
-            playerScript.SetHP(data.playerHP);
 
-        playerScript.RestoreGunVisual(data.playerGunIndex);
+        {
+            playerScript.SetHP(data.playerHP);
+            playerScript.RestoreGunVisual(data.playerGunIndex);
+        }
+        else
+        {
+            Debug.LogWarning("LoadGameRoutine: playerScript is null after load.");
+        }
 
         gameGoalCount = data.gameGoalCount;
         if (gameGoalCountText != null)
             gameGoalCountText.text = gameGoalCount.ToString("F0");
+        stateUnpause();
     }
 
     public int GetGameGoalCount()

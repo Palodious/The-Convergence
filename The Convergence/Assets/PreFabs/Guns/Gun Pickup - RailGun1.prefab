@@ -1173,8 +1173,8 @@ GameObject:
   m_Component:
   - component: {fileID: 1626224805286992964}
   - component: {fileID: 7642865210083184714}
-  - component: {fileID: 2571224393377990587}
   - component: {fileID: 3563017330958320772}
+  - component: {fileID: 2571224393377990587}
   m_Layer: 10
   m_Name: Gun Pickup - RailGun1
   m_TagString: Untagged
@@ -1225,6 +1225,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::gunPickup
   gun: {fileID: 11400000, guid: e4a596252ddd867448cb8a98803cad63, type: 2}
+--- !u!114 &3563017330958320772
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5950267001763509478}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2595f0efb17706340b65de4d7e322ddc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SaveEntity
+  id: 
+  prefabKey: RailGun1
 --- !u!135 &2571224393377990587
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -1246,20 +1260,6 @@ SphereCollider:
   serializedVersion: 3
   m_Radius: 1.8
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &3563017330958320772
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5950267001763509478}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2595f0efb17706340b65de4d7e322ddc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::SaveEntity
-  id: 
-  prefabKey: 
 --- !u!1 &6630935907620883545
 GameObject:
   m_ObjectHideFlags: 0

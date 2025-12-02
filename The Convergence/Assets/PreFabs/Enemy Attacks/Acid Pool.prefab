@@ -16,7 +16,7 @@ GameObject:
   - component: {fileID: -4992993194117121403}
   - component: {fileID: -4491166702455308773}
   m_Layer: 0
-  m_Name: Venom
+  m_Name: Acid Pool
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -32,7 +32,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 15.59, y: 1.76, z: -5.78}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 5, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -49,16 +49,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9c0939bf7c617eb4b873ccc966bfab79, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::damage
-  type: 0
-  dotPrefab: {fileID: 4705637938062420806, guid: 5aea61532a385814d981d77cf25b3fa8, type: 3}
+  type: 2
+  dotPrefab: {fileID: 4705637938062420806}
   rb: {fileID: 1394799381658555603}
   ignoreLayer:
     serializedVersion: 2
     m_Bits: 0
-  damageAmount: 2
-  damageRate: 0.8
+  damageAmount: 1
+  damageRate: 1.5
   speed: 32
-  destroyTime: 1
+  destroyTime: 5
 --- !u!135 &1993101440778996551
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -164,8 +164,8 @@ TrailRenderer:
       serializedVersion: 2
       m_Curve:
       - serializedVersion: 3
-        time: 0
-        value: 1
+        time: 0.007007599
+        value: 0.98916054
         inSlope: 0
         outSlope: 0
         tangentMode: 0
