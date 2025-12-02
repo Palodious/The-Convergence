@@ -23,6 +23,7 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
     [SerializeField] Transform headPos;
 
     [Header("~=~= Stats =~=~")]
+    bool isAlive = true;
     [Range(1, 300)][SerializeField] int HP;
     [Range(1, 360)][SerializeField] int FOV;
     [Range(1, 360)][SerializeField] int faceTargetSpeed;
@@ -253,6 +254,9 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
 
     public void takeDamage(int amount)
     {
+        // Prevent multiple death triggers
+        if (!isAlive) return;
+
         HP -= amount;
         agent.SetDestination(gamemanager.instance.player.transform.position);
 
@@ -262,12 +266,21 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
 
         if (HP <= 0)
         {
-            // Play death audio before destroying
+            // Mark enemy dead immediately so no further hits or AI actions count
+            isAlive = false;
+
+            // Play death audio
             if (audDeath.Length > 0 && aud != null)
                 aud.PlayOneShot(audDeath[Random.Range(0, audDeath.Length)], audDeathVol);
 
+            // Reduce the goal ONCE
             gamemanager.instance.updateGameGoal(-1);
-            Destroy(gameObject, 0.1f); // short delay ensures sound can start
+
+            // Disable movement + animations so the enemy stops acting while the death sound plays
+            if (agent != null) agent.isStopped = true;
+            if (anim != null) anim.enabled = false;
+
+            Destroy(gameObject, 0.1f);
         }
         else
         {
