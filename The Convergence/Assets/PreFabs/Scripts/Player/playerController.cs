@@ -71,7 +71,6 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
 
     void Start()
     {
-        // Defensive: if controller is missing try to get it
         if (controller == null)
         {
             controller = GetComponent<CharacterController>();
@@ -87,7 +86,6 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
 
     void Update()
     {
-        // Defensive: skip gameplay update when gamemanager not present
         if (gamemanager.instance == null || !gamemanager.instance.isPaused)
         {
             // safe DrawRay
@@ -101,6 +99,27 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
         sprint();
 
         HandleMedkitCooldown();
+
+        // Align player rotation with camera so movement directions match camera forward
+        AlignPlayerWithCamera();
+    }
+
+    //Camera alignment helper: keeps the player's Y-rotation toward camera direction
+    void AlignPlayerWithCamera()
+    {
+        if (Camera.main == null) return;
+
+        Transform cam = Camera.main.transform;
+        Vector3 lookDir = cam.forward;
+        lookDir.y = 0f;
+
+        if (lookDir.sqrMagnitude < 0.01f) return;
+
+        transform.rotation = Quaternion.Slerp(
+            transform.rotation,
+            Quaternion.LookRotation(lookDir),
+            10f * Time.deltaTime
+        );
     }
 
     void movement()
@@ -130,7 +149,33 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
             }
         }
 
-        moveDir = Input.GetAxis("Horizontal") * transform.right + Input.GetAxis("Vertical") * transform.forward;
+        // Camera movement
+        Vector3 camForward = Vector3.forward;
+        Vector3 camRight = Vector3.right;
+
+        if (Camera.main != null)
+        {
+            camForward = Camera.main.transform.forward;
+            camRight = Camera.main.transform.right;
+
+            camForward.y = 0f;
+            camRight.y = 0f;
+            camForward.Normalize();
+            camRight.Normalize();
+        }
+        else
+        {
+            // fall back to player axes
+            camForward = transform.forward;
+            camRight = transform.right;
+        }
+
+        float h = Input.GetAxis("Horizontal");
+        float v = Input.GetAxis("Vertical");
+
+        moveDir = (camRight * h + camForward * v);
+
+        // keep original behavior of checking magnitude for footsteps / animation
         controller.Move(moveDir * speed * Time.deltaTime);
 
         jump();
@@ -156,7 +201,9 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
         // Animator parameters for movement / IK
         if (animator != null)
         {
-            animator.SetFloat("Speed", moveDir.magnitude);
+            // send magnitude of horizontal movement to animator
+            Vector3 horizMove = new Vector3(moveDir.x, 0, moveDir.z);
+            animator.SetFloat("Speed", horizMove.magnitude);
             animator.SetBool("IsGrounded", controller.isGrounded);
         }
     }
