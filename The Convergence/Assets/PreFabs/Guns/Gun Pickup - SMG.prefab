@@ -108,8 +108,8 @@ GameObject:
   m_Component:
   - component: {fileID: 4399074711530537237}
   - component: {fileID: 4761302528765965533}
-  - component: {fileID: 4588616711215583839}
   - component: {fileID: 5399549164977757889}
+  - component: {fileID: 4588616711215583839}
   m_Layer: 10
   m_Name: Gun Pickup - SMG
   m_TagString: Untagged
@@ -146,6 +146,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::gunPickup
   gun: {fileID: 11400000, guid: 9c7e12c69d50f724894ce8d954df12dd, type: 2}
+--- !u!114 &5399549164977757889
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1070632586094627505}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2595f0efb17706340b65de4d7e322ddc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SaveEntity
+  id: 
+  prefabKey: SMG
 --- !u!135 &4588616711215583839
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -167,17 +181,3 @@ SphereCollider:
   serializedVersion: 3
   m_Radius: 0.5
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &5399549164977757889
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1070632586094627505}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2595f0efb17706340b65de4d7e322ddc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::SaveEntity
-  id: 
-  prefabKey: 

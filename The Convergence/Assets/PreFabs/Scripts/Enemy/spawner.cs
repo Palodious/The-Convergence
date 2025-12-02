@@ -64,4 +64,32 @@ public class spawner : MonoBehaviour
         spawnCount++;
         spawnTimer = 0;
     }
+
+    [System.Serializable]
+    private struct SpawnerState
+    {
+        public int spawnCount;
+        public float spawnTimer;
+        public bool startSpawning;
+    }
+
+    public object CaptureState()
+    {
+        return new SpawnerState
+        {
+            spawnCount = spawnCount,
+            spawnTimer = spawnTimer,
+            startSpawning = startSpawning
+        };
+    }
+
+    public void RestoreState(object state)
+    {
+        if (state is not SpawnerState s)
+            return;
+
+        spawnCount = s.spawnCount;
+        spawnTimer = s.spawnTimer;
+        startSpawning = s.startSpawning;
+    }
 }
