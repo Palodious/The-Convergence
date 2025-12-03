@@ -7,7 +7,7 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
     [Header("~=~= Components =~=~")]
     [SerializeField] CharacterController controller;
     [SerializeField] LayerMask ignoreLayer;
-    public Animator animator; // Added for IK
+    public Animator animator; // assign your model's Animator here (added for aim/animation)
 
     [Header("~=~= Player Stats =~=~")]
     [Range(1, 1000)][SerializeField] int HP;
@@ -35,8 +35,8 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
     [Range(0, 1)][SerializeField] float audJumpVol;
     [SerializeField] AudioClip[] audHurt;
     [Range(0, 1)][SerializeField] float audHurtVol;
-    [SerializeField] AudioClip audMedkit;
-    [Range(0, 1)][SerializeField] float audMedkitVol = 1f;
+    [SerializeField] AudioClip audMedkit;      // Sound for using a medkit
+    [Range(0, 1)][SerializeField] float audMedkitVol = 1f; // Volume for medkit use
 
     public int ShootDamage => shootDamage;
     float originalHeight; // remember height for uncrouch  
@@ -47,7 +47,7 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
 
     int jumpCount;
     int HPOrig;
-    float lastShotTime;
+    float shootTimer;
 
     bool isCrouching;  // crouch state  
     bool isGliding;    // glide state  
@@ -64,73 +64,54 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
     [Header("~=~= Medkit Settings =~=~")]
     private bool canUseMedkit = true;
     private float medkitCooldown = 0f;
-    [Range(0.1f, 60f)][SerializeField] private float medkitUseCooldown = 5f;
+    [Range(0.1f, 60f)][SerializeField] private float medkitUseCooldown = 5f; // Cooldown between medkit uses
 
-    [Header("~=~= Right Hand IK ~=~")]
-    public Transform rightHandIKTarget;
+    [Header("~=~= TPS / Aiming Settings =~=~")]
+    public Transform aimTarget;                // assign empty AimTarget in front of player
+    public Transform rightHandIKTarget;        // assign empty child at gun grip
+    [HideInInspector] public bool isAiming;    // true while holding Fire2
+    [Range(0f, 1f)] public float aimMoveSpeed = 8f; // how fast upper-body aims/IK blends
 
     void Start()
     {
-        if (controller == null)
-        {
-            controller = GetComponent<CharacterController>();
-            if (controller == null)
-                Debug.LogWarning("playerController: CharacterController not assigned or found.");
-        }
-
         HPOrig = HP;
-        originalHeight = (controller != null) ? controller.height : 2f;
+        originalHeight = controller.height;
         originalSpeed = speed;
         respawn();
     }
 
     void Update()
     {
-        if (gamemanager.instance == null || !gamemanager.instance.isPaused)
-        {
-            // safe DrawRay
-            if (Camera.main != null)
-                Debug.DrawRay(Camera.main.transform.position, Camera.main.transform.forward * shootDist, Color.red);
+        // read aiming input (hold-to-aim)
+        isAiming = Input.GetButton("Fire2"); // right mouse by default
 
-            //shootTimer += Time.deltaTime;
+        // set animator param if available
+        if (animator != null)
+            animator.SetBool("IsAiming", isAiming);
+
+        if (!gamemanager.instance.isPaused)
+        {
+            // helpful debug ray showing camera center forward (not required)
+            Debug.DrawRay(Camera.main.transform.position, Camera.main.transform.forward * shootDist, Color.red);
+
+            shootTimer += Time.deltaTime;
             movement();
         }
 
         sprint();
 
+        // handle medkit cooldown timer
         HandleMedkitCooldown();
-
-        // Align player rotation with camera so movement directions match camera forward
-        AlignPlayerWithCamera();
-    }
-
-    //Camera alignment helper: keeps the player's Y-rotation toward camera direction
-    void AlignPlayerWithCamera()
-    {
-        if (Camera.main == null) return;
-
-        Transform cam = Camera.main.transform;
-        Vector3 lookDir = cam.forward;
-        lookDir.y = 0f;
-
-        if (lookDir.sqrMagnitude < 0.01f) return;
-
-        transform.rotation = Quaternion.Slerp(
-            transform.rotation,
-            Quaternion.LookRotation(lookDir),
-            10f * Time.deltaTime
-        );
     }
 
     void movement()
     {
-        if (controller == null) return;
-
         if (controller.isGrounded)
         {
             if (playerVel.y < 0) playerVel.y = -2f;
             jumpCount = 0;
 
+            // play footstep audio if moving
             if (moveDir.normalized.magnitude > 0.3f && !isPlayingStep)
             {
                 StartCoroutine(playStep());
@@ -140,8 +121,7 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
         {
             if (isGliding)
             {
-                float targetFallSpeed = -glideGravity;
-                playerVel.y = Mathf.Lerp(playerVel.y, targetFallSpeed, Time.deltaTime * 2f);
+                playerVel.y = -glideGravity;
             }
             else
             {
@@ -149,34 +129,33 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
             }
         }
 
-        // Camera movement
-        Vector3 camForward = Vector3.forward;
-        Vector3 camRight = Vector3.right;
-
-        if (Camera.main != null)
-        {
-            camForward = Camera.main.transform.forward;
-            camRight = Camera.main.transform.right;
-
-            camForward.y = 0f;
-            camRight.y = 0f;
-            camForward.Normalize();
-            camRight.Normalize();
-        }
-        else
-        {
-            // fall back to player axes
-            camForward = transform.forward;
-            camRight = transform.right;
-        }
-
+        //camera-relative movement (keeps lower-body independent)
         float h = Input.GetAxis("Horizontal");
         float v = Input.GetAxis("Vertical");
 
-        moveDir = (camRight * h + camForward * v);
+        Vector3 camF = Camera.main.transform.forward;
+        Vector3 camR = Camera.main.transform.right;
+        camF.y = 0f;
+        camR.y = 0f;
+        camF.Normalize();
+        camR.Normalize();
 
-        // keep original behavior of checking magnitude for footsteps / animation
+        Vector3 camMove = camR * h + camF * v;
+        moveDir = camMove.normalized;
+
+        // Move the character (lower-body will face movement direction when not aiming)
         controller.Move(moveDir * speed * Time.deltaTime);
+
+        // If not aiming: rotate lower-body to face movement direction (classic TPS)
+        if (!isAiming)
+        {
+            if (moveDir.sqrMagnitude > 0.001f)
+            {
+                Quaternion targetRot = Quaternion.LookRotation(moveDir);
+                transform.rotation = Quaternion.Slerp(transform.rotation, targetRot, Time.deltaTime * 10f);
+            }
+        }
+        // If aiming, do NOT forcibly rotate lower-body: upper-body (spine) will aim independently (via IK script)
 
         jump();
         controller.Move(playerVel * Time.deltaTime);
@@ -191,30 +170,16 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
         }
         else if (isGliding) StopGlide();
 
-        if (Input.GetButton("Fire1") && Time.time >= lastShotTime + shootRate)
+        if (Input.GetButton("Fire1") && shootTimer >= shootRate)
         {
             shoot();
         }
 
         selectGun();
-
-        // Animator parameters for movement / IK
-        if (animator != null)
-        {
-            // send magnitude of horizontal movement to animator
-            Vector3 horizMove = new Vector3(moveDir.x, 0, moveDir.z);
-            animator.SetFloat("Speed", horizMove.magnitude);
-            animator.SetBool("IsGrounded", controller.isGrounded);
-        }
     }
 
     IEnumerator playStep()
     {
-        if (aud == null || audStep == null || audStep.Length == 0)
-        {
-            yield break;
-        }
-
         isPlayingStep = true;
         aud.PlayOneShot(audStep[Random.Range(0, audStep.Length)], audStepVol);
 
@@ -226,11 +191,8 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
 
     void sprint()
     {
-        if (Input.GetButtonDown("Sprint")) { speed = originalSpeed * sprintMod; isSprinting = true; }
-        else
-            {
-            speed = originalSpeed; isSprinting = false;
-            }
+        if (Input.GetButtonDown("Sprint")) { speed *= sprintMod; isSprinting = true; }
+        else if (Input.GetButtonUp("Sprint")) { speed /= sprintMod; isSprinting = false; }
     }
 
     void jump()
@@ -239,17 +201,14 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
         {
             playerVel.y = JumpSpeed;
             jumpCount++;
-            if (aud != null && audJump != null && audJump.Length > 0)
-            {
-                aud.pitch = Random.Range(0.9f, 1.1f);
-                aud.PlayOneShot(audJump[Random.Range(0, audJump.Length)], audJumpVol);
-            }
+            aud.pitch = Random.Range(0.9f, 1.1f);
+            aud.PlayOneShot(audJump[Random.Range(0, audJump.Length)], audJumpVol);
         }
     }
 
     void crouch()
     {
-        if (!isCrouching && controller != null)
+        if (!isCrouching)
         {
             isCrouching = true;
             controller.height = crouchHeight;
@@ -259,7 +218,7 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
 
     void uncrouch()
     {
-        if (isCrouching && controller != null)
+        if (isCrouching)
         {
             isCrouching = false;
             controller.height = originalHeight;
@@ -269,7 +228,7 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
 
     void StartGlide()
     {
-        if (controller != null && !controller.isGrounded && !isGliding)
+        if (!controller.isGrounded && !isGliding)
         {
             isGliding = true;
             playerVel.y = -0.5f;
@@ -283,52 +242,116 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
 
     void shoot()
     {
-        if (gunList == null || gunList.Count == 0) return;
-        if (Camera.main == null) return;
+        if (gunList.Count == 0) return;
 
-        lastShotTime = Time.time;
+        shootTimer = 0;
 
         if (gunList.Count > 0)
         {
-            if (aud != null)
-            {
-                aud.pitch = Random.Range(0.9f, 1.1f);
-                var snds = gunList[gunListPos].shootSound;
-                if (snds != null && snds.Length > 0) aud.PlayOneShot(snds[Random.Range(0, snds.Length)], gunList[gunListPos].shootSoundVol);
-            }
+            aud.pitch = Random.Range(0.9f, 1.1f);
+            gunStats gunPos = gunList[gunListPos];
+            aud.PlayOneShot(gunPos.shootSound[Random.Range(0, gunPos.shootSound.Length)], gunPos.shootSoundVol);
         }
 
-        RaycastHit hit;
-        if (Physics.Raycast(Camera.main.transform.position, Camera.main.transform.forward, out hit, shootDist, ~ignoreLayer))
+        // --- Gears-style shooting: fire from gunModel toward the AimTarget ---
+        if (aimTarget != null && gunModel != null)
         {
-            IDamage dmg = hit.collider.GetComponent<IDamage>();
-            if (dmg != null)
+            Vector3 shootDir = (aimTarget.position - gunModel.transform.position).normalized;
+            if (Physics.Raycast(gunModel.transform.position, shootDir, out RaycastHit hit, shootDist, ~ignoreLayer))
             {
-                dmg.takeDamage(Mathf.RoundToInt(shootDamage * damageBoost));
-            }
+                Debug.Log(hit.collider.name);
 
-            if (gunList.Count > 0 && gunList[gunListPos].hitEffect != null)
-                Instantiate(gunList[gunListPos].hitEffect, hit.point, Quaternion.identity);
+                IDamage dmg = hit.collider.GetComponent<IDamage>();
+                if (dmg != null)
+                {
+                    dmg.takeDamage(Mathf.RoundToInt(shootDamage * damageBoost));
+                }
+
+                if (gunList.Count > 0)
+                    Instantiate(gunList[gunListPos].hitEffect, hit.point, Quaternion.identity);
+            }
+        }
+        else
+        {
+            if (Physics.Raycast(Camera.main.transform.position, Camera.main.transform.forward, out RaycastHit hit2, shootDist, ~ignoreLayer))
+            {
+                IDamage dmg = hit2.collider.GetComponent<IDamage>();
+                if (dmg != null)
+                {
+                    dmg.takeDamage(Mathf.RoundToInt(shootDamage * damageBoost));
+                }
+
+                if (gunList.Count > 0)
+                    Instantiate(gunList[gunListPos].hitEffect, hit2.point, Quaternion.identity);
+            }
         }
     }
 
-    // --- MEDKIT SYSTEM ---
-    public void HandleMedkitCooldown()
+    // --- IK is handled by a separate script (PlayerIKController) using rightHandIKTarget.
+    // Keep the playerController free of heavy IK math — we expose data (isAiming, aimTarget, rightHandIKTarget).
+
+    public void takeDamage(int amount)
     {
-        if (!canUseMedkit)
-        {
-            medkitCooldown -= Time.deltaTime;
-            if (medkitCooldown <= 0f)
-            {
-                canUseMedkit = true;
-                medkitCooldown = 0f;
-            }
-        }
+        HP -= amount;
+        updatePlayerUI();
+        StartCoroutine(screenFlashDamage());
+
+        aud.pitch = Random.Range(0.9f, 1.1f);
+        aud.PlayOneShot(audHurt[Random.Range(0, audHurt.Length)], audHurtVol);
+
+        if (HP <= 0) gamemanager.instance.youLose();
     }
 
-    public bool CanUseMedkit()
+    public void updatePlayerUI()
     {
-        return canUseMedkit && HP < HPOrig;
+        if (gamemanager.instance.playerHPBar != null)
+            gamemanager.instance.playerHPBar.fillAmount = (float)HP / HPOrig;
+    }
+
+    IEnumerator screenFlashDamage()
+    {
+        var gm = gamemanager.instance;
+        if (gm == null || gm.playerDamagePanel == null)
+            yield break;
+
+        var panel = gm.playerDamagePanel;
+
+        if (panel != null)
+            panel.SetActive(true);
+
+        yield return new WaitForSeconds(0.1f);
+
+        if (panel != null)
+            panel.SetActive(false);
+    }
+
+    public int CurrentHP
+    {
+        get { return HP; }
+        set { HP = value; }
+    }
+
+    public int GetHP() => HP;
+    public void SetHP(int value)
+    {
+        HP = value;
+        updatePlayerUI();
+    }
+
+    // Expose which gun slot I'm using so the save system can store it.
+    public int GetCurrentGunIndex()
+    {
+        return gunListPos;
+    }
+
+    // After loading, call this to rebuild the visual gun model.
+    public void RestoreGunVisual(int index)
+    {
+        if (gunList == null || gunList.Count == 0)
+            return;
+
+        gunListPos = Mathf.Clamp(index, 0, gunList.Count - 1);
+        changeGun();
     }
 
     public void GetItem(ScriptableObject item)
@@ -350,10 +373,6 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
 
     public void UseMedkitFromPickup(medkitStats medkit)
     {
-        if (medkit == null) return;
-        if (!CanUseMedkit()) return;
-        canUseMedkit = false;
-        medkitCooldown = medkitUseCooldown;
         int healAmount = medkit.healAmount;
         HP += healAmount;
         if (HP > HPOrig) HP = HPOrig;
@@ -363,59 +382,34 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
         if (medkit.useEffect != null)
             Instantiate(medkit.useEffect, transform.position, Quaternion.identity);
 
-        if (audMedkit != null && aud != null)
+        // Play medkit audio
+        if (audMedkit != null)
         {
-            aud.pitch = Random.Range(0.95f, 1.05f);
+            aud.pitch = Random.Range(0.95f, 1.05f); // slight pitch variation
             aud.PlayOneShot(audMedkit, audMedkitVol);
         }
     }
 
-    public void takeDamage(int amount)
+    public void HandleMedkitCooldown()
     {
-        HP -= amount;
-        updatePlayerUI();
-        StartCoroutine(screenFlashDamage());
-
-        if (aud != null && audHurt != null && audHurt.Length > 0)
+        if (!canUseMedkit)
         {
-            aud.pitch = Random.Range(0.9f, 1.1f);
-            aud.PlayOneShot(audHurt[Random.Range(0, audHurt.Length)], audHurtVol);
-        }
-
-        if (HP <= 0)
-        {
-            if (gamemanager.instance != null) gamemanager.instance.youLose();
+            medkitCooldown -= Time.deltaTime;
+            if (medkitCooldown <= 0f)
+            {
+                canUseMedkit = true;
+                medkitCooldown = 0f;
+            }
         }
     }
 
-    public void updatePlayerUI()
+    public bool CanUseMedkit()
     {
-        if (gamemanager.instance != null && gamemanager.instance.playerHPBar != null)
-            gamemanager.instance.playerHPBar.fillAmount = (float)HP / HPOrig;
+        return canUseMedkit && HP < HPOrig;
     }
 
-    IEnumerator screenFlashDamage()
-    {
-        var gm = gamemanager.instance;
-        if (gm == null || gm.playerDamagePanel == null)
-            yield break;
-
-        var panel = gm.playerDamagePanel;
-
-        if (panel != null)
-            panel.SetActive(true);
-
-        yield return new WaitForSeconds(0.1f);
-
-        if (panel != null)
-            panel.SetActive(false);
-    }
-
-    // --- GUN SYSTEM ---
     public void getGunStats(gunStats gun)
     {
-        if (gun == null) return;
-
         if (gunList.Contains(gun))
         {
             gunListPos = gunList.IndexOf(gun);
@@ -431,7 +425,7 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
 
     void changeGun()
     {
-        if (gunList == null || gunList.Count == 0 || gunModel == null) return;
+        if (gunList.Count == 0) return;
 
         shootDamage = gunList[gunListPos].shootDamage;
         shootDist = gunList[gunListPos].shootDist;
@@ -448,17 +442,14 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
             Destroy(child.gameObject);
         }
 
-        if (gunList[gunListPos].gunModel != null)
-        {
-            GameObject newGunModel = Instantiate(gunList[gunListPos].gunModel, gunModel.transform);
-            newGunModel.transform.localPosition = Vector3.zero;
-            newGunModel.transform.localRotation = Quaternion.identity;
-        }
+        GameObject newGunModel = Instantiate(gunList[gunListPos].gunModel, gunModel.transform);
+        newGunModel.transform.localPosition = Vector3.zero;
+        newGunModel.transform.localRotation = Quaternion.identity;
     }
 
     void selectGun()
     {
-        if (gunList == null || gunList.Count < 2) return;
+        if (gunList.Count < 2) return;
 
         float scroll = Input.GetAxis("Mouse ScrollWheel");
 
@@ -479,29 +470,20 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
 
     public void respawn()
     {
-        if (controller != null && gamemanager.instance != null && gamemanager.instance.spawnPoint != null)
-        {
-            controller.transform.position = gamemanager.instance.spawnPoint.transform.position;
-        }
-        else if (gamemanager.instance != null && gamemanager.instance.spawnPoint != null)
-        {
-            transform.position = gamemanager.instance.spawnPoint.transform.position;
-        }
-
+        controller.transform.position = gamemanager.instance.spawnPoint.transform.position;
         HP = HPOrig;
-        playerVel = Vector3.zero;
-        jumpCount = 0;
-        isCrouching = false;
-        isGliding = false;
-        canUseMedkit = true;
-        medkitCooldown = 0f;
-
-        if (controller != null)
-        {
-            controller.height = originalHeight;
-        }
-
         updatePlayerUI();
+    }
+
+    [System.Serializable]
+    public class PlayerControllerSaveData
+    {
+        public int hp;
+        public bool isCrouching;
+        public bool isGliding;
+        public bool canUseMedkit;
+        public float medkitCooldown;
+        public int gunListPos;
     }
 
     object ISaveable.CaptureState() => CaptureState();
@@ -522,7 +504,8 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
 
     public void RestoreState(object state)
     {
-        var data = (PlayerControllerSaveData)state;
+        var data = state as PlayerControllerSaveData;
+        if (data == null) return;
 
         HP = data.hp;
         isCrouching = data.isCrouching;
@@ -536,12 +519,12 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
             changeGun();
         }
 
-        if (isCrouching && controller != null)
+        if (isCrouching)
         {
             controller.height = crouchHeight;
             speed = Mathf.RoundToInt(originalSpeed * crouchSpeedMod);
         }
-        else if (controller != null)
+        else
         {
             controller.height = originalHeight;
             speed = originalSpeed;
@@ -549,39 +532,4 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
 
         updatePlayerUI();
     }
-
-    // Exposed helpers used by save manager or other systems
-    public int GetHP() => HP;
-    public void SetHP(int value)
-    {
-        HP = value;
-        updatePlayerUI();
-    }
-
-    public int GetCurrentGunIndex() => gunListPos;
-    public void RestoreGunVisual(int index)
-    {
-        if (gunList == null || gunList.Count == 0) return;
-
-        gunListPos = Mathf.Clamp(index, 0, gunList.Count - 1);
-        changeGun();
-    }
-
-    // Optionally expose CurrentHP property (kept for compatibility)
-    public int CurrentHP
-    {
-        get { return HP; }
-        set { HP = value; }
-    }
 }
-    
-    [System.Serializable]
-    public class PlayerControllerSaveData
-    {
-        public int hp;
-        public bool isCrouching;
-        public bool isGliding;
-        public bool canUseMedkit;
-        public float medkitCooldown;
-        public int gunListPos;
-    }

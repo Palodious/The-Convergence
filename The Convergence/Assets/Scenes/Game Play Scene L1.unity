@@ -589,6 +589,10 @@ PrefabInstance:
       propertyPath: id
       value: 65e93b0a9bce4fcb810ff637d6cca3af
       objectReference: {fileID: 0}
+    - target: {fileID: 5386695453824410145, guid: 90e596fc3a9567b4c8d42d0523a13f19, type: 3}
+      propertyPath: gunModel
+      value: 
+      objectReference: {fileID: 0}
     - target: {fileID: 6858211449646362027, guid: 90e596fc3a9567b4c8d42d0523a13f19, type: 3}
       propertyPath: m_IsActive
       value: 0
@@ -3192,7 +3196,7 @@ MonoBehaviour:
   shootDamage: 1
   shootDist: 1
   shootRate: 0.01
-  glideGravity: 25
+  glideGravity: 5
   crouchSpeedMod: 0.25
   crouchHeight: 0.5
   aud: {fileID: 7718343462627762144}
@@ -3211,7 +3215,10 @@ MonoBehaviour:
   gunList: []
   gunModel: {fileID: 6577229940228874949}
   medkitUseCooldown: 5
+  aimTarget: {fileID: 0}
   rightHandIKTarget: {fileID: 0}
+  isAiming: 0
+  aimMoveSpeed: 8
 --- !u!4 &5612301094381848759
 Transform:
   m_ObjectHideFlags: 0
