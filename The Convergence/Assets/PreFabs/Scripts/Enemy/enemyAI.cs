@@ -603,22 +603,18 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
         }
     }
 
-    public void SetPatrolPoints(Transform[] points)
+    public void SetPatrolPoints(Transform[] points, string sourceId = null)
     {
         patrolPoints = points;
         patrolIndex = 0;
 
-        if (usePatrol && patrolPoints != null && patrolPoints.Length > 0)
-            agent.SetDestination(patrolPoints[0].position);
-    }
+        if (!string.IsNullOrEmpty(sourceId))
+            patrolSourceId = sourceId;
 
-    public void SetPatrolPoints(Transform[] points, string sourceId)
-    {
-        patrolSourceId = sourceId;
-        SetPatrolPoints(points);
-
-        if (usePatrol && patrolPoints != null && patrolPoints.Length > 0)
+        if (usePatrol && patrolPoints != null && patrolPoints.Length > 0 && agent != null)
+        {
             agent.SetDestination(patrolPoints[0].position);
+        }
     }
 
     //Gizmos for visualizing turret angles
