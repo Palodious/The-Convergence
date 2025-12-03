@@ -101,6 +101,7 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
     [Header("~=~= Patrol Points =~=~")]
     [SerializeField] Transform[] patrolPoints; // Optional patrol points
     int patrolIndex = 0;
+    [SerializeField] string patrolSourceId;
 
     bool isPlayingStep;
 
@@ -611,6 +612,15 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
             agent.SetDestination(patrolPoints[0].position);
     }
 
+    public void SetPatrolPoints(Transform[] points, string sourceId)
+    {
+        patrolSourceId = sourceId;
+        SetPatrolPoints(points);
+
+        if (usePatrol && patrolPoints != null && patrolPoints.Length > 0)
+            agent.SetDestination(patrolPoints[0].position);
+    }
+
     //Gizmos for visualizing turret angles
     void OnDrawGizmosSelected()
     {
@@ -649,6 +659,8 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
         public bool hasDestination;
         public Vector3 destination;
         public bool isTurretActive;//save turret state
+        public string patrolSourceId;
+
     }
 
     public object CaptureState()
@@ -657,12 +669,14 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
         {
             hp = HP,
             pos = transform.position,
-            isTurretActive = isTurretActive, //save turret state
             startingPos = startingPos,
             roamTimer = roamTimer,
             patrolIndex = patrolIndex,
             hasDestination = false,
-            destination = Vector3.zero
+            destination = Vector3.zero,
+            isTurretActive = isTurretActive, //save turret state
+            patrolSourceId = patrolSourceId
+
         };
 
         if (agent != null && agent.hasPath)
@@ -695,6 +709,20 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
         // 3. Restore roam / patrol internals
         startingPos = s.startingPos;
         roamTimer = s.roamTimer;
+        patrolSourceId = s.patrolSourceId;
+
+        if ((patrolPoints == null || patrolPoints.Length == 0) && !string.IsNullOrEmpty(patrolSourceId))
+        {
+            var src = spawner.FindBySaveId(patrolSourceId);
+            if (src != null)
+            {
+                var points = src.GetPatrolPoints();
+                if (points != null && points.Length > 0)
+                {
+                    SetPatrolPoints(points);
+                }
+            }
+        }
 
         // Only clamp patrolIndex if we actually have patrol points
         if (patrolPoints != null && patrolPoints.Length > 0)

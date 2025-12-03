@@ -1,7 +1,11 @@
 using UnityEngine;
+using System.Collections.Generic;
 
 public class spawner : MonoBehaviour, ISaveable
 {
+    // Global lookup so enemies can find their spawner by SaveEntity Id.
+    static readonly Dictionary<string, spawner> registry = new Dictionary<string, spawner>();
+
     [SerializeField] GameObject objectToSpawn;
     [SerializeField] int spawnAmount;
     [SerializeField] float spawnRate;
@@ -14,6 +18,34 @@ public class spawner : MonoBehaviour, ISaveable
     float spawnTimer;
 
     bool startSpawning;
+    SaveEntity saveEntity;
+    string saveId;
+
+    void Awake()
+    {
+        // I register myself in a static lookup so enemies can find me later by my SaveEntity Id.
+        saveEntity = GetComponent<SaveEntity>();
+        if (saveEntity != null)
+        {
+            saveId = saveEntity.Id;
+            if (!string.IsNullOrEmpty(saveId))
+            {
+                registry[saveId] = this;
+            }
+        }
+    }
+
+    void OnDestroy()
+    {
+        // If this spawner goes away, I clean up my registry entry.
+        if (!string.IsNullOrEmpty(saveId) &&
+            registry.TryGetValue(saveId, out var current) &&
+            current == this)
+        {
+            registry.Remove(saveId);
+        }
+    }
+
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -64,6 +96,21 @@ public class spawner : MonoBehaviour, ISaveable
         spawnCount++;
         spawnTimer = 0;
     }
+
+    public Transform[] GetPatrolPoints()
+    {
+        return patrolPoints;
+    }
+
+    public static spawner FindBySaveId(string id)
+    {
+        if (string.IsNullOrEmpty(id))
+            return null;
+
+        registry.TryGetValue(id, out var result);
+        return result;
+    }
+
 
     [System.Serializable]
     private struct SpawnerState

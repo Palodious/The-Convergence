@@ -9,8 +9,8 @@ public class tpsCameraCollision : MonoBehaviour
 
     [Header("~=~= Distance Settings ~=~= ")]
     [Range(0.5f, 10f)][SerializeField] float defaultDistance = 4f; // Normal camera distance
-    [Range(0.2f, 10f)][SerializeField] float minDistance = 0.5f;   // Closest allowed
-    [Range(0.2f, 10f)][SerializeField] float maxDistance = 4f;     // Furthest allowed
+    [Range(0.01f, 10f)][SerializeField] float minDistance = 0.5f;   // Closest allowed
+    [Range(0.01f, 10f)][SerializeField] float maxDistance = 4f;     // Furthest allowed
 
     [Header("~=~= Collision ~=~= ")]
     [Range(0.01f, 1f)][SerializeField] float sphereRadius = 0.25f;  // Size of the collision sphere
