@@ -12,11 +12,6 @@ public class PlayerAbilities : MonoBehaviour
     [Range(5f, 15f)][SerializeField] float pulseRange;
     [Range(2f, 15f)][SerializeField] float pulseCooldown;
 
-    // Rift Surge
-    [Range(10f, 50f)][SerializeField] float surgeDuration;
-    [Range(1f, 5f)][SerializeField] float surgeDamageBoost;
-    [Range(2f, 20f)][SerializeField] float surgeCooldown;
-
     // Rift Jump
     [Range(10f, 25f)][SerializeField] float jumpDistance;
     [Range(2f, 15f)][SerializeField] float jumpCooldown;
@@ -43,7 +38,6 @@ public class PlayerAbilities : MonoBehaviour
             charController = GetComponent<CharacterController>();
 
         pulseTimer = pulseCooldown;
-        surgeTimer = surgeCooldown;
         jumpTimer = jumpCooldown;
     }
 
@@ -57,9 +51,6 @@ public class PlayerAbilities : MonoBehaviour
         // Input handling
         if (Input.GetKeyDown(KeyCode.Q) && pulseTimer >= pulseCooldown)
             StartCoroutine(RiftPulse());
-
-        if (Input.GetKeyDown(KeyCode.E) && surgeTimer >= surgeCooldown)
-            StartCoroutine(RiftSurge());
 
         if (Input.GetKeyDown(KeyCode.F) && jumpTimer >= jumpCooldown)
             StartCoroutine(RiftJump());
@@ -91,58 +82,6 @@ public class PlayerAbilities : MonoBehaviour
         }
 
         yield return null;
-    }
-
-    IEnumerator RiftSurge()
-    {
-        if (surgeTimer < surgeCooldown) yield break;
-
-        surgeTimer = 0;
-        isSurging = true;
-        controller.damageBoost = surgeDamageBoost;
-
-        Debug.Log($"RIFT SURGE STARTED! Damage ×{surgeDamageBoost} for {surgeDuration:F0}s");
-
-        if (gamemanager.instance != null && gamemanager.instance.surgeOverlay != null)
-        {
-            gamemanager.instance.surgeOverlay.SetActive(true);
-            Image overlayImage = gamemanager.instance.surgeOverlay.GetComponent<Image>();
-            if (overlayImage != null)
-                overlayImage.color = new Color(0.2f, 0.6f, 1f, 0.3f);
-        }
-
-        surgeEffect = EffectsManager.Instance.Create("Surge", transform.position);
-        if (surgeEffect != null)
-        {
-            surgeEffect.transform.SetParent(transform);
-            surgeEffect.transform.localPosition = Vector3.zero;
-            surgeEffect.transform.localRotation = Quaternion.identity;
-        }
-
-        yield return new WaitForSeconds(surgeDuration);
-
-        EndSurge();
-    }
-
-    void EndSurge()
-    {
-        if (!isSurging) return;
-
-        isSurging = false;
-        controller.damageBoost = 1f;
-
-        if (gamemanager.instance != null && gamemanager.instance.surgeOverlay != null)
-            gamemanager.instance.surgeOverlay.SetActive(false);
-
-        EffectsManager.Instance.Create("SurgeEnd", transform.position);
-
-        if (surgeEffect != null)
-        {
-            EffectsManager.Instance.Return(surgeEffect);
-            surgeEffect = null;
-        }
-
-        Debug.Log("Rift Surge ENDED — damage boost removed");
     }
 
     IEnumerator RiftJump()
