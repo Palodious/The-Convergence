@@ -10,6 +10,7 @@ public class spawner : MonoBehaviour, ISaveable
     [SerializeField] int spawnAmount;
     [SerializeField] float spawnRate;
     [SerializeField] Transform[] spawnPos;
+    [SerializeField] bool hasTriggered;
 
     [Header("Optional Patrol Points")]
     [SerializeField] Transform[] patrolPoints; // Enemies can use patrol points
@@ -72,8 +73,9 @@ public class spawner : MonoBehaviour, ISaveable
     }
     private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("Player"))
+        if (other.CompareTag("Player") && !hasTriggered)
         {
+            hasTriggered = true;
             startSpawning = true;
         }
     }
@@ -125,6 +127,7 @@ public class spawner : MonoBehaviour, ISaveable
     {
         public int spawnCount;
         public float spawnTimer;
+        public bool hasTriggered;
         public bool startSpawning;
     }
 
@@ -137,6 +140,7 @@ public class spawner : MonoBehaviour, ISaveable
         {
             spawnCount = this.spawnCount,
             spawnTimer = this.spawnTimer,
+            hasTriggered = this.hasTriggered,
             startSpawning = this.startSpawning
         };
     }
@@ -151,6 +155,7 @@ public class spawner : MonoBehaviour, ISaveable
 
         spawnCount = Mathf.Clamp(s.spawnCount, 0, spawnAmount);
         spawnTimer = Mathf.Max(0f, s.spawnTimer);
+        hasTriggered = s.hasTriggered;
         startSpawning = s.startSpawning;
     }
 }

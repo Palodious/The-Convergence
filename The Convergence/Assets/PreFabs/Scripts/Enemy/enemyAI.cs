@@ -612,9 +612,7 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
             patrolSourceId = sourceId;
 
         if (usePatrol && patrolPoints != null && patrolPoints.Length > 0 && agent != null)
-        {
             agent.SetDestination(patrolPoints[0].position);
-        }
     }
 
     //Gizmos for visualizing turret angles

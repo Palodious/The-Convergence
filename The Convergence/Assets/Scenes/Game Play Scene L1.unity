@@ -1479,9 +1479,6 @@ MonoBehaviour:
   pulseDamage: 20
   pulseRange: 6
   pulseCooldown: 4
-  surgeDuration: 15
-  surgeDamageBoost: 2.5
-  surgeCooldown: 8
   jumpDistance: 15
   jumpCooldown: 5
   enemyMask:
@@ -3087,7 +3084,8 @@ PrefabInstance:
       propertyPath: m_Name
       value: Spawn Point
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 1481737858617780610, guid: d0616d55a735dc641ac876093e9fe182, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
