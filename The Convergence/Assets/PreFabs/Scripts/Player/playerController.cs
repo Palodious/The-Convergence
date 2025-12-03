@@ -348,6 +348,9 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
     public void UseMedkitFromPickup(medkitStats medkit)
     {
         if (medkit == null) return;
+        if (!CanUseMedkit()) return;
+        canUseMedkit = false;
+        medkitCooldown = medkitUseCooldown;
         int healAmount = medkit.healAmount;
         HP += healAmount;
         if (HP > HPOrig) HP = HPOrig;
