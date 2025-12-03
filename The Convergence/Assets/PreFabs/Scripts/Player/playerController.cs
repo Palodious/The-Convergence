@@ -48,6 +48,7 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
     int jumpCount;
     int HPOrig;
     float shootTimer;
+    float lastShotTime;
 
     bool isCrouching;  // crouch state  
     bool isGliding;    // glide state  
@@ -92,7 +93,7 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
             if (Camera.main != null)
                 Debug.DrawRay(Camera.main.transform.position, Camera.main.transform.forward * shootDist, Color.red);
 
-            shootTimer += Time.deltaTime;
+            //shootTimer += Time.deltaTime;
             movement();
         }
 
@@ -191,7 +192,7 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
         }
         else if (isGliding) StopGlide();
 
-        if (Input.GetButton("Fire1") && shootTimer >= shootRate)
+        if (Input.GetButton("Fire1") && Time.time >= lastShotTime + shootRate)
         {
             shoot();
         }
@@ -283,7 +284,7 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
         if (gunList == null || gunList.Count == 0) return;
         if (Camera.main == null) return;
 
-        shootTimer = 0;
+        lastShotTime = Time.time;
 
         if (gunList.Count > 0)
         {
