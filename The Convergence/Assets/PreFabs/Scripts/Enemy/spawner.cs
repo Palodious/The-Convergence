@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class spawner : MonoBehaviour
+public class spawner : MonoBehaviour, ISaveable
 {
     [SerializeField] GameObject objectToSpawn;
     [SerializeField] int spawnAmount;
@@ -73,23 +73,29 @@ public class spawner : MonoBehaviour
         public bool startSpawning;
     }
 
+        object ISaveable.CaptureState() => CaptureState();
+        void ISaveable.RestoreState(object state) => RestoreState(state);
+
     public object CaptureState()
     {
         return new SpawnerState
         {
-            spawnCount = spawnCount,
-            spawnTimer = spawnTimer,
-            startSpawning = startSpawning
+            spawnCount = this.spawnCount,
+            spawnTimer = this.spawnTimer,
+            startSpawning = this.startSpawning
         };
     }
 
     public void RestoreState(object state)
     {
         if (state is not SpawnerState s)
+        {
+            Debug.LogError($"spawner.RestoreState: expected SpawnerState, got {state?.GetType()} on {name}");
             return;
+        }
 
-        spawnCount = s.spawnCount;
-        spawnTimer = s.spawnTimer;
+        spawnCount = Mathf.Clamp(s.spawnCount, 0, spawnAmount);
+        spawnTimer = Mathf.Max(0f, s.spawnTimer);
         startSpawning = s.startSpawning;
     }
 }
