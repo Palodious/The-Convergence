@@ -47,7 +47,6 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
 
     int jumpCount;
     int HPOrig;
-    float shootTimer;
     float lastShotTime;
 
     bool isCrouching;  // crouch state  
@@ -227,8 +226,11 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
 
     void sprint()
     {
-        if (Input.GetButtonDown("Sprint")) { speed *= sprintMod; isSprinting = true; }
-        else if (Input.GetButtonUp("Sprint")) { speed /= sprintMod; isSprinting = false; }
+        if (Input.GetButtonDown("Sprint")) { speed = originalSpeed * sprintMod; isSprinting = true; }
+        else
+            {
+            speed = originalSpeed; isSprinting = false;
+            }
     }
 
     void jump()
@@ -487,18 +489,19 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
         }
 
         HP = HPOrig;
-        updatePlayerUI();
-    }
+        playerVel = Vector3.zero;
+        jumpCount = 0;
+        isCrouching = false;
+        isGliding = false;
+        canUseMedkit = true;
+        medkitCooldown = 0f;
 
-    [System.Serializable]
-    public class PlayerControllerSaveData
-    {
-        public int hp;
-        public bool isCrouching;
-        public bool isGliding;
-        public bool canUseMedkit;
-        public float medkitCooldown;
-        public int gunListPos;
+        if (controller != null)
+        {
+            controller.height = originalHeight;
+        }
+
+        updatePlayerUI();
     }
 
     object ISaveable.CaptureState() => CaptureState();
@@ -519,8 +522,7 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
 
     public void RestoreState(object state)
     {
-        var data = state as PlayerControllerSaveData;
-        if (data == null) return;
+        var data = (PlayerControllerSaveData)state;
 
         HP = data.hp;
         isCrouching = data.isCrouching;
@@ -556,11 +558,7 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
         updatePlayerUI();
     }
 
-    public int GetCurrentGunIndex()
-    {
-        return gunListPos;
-    }
-
+    public int GetCurrentGunIndex() => gunListPos;
     public void RestoreGunVisual(int index)
     {
         if (gunList == null || gunList.Count == 0) return;
@@ -576,3 +574,14 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
         set { HP = value; }
     }
 }
+    
+    [System.Serializable]
+    public class PlayerControllerSaveData
+    {
+        public int hp;
+        public bool isCrouching;
+        public bool isGliding;
+        public bool canUseMedkit;
+        public float medkitCooldown;
+        public int gunListPos;
+    }
