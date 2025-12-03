@@ -90,7 +90,15 @@ public class spawner : MonoBehaviour, ISaveable
         enemyAI ai = newObj.GetComponent<enemyAI>();
         if (ai != null && patrolPoints != null && patrolPoints.Length > 0)
         {
-            ai.SetPatrolPoints(patrolPoints);
+            if (!string.IsNullOrEmpty(saveId))
+            {
+                ai.SetPatrolPoints(patrolPoints, saveId);
+            }
+            else
+            {
+                // Fallback if someone forgot the SaveEntity.
+                ai.SetPatrolPoints(patrolPoints);
+            }
         }
 
         spawnCount++;
