@@ -348,7 +348,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 058e3db800def9641a76f6ac3eb9922f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TPSCameraController
-  target: {fileID: 0}
+  target: {fileID: 3810211580229429667}
   offset: {x: 0, y: 2, z: -4}
   followSpeed: 10
   mouseSensitivity: 200
@@ -529,84 +529,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 2880066801963658504, guid: 63b017899aae5ff4aa43b538ad0e287c, type: 3}
   m_PrefabInstance: {fileID: 592065228}
   m_PrefabAsset: {fileID: 0}
---- !u!1001 &634434778
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: 2376811500745352790, guid: 90e596fc3a9567b4c8d42d0523a13f19, type: 3}
-      propertyPath: m_Name
-      value: Player
-      objectReference: {fileID: 0}
-    - target: {fileID: 2376811500745352790, guid: 90e596fc3a9567b4c8d42d0523a13f19, type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3810211579639045497, guid: 90e596fc3a9567b4c8d42d0523a13f19, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: -145.32
-      objectReference: {fileID: 0}
-    - target: {fileID: 3810211579639045497, guid: 90e596fc3a9567b4c8d42d0523a13f19, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 1.0699999
-      objectReference: {fileID: 0}
-    - target: {fileID: 3810211579639045497, guid: 90e596fc3a9567b4c8d42d0523a13f19, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: -83.78
-      objectReference: {fileID: 0}
-    - target: {fileID: 3810211579639045497, guid: 90e596fc3a9567b4c8d42d0523a13f19, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 3810211579639045497, guid: 90e596fc3a9567b4c8d42d0523a13f19, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3810211579639045497, guid: 90e596fc3a9567b4c8d42d0523a13f19, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3810211579639045497, guid: 90e596fc3a9567b4c8d42d0523a13f19, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3810211579639045497, guid: 90e596fc3a9567b4c8d42d0523a13f19, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3810211579639045497, guid: 90e596fc3a9567b4c8d42d0523a13f19, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3810211579639045497, guid: 90e596fc3a9567b4c8d42d0523a13f19, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4522564509629319291, guid: 90e596fc3a9567b4c8d42d0523a13f19, type: 3}
-      propertyPath: id
-      value: 65e93b0a9bce4fcb810ff637d6cca3af
-      objectReference: {fileID: 0}
-    - target: {fileID: 5386695453824410145, guid: 90e596fc3a9567b4c8d42d0523a13f19, type: 3}
-      propertyPath: gunModel
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 6858211449646362027, guid: 90e596fc3a9567b4c8d42d0523a13f19, type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8058420778030705383, guid: 90e596fc3a9567b4c8d42d0523a13f19, type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects:
-    - {fileID: 8058420778030705383, guid: 90e596fc3a9567b4c8d42d0523a13f19, type: 3}
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 90e596fc3a9567b4c8d42d0523a13f19, type: 3}
 --- !u!1001 &812060846
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3218,7 +3140,7 @@ MonoBehaviour:
   aimTarget: {fileID: 0}
   rightHandIKTarget: {fileID: 0}
   isAiming: 0
-  aimMoveSpeed: 8
+  aimMoveSpeed: 1
 --- !u!4 &5612301094381848759
 Transform:
   m_ObjectHideFlags: 0
@@ -3928,9 +3850,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::tpsCameraCollision
   target: {fileID: 3810211580229429667}
-  targetOffset: {x: 0, y: 1, z: 0}
-  defaultDistance: 4
-  minDistance: 0.5
+  targetOffset: {x: 0, y: 1.5, z: 0}
+  defaultDistance: 4.5
+  minDistance: 0.01
   maxDistance: 4
   sphereRadius: 0.25
   collisionMask:
@@ -4201,4 +4123,3 @@ SceneRoots:
   - {fileID: 8446038480787056791}
   - {fileID: 144783029}
   - {fileID: 1397716705}
-  - {fileID: 634434778}
