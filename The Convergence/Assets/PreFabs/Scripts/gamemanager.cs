@@ -188,7 +188,10 @@ public class gamemanager : MonoBehaviour
             var savedIds = new HashSet<string>(data.entities.Select(e => e.id));
 
             // Every enemy currently in the scene.
-            var allEnemies = FindObjectsOfType<enemyAI>(true);
+            var allEnemies = FindObjectsByType<enemyAI>(
+                FindObjectsInactive.Include,
+                FindObjectsSortMode.None
+            );
 
             foreach (var enemy in allEnemies)
             {
