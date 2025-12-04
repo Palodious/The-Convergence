@@ -1,25 +1,36 @@
 using UnityEngine;
-using System.Collections;
 
-public class keyPickup : MonoBehaviour
+public class KeyPickup : MonoBehaviour
 {
-    [Header("~=~= Key Pickup =~=~")]
-    [SerializeField] KeyItem key;
+    [SerializeField] keyStats key;
+    [SerializeField] private bool isPickup = true; // Toggle for enemies dropping keys
 
-    private void OnTriggerEnter(Collider other)
+    private void Start()
     {
-        IPickup pik = other.GetComponent<IPickup>();
-
-        if (pik != null)
+        // If this is attached to an enemy, the enemy should control whether it drops this
+        if (!isPickup)
         {
-            pik.GetItem(key);
-            StartCoroutine(DelayedDestroy());
+            this.enabled = false;
         }
     }
 
-    IEnumerator DelayedDestroy()
+    private void OnTriggerEnter(Collider other)
     {
-        yield return null;
-        Destroy(gameObject);
+        if (!isPickup) return;
+        if (!other.CompareTag("Player")) return;
+
+        playerController player = other.GetComponent<playerController>();
+        if (player != null)
+        {
+            player.GetItem(key);
+            Destroy(gameObject);
+        }
+    }
+
+    // Public method for enemies to enable dropping
+    public void EnablePickup()
+    {
+        isPickup = true;
+        this.enabled = true;
     }
 }

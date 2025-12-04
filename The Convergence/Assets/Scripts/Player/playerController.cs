@@ -369,19 +369,31 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
             return;
         }
 
-        if (item is KeyItem key)
+        if (item is keyStats key)
         {
-            CollectKey(key);
+            GiveKey(key);
             return;
         }
 
         Debug.LogWarning("Picked up unknown item: " + item.name);
     }
 
-    void CollectKey(KeyItem key)
+    public void GiveKey(keyStats key)
     {
         hasKey = true;
-        Debug.Log("Picked up key: " + key.keyID);
+        Debug.Log($"Player picked up {key.keyCount} {key.keyName}(s)!");
+
+        // Play pickup effect if available
+        if (key.pickupEffect != null)
+        {
+            Instantiate(key.pickupEffect, transform.position, Quaternion.identity);
+        }
+    }
+
+    public void UseKey()
+    {
+        hasKey = false;
+        Debug.Log("Player used a key!");
     }
 
     public void UseMedkitFromPickup(medkitStats medkit)

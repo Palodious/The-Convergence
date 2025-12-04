@@ -85,6 +85,19 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
     [SerializeField] AudioClip[] audDeath; // <-- NEW: Death audio
     [Range(0, 1)][SerializeField] float audDeathVol;
 
+    // Drop Settings (Items use pickupPrefab, Key uses direct prefab)
+    [Header("~=~= Drop Settings =~=~")]
+    [SerializeField] bool enableDrops = false; // toggle item drops on/off
+    [Range(0f, 1f)][SerializeField] float dropChance = 1f;// chance to drop items (0..1)
+    [SerializeField] GameObject pickupPrefab; // prefab that should accept a ScriptableObject (via AssignItem)
+    [SerializeField] ScriptableObject[] dropItems; // scriptable items to assign to pickupPrefab
+    [Range(0f, 1f)][SerializeField] float dropSpread = 0.5f; // random spawn spread for drops
+
+    [Header("~=~= Key Drop Settings =~=~")]
+    [SerializeField] bool dropsKey = false; // whether this enemy will drop a key prefab
+    [Range(0f, 1f)][SerializeField] float keyDropChance = 1f; // chance to drop key (0..1)
+    [SerializeField] KeyPickup keyPickupPrefab; // direct key prefab (instantiated directly)
+
     public EnemyType EnemyTypeValue => enemyType;
 
     Color colorOrig;
@@ -498,7 +511,7 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
         if (!isAlive) return;
 
         HP -= amount;
-        if (!enableTurretMode && gamemanager.instance.player != null) 
+        if (!enableTurretMode && gamemanager.instance.player != null)
             agent.SetDestination(gamemanager.instance.player.transform.position);
 
         // Play hurt audio
@@ -517,6 +530,20 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
             // Reduce the goal ONCE
             gamemanager.instance.updateGameGoal(-1);
 
+            // Items (ScriptableObject -> pickupPrefab)
+            if (enableDrops)
+            {
+                // roll chance once for this enemy
+                if (Random.value <= dropChance)
+                    TryDropItems();
+            }
+
+            // Key (direct prefab spawn)
+            if (dropsKey && keyPickupPrefab != null)
+            {
+                TryDropKey();
+            }
+
             // Disable movement + animations so the enemy stops acting while the death sound plays
             if (agent != null) agent.isStopped = true;
             if (anim != null) anim.enabled = false;
@@ -534,6 +561,58 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
         model.material.color = Color.red;
         yield return new WaitForSeconds(0.1f);
         model.material.color = colorOrig;
+    }
+
+    void TryDropItems()
+    {
+        if (pickupPrefab == null || dropItems == null || dropItems.Length == 0) return;
+
+        foreach (var item in dropItems)
+        {
+            if (item == null) continue;
+
+            // spawn slightly above center to reduce clipping and apply spread
+            Vector3 spawnPos = transform.position + Vector3.up * 0.5f + Random.insideUnitSphere * dropSpread;
+            GameObject drop = Instantiate(pickupPrefab, spawnPos, Quaternion.identity);
+
+            // Try to find and call AssignItem(ScriptableObject) on any component via reflection
+            var comps = drop.GetComponents<MonoBehaviour>();
+            foreach (var comp in comps)
+            {
+                if (comp == null) continue;
+                var method = comp.GetType().GetMethod("AssignItem", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
+                if (method != null)
+                {
+                    // method signature expected: void AssignItem(ScriptableObject item)
+                    try
+                    {
+                        method.Invoke(comp, new object[] { item });
+                        break; // assigned, stop searching
+                    }
+                    catch (System.Exception ex)
+                    {
+                        Debug.LogWarning($"enemyAI.TryDropItems: failed to invoke AssignItem on {comp.GetType().Name}: {ex.Message}");
+                    }
+                }
+            }
+        }
+    }
+
+    void TryDropKey()
+    {
+        if (keyPickupPrefab == null) return;
+
+        // Check key drop chance
+        if (Random.value > keyDropChance) return;
+
+        Vector3 spawnPos = transform.position + Vector3.up * 0.5f;
+        KeyPickup keyDrop = Instantiate(keyPickupPrefab, spawnPos, Quaternion.identity);
+
+        // Enable the pickup (in case it was disabled by default)
+        if (keyDrop != null)
+        {
+            keyDrop.EnablePickup();
+        }
     }
 
     void Shoot()
@@ -690,17 +769,17 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
             return;
         }
 
-        // 1. Restore position first
+        // Restore position first
         if (agent != null)
             agent.Warp(s.pos);
         else
             transform.position = s.pos;
 
-        // 2. Restore combat state
+        // Restore combat state
         HP = s.hp;
         isTurretActive = s.isTurretActive;// save turret state
 
-        // 3. Restore roam / patrol internals
+        // Restore roam / patrol internals
         startingPos = s.startingPos;
         roamTimer = s.roamTimer;
         patrolSourceId = s.patrolSourceId;
@@ -724,14 +803,14 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
         else
             patrolIndex = 0;
 
-        // 4. Restore movement destination (if it was valid when saved)
+        // Restore movement destination (if it was valid when saved)
         if (agent != null && s.hasDestination)
         {
             // We trust the saved destination because it came from agent.destination.
             agent.SetDestination(s.destination);
         }
 
-        // 5. Clean up animation state
+        // Clean up animation state
         if (anim != null)
         {
             anim.Rebind();
