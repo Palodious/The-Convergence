@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class KeyPickup : MonoBehaviour
+public class keyPickup : MonoBehaviour
 {
     [SerializeField] keyStats key;
     [SerializeField] private bool isPickup = true; // Toggle for enemies dropping keys
@@ -11,6 +11,13 @@ public class KeyPickup : MonoBehaviour
         if (!isPickup)
         {
             this.enabled = false;
+        }
+
+        // Optional: Check if player already has keys and self-destruct
+        if (playerController.keyCount > 0)
+        {
+            // Optional: Destroy this key if player already has some
+            // Destroy(gameObject);
         }
     }
 

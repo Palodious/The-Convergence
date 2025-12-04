@@ -6,6 +6,7 @@ public class Door : MonoBehaviour
     [SerializeField] Animator anim;
     [SerializeField] bool requiresKey = false;
     [SerializeField] bool requiresEnemiesDefeated = true;
+    [SerializeField] int keysRequired = 1; // NEW: How many keys needed
 
     private bool isOpen = false;
 
@@ -22,8 +23,8 @@ public class Door : MonoBehaviour
         // Check key requirement if needed
         if (requiresKey)
         {
-            // Access the static field using the class name, not instance
-            canOpen = canOpen && playerController.hasKey;
+            // Access the static keyCount using the class name
+            canOpen = canOpen && (playerController.keyCount >= keysRequired);
         }
 
         // Check enemies requirement if needed
@@ -34,9 +35,13 @@ public class Door : MonoBehaviour
 
         if (canOpen)
         {
-            if (requiresKey && playerController.hasKey)
+            if (requiresKey && playerController.keyCount >= keysRequired)
             {
-                player.UseKey();
+                // Use required number of keys
+                for (int i = 0; i < keysRequired; i++)
+                {
+                    player.UseKey();
+                }
             }
             OpenDoor();
         }

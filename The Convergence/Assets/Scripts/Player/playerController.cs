@@ -35,10 +35,11 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
     [Range(0, 1)][SerializeField] float audJumpVol;
     [SerializeField] AudioClip[] audHurt;
     [Range(0, 1)][SerializeField] float audHurtVol;
-    [SerializeField] AudioClip audMedkit;      // Sound for using a medkit
+    [SerializeField] AudioClip audMedkit; // Sound for using a medkit
     [Range(0, 1)][SerializeField] float audMedkitVol = 1f; // Volume for medkit use
 
-    public static bool hasKey = false;
+    // CHANGE: Replace static bool with static int for key count
+    public static int keyCount = 0;
 
     public int ShootDamage => shootDamage;
     float originalHeight; // remember height for uncrouch  
@@ -52,7 +53,7 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
     float shootTimer;
 
     bool isCrouching;  // crouch state  
-    bool isGliding;    // glide state  
+    bool isGliding; // glide state  
     bool isSprinting;
     bool isPlayingStep;
 
@@ -69,9 +70,9 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
     [Range(0.1f, 60f)][SerializeField] private float medkitUseCooldown = 5f; // Cooldown between medkit uses
 
     [Header("~=~= TPS / Aiming Settings =~=~")]
-    public Transform aimTarget;                // assign empty AimTarget in front of player
-    public Transform rightHandIKTarget;        // assign empty child at gun grip
-    [HideInInspector] public bool isAiming;    // true while holding Fire2
+    public Transform aimTarget; // assign empty AimTarget in front of player
+    public Transform rightHandIKTarget; // assign empty child at gun grip
+    [HideInInspector] public bool isAiming; // true while holding Fire2
     [Range(0f, 1f)] public float aimMoveSpeed = 8f; // how fast upper-body aims/IK blends
 
     void Start()
@@ -255,7 +256,7 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
             aud.PlayOneShot(gunPos.shootSound[Random.Range(0, gunPos.shootSound.Length)], gunPos.shootSoundVol);
         }
 
-        // --- Gears-style shooting: fire from gunModel toward the AimTarget ---
+        // fire from gunModel toward the AimTarget
         if (aimTarget != null && gunModel != null)
         {
             Vector3 shootDir = (aimTarget.position - gunModel.transform.position).normalized;
@@ -290,7 +291,6 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
     }
 
     // IK is handled by a separate script (PlayerIKController) using rightHandIKTarget.
-
     public void takeDamage(int amount)
     {
         HP -= amount;
@@ -378,10 +378,11 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
         Debug.LogWarning("Picked up unknown item: " + item.name);
     }
 
+    // Updated to use key count instead of boolean
     public void GiveKey(keyStats key)
     {
-        hasKey = true;
-        Debug.Log($"Player picked up {key.keyCount} {key.keyName}(s)!");
+        keyCount += key.keyCount; // Add the key count from the ScriptableObject
+        Debug.Log($"Player picked up {key.keyCount} {key.keyName}(s)! Total keys: {keyCount}");
 
         // Play pickup effect if available
         if (key.pickupEffect != null)
@@ -390,10 +391,20 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
         }
     }
 
-    public void UseKey()
+    // Updated to use key count instead of boolean
+    public bool UseKey()
     {
-        hasKey = false;
-        Debug.Log("Player used a key!");
+        if (keyCount > 0)
+        {
+            keyCount--;
+            Debug.Log($"Player used a key! Keys remaining: {keyCount}");
+            return true;
+        }
+        else
+        {
+            Debug.Log("No keys to use!");
+            return false;
+        }
     }
 
     public void UseMedkitFromPickup(medkitStats medkit)
@@ -509,6 +520,7 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
         public bool canUseMedkit;
         public float medkitCooldown;
         public int gunListPos;
+        public int keyCount; // Save key count
     }
 
     object ISaveable.CaptureState() => CaptureState();
@@ -523,7 +535,8 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
             isGliding = this.isGliding,
             canUseMedkit = this.canUseMedkit,
             medkitCooldown = this.medkitCooldown,
-            gunListPos = this.gunListPos
+            gunListPos = this.gunListPos,
+            keyCount = playerController.keyCount // Save key count
         };
     }
 
@@ -543,6 +556,8 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
             gunListPos = Mathf.Clamp(data.gunListPos, 0, gunList.Count - 1);
             changeGun();
         }
+        // Restore key count
+        playerController.keyCount = data.keyCount;
 
         if (isCrouching)
         {

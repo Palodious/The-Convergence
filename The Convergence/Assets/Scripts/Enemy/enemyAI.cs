@@ -96,7 +96,7 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
     [Header("~=~= Key Drop Settings =~=~")]
     [SerializeField] bool dropsKey = false; // whether this enemy will drop a key prefab
     [Range(0f, 1f)][SerializeField] float keyDropChance = 1f; // chance to drop key (0..1)
-    [SerializeField] KeyPickup keyPickupPrefab; // direct key prefab (instantiated directly)
+    [SerializeField] keyPickup keyPickupPrefab; // CHANGE: Use KeyPickup type instead of GameObject
 
     public EnemyType EnemyTypeValue => enemyType;
 
@@ -598,6 +598,7 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
         }
     }
 
+    // CHANGE: Updated TryDropKey method to prevent multiple key drops
     void TryDropKey()
     {
         if (keyPickupPrefab == null) return;
@@ -605,14 +606,37 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
         // Check key drop chance
         if (Random.value > keyDropChance) return;
 
+        // NEW: Prevent dropping if player already has keys
+        if (playerController.keyCount > 0)
+        {
+            // Optional: You can still drop if you want keys to be collectible even when player has some
+            // For "only one key in scene at a time", keep this check
+            return;
+        }
+
+        // NEW: Check if a key already exists in the scene (optional safety)
+        if (KeyAlreadyExistsInScene())
+        {
+            // Optional: Uncomment if you want ONLY ONE key pickup in the scene at any time
+            // return;
+        }
+
         Vector3 spawnPos = transform.position + Vector3.up * 0.5f;
-        KeyPickup keyDrop = Instantiate(keyPickupPrefab, spawnPos, Quaternion.identity);
+        keyPickup keyDrop = Instantiate(keyPickupPrefab, spawnPos, Quaternion.identity);
 
         // Enable the pickup (in case it was disabled by default)
         if (keyDrop != null)
         {
             keyDrop.EnablePickup();
         }
+    }
+
+    // NEW: Helper method to check for existing keys in scene
+    bool KeyAlreadyExistsInScene()
+    {
+        // Updated to use non-deprecated FindObjectsByType method
+        keyPickup[] existingKeys = FindObjectsByType<keyPickup>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+        return existingKeys.Length > 0;
     }
 
     void Shoot()
