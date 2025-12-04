@@ -4,6 +4,8 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using System.Collections.Generic;
+using System.Linq;
 
 public class gamemanager : MonoBehaviour
 {
@@ -179,6 +181,32 @@ public class gamemanager : MonoBehaviour
 
         // Let SaveManager rebuild the scene based on the save.
         yield return SaveManager.Instance.LoadAndRestore(data, spawnFunc);
+
+        if (data.entities != null && data.entities.Count > 0)
+        {
+            // All IDs that *should* exist according to the save.
+            var savedIds = new HashSet<string>(data.entities.Select(e => e.id));
+
+            // Every enemy currently in the scene.
+            var allEnemies = FindObjectsByType<enemyAI>(
+                FindObjectsInactive.Include,
+                FindObjectsSortMode.None
+            );
+
+            foreach (var enemy in allEnemies)
+            {
+                var se = enemy.GetComponent<SaveEntity>();
+                if (se == null)
+                    continue;
+
+                // If this enemy's ID wasn't in the save, it's a stray spawn.
+                if (!savedIds.Contains(se.Id))
+                {
+                    Debug.Log($"[Load Cleanup] Destroying enemy '{enemy.name}' with id {se.Id} that was not in the save file.");
+                    Destroy(enemy.gameObject);
+                }
+            }
+        }
 
         // Re-hook references after the world is restored.
         player = GameObject.FindWithTag("Player");

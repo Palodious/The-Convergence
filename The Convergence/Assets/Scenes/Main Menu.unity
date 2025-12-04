@@ -246,17 +246,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 50, y: -30, z: 0}
---- !u!114 &430810600 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 1364965146786961893, guid: 180fb47de8c698242a68e1042150a92a, type: 3}
-  m_PrefabInstance: {fileID: 3482923602021476029}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 16862492db33ac04d89b3dbee4149daf, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::MainMenu
 --- !u!1 &961739749
 GameObject:
   m_ObjectHideFlags: 0
@@ -402,6 +391,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 178791909810231314, guid: 180fb47de8c698242a68e1042150a92a, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 200
+      objectReference: {fileID: 0}
+    - target: {fileID: 280509412511157500, guid: 180fb47de8c698242a68e1042150a92a, type: 3}
+      propertyPath: m_text
+      value: Load Game
+      objectReference: {fileID: 0}
     - target: {fileID: 1312250292013561285, guid: 180fb47de8c698242a68e1042150a92a, type: 3}
       propertyPath: m_Pivot.x
       value: 0
@@ -515,6 +512,10 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3351080985617689012, guid: 180fb47de8c698242a68e1042150a92a, type: 3}
+      propertyPath: m_Name
+      value: Load Game
+      objectReference: {fileID: 0}
+    - target: {fileID: 3351080985617689012, guid: 180fb47de8c698242a68e1042150a92a, type: 3}
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
@@ -525,14 +526,14 @@ PrefabInstance:
     - target: {fileID: 3489707329933666401, guid: 180fb47de8c698242a68e1042150a92a, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
-      objectReference: {fileID: 430810600}
+      objectReference: {fileID: 3482923602021476031}
     - target: {fileID: 3489707329933666401, guid: 180fb47de8c698242a68e1042150a92a, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: ContinueGame
+      value: LoadGame
       objectReference: {fileID: 0}
     - target: {fileID: 3489707329933666401, guid: 180fb47de8c698242a68e1042150a92a, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
-      value: MainMenu, Assembly-CSharp
+      value: gamemanager, Assembly-CSharp
       objectReference: {fileID: 0}
     - target: {fileID: 3489707329933666401, guid: 180fb47de8c698242a68e1042150a92a, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
@@ -590,6 +591,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Button
+--- !u!114 &3482923602021476031 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1489666660440318301, guid: 180fb47de8c698242a68e1042150a92a, type: 3}
+  m_PrefabInstance: {fileID: 3482923602021476029}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0bbf4f30addb6f647b4a11ab45f02ae0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::gamemanager
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
