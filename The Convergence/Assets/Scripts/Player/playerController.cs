@@ -38,6 +38,8 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
     [SerializeField] AudioClip audMedkit;      // Sound for using a medkit
     [Range(0, 1)][SerializeField] float audMedkitVol = 1f; // Volume for medkit use
 
+    public static bool hasKey = false;
+
     public int ShootDamage => shootDamage;
     float originalHeight; // remember height for uncrouch  
     int originalSpeed; // store original speed  
@@ -287,8 +289,7 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
         }
     }
 
-    // --- IK is handled by a separate script (PlayerIKController) using rightHandIKTarget.
-    // Keep the playerController free of heavy IK math — we expose data (isAiming, aimTarget, rightHandIKTarget).
+    // IK is handled by a separate script (PlayerIKController) using rightHandIKTarget.
 
     public void takeDamage(int amount)
     {
@@ -368,7 +369,19 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
             return;
         }
 
+        if (item is KeyItem key)
+        {
+            CollectKey(key);
+            return;
+        }
+
         Debug.LogWarning("Picked up unknown item: " + item.name);
+    }
+
+    void CollectKey(KeyItem key)
+    {
+        hasKey = true;
+        Debug.Log("Picked up key: " + key.keyID);
     }
 
     public void UseMedkitFromPickup(medkitStats medkit)
