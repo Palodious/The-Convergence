@@ -13,11 +13,11 @@ public class keyPickup : MonoBehaviour
             this.enabled = false;
         }
 
-        // Optional: Check if player already has keys and self-destruct
+        // Check if player already has keys and self-destruct
         if (playerController.keyCount > 0)
         {
-            // Optional: Destroy this key if player already has some
-            // Destroy(gameObject);
+            // Destroy this key if player already has some
+            //Destroy(gameObject);
         }
     }
 
@@ -29,12 +29,20 @@ public class keyPickup : MonoBehaviour
         playerController player = other.GetComponent<playerController>();
         if (player != null)
         {
+            // DETACH the light before giving the key
+            Light keyLight = GetComponent<Light>();
+            if (keyLight != null)
+            {
+                // Detach from parent BEFORE destroying
+                keyLight.transform.SetParent(null);
+                Destroy(keyLight.gameObject); // Destroy the light GameObject completely
+            }
+
             player.GetItem(key);
             Destroy(gameObject);
         }
     }
 
-    // Public method for enemies to enable dropping
     public void EnablePickup()
     {
         isPickup = true;
