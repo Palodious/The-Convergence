@@ -121,9 +121,18 @@ MonoBehaviour:
   audDeath:
   - {fileID: 8300000, guid: 2fbbe83cecd56e245a5ad0d73572b05f, type: 3}
   audDeathVol: 0.15
+  enableDrops: 0
+  dropChance: 1
+  pickupPrefab: {fileID: 0}
+  dropItems: []
+  dropSpread: 0.5
+  dropsKey: 0
+  keyDropChance: 1
+  keyPickupPrefab: {fileID: 0}
   patrolPoints:
   - {fileID: 0}
   - {fileID: 0}
+  patrolSourceId: 
 --- !u!195 &4143625095129991600
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -253,7 +262,7 @@ AudioSource:
   m_GameObject: {fileID: 2804925484609231592}
   m_Enabled: 1
   serializedVersion: 4
-  OutputAudioMixerGroup: {fileID: 0}
+  OutputAudioMixerGroup: {fileID: 24300002, guid: 00cb03a6ea84338449da26b4afb0b02a, type: 2}
   m_audioClip: {fileID: 0}
   m_Resource: {fileID: 0}
   m_PlayOnAwake: 0

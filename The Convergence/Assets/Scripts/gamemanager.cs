@@ -92,6 +92,9 @@ public class gamemanager : MonoBehaviour
         Cursor.lockState = CursorLockMode.None;
         if (playerScript != null)
             playerScript.enabled = false;
+
+        if (SFXManager.Instance != null)
+            SFXManager.Instance.PlaySound("UI_Open");
     }
     public void stateUnpause()
     {
@@ -107,6 +110,9 @@ public class gamemanager : MonoBehaviour
 
         if (playerScript != null)
             playerScript.enabled = true;
+
+        if (SFXManager.Instance != null)
+            SFXManager.Instance.PlaySound("UI_Close");
     }
 
     public void updateGameGoal(int amount)
@@ -144,16 +150,28 @@ public class gamemanager : MonoBehaviour
         if (SaveManager.Instance == null)
         {
             Debug.LogWarning("SaveGame called but SaveManager.Instance is null. Make sure SaveManager is in the scene.");
+
+            if (SFXManager.Instance != null)
+                SFXManager.Instance.PlaySound("UI_Error");
+
             return;
         }
 
         if (player == null || playerScript == null)
         {
             Debug.LogWarning("SaveGame called but player/playerScript is null.");
+
+            if (SFXManager.Instance != null)
+                SFXManager.Instance.PlaySound("UI_Error");
+
             return;
         }
 
         SaveManager.Instance.Save(player, playerScript.GetHP(), gameGoalCount);
+
+        if (SFXManager.Instance != null)
+            SFXManager.Instance.PlaySound("UI_Apply");
+
     }
 
     public void LoadGame()
@@ -161,6 +179,10 @@ public class gamemanager : MonoBehaviour
         if (SaveManager.Instance == null)
         {
             Debug.LogWarning("LoadGame called but SaveManager.Instance is null. Make sure SaveManager is in the scene.");
+
+            if (SFXManager.Instance != null)
+                SFXManager.Instance.PlaySound("UI_Error");
+
             return;
         }
 

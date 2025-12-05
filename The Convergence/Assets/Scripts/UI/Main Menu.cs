@@ -51,6 +51,9 @@ public class MainMenu : MonoBehaviour
     // Called by Start Game button
     public void StartGame()
     {
+        if (SFXManager.Instance != null)
+            SFXManager.Instance.PlaySound("UI_Click");
+
         SceneManager.LoadScene(firstLevelSceneName);
     }
 
@@ -60,6 +63,10 @@ public class MainMenu : MonoBehaviour
         if (SaveManager.Instance == null)
         {
             Debug.LogWarning("Continue pressed but no SaveManager in the Main Menu scene.");
+
+            if (SFXManager.Instance != null)
+                SFXManager.Instance.PlaySound("UI_Error");
+
             return;
         }
 
@@ -67,8 +74,15 @@ public class MainMenu : MonoBehaviour
         if (!SaveManager.Instance.TryLoad(out data))
         {
             Debug.LogWarning("Continue pressed but no save file found.");
+
+            if (SFXManager.Instance != null)
+                SFXManager.Instance.PlaySound("UI_Error");
+
             return;
         }
+
+        if (SFXManager.Instance != null)
+            SFXManager.Instance.PlaySound("UI_Click");
 
         // Tell the next scene's gamemanager to auto-load on Awake.
         SaveManager.PendingLoad = true;
@@ -80,29 +94,20 @@ public class MainMenu : MonoBehaviour
     // Called by Options button
     public void OpenOptions()
     {
+        if (SFXManager.Instance != null)
+            SFXManager.Instance.PlaySound("UI_Open");
+
         if (optionsPanel != null) optionsPanel.SetActive(true);
     }
 
     // Hook this up to a Close button on the options panel
     public void CloseOptions()
     {
+        if (SFXManager.Instance != null)
+            SFXManager.Instance.PlaySound("UI_Close");
+
         if (optionsPanel != null) optionsPanel.SetActive(false);
     }
-
-    //public void ContinueGame()
-    //{
-    //    if (!SaveSystem.TryLoad(out var d))
-    //    {
-    //        Debug.LogWarning("No save found.");
-    //        return;
-    //    }
-
-    //    // Tell the next scene to restore state.
-    //    SaveSystem.PendingLoad = true;
-
-    //    // Jump to saved scene.
-    //    SceneManager.LoadScene(d.scene);
-    //}
 
 // Called by Quit button
 public void QuitGame()
