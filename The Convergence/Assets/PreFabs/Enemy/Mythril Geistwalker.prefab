@@ -1310,6 +1310,7 @@ GameObject:
   - component: {fileID: 7382090781301656490}
   - component: {fileID: -2281027393630644909}
   - component: {fileID: 2593248415674263162}
+  - component: {fileID: -8990476963880795192}
   - component: {fileID: 3692946239600984159}
   - component: {fileID: 4121909897967337052}
   - component: {fileID: 7793829858010845652}
@@ -1422,16 +1423,24 @@ MonoBehaviour:
   audDeath:
   - {fileID: 8300000, guid: 2fbbe83cecd56e245a5ad0d73572b05f, type: 3}
   audDeathVol: 0.15
-  enableDrops: 0
-  dropChance: 1
-  pickupPrefab: {fileID: 0}
-  dropItems: []
-  dropSpread: 0.5
-  dropsKey: 0
-  keyDropChance: 1
-  keyPickupPrefab: {fileID: 0}
+  dropper: {fileID: 0}
   patrolPoints: []
   patrolSourceId: 
+--- !u!114 &-8990476963880795192
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4229121175722213460}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7051124d272ddf342b49521a3a3a5503, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ItemDrop
+  items: []
+  keyItem: {fileID: 1948811071739049229, guid: 00222f0a4e15b1c48915dfcb77310ff1, type: 3}
+  dropChance: 0.5
 --- !u!95 &3692946239600984159
 Animator:
   serializedVersion: 7

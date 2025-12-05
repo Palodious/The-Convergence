@@ -85,18 +85,7 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
     [SerializeField] AudioClip[] audDeath; // <-- NEW: Death audio
     [Range(0, 1)][SerializeField] float audDeathVol;
 
-    // Drop Settings (Items use pickupPrefab, Key uses direct prefab)
-    [Header("~=~= Drop Settings =~=~")]
-    [SerializeField] bool enableDrops = false; // toggle item drops on/off
-    [Range(0f, 1f)][SerializeField] float dropChance = 1f;// chance to drop items (0..1)
-    [SerializeField] GameObject pickupPrefab; // prefab that should accept a ScriptableObject (via AssignItem)
-    [SerializeField] ScriptableObject[] dropItems; // scriptable items to assign to pickupPrefab
-    [Range(0f, 1f)][SerializeField] float dropSpread = 0.5f; // random spawn spread for drops
-
-    [Header("~=~= Key Drop Settings =~=~")]
-    [SerializeField] bool dropsKey = false; // whether this enemy will drop a key prefab
-    [Range(0f, 1f)][SerializeField] float keyDropChance = 1f; // chance to drop key (0..1)
-    [SerializeField] keyPickup keyPickupPrefab; // CHANGE: Use KeyPickup type instead of GameObject
+    [SerializeField] private ItemDrop itemDrop;
 
     public EnemyType EnemyTypeValue => enemyType;
 
@@ -142,6 +131,9 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
         // Initialize patrol by setting the first patrol point as the destination
         if (usePatrol && patrolPoints != null && patrolPoints.Length > 0)
             agent.SetDestination(patrolPoints[patrolIndex].position);
+
+        if (itemDrop == null)
+            itemDrop = GetComponent<ItemDrop>();
 
         //Initialize turret
         if (enableTurretMode)
@@ -505,12 +497,15 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
         }
     }
 
-    public void takeDamage(int amount)
+    public void takeDamage(int amount) // note the capitalization
     {
         // Prevent multiple death triggers
         if (!isAlive) return;
 
+        // Subtract HP
         HP -= amount;
+
+        // Make enemy aware of the player if not a turret
         if (!enableTurretMode && gamemanager.instance.player != null)
             agent.SetDestination(gamemanager.instance.player.transform.position);
 
@@ -518,33 +513,24 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
         if (audHurt.Length > 0 && aud != null)
             aud.PlayOneShot(audHurt[Random.Range(0, audHurt.Length)], audHurtVol);
 
+        // Check for death
         if (HP <= 0)
         {
-            // Mark enemy dead immediately so no further hits or AI actions count
+            // Mark enemy dead immediately
             isAlive = false;
 
             // Play death audio
             if (audDeath.Length > 0 && aud != null)
                 aud.PlayOneShot(audDeath[Random.Range(0, audDeath.Length)], audDeathVol);
 
-            // Reduce the goal ONCE
+            // Update game goal
             gamemanager.instance.updateGameGoal(-1);
 
-            // Items (ScriptableObject -> pickupPrefab)
-            if (enableDrops)
-            {
-                // roll chance once for this enemy
-                if (Random.value <= dropChance)
-                    TryDropItems();
-            }
+            // Drop items using the ItemDrop component
+            if (itemDrop != null)
+                itemDrop.TryDrop();
 
-            // Key (direct prefab spawn)
-            if (dropsKey && keyPickupPrefab != null)
-            {
-                TryDropKey();
-            }
-
-            // Disable movement + animations so the enemy stops acting while the death sound plays
+            // Stop movement and animations
             if (agent != null) agent.isStopped = true;
             if (anim != null) anim.enabled = false;
 
@@ -552,91 +538,17 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
         }
         else
         {
+            // Flash red to indicate damage
             StartCoroutine(flashRed());
         }
     }
+
 
     IEnumerator flashRed()
     {
         model.material.color = Color.red;
         yield return new WaitForSeconds(0.1f);
         model.material.color = colorOrig;
-    }
-
-    void TryDropItems()
-    {
-        if (pickupPrefab == null || dropItems == null || dropItems.Length == 0) return;
-
-        foreach (var item in dropItems)
-        {
-            if (item == null) continue;
-
-            // spawn slightly above center to reduce clipping and apply spread
-            Vector3 spawnPos = transform.position + Vector3.up * 0.5f + Random.insideUnitSphere * dropSpread;
-            GameObject drop = Instantiate(pickupPrefab, spawnPos, Quaternion.identity);
-
-            // Try to find and call AssignItem(ScriptableObject) on any component via reflection
-            var comps = drop.GetComponents<MonoBehaviour>();
-            foreach (var comp in comps)
-            {
-                if (comp == null) continue;
-                var method = comp.GetType().GetMethod("AssignItem", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
-                if (method != null)
-                {
-                    // method signature expected: void AssignItem(ScriptableObject item)
-                    try
-                    {
-                        method.Invoke(comp, new object[] { item });
-                        break; // assigned, stop searching
-                    }
-                    catch (System.Exception ex)
-                    {
-                        Debug.LogWarning($"enemyAI.TryDropItems: failed to invoke AssignItem on {comp.GetType().Name}: {ex.Message}");
-                    }
-                }
-            }
-        }
-    }
-
-    // CHANGE: Updated TryDropKey method to prevent multiple key drops
-    void TryDropKey()
-    {
-        if (keyPickupPrefab == null) return;
-
-        // Check key drop chance
-        if (Random.value > keyDropChance) return;
-
-        // NEW: Prevent dropping if player already has keys
-        if (playerController.keyCount > 0)
-        {
-            // Optional: You can still drop if you want keys to be collectible even when player has some
-            // For "only one key in scene at a time", keep this check
-            return;
-        }
-
-        // NEW: Check if a key already exists in the scene (optional safety)
-        if (KeyAlreadyExistsInScene())
-        {
-            // Optional: Uncomment if you want ONLY ONE key pickup in the scene at any time
-            // return;
-        }
-
-        Vector3 spawnPos = transform.position + Vector3.up * 0.5f;
-        keyPickup keyDrop = Instantiate(keyPickupPrefab, spawnPos, Quaternion.identity);
-
-        // Enable the pickup (in case it was disabled by default)
-        if (keyDrop != null)
-        {
-            keyDrop.EnablePickup();
-        }
-    }
-
-    // NEW: Helper method to check for existing keys in scene
-    bool KeyAlreadyExistsInScene()
-    {
-        // Updated to use non-deprecated FindObjectsByType method
-        keyPickup[] existingKeys = FindObjectsByType<keyPickup>(FindObjectsInactive.Include, FindObjectsSortMode.None);
-        return existingKeys.Length > 0;
     }
 
     void Shoot()
@@ -745,6 +657,7 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
             Gizmos.DrawRay(turretRotationAxes[0].position, maxDirection * sightRange);
         }
     }
+
     [System.Serializable]
     private struct EnemyState
     {
@@ -757,7 +670,6 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
         public Vector3 destination;
         public bool isTurretActive;//save turret state
         public string patrolSourceId;
-
     }
 
     public object CaptureState()
@@ -773,7 +685,6 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
             destination = Vector3.zero,
             isTurretActive = isTurretActive, //save turret state
             patrolSourceId = patrolSourceId
-
         };
 
         if (agent != null && agent.hasPath)
@@ -830,7 +741,6 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
         // Restore movement destination (if it was valid when saved)
         if (agent != null && s.hasDestination)
         {
-            // We trust the saved destination because it came from agent.destination.
             agent.SetDestination(s.destination);
         }
 
