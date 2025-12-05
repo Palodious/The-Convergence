@@ -996,6 +996,7 @@ MonoBehaviour:
   anim: {fileID: 3235738258623578902}
   model: {fileID: 3139236838864997322}
   headPos: {fileID: 3949307992922597009}
+  turretHead: {fileID: 0}
   HP: 60
   FOV: 80
   faceTargetSpeed: 125
@@ -1010,6 +1011,19 @@ MonoBehaviour:
   meleeRange: 0.1
   attackRate: 0.1
   meleeDamageAmount: 10
+  enableTurretMode: 0
+  turretRotationAxes: []
+  turretRotationSpeed: 5
+  idleRotationSpeed: 10
+  minHorizontalAngle: -45
+  maxHorizontalAngle: 45
+  minVerticalAngle: -20
+  maxVerticalAngle: 20
+  independentVerticalRotation: 0
+  useBurstFire: 0
+  bulletsPerBurst: 3
+  timeBetweenBurstShots: 0.1
+  timeBetweenBursts: 1
   useAnimations: 1
   usePatrol: 0
   useRoam: 1
@@ -1028,7 +1042,16 @@ MonoBehaviour:
   audDeath:
   - {fileID: 8300000, guid: 878722455253d33438989b46a36d504b, type: 3}
   audDeathVol: 0.15
+  enableDrops: 0
+  dropChance: 1
+  pickupPrefab: {fileID: 0}
+  dropItems: []
+  dropSpread: 0.5
+  dropsKey: 0
+  keyDropChance: 1
+  keyPickupPrefab: {fileID: 0}
   patrolPoints: []
+  patrolSourceId: 
 --- !u!95 &3235738258623578902
 Animator:
   serializedVersion: 7
@@ -1124,7 +1147,7 @@ AudioSource:
   m_GameObject: {fileID: 8723845815909595680}
   m_Enabled: 1
   serializedVersion: 4
-  OutputAudioMixerGroup: {fileID: 0}
+  OutputAudioMixerGroup: {fileID: 24300002, guid: 00cb03a6ea84338449da26b4afb0b02a, type: 2}
   m_audioClip: {fileID: 0}
   m_Resource: {fileID: 0}
   m_PlayOnAwake: 0
