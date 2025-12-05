@@ -60,6 +60,25 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
     [Range(-90, 90)][SerializeField] float maxVerticalAngle = 20f;
     [SerializeField] bool independentVerticalRotation = false; // Vertical rotates separately
 
+    [Header("~=~= Jump Settings =~=~")]
+    [SerializeField] bool canJumpAttack = false;
+    [Range(0.1f, 10f)][SerializeField] float jumpForce;
+    [Range(1f, 20f)][SerializeField] float jumpAttackRange; // Max distance to trigger jump
+    [Range(0.1f, 4f)][SerializeField] float minHeightDifference; // How much higher player must be
+    [Range(0.5f, 10f)][SerializeField] float jumpAttackCooldown;
+    [Range(1, 30)][SerializeField] int jumpAttackDamage;
+    [Range(0.5f, 5f)][SerializeField] float jumpAttackRadius; // Damage radius on landing
+    [SerializeField] float jumpTimer;
+
+    [Header("~=~= Dash Attack Settings =~=~")]
+    [SerializeField] bool canDashAttack = false;
+    [Range(2f, 25f)][SerializeField] float dashSpeed;
+    [Range(0.1f, 2f)][SerializeField] float dashDuration;
+    [Range(1f, 20f)][SerializeField] float dashAttackRange; // Max distance to trigger dash
+    [Range(4f, 25f)][SerializeField] float minDashDistance; // Min distance (don't dash if too close)
+    [Range(0.5f, 10f)][SerializeField] float dashAttackCooldown;
+    [Range(1.1f, 5f)][SerializeField] float playerFleeingThreshold; // How fast player must be moving away
+
     //Burst Fire Settings
     [Header("~=~= Burst Fire Settings =~=~")]
     [SerializeField] bool useBurstFire = false;
@@ -84,6 +103,10 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
     [Range(0, 1)][SerializeField] float audMeleeVol;
     [SerializeField] AudioClip[] audDeath; // <-- NEW: Death audio
     [Range(0, 1)][SerializeField] float audDeathVol;
+    [SerializeField] AudioClip[] audJumpAttack; // <-- NEW: Jump attack audio
+    [Range(0, 1)][SerializeField] float audJumpAttackVol;
+    [SerializeField] AudioClip[] audDash; // <-- NEW: Dash attack audio
+    [Range(0, 1)][SerializeField] float audDashVol = 0.5f;
 
     [SerializeField] private ItemDrop itemDrop;
 
@@ -113,6 +136,21 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
     private float currentIdleRotation = 0f;
     private float idleRotationDirection = 1f;
 
+    // Jump Attack variables
+    private float jumpAttackTimer = 1f;
+    private bool isJumpAttacking = false;
+    private Rigidbody rb;
+    private bool wasKinematic;
+    private Vector3 jumpTarget;
+
+    // Dash Attack variables
+    private float dashAttackTimer = 1f;
+    private bool isDashing = false;
+    private Vector3 dashDirection;
+    private float dashTimeRemaining;
+    private Vector3 lastPlayerPosition;
+    private Vector3 playerVelocity;
+
     //Burst fire variables
     private bool isBursting = false;
     private int currentBurstCount = 0;
@@ -127,6 +165,25 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
         colorOrig = model.material.color;
         stoppingDistOrig = agent.stoppingDistance;
         startingPos = transform.position;
+
+        //rigidbody setup for jump attack
+        if (canJumpAttack)
+        {
+            rb = GetComponent<Rigidbody>();
+            if (rb == null)
+            {
+                rb = gameObject.AddComponent<Rigidbody>();
+                rb.isKinematic = true;
+                rb.useGravity = false;
+            }
+            wasKinematic = rb.isKinematic;
+        }
+
+        // Initialize player position tracking for dash
+        if (gamemanager.instance.player != null)
+        {
+            lastPlayerPosition = gamemanager.instance.player.transform.position;
+        }
 
         // Initialize patrol by setting the first patrol point as the destination
         if (usePatrol && patrolPoints != null && patrolPoints.Length > 0)
@@ -144,8 +201,29 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
 
     void Update()
     {
+        // Don't do anything if dead or in special state
+        if (!isAlive) return;
+
         shootTimer += Time.deltaTime;
         attackTimer += Time.deltaTime;
+        jumpAttackTimer += Time.deltaTime;
+        dashAttackTimer += Time.deltaTime;
+
+        // To track pplayer velocity for the dash attack
+        TrackPlayerVelocity();
+
+        // dash attack logic so enemy doesn't attack player if player movement is normal
+        if (isDashing)
+        {
+            HandleDashMovement();
+            return;
+        }
+
+        // Handling jump attack
+        if (isJumpAttacking)
+        {
+            return;
+        }
 
         // Play footsteps if moving
         if (!enableTurretMode && agent.velocity.magnitude > 0.1f && !isPlayingStep)
@@ -325,6 +403,212 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
         }
     }
 
+    void TrackPlayerVelocity()
+    {
+        if (gamemanager.instance.player == null) return;
+
+        Vector3 currentPlayerPos = gamemanager.instance.player.transform.position;
+        playerVelocity = (currentPlayerPos - lastPlayerPosition) / Time.deltaTime;
+        lastPlayerPosition = currentPlayerPos;
+    }
+
+    bool ShouldJumpAttack()
+    {
+        if (!canJumpAttack || isJumpAttacking || isDashing) return false;
+        if (jumpAttackTimer < jumpAttackCooldown) return false;
+        if (gamemanager.instance.player == null) return false;
+
+        Vector3 playerPos = gamemanager.instance.player.transform.position;
+        float distanceToPlayer = Vector3.Distance(transform.position, playerPos);
+        float heightDifference = playerPos.y - transform.position.y;
+
+        // Check if player is above enemyAI and within range
+        return heightDifference >= minHeightDifference && distanceToPlayer <= jumpAttackRange;
+    }
+
+    bool ShouldDashAttack()
+    {
+        // Enemies with type melee attack can dash
+        if (!canDashAttack || isDashing || isJumpAttacking) return false;
+        if (enemyType != EnemyType.Melee && enemyType != EnemyType.Hybrid) return false;
+        if (dashAttackTimer < dashAttackCooldown) return false;
+        if (gamemanager.instance.player == null) return false;
+
+        Vector3 playerPos = gamemanager.instance.player.transform.position;
+        float distanceToPlayer = Vector3.Distance(transform.position, playerPos);
+
+        // Check if player is within dash attack range
+        if (distanceToPlayer < minDashDistance || distanceToPlayer > dashAttackRange) return false;
+
+        // Check if player is moving away from enemy
+        Vector3 directionToEnemy = (transform.position - playerPos).normalized;
+        float fleeingSpeed = Vector3.Dot(playerVelocity, directionToEnemy);
+
+        // Negative dot product means player is moving away
+        return fleeingSpeed < -playerFleeingThreshold;
+    }
+
+    void StartJumpAttack()
+    {
+        if (isJumpAttacking || gamemanager.instance.player == null) return;
+
+        isJumpAttacking = true;
+        jumpAttackTimer = 1f;
+        jumpTarget = gamemanager.instance.player.transform.position;
+
+        // Disable NavMeshAgent and enable rigidbody for physics-based jump
+        agent.enabled = false;
+        rb.isKinematic = false;
+        rb.useGravity = true;
+
+        // Calculate jump direction
+        Vector3 direction = (jumpTarget - transform.position);
+        float horizontalDistance = new Vector3(direction.x, 0, direction.z).magnitude;
+        float verticalDistance = direction.y;
+
+        // Calculate jump velocity for arc distance
+        float timeToReach = horizontalDistance / (jumpForce * 0.7f);
+        Vector3 horizontalVelocity = new Vector3(direction.x, 0, direction.z).normalized * jumpForce * 0.7f;
+        float verticalVelocity = (verticalDistance / timeToReach) + (0.5f * Physics.gravity.magnitude * timeToReach);
+        verticalVelocity = Mathf.Max(verticalVelocity, jumpForce); //Upward force
+
+        rb.linearVelocity = horizontalVelocity + Vector3.up * verticalVelocity;
+
+        // Play animation and sound
+        if (useAnimations && anim != null)
+            anim.SetTrigger("JumpAttack");
+        if (audJumpAttack.Length > 0 && aud != null)
+            aud.PlayOneShot(audJumpAttack[Random.Range(0, audJumpAttack.Length)], audJumpAttackVol);
+
+        // Faces player during jump
+        Vector3 lookDir = new Vector3(direction.x, 0, direction.z);
+        if (lookDir != Vector3.zero)
+            transform.rotation = Quaternion.LookRotation(lookDir);
+    }
+
+    void StartDashAttack()
+    {
+        if (isDashing || gamemanager.instance.player == null) return;
+
+        isDashing = true;
+        dashAttackTimer = 1f;
+        dashTimeRemaining = dashDuration;
+
+        // Calculate dash direction towards player
+        Vector3 playerPos = gamemanager.instance.player.transform.position;
+        dashDirection = (playerPos - transform.position).normalized;
+        dashDirection.y = 0; // Keep dash horizontal
+
+        // Disable NavMeshAgent during dash
+        agent.enabled = false;
+
+        // Play animation and sound
+        if (useAnimations && anim != null)
+            anim.SetTrigger("DashAttack");
+        if (audDash.Length > 0 && aud != null)
+            aud.PlayOneShot(audDash[Random.Range(0, audDash.Length)], audDashVol);
+
+        // Faces player during dash
+        if (dashDirection != Vector3.zero)
+            transform.rotation = Quaternion.LookRotation(dashDirection);
+    }
+
+    void HandleDashMovement()
+    {
+        dashTimeRemaining -= Time.deltaTime;
+
+        // Move in players directio to dash
+        transform.position += dashDirection * dashSpeed * Time.deltaTime;
+
+        // Check for a collision with the player during dash
+        Collider[] hits = Physics.OverlapSphere(meleePos.position, meleeRange, ~ignoreLayer);
+        foreach (var hit in hits)
+        {
+            if (hit.CompareTag("Player"))
+            {
+                IDamage dmg = hit.GetComponent<IDamage>();
+                if (dmg != null)
+                {
+                    dmg.takeDamage(meleeDamageAmount);
+                    EndDash();
+                    return;
+                }
+            }
+        }
+
+        // End dash when time runs out
+        if (dashTimeRemaining <= 0)
+        {
+            EndDash();
+        }
+    }
+
+    void EndDash()
+    {
+        isDashing = false;
+
+        // Re-enabling NavMeshAgent
+        NavMeshHit navHit;
+        if (NavMesh.SamplePosition(transform.position, out navHit, 5f, NavMesh.AllAreas))
+        {
+            transform.position = navHit.position;
+        }
+        agent.enabled = true;
+
+        // Resume chasing player
+        if (gamemanager.instance.player != null)
+            agent.SetDestination(gamemanager.instance.player.transform.position);
+    }
+
+    void OnCollisionEnter(Collision collision)
+    {
+        // Handle landing after jump attack
+        if (isJumpAttacking)
+        {
+            // Check if enemy hits the ground
+            foreach (ContactPoint contact in collision.contacts)
+            {
+                if (contact.normal.y > 0.5f)
+                {
+                    LandJumpAttack();
+                    break;
+                }
+            }
+        }
+    }
+
+    void LandJumpAttack()
+    {
+        isJumpAttacking = false;
+
+        // Deal damage in radius upon landing
+        Collider[] hits = Physics.OverlapSphere(transform.position, jumpAttackRadius, ~ignoreLayer);
+        foreach (var hit in hits)
+        {
+            IDamage dmg = hit.GetComponent<IDamage>();
+            if (dmg != null && hit.CompareTag("Player"))
+            {
+                dmg.takeDamage(jumpAttackDamage);
+            }
+        }
+
+        // Re-enabling NavMeshAgent
+        rb.isKinematic = true;
+        rb.useGravity = false; 
+        rb.linearVelocity = Vector3.zero;
+
+        NavMeshHit navHit;
+        if (NavMesh.SamplePosition(transform.position, out navHit, 5f, NavMesh.AllAreas))
+        {
+            transform.position = navHit.position;
+        }
+        agent.enabled = true;
+
+        // Play landing animation
+        if (useAnimations && anim != null)
+            anim.SetTrigger("Land");
+    }
+
     //Burst fire coroutine
     IEnumerator BurstFire()
     {
@@ -443,6 +727,19 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
             {
                 if (!enableTurretMode)
                 {
+                    //check for special attacks
+                    if (ShouldJumpAttack())
+                    {
+                        StartJumpAttack();
+                        return true;
+                    }
+
+                    if (ShouldDashAttack())
+                    {
+                        StartDashAttack();
+                        return true;
+                    }
+
                     agent.SetDestination(playerPos);
                     agent.stoppingDistance = stoppingDistOrig;
 
@@ -670,6 +967,8 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
         public Vector3 destination;
         public bool isTurretActive;//save turret state
         public string patrolSourceId;
+        public float jumpAttackTimer;
+        public float dashAttackTimer;
     }
 
     public object CaptureState()
@@ -684,7 +983,10 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
             hasDestination = false,
             destination = Vector3.zero,
             isTurretActive = isTurretActive, //save turret state
-            patrolSourceId = patrolSourceId
+            patrolSourceId = patrolSourceId,
+            jumpAttackTimer = this.jumpAttackTimer,
+            dashAttackTimer = this.dashAttackTimer
+
         };
 
         if (agent != null && agent.hasPath)
@@ -703,6 +1005,10 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
             Debug.LogError($"enemyAI.RestoreState: expected EnemyState, got {state?.GetType()} on {name}");
             return;
         }
+
+        jumpAttackTimer = s.jumpAttackTimer;
+        dashAttackTimer = s.dashAttackTimer;
+
 
         // Restore position first
         if (agent != null)

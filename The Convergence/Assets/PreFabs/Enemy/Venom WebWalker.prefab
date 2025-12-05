@@ -1021,6 +1021,21 @@ MonoBehaviour:
   minVerticalAngle: -20
   maxVerticalAngle: 20
   independentVerticalRotation: 0
+  canJumpAttack: 1
+  jumpForce: 2.5
+  jumpAttackRange: 7.2
+  minHeightDifference: 1.45
+  jumpAttackCooldown: 5.45
+  jumpAttackDamage: 6
+  jumpAttackRadius: 2.34
+  jumpTimer: 3
+  canDashAttack: 1
+  dashSpeed: 6.9
+  dashDuration: 1.05
+  dashAttackRange: 7.2
+  minDashDistance: 9.8
+  dashAttackCooldown: 5.52
+  playerFleeingThreshold: 3.02
   useBurstFire: 0
   bulletsPerBurst: 3
   timeBetweenBurstShots: 0.1
@@ -1043,7 +1058,11 @@ MonoBehaviour:
   audDeath:
   - {fileID: 8300000, guid: 878722455253d33438989b46a36d504b, type: 3}
   audDeathVol: 0.15
-  dropper: {fileID: 0}
+  audJumpAttack: []
+  audJumpAttackVol: 0
+  audDash: []
+  audDashVol: 0.5
+  itemDrop: {fileID: 0}
   patrolPoints: []
   patrolSourceId: 
 --- !u!114 &931205412325036861
