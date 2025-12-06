@@ -312,4 +312,24 @@ public class Turret : MonoBehaviour, IDamage
 
         Destroy(gameObject);
     }
+    // FOV Visualization
+    void CreateFOVVisualization()
+    {
+        GameObject fovVisual = new GameObject("FOV_Visualization");
+        fovVisual.transform.SetParent(transform);
+        fovVisual.transform.localPosition = Vector3.zero;
+        fovVisual.transform.localRotation = Quaternion.identity;
+
+        MeshFilter meshFilter = fovVisual.AddComponent<MeshFilter>();
+        MeshRenderer meshRenderer = fovVisual.AddComponent<MeshRenderer>();
+
+        fovMesh = new Mesh();
+        meshFilter.mesh = fovMesh;
+
+        // Create material for FOV visualization
+        fovMaterial = new Material(Shader.Find("Transparent/Diffuse"));
+        fovMaterial.color = currentFOVColor;
+        meshRenderer.material = fovMaterial;
+    }
+
 }
