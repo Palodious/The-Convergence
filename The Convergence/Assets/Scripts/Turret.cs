@@ -42,6 +42,12 @@ public class Turret : MonoBehaviour, IDamage
     [Range(0.05f, 1f)][SerializeField] float burstDelay = 0.1f;
     [Range(0.1f, 3f)][SerializeField] float burstCooldown = 1f;
 
+    [Header("**** Visual FOV Display ****")] // ADDED THIS HEADER
+    [SerializeField] bool showFOV = true;
+    [SerializeField] Color fovColor = new Color(1f, 0f, 0f, 0.3f); // RED with transparency (alpha 0.3)
+    [SerializeField] Color detectionColor = new Color(1f, 0f, 0f, 0.6f); // Brighter red when detecting
+    [Range(10, 50)][SerializeField] int fovSegments = 30;
+
     [Header("**** Effects ****")]
     [SerializeField] AudioSource audioSource;
     [SerializeField] AudioClip shootSound;
