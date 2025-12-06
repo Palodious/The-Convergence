@@ -97,6 +97,60 @@ public class Turret : MonoBehaviour, IDamage
     // Update is called once per frame
     void Update()
     {
-        
+        if (target == null) return;
+
+        float distanceToTarget = Vector3.Distance(transform.position, target.position);
+
+        // Check if target is in range
+        if (distanceToTarget <= range)
+        {
+            Vector3 directionToTarget = (target.position - transform.position).normalized;
+
+            // Check if target is within FOV cone
+            if (IsInFOV(directionToTarget))
+            {
+                // Check line of sight
+                if (HasLineOfSight())
+                {
+                    if (!hasTarget)
+                    {
+                        OnTargetAcquired();
+                        hasTarget = true;
+                    }
+
+                    // Rotate to face target
+                    RotateTowardsTarget(directionToTarget);
+
+                    // Check firing conditions
+                    if (!isFiring && fireTimer >= 1f / fireRate)
+                    {
+                        if (fireMode == FireMode.Burst && burstFireEnabled)
+                        {
+                            if (!isBursting)
+                                burstCoroutine = StartCoroutine(BurstFire());
+                        }
+                        else
+                        {
+                            Fire();
+                        }
+                    }
+                }
+                else if (hasTarget)
+                {
+                    OnTargetLost();
+                    hasTarget = false;
+                }
+            }
+            else if (hasTarget)
+            {
+                OnTargetLost();
+                hasTarget = false;
+            }
+        }
+        else if (hasTarget)
+        {
+            OnTargetLost();
+            hasTarget = false;
+        }
     }
 }
