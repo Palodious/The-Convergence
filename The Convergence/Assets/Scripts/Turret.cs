@@ -74,7 +74,18 @@ public class Turret : MonoBehaviour, IDamage
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        
+        // Find player target
+        GameObject player = GameObject.FindGameObjectWithTag("Player");
+        if (player != null)
+            target = player.transform;
+        else if (debugMode)
+            Debug.LogWarning("Turret: No player found with tag 'Player'");
+
+        // Initialize rotations
+        if (turretBase != null)
+            baseStartRotation = turretBase.localEulerAngles;
+        if (turretHead != null)
+            headStartRotation = turretHead.localEulerAngles;
     }
 
     // Update is called once per frame
