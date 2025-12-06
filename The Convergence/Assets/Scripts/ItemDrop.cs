@@ -14,6 +14,8 @@ public class ItemDrop : MonoBehaviour
     public keyPickup keyPrefab;
     [Range(0f, 1f)] public float keyDropChance = 1f;
 
+    public static bool keyHasDropped = false;
+
     public void TryDrop()
     {
         // Drop items
@@ -26,7 +28,6 @@ public class ItemDrop : MonoBehaviour
                     Vector3 spawnPos = transform.position + Vector3.up * 0.5f + Random.insideUnitSphere * dropSpread;
                     GameObject drop = Instantiate(pickupPrefab, spawnPos, Quaternion.identity);
 
-                    // Assign ScriptableObject via reflection
                     var comps = drop.GetComponents<MonoBehaviour>();
                     foreach (var comp in comps)
                     {
@@ -46,12 +47,17 @@ public class ItemDrop : MonoBehaviour
             }
         }
 
-        // Drop key
-        if (dropsKey && keyPrefab != null && Random.value <= keyDropChance)
+        // Drop key once globally
+        if (!keyHasDropped && dropsKey && keyPrefab != null && Random.value <= keyDropChance)
         {
             Vector3 spawnPos = transform.position + Vector3.up * 0.5f;
             keyPickup keyDrop = Instantiate(keyPrefab, spawnPos, Quaternion.identity);
-            if (keyDrop != null) keyDrop.EnablePickup();
+            if (keyDrop != null)
+            {
+                keyDrop.EnablePickup();
+                keyHasDropped = true;
+            }
         }
     }
+
 }
