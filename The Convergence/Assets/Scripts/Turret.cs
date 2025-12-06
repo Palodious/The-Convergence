@@ -25,6 +25,22 @@ public class Turret : MonoBehaviour, IDamage
     [Range(5, 100)][SerializeField] float range = 25f;
     [Range(0.1f, 10f)][SerializeField] float fireRate = 1f;
     [Range(1, 10)][SerializeField] float projectileSpeed = 20f;
+
+    [Header("**** Rotation Settings ****")]
+    [Range(1, 100)][SerializeField] float rotationSpeed = 5f;
+    [Range(1, 180)][SerializeField] float horizontalFOV = 120f; // Horizontal field of view
+    [Range(1, 90)][SerializeField] float verticalFOV = 60f; // Vertical field of view
+    [Range(-180, 180)][SerializeField] float minHorizontalAngle = -90f;
+    [Range(-180, 180)][SerializeField] float maxHorizontalAngle = 90f;
+    [Range(-90, 90)][SerializeField] float minVerticalAngle = -30f;
+    [Range(-90, 90)][SerializeField] float maxVerticalAngle = 30f;
+    
+    [Header("**** Firing Settings ****")]
+    [SerializeField] FireMode fireMode = FireMode.Single;
+    [SerializeField] bool burstFireEnabled = false;
+    [Range(1, 10)][SerializeField] int burstCount = 3;
+    [Range(0.05f, 1f)][SerializeField] float burstDelay = 0.1f;
+    [Range(0.1f, 3f)][SerializeField] float burstCooldown = 1f;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
