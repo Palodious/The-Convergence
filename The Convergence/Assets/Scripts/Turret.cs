@@ -86,6 +86,12 @@ public class Turret : MonoBehaviour, IDamage
             baseStartRotation = turretBase.localEulerAngles;
         if (turretHead != null)
             headStartRotation = turretHead.localEulerAngles;
+
+        // Create FOV visualization if enabled
+        if (showFOV)
+            CreateFOVVisualization();
+
+        currentFOVColor = fovColor;
     }
 
     // Update is called once per frame
