@@ -1,13 +1,23 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.AI;
-using UnityEngine.UIElements;
-using UnityEngine.XR;
-using static UnityEngine.GraphicsBuffer;
-using static UnityEngine.ParticleSystem;
 
-public class Turret : MonoBehaviour
+public class Turret : MonoBehaviour, IDamage
 {
+    [System.Serializable]
+    public enum FireMode
+    {
+        Single,
+        Burst
+    }
+
+    [Header("**** Core Components ****")]
+    [SerializeField] Transform turretBase; // Rotates horizontally (Y axis)
+    [SerializeField] Transform turretHead; // Rotates vertically (X axis)
+    [SerializeField] Transform projectileSpawnPoint;
+    [SerializeField] GameObject projectilePrefab;
+    [SerializeField] LayerMask targetLayer;
+    [SerializeField] LayerMask obstacleLayer;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
