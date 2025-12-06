@@ -42,13 +42,6 @@ public class Turret : MonoBehaviour, IDamage
     [Range(0.05f, 1f)][SerializeField] float burstDelay = 0.1f;
     [Range(0.1f, 3f)][SerializeField] float burstCooldown = 1f;
 
-    [Header("**** Firing Settings ****")]
-    [SerializeField] FireMode fireMode = FireMode.Single;
-    [SerializeField] bool burstFireEnabled = false;
-    [Range(1, 10)][SerializeField] int burstCount = 3;
-    [Range(0.05f, 1f)][SerializeField] float burstDelay = 0.1f;
-    [Range(0.1f, 3f)][SerializeField] float burstCooldown = 1f;
-
     [Header("**** Effects ****")]
     [SerializeField] AudioSource audioSource;
     [SerializeField] AudioClip shootSound;
