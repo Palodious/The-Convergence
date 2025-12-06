@@ -454,5 +454,25 @@ public class Turret : MonoBehaviour, IDamage
     {
         target = newTarget;
     }
+    public void SetFireMode(FireMode mode)
+    {
+        fireMode = mode;
+    }
 
+    public void ToggleBurstFire(bool enabled)
+    {
+        burstFireEnabled = enabled;
+    }
+
+    public void SetRotationLimits(float minHoriz, float maxHoriz, float minVert, float maxVert)
+    {
+        minHorizontalAngle = minHoriz;
+        maxHorizontalAngle = maxHoriz;
+        minVerticalAngle = minVert;
+        maxVerticalAngle = maxVert;
+    }
+
+    public int GetHealth() => health;
+    public int GetMaxHealth() => 100; // make this configurable?
+    public bool HasTarget() => hasTarget;
 }
