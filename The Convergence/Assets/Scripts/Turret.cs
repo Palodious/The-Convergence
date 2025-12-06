@@ -195,6 +195,36 @@ public class Turret : MonoBehaviour, IDamage
 
         return true;
     }
+    void RotateTowardsTarget(Vector3 directionToTarget)
+    {
+        if (turretBase == null || turretHead == null) return;
 
+        // Horizontal rotation (Y axis)
+        Vector3 flatDirection = new Vector3(directionToTarget.x, 0, directionToTarget.z);
+        if (flatDirection != Vector3.zero)
+        {
+            Quaternion targetBaseRotation = Quaternion.LookRotation(flatDirection);
+
+            // Clamp horizontal rotation
+            float targetY = targetBaseRotation.eulerAngles.y;
+            float currentY = turretBase.eulerAngles.y;
+
+            // Convert to -180 to 180 range
+            if (targetY > 180) targetY -= 360;
+            if (currentY > 180) currentY -= 360;
+
+            targetY = Mathf.Clamp(targetY, minHorizontalAngle, maxHorizontalAngle);
+
+            Quaternion clampedBaseRotation = Quaternion.Euler(0, targetY, 0);
+            turretBase.rotation = Quaternion.Slerp(turretBase.rotation, clampedBaseRotation, rotationSpeed * Time.deltaTime);
+        }
+
+        // Vertical rotation (X axis)
+        float verticalAngle = Mathf.Asin(directionToTarget.y / directionToTarget.magnitude) * Mathf.Rad2Deg;
+        verticalAngle = Mathf.Clamp(verticalAngle, minVerticalAngle, maxVerticalAngle);
+
+        Quaternion targetHeadRotation = Quaternion.Euler(-verticalAngle, 0, 0);
+        turretHead.localRotation = Quaternion.Slerp(turretHead.localRotation, targetHeadRotation, rotationSpeed * Time.deltaTime);
+    }
 }
 }
