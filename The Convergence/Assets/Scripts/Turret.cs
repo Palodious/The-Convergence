@@ -331,5 +331,88 @@ public class Turret : MonoBehaviour, IDamage
         fovMaterial.color = currentFOVColor;
         meshRenderer.material = fovMaterial;
     }
+    void UpdateFOVVisualization()
+    {
+        if (fovMesh == null || turretHead == null) return;
 
+        List<Vector3> vertices = new List<Vector3>();
+        List<int> triangles = new List<int>();
+
+        float horizontalStep = horizontalFOV / fovSegments;
+        float verticalStep = verticalFOV / fovSegments;
+        float halfHorizontalFOV = horizontalFOV / 2f;
+        float halfVerticalFOV = verticalFOV / 2f;
+
+        // Create cone vertices
+        vertices.Add(Vector3.zero); // Center point (tip of cone)
+
+        for (int v = 0; v <= fovSegments; v++)
+        {
+            float verticalAngle = -halfVerticalFOV + (verticalStep * v);
+
+            for (int h = 0; h <= fovSegments; h++)
+            {
+                float horizontalAngle = -halfHorizontalFOV + (horizontalStep * h);
+
+                // Convert spherical coordinates to Cartesian
+                float x = Mathf.Sin(horizontalAngle * Mathf.Deg2Rad);
+                float y = Mathf.Sin(verticalAngle * Mathf.Deg2Rad);
+                float z = Mathf.Cos(horizontalAngle * Mathf.Deg2Rad) * Mathf.Cos(verticalAngle * Mathf.Deg2Rad);
+
+                Vector3 point = new Vector3(x, y, z) * range;
+                vertices.Add(point);
+            }
+        }
+
+        // Create triangles for cone
+        int vertexCount = fovSegments + 1;
+
+        for (int v = 0; v < fovSegments; v++)
+        {
+            for (int h = 0; h < fovSegments; h++)
+            {
+                int current = 1 + (v * vertexCount) + h;
+                int next = current + 1;
+                int below = current + vertexCount;
+                int belowNext = below + 1;
+
+                // Create two triangles for each quad
+                triangles.Add(0);
+                triangles.Add(current);
+                triangles.Add(next);
+
+                triangles.Add(0);
+                triangles.Add(next);
+                triangles.Add(belowNext);
+
+                triangles.Add(0);
+                triangles.Add(belowNext);
+                triangles.Add(below);
+
+                triangles.Add(0);
+                triangles.Add(below);
+                triangles.Add(current);
+            }
+        }
+
+        fovMesh.Clear();
+        fovMesh.vertices = vertices.ToArray();
+        fovMesh.triangles = triangles.ToArray();
+        fovMesh.RecalculateNormals();
+
+        // Update material color
+        if (fovMaterial != null)
+            fovMaterial.color = currentFOVColor;
+
+        // Position and rotate the FOV visualization with the turret head
+        if (fovMesh != null)
+        {
+            GameObject fovVisual = GameObject.Find("FOV_Visualization");
+            if (fovVisual != null)
+            {
+                fovVisual.transform.position = turretHead.position;
+                fovVisual.transform.rotation = turretHead.rotation;
+            }
+        }
+    }
 }
