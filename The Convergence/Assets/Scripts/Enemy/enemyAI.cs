@@ -155,16 +155,16 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
     private float currentIdleRotation = 0f;
     private float idleRotationDirection = 1f;
 
-    // Jump Attack variables - UPDATED FOR ARC STYLE
+    // Jump Attack variables
     private float jumpAttackTimer = 1f;
     private bool isJumpAttacking = false;
     private Rigidbody rb;
     private bool wasKinematic;
     private Vector3 jumpTarget;
     private Coroutine jumpCheckCoroutine;
-    private Coroutine jumpCoroutine; // NEW: For arc jump coroutine
-    private Vector3 jumpStartPosition; // NEW
-    private bool hasLanded = false; // NEW
+    private Coroutine jumpCoroutine; // For arc jump coroutine
+    private Vector3 jumpStartPosition;
+    private bool hasLanded = false;
 
     // Dash Attack variables
     private float dashAttackTimer = 1f;
@@ -464,7 +464,7 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
         return false;
     }
 
-    // Initialize turret specific settings - KEPT ORIGINAL
+    // Initialize turret specific settings
     void InitializeTurret()
     {
         isTurretActive = true;
@@ -492,7 +492,7 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
         }
     }
 
-    // Rotate turret when idle - KEPT ORIGINAL
+    // Rotate turret when idle
     void IdleTurretRotation()
     {
         if (turretRotationAxes == null || turretRotationAxes.Length == 0)
@@ -508,7 +508,7 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
             currentIdleRotation = Mathf.Clamp(currentIdleRotation, minHorizontalAngle, maxHorizontalAngle);
         }
 
-        // Apply rotation to the first axis (typically horizontal)
+        // Apply rotation to the first axis
         if (turretRotationAxes[0] != null)
         {
             Vector3 newRotation = turretRotationAxes[0].localEulerAngles;
@@ -619,7 +619,7 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
         return fleeingSpeed < -playerFleeingThreshold;
     }
 
-    // Start jump attack - FIXED VERSION (don't disable agent, just stop it)
+    // Start jump attack
     void StartJumpAttack()
     {
         if (isJumpAttacking || gamemanager.instance.player == null) return;
@@ -639,7 +639,6 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
             // Clear the path without using ResetPath()
             try
             {
-                // Alternative to ResetPath() - set a dummy destination
                 agent.SetDestination(transform.position);
             }
             catch (System.Exception e)
@@ -666,7 +665,7 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
         jumpCoroutine = StartCoroutine(PerformArcJumpAttack());
     }
 
-    // Coroutine to perform arc-style jump attack - UPDATED WITH ADJUSTABLE LANDING DISTANCE
+    // Coroutine to perform arc-style jump attack
     IEnumerator PerformArcJumpAttack()
     {
         // Wait for windup animation
@@ -675,53 +674,64 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
         // Play jump animation
         if (useAnimations && anim != null)
             anim.SetTrigger("JumpAttack");
-        
+
         // Play jump sound
         if (audJumpAttack.Length > 0 && aud != null)
             aud.PlayOneShot(audJumpAttack[Random.Range(0, audJumpAttack.Length)], audJumpAttackVol);
 
         Vector3 startPos = transform.position;
         Vector3 playerPos = gamemanager.instance.player.transform.position;
-        
+
         // Calculate direction to player
         Vector3 toPlayer = (playerPos - startPos).normalized;
-        
+
         // Calculate landing position: Use the adjustable landingDistanceFromPlayer
-        // landingDistanceFromPlayer = 0: Land directly on player
-        // landingDistanceFromPlayer = 0.5: Land 0.5 units from player
-        // landingDistanceFromPlayer = 1: Land 1 unit from player, etc.
-        Vector3 endPos = playerPos - (toPlayer * landingDistanceFromPlayer);
-        
+        Vector3 endPos = playerPos - (toPlayer * Mathf.Max(0.1f, landingDistanceFromPlayer));
+
         // Ensure the player will be within damage radius
         float distanceToPlayerAfterLanding = Vector3.Distance(endPos, playerPos);
-        if (distanceToPlayerAfterLanding > jumpAttackRadius * 0.9f)
+        if (distanceToPlayerAfterLanding > jumpAttackRadius * 0.7f)
         {
             // Adjust landing position to ensure player is within damage radius
-            endPos = playerPos - (toPlayer * (jumpAttackRadius * 0.8f));
+            endPos = playerPos - (toPlayer * (jumpAttackRadius * 0.5f));
         }
-        
-        // Adjust end position to be at ground level
-        RaycastHit groundHit;
-        if (Physics.Raycast(endPos + Vector3.up * 2f, Vector3.down, out groundHit, 5f, ~ignoreLayer))
+
+        // Use more accurate ground finding
+        Vector3 finalLandingPos = FindGroundPosition(endPos);
+
+        // If no ground found, try positions around the player
+        if (finalLandingPos == Vector3.zero)
         {
-            endPos.y = groundHit.point.y;
-        }
-        else
-        {
-            // If no ground found, check near player position
-            if (Physics.Raycast(playerPos + Vector3.up * 2f, Vector3.down, out groundHit, 5f, ~ignoreLayer))
+            // Try positions in a circle around the player
+            for (int i = 0; i < 8; i++)
             {
-                endPos = groundHit.point - (toPlayer * Mathf.Min(landingDistanceFromPlayer, jumpAttackRadius * 0.8f));
+                float angle = i * 45f;
+                Vector3 testPos = playerPos + Quaternion.Euler(0, angle, 0) * Vector3.forward * landingDistanceFromPlayer;
+                finalLandingPos = FindGroundPosition(testPos);
+                if (finalLandingPos != Vector3.zero)
+                    break;
             }
-            else
-            {
-                endPos.y = startPos.y; // Fallback to same height
-            }
+
+            // If still no ground, use start position
+            if (finalLandingPos == Vector3.zero)
+                finalLandingPos = startPos;
         }
+
+        endPos = finalLandingPos;
 
         // Calculate horizontal distance
         Vector3 horizontalDirection = new Vector3(endPos.x - startPos.x, 0, endPos.z - startPos.z);
         float horizontalDistance = horizontalDirection.magnitude;
+
+        // If distance is very small, add minimum jump
+        if (horizontalDistance < 0.5f)
+        {
+            horizontalDirection = toPlayer;
+            horizontalDistance = 1f;
+            endPos = startPos + horizontalDirection * horizontalDistance;
+            endPos.y = FindGroundPosition(endPos).y;
+        }
+
         Vector3 horizontalNormalized = horizontalDirection.normalized;
 
         // Adjust jump duration based on distance
@@ -733,39 +743,63 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
         {
             elapsedTime += Time.deltaTime;
             float normalizedTime = elapsedTime / actualJumpDuration;
-            
+
             // Calculate position along horizontal path
             float horizontalProgress = normalizedTime;
             Vector3 horizontalPosition = startPos + horizontalNormalized * (horizontalDistance * horizontalProgress);
-            
+
             // Calculate vertical position using jump curve
             float verticalOffset = jumpCurve.Evaluate(normalizedTime) * jumpHeight;
-            
+
             // Combine positions
             Vector3 newPosition = horizontalPosition;
             newPosition.y = startPos.y + verticalOffset;
-            
+
             // Apply position
             transform.position = newPosition;
-            
+
             // Apply rotation during jump (look at target)
             Vector3 lookDirection = (playerPos - transform.position);
             lookDirection.y = 0;
             if (lookDirection != Vector3.zero)
                 transform.rotation = Quaternion.LookRotation(lookDirection);
-            
+
             yield return null;
         }
 
         // Ensure we end at the calculated landing position
         if (isJumpAttacking)
         {
+            // Final ground snap to prevent sliding
+            Vector3 groundPos = FindGroundPosition(endPos);
+            if (groundPos != Vector3.zero)
+                endPos = groundPos;
+
             transform.position = endPos;
             LandJumpAttack();
         }
     }
 
-    // Start dash attack - FIXED VERSION
+    // NEW METHOD: Find ground position with better detection
+    Vector3 FindGroundPosition(Vector3 position)
+    {
+        // Try downward raycast first
+        RaycastHit hit;
+        if (Physics.Raycast(position + Vector3.up * 3f, Vector3.down, out hit, 10f, ~ignoreLayer))
+        {
+            return hit.point;
+        }
+
+        // Try sphere cast for better detection
+        if (Physics.SphereCast(position + Vector3.up * 3f, 0.5f, Vector3.down, out hit, 10f, ~ignoreLayer))
+        {
+            return hit.point;
+        }
+
+        return Vector3.zero;
+    }
+
+    // Start dash attack
     void StartDashAttack()
     {
         if (isDashing || gamemanager.instance.player == null) return;
@@ -856,7 +890,7 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
         return false;
     }
 
-    // End dash attack and return to normal state - FIXED VERSION
+    // End dash attack and return to normal state
     void EndDash()
     {
         if (!isDashing) return;
@@ -887,7 +921,7 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
         }
     }
 
-    // Handle landing after jump attack - UPDATED
+    // Handle landing after jump attack
     void LandJumpAttack()
     {
         if (hasLanded || !isJumpAttacking) return;
@@ -910,57 +944,79 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
         StartCoroutine(ApplyJumpDamage());
     }
 
-    // Apply damage from jump attack with delay - FIXED FOR BETTER HIT DETECTION
+    // Apply damage from jump attack with delay
     IEnumerator ApplyJumpDamage()
     {
         yield return new WaitForSeconds(jumpDamageDelay);
 
-        bool playerHit = false;
-        
-        // First, try direct overlap sphere
-        Collider[] hits = Physics.OverlapSphere(transform.position, jumpAttackRadius);
-        foreach (var hit in hits)
+        bool playerDamaged = false;
+        Vector3 playerPos = gamemanager.instance.player.transform.position;
+        float distanceToPlayer = Vector3.Distance(transform.position, playerPos);
+
+        // Direct distance check
+        if (distanceToPlayer <= jumpAttackRadius * 1.2f) // Slightly larger radius for safety
         {
-            // Skip self
-            if (hit.gameObject == gameObject) continue;
-            
-            // Check if it's the player
-            if (hit.CompareTag("Player"))
+            IDamage dmg = gamemanager.instance.player.GetComponent<IDamage>();
+            if (dmg != null)
             {
-                IDamage dmg = hit.GetComponent<IDamage>();
-                if (dmg != null)
+                dmg.takeDamage(jumpAttackDamage);
+                playerDamaged = true;
+                Debug.Log($"Jump attack hit player via distance check: {distanceToPlayer} units away");
+            }
+        }
+
+        // Overlap sphere
+        if (!playerDamaged)
+        {
+            Collider[] hits = Physics.OverlapSphere(transform.position, jumpAttackRadius);
+            foreach (var hit in hits)
+            {
+                if (hit.CompareTag("Player"))
                 {
-                    dmg.takeDamage(jumpAttackDamage);
-                    playerHit = true;
-                    break;
+                    IDamage dmg = hit.GetComponent<IDamage>();
+                    if (dmg != null)
+                    {
+                        dmg.takeDamage(jumpAttackDamage);
+                        playerDamaged = true;
+                        Debug.Log($"Jump attack hit player via overlap sphere");
+                        break;
+                    }
                 }
             }
         }
-        
-        // If player wasn't hit, try a raycast to the player's position
-        if (!playerHit && gamemanager.instance.player != null)
+
+        // Raycast to player
+        if (!playerDamaged)
         {
-            Vector3 playerPos = gamemanager.instance.player.transform.position;
-            float distanceToPlayer = Vector3.Distance(transform.position, playerPos);
-            
-            // If player is within reasonable distance, damage them
-            if (distanceToPlayer <= jumpAttackRadius * 1.5f)
+            RaycastHit hit;
+            Vector3 rayDirection = (playerPos - transform.position).normalized;
+            if (Physics.Raycast(transform.position, rayDirection, out hit, jumpAttackRadius * 2f, ~ignoreLayer))
             {
-                IDamage dmg = gamemanager.instance.player.GetComponent<IDamage>();
-                if (dmg != null)
+                if (hit.collider.CompareTag("Player"))
                 {
-                    dmg.takeDamage(jumpAttackDamage);
+                    IDamage dmg = hit.collider.GetComponent<IDamage>();
+                    if (dmg != null)
+                    {
+                        dmg.takeDamage(jumpAttackDamage);
+                        Debug.Log($"Jump attack hit player via raycast");
+                    }
                 }
             }
+        }
+
+        // Log if no damage was deal
+        if (!playerDamaged)
+        {
+            Debug.LogWarning($"Jump attack missed player! Distance: {distanceToPlayer}, Radius: {jumpAttackRadius}");
         }
 
         // Re-enable agent movement after jump
-        yield return new WaitForSeconds(0.2f); // Small delay before re-enabling
-        
+        yield return new WaitForSeconds(0.2f);
+
         EndJumpAttack();
     }
 
-    // End jump attack and return to normal state - FIXED VERSION
+    // End jump attack and return to normal state
     void EndJumpAttack()
     {
         if (!isJumpAttacking) return;
@@ -995,7 +1051,7 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
         }
     }
 
-    // Cancel jump attack (called when enemy dies during jump) - UPDATED
+    // Cancel jump attack
     void CancelJumpAttack()
     {
         if (!isJumpAttacking) return;
@@ -1059,7 +1115,7 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
         isPlayingStep = false;
     }
 
-    // Check if should roam or patrol - FIXED: Added agent null/active checks
+    // Check if should roam or patrol
     void checkRoamOrPatrol()
     {
         if (enableTurretMode || agent == null || !agent.isActiveAndEnabled || isJumpAttacking || isDashing) return;
@@ -1077,7 +1133,7 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
         }
     }
 
-    // Roam to random position - FIXED: Added agent null/active check
+    // Roam to random position
     void roam()
     {
         if (agent == null || !agent.isActiveAndEnabled || isJumpAttacking || isDashing) return;
@@ -1093,7 +1149,7 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
         agent.SetDestination(hit.position);
     }
 
-    // Patrol between points - FIXED: Added agent null/active checks
+    // Patrol between points
     void checkPatrol()
     {
         if (agent == null || !agent.isActiveAndEnabled || isJumpAttacking || isDashing) return;
@@ -1120,7 +1176,7 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
         }
     }
 
-    // Check if enemy can see player - FIXED VERSION with agent safety checks
+    // Check if enemy can see player
     bool canSeePlayer()
     {
         if (gamemanager.instance.player == null) return false;
@@ -1247,7 +1303,6 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
         // Prevent multiple death triggers or damage during special states
         if (!isAlive || isDashing || isJumpAttacking) return;
 
-        // Subtract HP
         HP -= amount;
 
         // Make enemy aware of the player if not a turret
@@ -1280,7 +1335,7 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
         }
     }
 
-    // Handle enemy death - REMOVED ANIMATION AND DELAY
+    // Handle enemy death
     private void Die()
     {
         isAlive = false;
@@ -1305,7 +1360,6 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
         Destroy(gameObject);
     }
 
-    // Flash red when damaged
     IEnumerator flashRed()
     {
         model.material.color = Color.red;
@@ -1361,7 +1415,7 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
             {
                 dmgTarget.takeDamage(meleeDamageAmount); // Apply damage
 
-                // Optional: spawn visual effect
+                // spawn visual effect
                 if (meleeDamage != null)
                     Instantiate(meleeDamage, hit.transform.position, Quaternion.identity);
             }
