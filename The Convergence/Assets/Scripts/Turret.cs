@@ -226,5 +226,90 @@ public class Turret : MonoBehaviour, IDamage
         Quaternion targetHeadRotation = Quaternion.Euler(-verticalAngle, 0, 0);
         turretHead.localRotation = Quaternion.Slerp(turretHead.localRotation, targetHeadRotation, rotationSpeed * Time.deltaTime);
     }
-}
+    void Fire()
+    {
+        if (projectilePrefab == null || projectileSpawnPoint == null) return;
+
+        fireTimer = 0f;
+        isFiring = true;
+
+        // Create projectile
+        GameObject projectile = Instantiate(projectilePrefab, projectileSpawnPoint.position, projectileSpawnPoint.rotation);
+
+        // Configure projectile
+        Projectile projScript = projectile.GetComponent<Projectile>();
+        if (projScript != null)
+        {
+            projScript.Initialize(damage, projectileSpeed, targetLayer);
+        }
+        else
+        {
+            Rigidbody rb = projectile.GetComponent<Rigidbody>();
+            if (rb != null)
+                rb.velocity = projectileSpawnPoint.forward * projectileSpeed;
+        }
+
+        // Play effects
+        if (audioSource != null && shootSound != null)
+            audioSource.PlayOneShot(shootSound);
+
+        if (muzzleFlash != null)
+            muzzleFlash.Play();
+
+        // Reset firing state
+        StartCoroutine(ResetFiringState());
+    }
+    IEnumerator BurstFire()
+    {
+        isBursting = true;
+
+        for (int i = 0; i < burstCount; i++)
+        {
+            Fire();
+            yield return new WaitForSeconds(burstDelay);
+        }
+
+        yield return new WaitForSeconds(burstCooldown);
+        isBursting = false;
+    }
+    IEnumerator ResetFiringState()
+    {
+        yield return new WaitForSeconds(0.1f);
+        isFiring = false;
+    }
+
+    void OnTargetAcquired()
+    {
+        if (debugMode) Debug.Log("Turret: Target acquired!");
+
+        if (audioSource != null && detectionSound != null)
+            audioSource.PlayOneShot(detectionSound);
+
+        currentFOVColor = detectionColor;
+    }
+
+    void OnTargetLost()
+    {
+        if (debugMode) Debug.Log("Turret: Target lost!");
+
+        currentFOVColor = fovColor;
+    }
+    // IDamage interface implementation
+    public void takeDamage(int amount)
+    {
+        health -= amount;
+
+        if (health <= 0)
+        {
+            DestroyTurret();
+        }
+    }
+
+    void DestroyTurret()
+    {
+        if (destructionEffect != null)
+            Instantiate(destructionEffect, transform.position, Quaternion.identity);
+
+        Destroy(gameObject);
+    }
 }
