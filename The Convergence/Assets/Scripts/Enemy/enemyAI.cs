@@ -475,8 +475,8 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
         rb.linearVelocity = horizontalVelocity + Vector3.up * verticalVelocity;
 
         // Play animation and sound
-        if (useAnimations && anim != null)
-            anim.SetTrigger("JumpAttack");
+       // if (useAnimations && anim != null)
+         //   anim.SetTrigger("JumpAttack");
         if (audJumpAttack.Length > 0 && aud != null)
             aud.PlayOneShot(audJumpAttack[Random.Range(0, audJumpAttack.Length)], audJumpAttackVol);
 
@@ -503,8 +503,8 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
         agent.enabled = false;
 
         // Play animation and sound
-        if (useAnimations && anim != null)
-            anim.SetTrigger("DashAttack");
+       // if (useAnimations && anim != null)
+         //   anim.SetTrigger("DashAttack");
         if (audDash.Length > 0 && aud != null)
             aud.PlayOneShot(audDash[Random.Range(0, audDash.Length)], audDashVol);
 
@@ -605,8 +605,8 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
         agent.enabled = true;
 
         // Play landing animation
-        if (useAnimations && anim != null)
-            anim.SetTrigger("Land");
+       // if (useAnimations && anim != null)
+         //   anim.SetTrigger("Land");
     }
 
     //Burst fire coroutine
