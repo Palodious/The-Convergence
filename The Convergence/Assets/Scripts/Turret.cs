@@ -239,7 +239,7 @@ public class Turret : MonoBehaviour, IDamage
         {
             Rigidbody rb = projectile.GetComponent<Rigidbody>();
             if (rb != null)
-                rb.velocity = projectileSpawnPoint.forward * projectileSpeed;
+                rb.linearVelocity = projectileSpawnPoint.forward * projectileSpeed;
         }
 
         // Play effects
