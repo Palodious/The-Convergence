@@ -415,4 +415,44 @@ public class Turret : MonoBehaviour, IDamage
             }
         }
     }
+    void OnDrawGizmosSelected()
+    {
+        if (!debugMode) return;
+
+        // Draw range sphere
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawWireSphere(transform.position, range);
+
+        // Draw FOV cone
+        if (turretHead != null)
+        {
+            Gizmos.color = hasTarget ? Color.red : Color.green;
+
+            // Draw horizontal FOV
+            float halfFOV = horizontalFOV / 2f;
+            Quaternion leftRayRotation = Quaternion.AngleAxis(-halfFOV, turretHead.up);
+            Quaternion rightRayRotation = Quaternion.AngleAxis(halfFOV, turretHead.up);
+            Vector3 leftRayDirection = leftRayRotation * turretHead.forward;
+            Vector3 rightRayDirection = rightRayRotation * turretHead.forward;
+
+            Gizmos.DrawRay(turretHead.position, leftRayDirection * range);
+            Gizmos.DrawRay(turretHead.position, rightRayDirection * range);
+
+            // Draw vertical FOV
+            Quaternion upRayRotation = Quaternion.AngleAxis(-verticalFOV / 2f, turretHead.right);
+            Quaternion downRayRotation = Quaternion.AngleAxis(verticalFOV / 2f, turretHead.right);
+            Vector3 upRayDirection = upRayRotation * turretHead.forward;
+            Vector3 downRayDirection = downRayRotation * turretHead.forward;
+
+            Gizmos.DrawRay(turretHead.position, upRayDirection * range);
+            Gizmos.DrawRay(turretHead.position, downRayDirection * range);
+        }
+    }
+
+    // Public methods for external control
+    public void SetTarget(Transform newTarget)
+    {
+        target = newTarget;
+    }
+
 }
