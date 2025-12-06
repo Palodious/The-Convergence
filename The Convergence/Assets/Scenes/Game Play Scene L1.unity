@@ -7595,7 +7595,7 @@ MonoBehaviour:
   dropSpread: 0.5
   dropsKey: 0
   keyPrefab: {fileID: 4189237473474580957, guid: 00222f0a4e15b1c48915dfcb77310ff1, type: 3}
-  keyDropChance: 0.25
+  keyDropChance: 0.05
 --- !u!1001 &430150767
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -9952,7 +9952,7 @@ MonoBehaviour:
   dropSpread: 0.5
   dropsKey: 1
   keyPrefab: {fileID: 4189237473474580957, guid: 00222f0a4e15b1c48915dfcb77310ff1, type: 3}
-  keyDropChance: 0.25
+  keyDropChance: 0.05
 --- !u!1 &571777004
 GameObject:
   m_ObjectHideFlags: 0
@@ -10833,7 +10833,7 @@ MonoBehaviour:
   dropSpread: 0.5
   dropsKey: 1
   keyPrefab: {fileID: 4189237473474580957, guid: 00222f0a4e15b1c48915dfcb77310ff1, type: 3}
-  keyDropChance: 0.25
+  keyDropChance: 0.05
 --- !u!1001 &608249527
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -11718,7 +11718,7 @@ MonoBehaviour:
   dropSpread: 0.5
   dropsKey: 1
   keyPrefab: {fileID: 4189237473474580957, guid: 00222f0a4e15b1c48915dfcb77310ff1, type: 3}
-  keyDropChance: 0.5
+  keyDropChance: 0.05
 --- !u!1 &640843008
 GameObject:
   m_ObjectHideFlags: 0
@@ -12160,6 +12160,31 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7664aa771caa1ce42965283fa24dbbd2, type: 3}
+--- !u!1 &692704029 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6058023672570388250, guid: 81ab76d98f42ecb418b28890fc46f136, type: 3}
+  m_PrefabInstance: {fileID: 973665377}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &692704033
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 692704029}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7051124d272ddf342b49521a3a3a5503, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ItemDrop
+  enableDrops: 0
+  dropChance: 1
+  pickupPrefab: {fileID: 0}
+  dropItems: []
+  dropSpread: 0.5
+  dropsKey: 1
+  keyPrefab: {fileID: 4189237473474580957, guid: 00222f0a4e15b1c48915dfcb77310ff1, type: 3}
+  keyDropChance: 0.25
 --- !u!1 &698943804
 GameObject:
   m_ObjectHideFlags: 0
@@ -16630,7 +16655,7 @@ MonoBehaviour:
   dropSpread: 0.5
   dropsKey: 1
   keyPrefab: {fileID: 4189237473474580957, guid: 00222f0a4e15b1c48915dfcb77310ff1, type: 3}
-  keyDropChance: 0.5
+  keyDropChance: 0.05
 --- !u!1 &968649021
 GameObject:
   m_ObjectHideFlags: 0
@@ -17041,7 +17066,13 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 6058023672570388250, guid: 81ab76d98f42ecb418b28890fc46f136, type: 3}
+      insertIndex: 2
+      addedObject: {fileID: 692704033}
+    - targetCorrespondingSourceObject: {fileID: 473113649794156519, guid: 81ab76d98f42ecb418b28890fc46f136, type: 3}
+      insertIndex: 2
+      addedObject: {fileID: 2121794520}
   m_SourcePrefab: {fileID: 100100000, guid: 81ab76d98f42ecb418b28890fc46f136, type: 3}
 --- !u!1 &974977889
 GameObject:
@@ -27990,7 +28021,7 @@ MonoBehaviour:
   dropSpread: 0.5
   dropsKey: 1
   keyPrefab: {fileID: 4189237473474580957, guid: 00222f0a4e15b1c48915dfcb77310ff1, type: 3}
-  keyDropChance: 0.5
+  keyDropChance: 0.05
 --- !u!1 &1605297295
 GameObject:
   m_ObjectHideFlags: 0
@@ -36910,6 +36941,31 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 459794, guid: 4a01cd5987c95e14fbbc6975d9e0f556, type: 3}
   m_PrefabInstance: {fileID: 1036160034}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &2121794516 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 473113649794156519, guid: 81ab76d98f42ecb418b28890fc46f136, type: 3}
+  m_PrefabInstance: {fileID: 973665377}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &2121794520
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2121794516}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7051124d272ddf342b49521a3a3a5503, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ItemDrop
+  enableDrops: 0
+  dropChance: 1
+  pickupPrefab: {fileID: 0}
+  dropItems: []
+  dropSpread: 0.5
+  dropsKey: 1
+  keyPrefab: {fileID: 4189237473474580957, guid: 00222f0a4e15b1c48915dfcb77310ff1, type: 3}
+  keyDropChance: 0.05
 --- !u!1001 &2122427623
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -198623,10 +198679,10 @@ SceneRoots:
   - {fileID: 1831387541}
   - {fileID: 64904917}
   - {fileID: 615523740}
-  - {fileID: 1715029963}
+  - {fileID: 973665377}
   - {fileID: 289196492}
   - {fileID: 343597335}
   - {fileID: 1783338269}
+  - {fileID: 1715029963}
   - {fileID: 1937804894}
   - {fileID: 1363837245}
-  - {fileID: 973665377}
