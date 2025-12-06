@@ -19,7 +19,6 @@ public class gamemanager : MonoBehaviour
 
     GameObject previousMenu;
 
-    // Expose current objective count; make it tracked and accessible.
     [SerializeField] private int gameGoalCount;
 
     [SerializeField] private PrefabRegistry prefabRegistry;
@@ -32,7 +31,6 @@ public class gamemanager : MonoBehaviour
     [SerializeField] public GameObject surgeOverlay;
     public GameObject spawnPoint;
 
-
     public GameObject player;
     public playerController playerScript;
 
@@ -42,7 +40,6 @@ public class gamemanager : MonoBehaviour
 
     float timeScaleOrig;
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Awake()
     {
         instance = this;
@@ -63,10 +60,8 @@ public class gamemanager : MonoBehaviour
             SaveManager.PendingLoad = false;
             LoadGame();
         }
-
     }
 
-    // Update is called once per frame
     void Update()
     {
         if (Input.GetButtonDown("Cancel"))
@@ -96,6 +91,7 @@ public class gamemanager : MonoBehaviour
         if (SFXManager.Instance != null)
             SFXManager.Instance.PlaySound("UI_Open");
     }
+
     public void stateUnpause()
     {
         isPaused = false;
@@ -126,16 +122,35 @@ public class gamemanager : MonoBehaviour
         if (gameGoalCountText != null)
             gameGoalCountText.text = gameGoalCount.ToString("F0");
 
-        // Only allow winning if we actually had objectives.
+        // Only allow winning if we actually had objectives and this is not level 4
+        // Level 4 win condition is handled separately by OnLevel4BossDefeated()
         if (objectivesInitialized && gameGoalCount <= 0)
         {
-            // You win!!!
+            // Check if this is NOT level 4 (boss level)
+            if (SceneManager.GetActiveScene().buildIndex != 4)
+            {
+                // Normal level win condition: all enemies defeated
+                statePause();
+                menuActive = menuWin;
+                if (menuActive != null)
+                    menuActive.SetActive(true);
+            }
+            // If this IS level 4, DO NOT trigger win here - wait for boss defeat
+        }
+    }
+
+    public void OnLevel4BossDefeated()
+    {
+        // Only trigger win if this is level 4 (boss level)
+        if (SceneManager.GetActiveScene().buildIndex == 4)
+        {
             statePause();
             menuActive = menuWin;
             if (menuActive != null)
                 menuActive.SetActive(true);
         }
     }
+
     public void youLose()
     {
         statePause();
@@ -171,7 +186,6 @@ public class gamemanager : MonoBehaviour
 
         if (SFXManager.Instance != null)
             SFXManager.Instance.PlaySound("UI_Apply");
-
     }
 
     public void LoadGame()
@@ -201,15 +215,11 @@ public class gamemanager : MonoBehaviour
         if (prefabRegistry != null)
             spawnFunc = prefabRegistry.SpawnByKey;
 
-        // Let SaveManager rebuild the scene based on the save.
         yield return SaveManager.Instance.LoadAndRestore(data, spawnFunc);
 
         if (data.entities != null && data.entities.Count > 0)
         {
-            // All IDs that *should* exist according to the save.
             var savedIds = new HashSet<string>(data.entities.Select(e => e.id));
-
-            // Every enemy currently in the scene.
             var allEnemies = FindObjectsByType<enemyAI>(
                 FindObjectsInactive.Include,
                 FindObjectsSortMode.None
@@ -218,10 +228,8 @@ public class gamemanager : MonoBehaviour
             foreach (var enemy in allEnemies)
             {
                 var se = enemy.GetComponent<SaveEntity>();
-                if (se == null)
-                    continue;
+                if (se == null) continue;
 
-                // If this enemy's ID wasn't in the save, it's a stray spawn.
                 if (!savedIds.Contains(se.Id))
                 {
                     Debug.Log($"[Load Cleanup] Destroying enemy '{enemy.name}' with id {se.Id} that was not in the save file.");
@@ -230,16 +238,13 @@ public class gamemanager : MonoBehaviour
             }
         }
 
-        // Re-hook references after the world is restored.
         player = GameObject.FindWithTag("Player");
         if (player != null)
             playerScript = player.GetComponent<playerController>();
 
         spawnPoint = GameObject.FindWithTag("Spawn Point");
 
-        // Restore player / objective values from the save.
         if (playerScript != null)
-
         {
             playerScript.SetHP(data.playerHP);
             playerScript.RestoreGunVisual(data.playerGunIndex);
@@ -256,10 +261,7 @@ public class gamemanager : MonoBehaviour
         stateUnpause();
     }
 
-    public int GetGameGoalCount()
-    {
-        return gameGoalCount;
-    }
+    public int GetGameGoalCount() => gameGoalCount;
 
     public void OpenOptionsMenu()
     {
@@ -269,7 +271,6 @@ public class gamemanager : MonoBehaviour
             return;
         }
 
-        // Remember the menu we came from (pause/win/lose)
         previousMenu = menuActive;
 
         if (previousMenu != null)
@@ -285,7 +286,6 @@ public class gamemanager : MonoBehaviour
 
         menuOptions.SetActive(false);
 
-        // If we came from another menu, go back to it
         if (previousMenu != null)
         {
             menuActive = previousMenu;
@@ -294,7 +294,6 @@ public class gamemanager : MonoBehaviour
         }
         else
         {
-            // If Options was opened with no previous menu, just unpause back to game
             stateUnpause();
         }
     }
