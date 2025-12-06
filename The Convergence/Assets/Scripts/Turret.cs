@@ -152,5 +152,49 @@ public class Turret : MonoBehaviour, IDamage
             OnTargetLost();
             hasTarget = false;
         }
+        // Update fire timer
+        if (!isFiring && !isBursting)
+            fireTimer += Time.deltaTime;
+
+        // Update FOV visualization color
+        if (showFOV)
+            UpdateFOVVisualization();
     }
+
+    bool IsInFOV(Vector3 directionToTarget)
+    {
+        if (turretHead == null) return false;
+        // Calculate horizontal angle
+        Vector3 flatDirection = new Vector3(directionToTarget.x, 0, directionToTarget.z);
+        Vector3 flatForward = new Vector3(turretHead.forward.x, 0, turretHead.forward.z);
+        float horizontalAngle = Vector3.Angle(flatForward, flatDirection);
+
+        // Calculate vertical angle
+        float verticalAngle = Vector3.Angle(turretHead.forward, directionToTarget);
+
+        return horizontalAngle <= horizontalFOV / 2f && verticalAngle <= verticalFOV / 2f;
+    }
+    bool HasLineOfSight()
+    {
+        if (target == null || turretHead == null) return false;
+
+        Vector3 rayOrigin = turretHead.position;
+        Vector3 direction = (target.position - rayOrigin).normalized;
+        float distance = Vector3.Distance(rayOrigin, target.position);
+
+        // Raycast to check for obstacles
+        if (Physics.Raycast(rayOrigin, direction, out RaycastHit hit, distance, obstacleLayer))
+        {
+            // Check if we hit the player through the target layer
+            if (((1 << hit.collider.gameObject.layer) & targetLayer) != 0)
+            {
+                return true;
+            }
+            return false;
+        }
+
+        return true;
+    }
+
+}
 }
