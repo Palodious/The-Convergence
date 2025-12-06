@@ -77,6 +77,8 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
 
     void Start()
     {
+        controller = GetComponent<CharacterController>();   // FIX
+
         HPOrig = HP;
         originalHeight = controller.height;
         originalSpeed = speed;
@@ -517,6 +519,10 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
 
     public void respawn()
     {
+        Debug.Log("controller = " + controller);
+        Debug.Log("gamemanager.instance = " + gamemanager.instance);
+        Debug.Log("spawnPoint = " + gamemanager.instance?.spawnPoint);
+
         controller.transform.position = gamemanager.instance.spawnPoint.transform.position;
         HP = HPOrig;
         updatePlayerUI();
