@@ -48,6 +48,29 @@ public class Turret : MonoBehaviour, IDamage
     [Range(1, 10)][SerializeField] int burstCount = 3;
     [Range(0.05f, 1f)][SerializeField] float burstDelay = 0.1f;
     [Range(0.1f, 3f)][SerializeField] float burstCooldown = 1f;
+
+    [Header("**** Effects ****")]
+    [SerializeField] AudioSource audioSource;
+    [SerializeField] AudioClip shootSound;
+    [SerializeField] AudioClip detectionSound;
+    [SerializeField] ParticleSystem muzzleFlash;
+    [SerializeField] GameObject destructionEffect;
+
+    [Header("**** Debug ****")]
+    [SerializeField] bool debugMode = false;
+
+    // State variables
+    private Transform target;
+    private float fireTimer;
+    private bool isFiring = false;
+    private bool isBursting = false;
+    private Coroutine burstCoroutine;
+    private Material fovMaterial;
+    private Mesh fovMesh;
+    private bool hasTarget = false;
+    private Vector3 baseStartRotation;
+    private Vector3 headStartRotation;
+    private Color currentFOVColor;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
