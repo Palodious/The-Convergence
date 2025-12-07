@@ -102,7 +102,7 @@ public class Store : MonoBehaviour
         consumableItems.Add(new StoreItem { id = 301, itemName = "Health Potion (10c)", cost = 10, type = ItemType.Consumable, state = "potionCount" });
         consumableItems.Add(new StoreItem { id = 302, itemName = "Health Potion (20c)", cost = 20, type = ItemType.Consumable, state = "potionCount" });
         consumableItems.Add(new StoreItem { id = 303, itemName = "Health Potion (30c)", cost = 30, type = ItemType.Consumable, state = "potionCount" });
-        consumableItems.Add(new StoreItem { id = 303, itemName = "Health Potion (40c)", cost = 40, type = ItemType.Consumable, state = "potionCount" });
+        consumableItems.Add(new StoreItem { id = 304, itemName = "Health Potion (40c)", cost = 40, type = ItemType.Consumable, state = "potionCount" });
 
     }
 
