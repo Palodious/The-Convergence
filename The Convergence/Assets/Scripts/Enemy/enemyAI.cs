@@ -128,6 +128,7 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
     [SerializeField] AudioClip[] audDash; // Dash attack audio
     [Range(0, 1)][SerializeField] float audDashVol = 0.5f;
 
+    [SerializeField] int coinRewardAmount = 5;
     [SerializeField] private ItemDrop itemDrop;
 
     public EnemyType EnemyTypeValue => enemyType;
@@ -1356,8 +1357,15 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
         if (itemDrop != null)
             itemDrop.TryDrop();
 
-        // Destroy immediately without animation or delay
-        Destroy(gameObject);
+        if (gamemanager.instance != null)
+        {
+            // Passes the specific reward amount set for this enemy instance
+            gamemanager.instance.AddCoins(coinRewardAmount);
+
+            // Destroy immediately without animation or delay
+            Destroy(gameObject);
+        }
+
     }
 
     IEnumerator flashRed()

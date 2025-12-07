@@ -39,6 +39,9 @@ public class gamemanager : MonoBehaviour
     public bool isPaused;
 
     float timeScaleOrig;
+    public TextMeshProUGUI coinTextDisplay;
+
+    public int currentCoins = 0;
 
     void Awake()
     {
@@ -295,6 +298,25 @@ public class gamemanager : MonoBehaviour
         else
         {
             stateUnpause();
+        }
+    }
+
+    private void UpdateCoinDisplay()
+    {
+        if (coinTextDisplay != null)
+        {
+            // Sets the text to show the current coin amount
+            coinTextDisplay.text = $":{currentCoins}";
+        }
+    }
+
+    public void AddCoins(int amount)
+    {
+        if (amount > 0)
+        {
+            currentCoins += amount;
+
+            UpdateCoinDisplay();
         }
     }
 }
