@@ -245,20 +245,20 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
         // Periodically check for special attacks even when not in direct combat
         if (specialAttackCheckTimer >= specialAttackCheckInterval && playerTracked)
         {
-            CheckSpecialAttacks(lastKnownPlayerPosition, 
+            CheckSpecialAttacks(lastKnownPlayerPosition,
                 Vector3.Distance(transform.position, lastKnownPlayerPosition));
             specialAttackCheckTimer = 0f;
         }
 
         // Play footsteps if moving and not performing special attacks
-        if (!enableTurretMode && !isJumpAttacking && !isDashing && 
+        if (!isJumpAttacking && !isDashing &&
             agent != null && agent.isActiveAndEnabled && agent.velocity.magnitude > 0.1f && !isPlayingStep)
         {
             StartCoroutine(playStep());
         }
 
         // Update movement animation speed if enabled and not performing special attacks
-        if (useAnimations && anim != null && !enableTurretMode && !isJumpAttacking && !isDashing &&
+        if (useAnimations && anim != null && !isJumpAttacking && !isDashing &&
             agent != null && agent.isActiveAndEnabled)
         {
             float agentSpeedCur = agent.velocity.magnitude;
@@ -267,16 +267,12 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
         }
 
         // Track roam timer only when not moving and not performing special attacks
-        if (!enableTurretMode && !isJumpAttacking && !isDashing && 
+        if (!isJumpAttacking && !isDashing &&
             agent != null && agent.isActiveAndEnabled && agent.remainingDistance < 0.01f)
             roamTimer += Time.deltaTime;
 
-        // Handle different enemy behaviors based on type and mode
-        if (enableTurretMode)
-        {
-            HandleTurretBehavior();
-        }
-        else if (!isJumpAttacking && !isDashing) // Only handle mobile behavior if not in special attack
+        // Handle mobile behavior if not in special attack
+        if (!isJumpAttacking && !isDashing) // Only handle mobile behavior if not in special attack
         {
             HandleMobileBehavior();
         }
