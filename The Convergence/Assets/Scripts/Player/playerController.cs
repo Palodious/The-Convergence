@@ -67,7 +67,6 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
     [Header("~=~= Medkit Settings =~=~")]
     private bool canUseMedkit = true;
     private float medkitCooldown = 0f;
-    [Range(0.1f, 60f)][SerializeField] private float medkitUseCooldown = 5f; // Cooldown between medkit uses
 
     [Header("~=~= TPS / Aiming Settings =~=~")]
     public Transform aimTarget; // assign empty AimTarget in front of player
@@ -105,8 +104,6 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
 
         sprint();
 
-        // handle medkit cooldown timer
-        HandleMedkitCooldown();
     }
 
     void movement()
@@ -436,19 +433,6 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
         {
             aud.pitch = Random.Range(0.95f, 1.05f); // slight pitch variation
             aud.PlayOneShot(audMedkit, audMedkitVol);
-        }
-    }
-
-    public void HandleMedkitCooldown()
-    {
-        if (!canUseMedkit)
-        {
-            medkitCooldown -= Time.deltaTime;
-            if (medkitCooldown <= 0f)
-            {
-                canUseMedkit = true;
-                medkitCooldown = 0f;
-            }
         }
     }
 

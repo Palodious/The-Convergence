@@ -62,6 +62,10 @@ public class VendingMachineInteraction : MonoBehaviour
 
         if (!isUIVisible)
         {
+            if (Store.Instance != null)
+            {
+                Store.Instance.OnStoreOpened();
+            }
             Time.timeScale = 0f;
             Cursor.lockState = CursorLockMode.None;
             Cursor.visible = true;
