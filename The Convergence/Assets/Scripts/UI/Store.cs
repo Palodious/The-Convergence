@@ -1,6 +1,5 @@
 using UnityEngine;
 using System.Collections.Generic;
-using JetBrains.Annotations;
 
 [System.Serializable]
 public class StoreItem
@@ -12,13 +11,6 @@ public class StoreItem
 
     
     public string state;
-}
-
-[System.Serializable]
-
-public class GunUpgradeItem : StoreItem
-{
-    public UpgradeDefinition upgradeDefinition;
 }
 
 [System.Serializable]
@@ -47,10 +39,10 @@ public class Store : MonoBehaviour
     public PlayerState playerState = new PlayerState();
 
     [Header("Store Data")]
-    public List<GunUpgradeItem> upgradeItems = new List<GunUpgradeItem>();
+    public List<StoreItem> upgradeItems = new List<StoreItem>();
     public List<StoreItem> consumableItems = new List<StoreItem>();
 
-    [SerializeField] private UpgradeManager upgradeManager;
+
 
 
     private void Awake()
@@ -145,20 +137,8 @@ public class Store : MonoBehaviour
             // Apply Effect based on Type
             if (item.type == ItemType.Upgrade)
             {
-                GunUpgradeItem upgradeItem = item as GunUpgradeItem;
-
-                if (upgradeItem != null && upgradeItem.upgradeDefinition != null)
-                {
-                    upgradeManager.PurchaseAndApplyUpgrade(upgradeItem.upgradeDefinition); 
-                    // Mark as purchased, effectively setting its quantity to 0
-                    playerState.purchasedIds.Add(item.id);
-                }
-                else
-                {
-                    Coin += item.cost;
-                    return false;
-                }
-               
+                // Mark as purchased, effectively setting its quantity to 0
+                playerState.purchasedIds.Add(item.id);
 
             }
             else if (item.type == ItemType.Consumable)
@@ -186,24 +166,24 @@ public class Store : MonoBehaviour
         {
             if (item.id == id)
             {
-
-                return item;
+                foundItem = item;
+                break;
             }
         }
-       
+        if (foundItem != null) return foundItem;
 
         // Search Consumables
         foreach (StoreItem item in consumableItems)
         {
             if (item.id == id)
             {
-                return item;
-                
+                foundItem = item;
+                break;
             }
         }
-       
+        if (foundItem != null) return foundItem;
 
-        return null;
+        return foundItem;
 
     }
 

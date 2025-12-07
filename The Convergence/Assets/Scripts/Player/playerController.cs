@@ -17,7 +17,10 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
     [Range(1, 10)][SerializeField] int maxJumps;
     [Range(1, 50)][SerializeField] int gravity;
 
-    
+    [Header("~=~= Shooting =~=~")]
+    [Range(1, 100)][SerializeField] int shootDamage;
+    [Range(1, 100)][SerializeField] int shootDist;
+    [Range(0.01f, 5f)][SerializeField] float shootRate;
 
     [Header("~=~= Movement Modifiers =~=~")]
     [Range(0.1f, 50f)][SerializeField] float glideGravity;
@@ -38,15 +41,7 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
     // CHANGE: Replace static bool with static int for key count
     public static int keyCount = 0;
 
-    public int ShootDamage
-    {
-        get
-        {
-            if(gunList.Count > 0) 
-                return gunList[gunListPos].shootDamage;
-            return 0;  
-        }
-    }
+    public int ShootDamage => shootDamage;
     float originalHeight; // remember height for uncrouch  
     int originalSpeed; // store original speed  
 
@@ -179,16 +174,8 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
             if (Input.GetKeyUp(KeyCode.G)) StopGlide();
         }
         else if (isGliding) StopGlide();
-        float currentShootRate = float.MaxValue;
 
-        if (gunList.Count > 0)
-        {
-            // Get the live fire rate from the currently equipped gun's stats object
-            currentShootRate = gunList[gunListPos].shootRate;
-        }
-
-        // Use the dynamic rate for the shoot check
-        if (Input.GetButton("Fire1") && shootTimer >= currentShootRate)
+        if (Input.GetButton("Fire1") && shootTimer >= shootRate)
         {
             shoot();
         }
@@ -261,56 +248,47 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
     void shoot()
     {
         if (gunList.Count == 0) return;
-        gunStats currentGun = gunList[gunListPos];
 
-        if (shootTimer >= currentGun.shootRate)
+        shootTimer = 0;
+
+        if (gunList.Count > 0)
         {
-            shootTimer = 0;
-
-            if (currentGun.ammoCur <= 0)
-            {
-                return;
-            }
-
-            currentGun.ammoCur--;
-
             aud.pitch = Random.Range(0.9f, 1.1f);
+            gunStats gunPos = gunList[gunListPos];
+            aud.PlayOneShot(gunPos.shootSound[Random.Range(0, gunPos.shootSound.Length)], gunPos.shootSoundVol);
+        }
 
-            aud.PlayOneShot(currentGun.shootSound[Random.Range(0, currentGun.shootSound.Length)], currentGun.shootSoundVol);
-
-            int currentDamage = currentGun.shootDamage;
-            int currentDistance = currentGun.shootDist;
-
-            Vector3 rayOrigin;
-            Vector3 rayDirection;
-
-            // fire from gunModel toward the AimTarget
-            if (aimTarget != null && gunModel != null)
+        // fire from gunModel toward the AimTarget
+        if (aimTarget != null && gunModel != null)
+        {
+            Vector3 shootDir = (aimTarget.position - gunModel.transform.position).normalized;
+            if (Physics.Raycast(gunModel.transform.position, shootDir, out RaycastHit hit, shootDist, ~ignoreLayer))
             {
-                rayOrigin = gunModel.transform.position;
-                rayDirection = (aimTarget.position - rayOrigin).normalized;
-
-            }
-            else
-            {
-                rayOrigin = Camera.main.transform.position;
-                rayDirection = Camera.main.transform.forward;
-            }
-            if (Physics.Raycast(rayOrigin, rayDirection, out RaycastHit hit, currentDistance, ~ignoreLayer))
-            {
-                Debug.Log($"Hit: {hit.collider.name}");
+                Debug.Log(hit.collider.name);
 
                 IDamage dmg = hit.collider.GetComponent<IDamage>();
                 if (dmg != null)
                 {
-                    // Apply damage using the gun's damage stat
-                    dmg.takeDamage(Mathf.RoundToInt(currentDamage * damageBoost));
+                    dmg.takeDamage(Mathf.RoundToInt(shootDamage * damageBoost));
                 }
 
-                // Instantiate hit effect
-                Instantiate(currentGun.hitEffect, hit.point, Quaternion.identity);
+                if (gunList.Count > 0)
+                    Instantiate(gunList[gunListPos].hitEffect, hit.point, Quaternion.identity);
             }
+        }
+        else
+        {
+            if (Physics.Raycast(Camera.main.transform.position, Camera.main.transform.forward, out RaycastHit hit2, shootDist, ~ignoreLayer))
+            {
+                IDamage dmg = hit2.collider.GetComponent<IDamage>();
+                if (dmg != null)
+                {
+                    dmg.takeDamage(Mathf.RoundToInt(shootDamage * damageBoost));
+                }
 
+                if (gunList.Count > 0)
+                    Instantiate(gunList[gunListPos].hitEffect, hit2.point, Quaternion.identity);
+            }
         }
     }
 
@@ -493,7 +471,9 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
     {
         if (gunList.Count == 0) return;
 
-      
+        shootDamage = gunList[gunListPos].shootDamage;
+        shootDist = gunList[gunListPos].shootDist;
+        shootRate = gunList[gunListPos].shootRate;
 
         Transform[] children = new Transform[gunModel.transform.childCount];
         for (int i = 0; i < gunModel.transform.childCount; i++)

@@ -3,7 +3,7 @@ using System.Collections;
 
 public class gunPickup : MonoBehaviour
 {
-    [SerializeField] private gunStats baseGunStats;
+    [SerializeField] gunStats gun;
 
     private void OnTriggerEnter(Collider other)
     {
@@ -11,9 +11,8 @@ public class gunPickup : MonoBehaviour
 
         if (pik != null)
         {
-            gunStats runtimeGunStats = Instantiate(baseGunStats);
-            runtimeGunStats.ammoCur = runtimeGunStats.ammoMax;
-            pik.GetItem(runtimeGunStats);
+            gun.ammoCur = gun.ammoMax;
+            pik.GetItem(gun);
             StartCoroutine(DelayedDestroy());
         }
     }
