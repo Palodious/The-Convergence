@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.SceneManagement; // Added for scene management
 
 public class Door : MonoBehaviour
 {
@@ -6,12 +7,17 @@ public class Door : MonoBehaviour
     // Regular door requirement settings
     [SerializeField] bool requiresKey = false;
     [SerializeField] bool requiresEnemiesDefeated = true;
-    [Range(1, 10)] [SerializeField] int keysRequired = 1; // How many keys needed
+    [Range(1, 10)][SerializeField] int keysRequired = 1; // How many keys needed
 
     [Header("~=~= Slide Settings =~=~")]
-    [Range(0.5f, 10f)] [SerializeField] float slideDistance = 3f; // How far upward the door moves when opened
+    [Range(0.5f, 10f)][SerializeField] float slideDistance = 3f; // How far upward the door moves when opened
+    [Range(0.1f, 10f)][SerializeField] float slideSpeed = 2f; // How fast the door slides up
 
-    [Range(0.1f, 10f)] [SerializeField] float slideSpeed = 2f; // How fast the door slides up
+    [Header("~=~= Scene Settings =~=~")]
+    [SerializeField] bool loadNextScene = false; // Toggle for scene loading
+    [SerializeField] string sceneName = ""; // Name of scene to load (if empty, uses build index)
+    [SerializeField] int sceneBuildIndex = -1; // Build index of scene to load (-1 for next scene)
+    [SerializeField] float sceneLoadDelay = 0.5f; // Delay before loading scene after door opens
 
     private bool isOpen = false;
     private Vector3 closedPos; // Stores the starting position so we know where to slide from
@@ -91,5 +97,42 @@ public class Door : MonoBehaviour
 
         // Make sure the door finishes exactly in the correct position
         transform.position = targetPos;
+
+        // Load scene after door has opened
+        if (loadNextScene)
+        {
+            yield return new WaitForSeconds(sceneLoadDelay);
+            LoadNextScene();
+        }
+    }
+
+    void LoadNextScene()
+    {
+        if (!string.IsNullOrEmpty(sceneName))
+        {
+            // Load scene by name
+            SceneManager.LoadScene(sceneName);
+        }
+        else if (sceneBuildIndex >= 0)
+        {
+            // Load scene by build index
+            SceneManager.LoadScene(sceneBuildIndex);
+        }
+        else
+        {
+            // Load next scene in build settings
+            int currentSceneIndex = SceneManager.GetActiveScene().buildIndex;
+            int nextSceneIndex = currentSceneIndex + 1;
+
+            // Check if next scene exists
+            if (nextSceneIndex < SceneManager.sceneCountInBuildSettings)
+            {
+                SceneManager.LoadScene(nextSceneIndex);
+            }
+            else
+            {
+                Debug.LogWarning("No next scene available in build settings!");
+            }
+        }
     }
 }
