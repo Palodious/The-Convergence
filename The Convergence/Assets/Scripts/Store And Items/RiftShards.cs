@@ -1,0 +1,22 @@
+using UnityEngine;
+
+[System.Serializable]
+public class RiftShards : ICurrency
+{
+    [Header("~=~=Rift Shards Amount=~=~")]
+    [Range(0, 999999)][SerializeField] private int amount;
+
+    public string Name => "Rift Shards";
+
+    // Getter and setter used by the manager
+    public int Amount
+    {
+        get => amount;
+        set => amount = Mathf.Max(0, value); // Prevents negative values
+    }
+
+    public RiftShards(int initial)
+    {
+        Amount = initial;
+    }
+}
