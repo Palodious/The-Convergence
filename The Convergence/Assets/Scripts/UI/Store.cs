@@ -68,10 +68,10 @@ public class Store : MonoBehaviour
         upgradeItems.Add(new StoreItem { id = 113, itemName = "Rifle Upgrade III", cost = 15, type = ItemType.Upgrade });
         upgradeItems.Add(new StoreItem { id = 114, itemName = "Rifle Upgrade IV (MAX)", cost = 20, type = ItemType.Upgrade });
 
-        upgradeItems.Add(new StoreItem { id = 111, itemName = "AR Upgrade I", cost = 5, type = ItemType.Upgrade });
-        upgradeItems.Add(new StoreItem { id = 112, itemName = "AR Upgrade II", cost = 10, type = ItemType.Upgrade });
-        upgradeItems.Add(new StoreItem { id = 113, itemName = "AR Upgrade III", cost = 15, type = ItemType.Upgrade });
-        upgradeItems.Add(new StoreItem { id = 114, itemName = "AR Upgrade IV (MAX)", cost = 20, type = ItemType.Upgrade });
+        upgradeItems.Add(new StoreItem { id = 121, itemName = "AR Upgrade I", cost = 5, type = ItemType.Upgrade });
+        upgradeItems.Add(new StoreItem { id = 122, itemName = "AR Upgrade II", cost = 10, type = ItemType.Upgrade });
+        upgradeItems.Add(new StoreItem { id = 123, itemName = "AR Upgrade III", cost = 15, type = ItemType.Upgrade });
+        upgradeItems.Add(new StoreItem { id = 124, itemName = "AR Upgrade IV (MAX)", cost = 20, type = ItemType.Upgrade });
 
         upgradeItems.Add(new StoreItem { id = 201, itemName = "Health Upgrade I", cost = 10, type = ItemType.Upgrade });
         upgradeItems.Add(new StoreItem { id = 202, itemName = "Health Upgrade II", cost = 20, type = ItemType.Upgrade });
@@ -80,8 +80,8 @@ public class Store : MonoBehaviour
 
         consumableItems.Add(new StoreItem { id = 301, itemName = "Health Potion (10c)", cost = 10, type = ItemType.Consumable, state = "potionCount" });
         consumableItems.Add(new StoreItem { id = 302, itemName = "Health Potion (20c)", cost = 20, type = ItemType.Consumable, state = "potionCount" });
-        consumableItems.Add(new StoreItem { id = 301, itemName = "Health Potion (30c)", cost = 30, type = ItemType.Consumable, state = "potionCount" });
-        consumableItems.Add(new StoreItem { id = 302, itemName = "Health Potion (40c)", cost = 40, type = ItemType.Consumable, state = "potionCount" });
+        consumableItems.Add(new StoreItem { id = 303, itemName = "Health Potion (30c)", cost = 30, type = ItemType.Consumable, state = "potionCount" });
+        consumableItems.Add(new StoreItem { id = 303, itemName = "Health Potion (40c)", cost = 40, type = ItemType.Consumable, state = "potionCount" });
 
     }
 
