@@ -933,6 +933,7 @@ GameObject:
   - component: {fileID: 6813135129765603049}
   - component: {fileID: -1195499999854618813}
   - component: {fileID: 7176286286379920563}
+  - component: {fileID: 931205412325036861}
   - component: {fileID: 3235738258623578902}
   - component: {fileID: 3096817051044307051}
   - component: {fileID: 6097442696138449061}
@@ -975,7 +976,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SaveEntity
   id: 
-  prefabKey: 
+  prefabKey: VenomWebWalker
 --- !u!114 &7176286286379920563
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -996,10 +997,11 @@ MonoBehaviour:
   anim: {fileID: 3235738258623578902}
   model: {fileID: 3139236838864997322}
   headPos: {fileID: 3949307992922597009}
+  turretHead: {fileID: 0}
   HP: 60
   FOV: 80
   faceTargetSpeed: 125
-  roamDist: 10
+  roamDist: 20
   roamPauseTime: 3
   animTransSpeed: 8
   projectile: {fileID: 4705637938062420806, guid: ff62b65117c527244a483945471f67d0, type: 3}
@@ -1010,6 +1012,34 @@ MonoBehaviour:
   meleeRange: 0.1
   attackRate: 0.1
   meleeDamageAmount: 10
+  enableTurretMode: 0
+  turretRotationAxes: []
+  turretRotationSpeed: 5
+  idleRotationSpeed: 10
+  minHorizontalAngle: -45
+  maxHorizontalAngle: 45
+  minVerticalAngle: -20
+  maxVerticalAngle: 20
+  independentVerticalRotation: 0
+  canJumpAttack: 1
+  jumpForce: 2.5
+  jumpAttackRange: 7.2
+  minHeightDifference: 1.45
+  jumpAttackCooldown: 5.45
+  jumpAttackDamage: 6
+  jumpAttackRadius: 2.34
+  jumpTimer: 3
+  canDashAttack: 1
+  dashSpeed: 6.9
+  dashDuration: 1.05
+  dashAttackRange: 7.2
+  minDashDistance: 9.8
+  dashAttackCooldown: 5.52
+  playerFleeingThreshold: 3.02
+  useBurstFire: 0
+  bulletsPerBurst: 3
+  timeBetweenBurstShots: 0.1
+  timeBetweenBursts: 1
   useAnimations: 1
   usePatrol: 0
   useRoam: 1
@@ -1028,7 +1058,33 @@ MonoBehaviour:
   audDeath:
   - {fileID: 8300000, guid: 878722455253d33438989b46a36d504b, type: 3}
   audDeathVol: 0.15
+  audJumpAttack: []
+  audJumpAttackVol: 0
+  audDash: []
+  audDashVol: 0.5
+  itemDrop: {fileID: 0}
   patrolPoints: []
+  patrolSourceId: 
+--- !u!114 &931205412325036861
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8723845815909595680}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7051124d272ddf342b49521a3a3a5503, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ItemDrop
+  enableDrops: 1
+  dropChance: 1
+  pickupPrefab: {fileID: 0}
+  dropItems: []
+  dropSpread: 0.5
+  dropsKey: 1
+  keyPrefab: {fileID: 4189237473474580957, guid: 00222f0a4e15b1c48915dfcb77310ff1, type: 3}
+  keyDropChance: 1
 --- !u!95 &3235738258623578902
 Animator:
   serializedVersion: 7
@@ -1124,7 +1180,7 @@ AudioSource:
   m_GameObject: {fileID: 8723845815909595680}
   m_Enabled: 1
   serializedVersion: 4
-  OutputAudioMixerGroup: {fileID: 0}
+  OutputAudioMixerGroup: {fileID: 24300002, guid: 00cb03a6ea84338449da26b4afb0b02a, type: 2}
   m_audioClip: {fileID: 0}
   m_Resource: {fileID: 0}
   m_PlayOnAwake: 0

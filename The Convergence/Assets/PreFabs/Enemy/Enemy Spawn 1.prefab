@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1251633077615465463}
   - component: {fileID: 6569822863648290068}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Pos
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -63,7 +63,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1428845876287103742}
   - component: {fileID: 2492939315447598794}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Pos
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -116,7 +116,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1212040565535114736}
   - component: {fileID: 1949480868638568309}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Pos
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -169,7 +169,7 @@ GameObject:
   m_Component:
   - component: {fileID: 544001149163091917}
   - component: {fileID: 939216070897452318}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Pos
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -222,7 +222,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4070105055624633129}
   - component: {fileID: 2212196293343114493}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Enemy Spawn 1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -282,7 +282,7 @@ GameObject:
   - component: {fileID: 5948560898164858670}
   - component: {fileID: 7913136616957658141}
   - component: {fileID: 7355063081839165796}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Whisp Spawn
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -322,6 +322,7 @@ MonoBehaviour:
   spawnRate: 0.5
   spawnPos:
   - {fileID: 1428845876287103742}
+  hasTriggered: 0
   patrolPoints:
   - {fileID: 0}
   - {fileID: 0}
@@ -357,7 +358,7 @@ GameObject:
   - component: {fileID: 6104698710079465937}
   - component: {fileID: 501409969646848853}
   - component: {fileID: 7095319744492016329}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Mythril Spawn
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -397,6 +398,7 @@ MonoBehaviour:
   spawnRate: 1
   spawnPos:
   - {fileID: 1212040565535114736}
+  hasTriggered: 0
   patrolPoints: []
 --- !u!135 &7095319744492016329
 SphereCollider:
@@ -430,7 +432,7 @@ GameObject:
   - component: {fileID: 1370973792179307392}
   - component: {fileID: 2236185629207372633}
   - component: {fileID: 5113520397808320296}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Webwalker Spawn
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -470,6 +472,7 @@ MonoBehaviour:
   spawnRate: 0.5
   spawnPos:
   - {fileID: 3253127501297678793}
+  hasTriggered: 0
   patrolPoints: []
 --- !u!135 &5113520397808320296
 SphereCollider:
@@ -501,9 +504,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3253127501297678793}
-  - component: {fileID: 6177608202239269384}
   - component: {fileID: 9101827128651721022}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Pos
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -525,23 +527,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1370973792179307392}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &6177608202239269384
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6120479235478784323}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f6e47971b24414849b52fa8ab36084d3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::spawner
-  objectToSpawn: {fileID: 0}
-  spawnAmount: 0
-  spawnRate: 0
-  spawnPos: []
-  patrolPoints: []
 --- !u!65 &9101827128651721022
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -574,7 +559,7 @@ GameObject:
   - component: {fileID: 4636763775321830537}
   - component: {fileID: 3181117518936011135}
   - component: {fileID: 8098263639071567334}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Whisp Spawn
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -614,6 +599,7 @@ MonoBehaviour:
   spawnRate: 0.5
   spawnPos:
   - {fileID: 1251633077615465463}
+  hasTriggered: 0
   patrolPoints:
   - {fileID: 3204405046851344042, guid: 6163b3fe2761e8047bde0e9a5d2860f0, type: 3}
   - {fileID: 4266776669560378470, guid: eaca1366bed676140b90d8dd094fe795, type: 3}
@@ -648,7 +634,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2908650448591085025}
   - component: {fileID: 2700837228379663912}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Pos
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -702,7 +688,7 @@ GameObject:
   - component: {fileID: 8547357065225917029}
   - component: {fileID: 2895372422630507236}
   - component: {fileID: 4881774519035382375}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Whisp Spawn
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -742,6 +728,7 @@ MonoBehaviour:
   spawnRate: 0.5
   spawnPos:
   - {fileID: 544001149163091917}
+  hasTriggered: 0
   patrolPoints:
   - {fileID: 7875236671911851873, guid: cdb789e1ec6cd2e4c99aca1b5f1abbb4, type: 3}
   - {fileID: 2697651621821698399, guid: 335daf6648798a141838681d9bb3b961, type: 3}
@@ -777,7 +764,7 @@ GameObject:
   - component: {fileID: 3852576899071307547}
   - component: {fileID: 4579870340260231820}
   - component: {fileID: 2388729109851387632}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Mythril Spawn
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -817,6 +804,7 @@ MonoBehaviour:
   spawnRate: 1
   spawnPos:
   - {fileID: 2908650448591085025}
+  hasTriggered: 0
   patrolPoints: []
 --- !u!135 &2388729109851387632
 SphereCollider:

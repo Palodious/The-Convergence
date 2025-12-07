@@ -1310,6 +1310,7 @@ GameObject:
   - component: {fileID: 7382090781301656490}
   - component: {fileID: -2281027393630644909}
   - component: {fileID: 2593248415674263162}
+  - component: {fileID: -8990476963880795192}
   - component: {fileID: 3692946239600984159}
   - component: {fileID: 4121909897967337052}
   - component: {fileID: 7793829858010845652}
@@ -1354,7 +1355,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SaveEntity
   id: 
-  prefabKey: 
+  prefabKey: MythrilGeistwalker
 --- !u!114 &2593248415674263162
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1375,10 +1376,11 @@ MonoBehaviour:
   anim: {fileID: 3692946239600984159}
   model: {fileID: 5841352514344377623}
   headPos: {fileID: 68137639033102836}
+  turretHead: {fileID: 0}
   HP: 70
   FOV: 50
   faceTargetSpeed: 125
-  roamDist: 10
+  roamDist: 20
   roamPauseTime: 3
   animTransSpeed: 8
   projectile: {fileID: 0}
@@ -1389,6 +1391,34 @@ MonoBehaviour:
   meleeRange: 2
   attackRate: 0.5
   meleeDamageAmount: 1
+  enableTurretMode: 0
+  turretRotationAxes: []
+  turretRotationSpeed: 5
+  idleRotationSpeed: 10
+  minHorizontalAngle: -45
+  maxHorizontalAngle: 45
+  minVerticalAngle: -20
+  maxVerticalAngle: 20
+  independentVerticalRotation: 0
+  canJumpAttack: 1
+  jumpForce: 2
+  jumpAttackRange: 10
+  minHeightDifference: 1.49
+  jumpAttackCooldown: 2.03
+  jumpAttackDamage: 6
+  jumpAttackRadius: 2.22
+  jumpTimer: 1
+  canDashAttack: 1
+  dashSpeed: 8
+  dashDuration: 1.5
+  dashAttackRange: 15
+  minDashDistance: 5
+  dashAttackCooldown: 5
+  playerFleeingThreshold: 3
+  useBurstFire: 0
+  bulletsPerBurst: 3
+  timeBetweenBurstShots: 0.1
+  timeBetweenBursts: 1
   useAnimations: 1
   usePatrol: 0
   useRoam: 1
@@ -1408,7 +1438,33 @@ MonoBehaviour:
   audDeath:
   - {fileID: 8300000, guid: 2fbbe83cecd56e245a5ad0d73572b05f, type: 3}
   audDeathVol: 0.15
+  audJumpAttack: []
+  audJumpAttackVol: 0
+  audDash: []
+  audDashVol: 0.5
+  itemDrop: {fileID: 0}
   patrolPoints: []
+  patrolSourceId: 
+--- !u!114 &-8990476963880795192
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4229121175722213460}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7051124d272ddf342b49521a3a3a5503, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ItemDrop
+  enableDrops: 1
+  dropChance: 0.5
+  pickupPrefab: {fileID: 0}
+  dropItems: []
+  dropSpread: 0.5
+  dropsKey: 0
+  keyPrefab: {fileID: 0}
+  keyDropChance: 1
 --- !u!95 &3692946239600984159
 Animator:
   serializedVersion: 7
@@ -1506,7 +1562,7 @@ AudioSource:
   m_GameObject: {fileID: 4229121175722213460}
   m_Enabled: 1
   serializedVersion: 4
-  OutputAudioMixerGroup: {fileID: 0}
+  OutputAudioMixerGroup: {fileID: 24300002, guid: 00cb03a6ea84338449da26b4afb0b02a, type: 2}
   m_audioClip: {fileID: 0}
   m_Resource: {fileID: 0}
   m_PlayOnAwake: 0

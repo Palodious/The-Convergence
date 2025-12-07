@@ -54,7 +54,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SaveEntity
   id: 
-  prefabKey: 
+  prefabKey: SkyscribeWispdrone
 --- !u!114 &2914004048708912450
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -75,6 +75,7 @@ MonoBehaviour:
   anim: {fileID: 0}
   model: {fileID: 8040678228756557300}
   headPos: {fileID: 5804238826743989315}
+  turretHead: {fileID: 0}
   HP: 50
   FOV: 60
   faceTargetSpeed: 100
@@ -89,6 +90,34 @@ MonoBehaviour:
   meleeRange: 0.1
   attackRate: 0.1
   meleeDamageAmount: 10
+  enableTurretMode: 0
+  turretRotationAxes: []
+  turretRotationSpeed: 5
+  idleRotationSpeed: 10
+  minHorizontalAngle: -45
+  maxHorizontalAngle: 45
+  minVerticalAngle: -20
+  maxVerticalAngle: 20
+  independentVerticalRotation: 0
+  canJumpAttack: 0
+  jumpForce: 0.1
+  jumpAttackRange: 1
+  minHeightDifference: 0.1
+  jumpAttackCooldown: 0.5
+  jumpAttackDamage: 1
+  jumpAttackRadius: 0.5
+  jumpTimer: 0
+  canDashAttack: 0
+  dashSpeed: 2
+  dashDuration: 0.1
+  dashAttackRange: 1
+  minDashDistance: 4
+  dashAttackCooldown: 0.5
+  playerFleeingThreshold: 1.1
+  useBurstFire: 0
+  bulletsPerBurst: 3
+  timeBetweenBurstShots: 0.1
+  timeBetweenBursts: 1
   useAnimations: 0
   usePatrol: 1
   useRoam: 0
@@ -107,9 +136,15 @@ MonoBehaviour:
   audDeath:
   - {fileID: 8300000, guid: 2fbbe83cecd56e245a5ad0d73572b05f, type: 3}
   audDeathVol: 0.15
+  audJumpAttack: []
+  audJumpAttackVol: 0
+  audDash: []
+  audDashVol: 0.5
+  itemDrop: {fileID: 0}
   patrolPoints:
   - {fileID: 0}
   - {fileID: 0}
+  patrolSourceId: 
 --- !u!195 &4143625095129991600
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -239,7 +274,7 @@ AudioSource:
   m_GameObject: {fileID: 2804925484609231592}
   m_Enabled: 1
   serializedVersion: 4
-  OutputAudioMixerGroup: {fileID: 0}
+  OutputAudioMixerGroup: {fileID: 24300002, guid: 00cb03a6ea84338449da26b4afb0b02a, type: 2}
   m_audioClip: {fileID: 0}
   m_Resource: {fileID: 0}
   m_PlayOnAwake: 0
