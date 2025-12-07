@@ -81,14 +81,13 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
     [Range(0.1f, 5f)][SerializeField] float specialAttackCheckInterval = 0.5f; // How often to check for special attacks
     [Range(10f, 200f)][SerializeField] float maxPlayerTrackingDistance = 50f; // Max distance to track player for special attacks
 
-    // Burst Fire Settings
-    [Header("~=~= Burst Fire Settings =~=~")]
+    [Header("**** Burst Fire Settings ****")]
     [SerializeField] bool useBurstFire = false;
     [Range(1, 20)][SerializeField] int bulletsPerBurst = 3;
     [Range(0.01f, 2f)][SerializeField] float timeBetweenBurstShots = 0.1f;
     [Range(0.1f, 10f)][SerializeField] float timeBetweenBursts = 1f;
 
-    [Header("~=~= Behavior Toggles =~=~")]
+    [Header("**** Behavior Toggles ****")]
     public bool useAnimations = true; // Toggle all animation logic on/off
     public bool usePatrol = true; // Toggle patrol behavior
     public bool useRoam = true; // Toggle roaming behavior
@@ -116,7 +115,7 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
 
     [SerializeField] private ItemDrop itemDrop;
 
-    [Header("~=~= Currency Drop =~=~")]
+    [Header("**** Currency Drop ****")]
     [Range(0,1000)][SerializeField] private int currencyDropAmount = 10; // Amount of currency this enemy drops
 
     public EnemyType EnemyTypeValue => enemyType;
@@ -131,18 +130,12 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
     Vector3 startingPos;
     float stoppingDistOrig;
 
-    [Header("~=~= Patrol Points =~=~")]
+    [Header("**** Patrol Points ****")]
     [SerializeField] Transform[] patrolPoints; // Optional patrol points
     int patrolIndex = 0;
     [SerializeField] string patrolSourceId;
 
     bool isPlayingStep;
-
-    // Turret variables
-    private bool isTurretActive = false;
-    private Vector3[] initialRotations;
-    private float currentIdleRotation = 0f;
-    private float idleRotationDirection = 1f;
 
     // Jump Attack variables
     private float jumpAttackTimer = 1f;
@@ -167,10 +160,6 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
     private bool isBursting = false;
     private int currentBurstCount = 0;
     private Coroutine burstCoroutine;
-
-    // Turret state tracking
-    private enum TurretState { Idle, Acquiring, Firing }
-    private TurretState currentTurretState = TurretState.Idle;
 
     // Special attack tracking variables
     private float specialAttackCheckTimer = 0f;
@@ -209,12 +198,6 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
 
         if (itemDrop == null)
             itemDrop = GetComponent<ItemDrop>();
-
-        // Initialize turret
-        if (enableTurretMode)
-        {
-            InitializeTurret();
-        }
 
         // Start continuous player tracking for special attacks
         if (canJumpAttack || canDashAttack)
