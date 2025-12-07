@@ -34,8 +34,6 @@ public class gamemanager : MonoBehaviour
     public GameObject player;
     public playerController playerScript;
 
-    private bool objectivesInitialized = false;
-
     public bool isPaused;
 
     float timeScaleOrig;
@@ -118,45 +116,31 @@ public class gamemanager : MonoBehaviour
     {
         gameGoalCount += amount;
 
-        // If we're adding goals, mark that the objective system is active.
-        if (amount > 0)
-            objectivesInitialized = true;
-
+        // Update UI display
         if (gameGoalCountText != null)
             gameGoalCountText.text = gameGoalCount.ToString("F0");
 
-        // Only check win condition if we actually had objectives
-        if (objectivesInitialized && gameGoalCount <= 0)
-        {
-            string currentSceneName = SceneManager.GetActiveScene().name;
 
-            // Check if this is the boss level (Level 4)
-            if (currentSceneName == "Game Play Scene L4")
-            {
-                // For Level 4, DO NOT trigger win here - wait for boss defeat
-                // The win will be triggered by OnLevel4BossDefeated() instead
-                Debug.Log("All enemies defeated on Level 4, but waiting for boss defeat...");
-            }
-            else
-            {
-                // For other levels (1-3): trigger win when all enemies are defeated
-                statePause();
-                menuActive = menuWin;
-                if (menuActive != null)
-                    menuActive.SetActive(true);
-            }
-        }
+        // NO WIN CONDITION TRIGGERED HERE
+        // Win is ONLY triggered by boss defeat on Level 4 via OnLevel4BossDefeated()
     }
 
     public void OnLevel4BossDefeated()
     {
-        // Only trigger win if this is level 4 (boss level)
-        if (SceneManager.GetActiveScene().buildIndex == 4)
+        string currentSceneName = SceneManager.GetActiveScene().name;
+
+        // Verify this is actually Level 4
+        if (currentSceneName == "Game Play Scene L4")
         {
+            Debug.Log("BOSS DEFEATED ON LEVEL 4 - TRIGGERING WIN CONDITION!");
             statePause();
             menuActive = menuWin;
             if (menuActive != null)
                 menuActive.SetActive(true);
+        }
+        else
+        {
+            Debug.LogError($"Boss defeated on wrong level! Current scene: {currentSceneName}. Boss should only be on 'Game Play Scene L4'");
         }
     }
 

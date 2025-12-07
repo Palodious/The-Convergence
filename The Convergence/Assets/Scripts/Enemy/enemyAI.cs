@@ -1142,50 +1142,48 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
         if (audDeath.Length > 0 && aud != null)
             aud.PlayOneShot(audDeath[Random.Range(0, audDeath.Length)], audDeathVol);
 
-        // Handle boss defeat differently
+        // Check if this is the boss enemy
         if (isBoss)
         {
-            // Boss defeated - trigger the win condition
-            Debug.Log("BOSS DEFEATED!");
+            Debug.Log("=== BOSS DEFEATED ===");
 
             // Show boss death effect if assigned
             if (bossDeathEffect != null)
                 Instantiate(bossDeathEffect, transform.position, Quaternion.identity);
 
             // Call the special boss defeat method in gamemanager
+            // This is the ONLY way to trigger the win condition in the entire game
             gamemanager.instance.OnLevel4BossDefeated();
 
-            // Drop items (boss usually drops more/loot)
+            // Drop special boss loot
             if (itemDrop != null)
                 itemDrop.TryDrop();
 
-            // Drop currency
+            // Drop currency (boss gives extra)
             if (currencyDropAmount > 0 && RiftShardManager.Instance != null)
             {
                 RiftShardManager.Instance.Add(currencyDropAmount * 5); // Boss gives 5x currency
             }
-
-            // Destroy the boss
-            Destroy(gameObject);
         }
         else
         {
-            // Regular enemy - update game goal
+            // REGULAR ENEMY (NOT BOSS)
+            // Update game goal count (for tracking only - no win condition)
             gamemanager.instance.updateGameGoal(-1);
 
-            // Drop items
+            // Drop regular loot
             if (itemDrop != null)
                 itemDrop.TryDrop();
 
-            // Drop currency
+            // Drop regular currency
             if (currencyDropAmount > 0 && RiftShardManager.Instance != null)
             {
                 RiftShardManager.Instance.Add(currencyDropAmount);
             }
-
-            // Destroy immediately without animation or delay
-            Destroy(gameObject);
         }
+
+        // Destroy the enemy object
+        Destroy(gameObject);
     }
 
     IEnumerator flashRed()
