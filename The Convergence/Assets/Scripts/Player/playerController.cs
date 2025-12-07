@@ -452,6 +452,11 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
         }
     }
 
+    public bool CanUseMedkit()
+    {
+        return canUseMedkit && HP < HPOrig;
+    }
+
     public void getGunStats(gunStats gun)
     {
         if (gunList.Contains(gun))

@@ -21,17 +21,8 @@ public class damage : MonoBehaviour
     [Range(1, 50)][SerializeField] private int speed;
     [Range(1, 20)][SerializeField] private int destroyTime;
 
-    [Header("~=~= Projectile Arc =~=~")]
-    [SerializeField] private ProjectileMode projectileMode = ProjectileMode.Straight; // Projectile mode selection (straight or arc)
-
-    [Header("Arc Settings")]
-    [Range(0, 60)][SerializeField] private float launchAngle = 35f; // Upward tilt angle for arcing projectiles
-    [Range(1, 50)][SerializeField] private float arcSpeed = 10f; // Speed of arcing projectile
-    [Range(0f, 50f)][SerializeField] private float gravityScale = 1f; // Gravity multiplier for arc
-
-    public enum ProjectileMode { Straight, Arc }
-
     private bool isDamaging;
+
 
     void Start()
     {
@@ -41,7 +32,7 @@ public class damage : MonoBehaviour
 
             if (type == damageType.moving)
             {
-                LaunchProjectile(); // Set initial velocity based on projectile mode
+                rb.linearVelocity = transform.forward * speed;
             }
         }
     }
@@ -50,33 +41,7 @@ public class damage : MonoBehaviour
     {
         if (type == damageType.homing)
         {
-            // Continuously move towards player for homing projectiles
             rb.linearVelocity = (gamemanager.instance.player.transform.position - transform.position).normalized * speed;
-        }
-    }
-
-    private void LaunchProjectile()
-    {
-        if (rb == null) return;
-
-        // Enable gravity only for arcing projectiles
-        rb.useGravity = (projectileMode == ProjectileMode.Arc);
-
-        if (projectileMode == ProjectileMode.Straight)
-        {
-            // Straight-line shot moves directly forward at set speed
-            rb.linearVelocity = transform.forward * speed;
-        }
-        else
-        {
-            // Arcing shot tilts the forward direction upward to create a ballistic arc
-            Vector3 direction = transform.forward;
-
-            // Apply the launch angle to the forward vector to calculate initial velocity
-            Vector3 launchVelocity =
-                Quaternion.AngleAxis(-launchAngle, transform.right) * direction * arcSpeed;
-
-            rb.linearVelocity = launchVelocity;
         }
     }
 
@@ -117,6 +82,7 @@ public class damage : MonoBehaviour
             }
         }
     }
+    
 
     private void OnTriggerStay(Collider other)
     {
