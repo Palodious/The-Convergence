@@ -12,23 +12,21 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
     {
         Melee,
         Shooter,
-        Hybrid,
-        Turret
+        Hybrid
     }
 
-    [Header("~=~= Layers =~=~")]
+    [Header("**** Layers ****")]
     [SerializeField] LayerMask ignoreLayer;
-    [Header("~=~= Enemy Type =~=~")]
+    [Header("**** Enemy Type ****")]
     [SerializeField] EnemyType enemyType;
 
-    [Header("~=~= Components =~=~")]
+    [Header("**** Components ****")]
     [SerializeField] NavMeshAgent agent;
     [SerializeField] Animator anim;
     [SerializeField] Renderer model;
     [SerializeField] Transform headPos;
-    [SerializeField] Transform turretHead;
 
-    [Header("~=~= Stats =~=~")]
+    [Header("**** Stats ****")]
     bool isAlive = true;
     [Range(1, 300)][SerializeField] int HP;
     [Range(1, 360)][SerializeField] int FOV;
@@ -38,30 +36,19 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
     [Range(0.1f, 10f)][SerializeField] float animTransSpeed;
     [Range(5f, 100f)][SerializeField] float sightRange = 20f;
 
-    [Header("~=~= Shooter Settings =~=~")]
+    [Header("**** Shooter Settings ****")]
     [SerializeField] GameObject projectile;
     [Range(0.1f, 10f)][SerializeField] float shootRate;
     [SerializeField] Transform shootPOS;
 
-    [Header("~=~= Melee Settings =~=~")]
+    [Header("**** Melee Settings ****")]
     [SerializeField] Transform meleePos; // Position from which melee attacks are measured
     [SerializeField] GameObject meleeDamage; // GameObject with damage.cs attached
     [Range(0.1f, 10f)][SerializeField] float meleeRange; // Distance at which enemy can hit player
     [Range(0.1f, 10f)][SerializeField] float attackRate;  // Cooldown between attacks
     [Range(1, 50)][SerializeField] int meleeDamageAmount;
 
-    [Header("~=~= Turret Settings =~=~")]
-    [SerializeField] bool enableTurretMode = false; // Toggle turret behavior
-    [SerializeField] Transform[] turretRotationAxes; // Axes to rotate (e.g., head, base)
-    [Range(0.1f, 100f)][SerializeField] float turretRotationSpeed = 5f;
-    [Range(0.1f, 50f)][SerializeField] float idleRotationSpeed = 10f; // Speed when idle
-    [Range(-180, 180)][SerializeField] float minHorizontalAngle = -45f;
-    [Range(-180, 180)][SerializeField] float maxHorizontalAngle = 45f;
-    [Range(-90, 90)][SerializeField] float minVerticalAngle = -20f;
-    [Range(-90, 90)][SerializeField] float maxVerticalAngle = 20f;
-    [SerializeField] bool independentVerticalRotation = false; // Vertical rotates separately
-
-    [Header("~=~= Jump Attack Settings =~=~")]
+    [Header("**** Jump Attack Settings ****")]
     [SerializeField] bool canJumpAttack = false;
     [Range(0.1f, 10f)][SerializeField] float jumpForce;
     [Range(1f, 50f)][SerializeField] float jumpAttackRange; // Max distance to trigger jump
@@ -71,8 +58,7 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
     [Range(0.5f, 15f)][SerializeField] float jumpAttackRadius; // Damage radius on landing
     [SerializeField] float jumpTimer;
 
-    // NEW JUMP ATTACK VARIABLES - ARC STYLE
-    [Header("~=~= Jump Attack Arc Settings =~=~")]
+    [Header("**** Jump Attack Arc Settings ****")]
     [Range(1f, 20f)][SerializeField] float jumpHeight = 3f; // Max height of jump arc
     [Range(0.1f, 5f)][SerializeField] float jumpDuration = 1f; // Total time of jump
     [SerializeField] AnimationCurve jumpCurve = AnimationCurve.EaseInOut(0, 0, 1, 1); // Jump arc curve
@@ -82,7 +68,7 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
     [Range(0f, 1f)][SerializeField] float jumpWindupTime = 0.2f; // Time before jumping starts
     [Range(0f, 3f)][SerializeField] float landingDistanceFromPlayer = 0.5f; // How close to land to player (0 = on player, larger = further away)
 
-    [Header("~=~= Dash Attack Settings =~=~")]
+    [Header("**** Dash Attack Settings ****")]
     [SerializeField] bool canDashAttack = false;
     [Range(2f, 50f)][SerializeField] float dashSpeed;
     [Range(0.1f, 5f)][SerializeField] float dashDuration;
@@ -91,7 +77,7 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
     [Range(0.5f, 30f)][SerializeField] float dashAttackCooldown;
     [Range(1.1f, 10f)][SerializeField] float playerFleeingThreshold; // How fast player must be moving away
 
-    [Header("~=~= Special Attack Tracking =~=~")]
+    [Header("**** Special Attack Tracking ****")]
     [Range(0.1f, 5f)][SerializeField] float specialAttackCheckInterval = 0.5f; // How often to check for special attacks
     [Range(10f, 200f)][SerializeField] float maxPlayerTrackingDistance = 50f; // Max distance to track player for special attacks
 
