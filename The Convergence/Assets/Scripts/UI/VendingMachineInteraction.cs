@@ -64,13 +64,13 @@ public class VendingMachineInteraction : MonoBehaviour
         {
             Time.timeScale = 0f;
             Cursor.lockState = CursorLockMode.None;
-
+            Cursor.visible = true;
         }
         else
         {
             Time.timeScale = 1f;
             Cursor.lockState = CursorLockMode.Locked;
-
+            Cursor.visible = false;
         }
     }
     
