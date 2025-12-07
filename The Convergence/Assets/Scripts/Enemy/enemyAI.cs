@@ -78,7 +78,6 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
     [SerializeField] AnimationCurve jumpCurve = AnimationCurve.EaseInOut(0, 0, 1, 1); // Jump arc curve
     [SerializeField] GameObject jumpLandingEffect; // Optional effect when landing
     [Range(0f, 1f)][SerializeField] float jumpDamageDelay = 0.1f; // Delay before applying damage after landing
-    [SerializeField] bool showJumpArcDebug = false; // Show debug line for jump arc
     [Range(0f, 1f)][SerializeField] float jumpWindupTime = 0.2f; // Time before jumping starts
     [Range(0f, 3f)][SerializeField] float landingDistanceFromPlayer = 0.5f; // How close to land to player (0 = on player, larger = further away)
 
