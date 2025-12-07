@@ -82,6 +82,8 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
 
     void Start()
     {
+        controller = GetComponent<CharacterController>();   // FIX
+
         HPOrig = HP;
         originalHeight = controller.height;
         originalSpeed = speed;
@@ -403,10 +405,21 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
     // Updated to use key count instead of boolean
     public void GiveKey(keyStats key)
     {
-        keyCount += key.keyCount; // Add the key count from the ScriptableObject
+        keyCount += key.keyCount;
         Debug.Log($"Player picked up {key.keyCount} {key.keyName}(s)! Total keys: {keyCount}");
 
-        // Play pickup effect if available
+        // Look for any lights that weren't originally on the player
+        Light[] allLights = GetComponentsInChildren<Light>();
+        foreach (Light light in allLights)
+        {
+            // Check if this light is part of the player's original setup
+            if (light != null && !light.gameObject.CompareTag("PlayerLight"))
+            {
+                light.enabled = false;
+                Destroy(light);
+            }
+        }
+
         if (key.pickupEffect != null)
         {
             Instantiate(key.pickupEffect, transform.position, Quaternion.identity);
@@ -526,6 +539,10 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
 
     public void respawn()
     {
+        Debug.Log("controller = " + controller);
+        Debug.Log("gamemanager.instance = " + gamemanager.instance);
+        Debug.Log("spawnPoint = " + gamemanager.instance?.spawnPoint);
+
         controller.transform.position = gamemanager.instance.spawnPoint.transform.position;
         HP = HPOrig;
         updatePlayerUI();
