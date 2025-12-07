@@ -55,6 +55,11 @@ public class elevator : MonoBehaviour
 
         if (doorClosing)
             MoveDoorClosed();
+
+        if (playerOnElevator)
+        {
+            // Change elevator color, play sound, etc.
+        }
     }
 
     private void MoveDoorOpen()
