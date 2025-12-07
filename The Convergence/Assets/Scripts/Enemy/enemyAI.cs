@@ -1125,8 +1125,8 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
 
         HP -= amount;
 
-        // Make enemy aware of the player if not a turret
-        if (!enableTurretMode && gamemanager.instance.player != null && agent != null && agent.isActiveAndEnabled && !isJumpAttacking && !isDashing)
+        // Make enemy aware of the player
+        if (gamemanager.instance.player != null && agent != null && agent.isActiveAndEnabled && !isJumpAttacking && !isDashing)
         {
             // Only set destination if agent is active and not in special attack
             try
@@ -1248,23 +1248,6 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
         }
     }
 
-    // Method to toggle turret mode at runtime
-    public void SetTurretMode(bool active)
-    {
-        enableTurretMode = active;
-
-        if (enableTurretMode)
-        {
-            InitializeTurret();
-        }
-        else
-        {
-            if (agent != null)
-                agent.enabled = true;
-            isTurretActive = false;
-        }
-    }
-
     // Set patrol points
     public void SetPatrolPoints(Transform[] points, string sourceId = null)
     {
@@ -1281,36 +1264,12 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
     // Draw gizmos for visualization
     void OnDrawGizmosSelected()
     {
-        if (enableTurretMode && turretRotationAxes != null && turretRotationAxes.Length > 0 && turretRotationAxes[0] != null)
-        {
-            // Draw FOV cone
-            Gizmos.color = Color.yellow;
-            float halfFOV = FOV / 2.0f;
-            Quaternion leftRayRotation = Quaternion.AngleAxis(-halfFOV, Vector3.up);
-            Quaternion rightRayRotation = Quaternion.AngleAxis(halfFOV, Vector3.up);
-            Vector3 leftRayDirection = leftRayRotation * turretRotationAxes[0].forward;
-            Vector3 rightRayDirection = rightRayRotation * turretRotationAxes[0].forward;
-
-            Gizmos.DrawRay(turretRotationAxes[0].position, leftRayDirection * sightRange);
-            Gizmos.DrawRay(turretRotationAxes[0].position, rightRayDirection * sightRange);
-
-            // Draw rotation limits
-            Gizmos.color = Color.blue;
-            Quaternion minRotation = Quaternion.Euler(0, minHorizontalAngle, 0);
-            Quaternion maxRotation = Quaternion.Euler(0, maxHorizontalAngle, 0);
-            Vector3 minDirection = minRotation * turretRotationAxes[0].forward;
-            Vector3 maxDirection = maxRotation * turretRotationAxes[0].forward;
-
-            Gizmos.DrawRay(turretRotationAxes[0].position, minDirection * sightRange);
-            Gizmos.DrawRay(turretRotationAxes[0].position, maxDirection * sightRange);
-        }
-
         // Draw jump attack range and radius
         if (canJumpAttack)
         {
             Gizmos.color = Color.green;
             Gizmos.DrawWireSphere(transform.position, jumpAttackRange);
-            
+
             Gizmos.color = Color.red;
             Gizmos.DrawWireSphere(transform.position, jumpAttackRadius);
         }
@@ -1345,7 +1304,6 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
             patrolIndex = patrolIndex,
             hasDestination = false,
             destination = Vector3.zero,
-            isTurretActive = isTurretActive, // Save turret state
             patrolSourceId = patrolSourceId,
             jumpAttackTimer = this.jumpAttackTimer,
             dashAttackTimer = this.dashAttackTimer
@@ -1380,7 +1338,6 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
 
         // Restore combat state
         HP = s.hp;
-        isTurretActive = s.isTurretActive; // Restore turret state
 
         // Restore roam / patrol internals
         startingPos = s.startingPos;
