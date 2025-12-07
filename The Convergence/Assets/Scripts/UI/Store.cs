@@ -202,7 +202,7 @@ public class Store : MonoBehaviour
         
     }
 
-    private StoreItem FindItemById(int id)
+    public StoreItem FindItemById(int id)
     {
         StoreItem foundItem = null;
 

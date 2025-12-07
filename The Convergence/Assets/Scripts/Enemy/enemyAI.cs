@@ -81,7 +81,6 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
     [Range(10f, 200f)][SerializeField] float maxPlayerTrackingDistance = 50f; // Max distance to track player for special attacks
 
     [Header("**** Burst Fire Settings ****")]
-    [SerializeField] bool useBurstFire = false;
     [Range(1, 20)][SerializeField] int bulletsPerBurst = 3;
     [Range(0.01f, 2f)][SerializeField] float timeBetweenBurstShots = 0.1f;
     [Range(0.1f, 10f)][SerializeField] float timeBetweenBursts = 1f;
