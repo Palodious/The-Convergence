@@ -11,6 +11,8 @@ public class StoreItem
 
     
     public string state;
+
+    public int quantity = 1;
 }
 
 [System.Serializable]
@@ -34,6 +36,8 @@ public enum ItemType
 
 public class Store : MonoBehaviour
 {
+    public static Store Instance;
+
     [Header("Player State (Runtime)")]
     public int Coin = 50;
     public PlayerState playerState = new PlayerState();
@@ -41,13 +45,30 @@ public class Store : MonoBehaviour
     [Header("Store Data")]
     public List<StoreItem> upgradeItems = new List<StoreItem>();
     public List<StoreItem> consumableItems = new List<StoreItem>();
+    private List<StoreButtonUI> registeredButtons = new List<StoreButtonUI>();
 
-
-
-
+    public void RegisterButton(StoreButtonUI button)
+    {
+        registeredButtons.Add(button);
+    }
+    private void RefreshAllButtonDisplays()
+    {
+        foreach (StoreButtonUI button in registeredButtons)
+        {
+            button.UpdateDisplay();
+        }
+    }
     private void Awake()
     {
-        InitializeStoreData();
+        if (Instance == null)
+        {
+            Instance = this;
+            InitializeStoreData();
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
     }
 
     void Start()
@@ -105,6 +126,12 @@ public class Store : MonoBehaviour
                 return false;
             }
 
+            if(item.quantity <= 0)
+            {
+                reason = "Out of Stock";
+                return false;
+            }
+
             reason = "Available"; // Quantity is 1 (Available for purchase)
             return true;
         }
@@ -140,13 +167,15 @@ public class Store : MonoBehaviour
                 // Mark as purchased, effectively setting its quantity to 0
                 playerState.purchasedIds.Add(item.id);
 
+                item.quantity = 0;
+
             }
             else if (item.type == ItemType.Consumable)
             {
                 playerState.potionCount++;
 
             }
-
+            RefreshAllButtonDisplays();
 
             return true;
         }
@@ -155,6 +184,22 @@ public class Store : MonoBehaviour
 
             return false;
         }
+    }
+
+    public void PurchaseItemButton(int itemId)
+    {
+        bool success = BuyItem(itemId);
+        if (success)
+        {
+            Debug.Log($"Successfully purchased Item ID: {itemId}. Coins remaining: {Coin}");
+        }
+        else
+        {
+            CanBuyItem(FindItemById(itemId), out string reason);
+            Debug.LogWarning($"Failed to purchase Item ID: {itemId}. Reason: {reason}");
+        }
+
+        
     }
 
     private StoreItem FindItemById(int id)
@@ -187,4 +232,8 @@ public class Store : MonoBehaviour
 
     }
 
+    public void OnStoreOpened()
+    {
+        RefreshAllButtonDisplays();
+    }
 }
