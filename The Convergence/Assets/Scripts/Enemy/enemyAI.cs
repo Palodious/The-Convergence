@@ -130,6 +130,9 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
 
     [SerializeField] private ItemDrop itemDrop;
 
+    [Header("~=~= Currency Drop =~=~")]
+    [Range(0,1000)][SerializeField] private int currencyDropAmount = 10; // Amount of currency this enemy drops
+
     public EnemyType EnemyTypeValue => enemyType;
 
     Color colorOrig;
@@ -1339,12 +1342,12 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
     private void Die()
     {
         isAlive = false;
-        
+
         // Cancel any special attacks
         if (isDashing) EndDash();
         if (isJumpAttacking) CancelJumpAttack();
         if (isBursting && burstCoroutine != null) StopCoroutine(burstCoroutine);
-        
+
         // Play death audio
         if (audDeath.Length > 0 && aud != null)
             aud.PlayOneShot(audDeath[Random.Range(0, audDeath.Length)], audDeathVol);
@@ -1355,6 +1358,12 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
         // Drop items
         if (itemDrop != null)
             itemDrop.TryDrop();
+
+        // Drop currency (automatically added to player)
+        if (currencyDropAmount > 0 && RiftShardManager.Instance != null)
+        {
+            RiftShardManager.Instance.Add(currencyDropAmount);
+        }
 
         // Destroy immediately without animation or delay
         Destroy(gameObject);
