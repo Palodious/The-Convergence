@@ -27,7 +27,6 @@ public class damage : MonoBehaviour
     [Header("Arc Settings")]
     [Range(0, 60)][SerializeField] private float launchAngle = 35f; // Upward tilt angle for arcing projectiles
     [Range(1, 50)][SerializeField] private float arcSpeed = 10f; // Speed of arcing projectile
-    [Range(0f, 50f)][SerializeField] private float gravityScale = 1f; // Gravity multiplier for arc
 
     public enum ProjectileMode { Straight, Arc }
 
