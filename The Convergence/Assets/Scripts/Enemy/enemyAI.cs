@@ -1007,19 +1007,19 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
     bool canSeePlayer()
     {
         if (gamemanager.instance.player == null) return false;
-        
+
         Vector3 playerPos = gamemanager.instance.player.transform.position;
         lastKnownPlayerPosition = playerPos; // Update last known position
         playerTracked = true;
 
-        // Use turret head position if available, otherwise use regular headPos
-        Transform lookPoint = enableTurretMode && turretHead != null ? turretHead : headPos;
+        // Use head position
+        Transform lookPoint = headPos;
         playerDir = playerPos - lookPoint.position;
         float distanceToPlayer = playerDir.magnitude;
 
         if (distanceToPlayer > sightRange)
         {
-            if (!enableTurretMode && agent != null && agent.isActiveAndEnabled && !isJumpAttacking && !isDashing) 
+            if (agent != null && agent.isActiveAndEnabled && !isJumpAttacking && !isDashing)
                 agent.stoppingDistance = 0;
             return false;
         }
@@ -1027,7 +1027,7 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
         angleToPlayer = Vector3.Angle(playerDir, lookPoint.forward);
         if (angleToPlayer > FOV)
         {
-            if (!enableTurretMode && agent != null && agent.isActiveAndEnabled && !isJumpAttacking && !isDashing) 
+            if (agent != null && agent.isActiveAndEnabled && !isJumpAttacking && !isDashing)
                 agent.stoppingDistance = 0;
             return false;
         }
@@ -1036,65 +1036,58 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
         if (Physics.Raycast(lookPoint.position, playerDir.normalized, out hit, sightRange, ~ignoreLayer))
         {
             if (hit.collider.CompareTag("Player"))
-            {
-                if (!enableTurretMode)
+            
+                // Check for special attacks
+                if (ShouldJumpAttack())
                 {
-                    // Check for special attacks
-                    if (ShouldJumpAttack())
-                    {
-                        StartJumpAttack();
-                        return true;
-                    }
-
-                    if (ShouldDashAttack())
-                    {
-                        StartDashAttack();
-                        return true;
-                    }
-
-                    // Set destination to player position if agent is active and not in special attack
-                    if (agent != null && agent.isActiveAndEnabled && !isJumpAttacking && !isDashing)
-                    {
-                        try
-                        {
-                            agent.SetDestination(playerPos);
-                            agent.stoppingDistance = stoppingDistOrig;
-                        }
-                        catch (System.Exception e)
-                        {
-                            Debug.LogWarning($"Could not set destination: {e.Message}");
-                        }
-                    }
-
-                    // Handle attacks based on enemy type
-                    switch (enemyType)
-                    {
-                        case EnemyType.Melee:
-                            if (distanceToPlayer <= meleeRange && attackTimer >= attackRate)
-                                meleeAttack();
-                            break;
-                        case EnemyType.Shooter:
-                            if (shootTimer >= shootRate && !isBursting)
-                                Shoot();
-                            break;
-                        case EnemyType.Hybrid:
-                            if (distanceToPlayer <= meleeRange && attackTimer >= attackRate)
-                                meleeAttack();
-                            else if (shootTimer >= shootRate && !isBursting)
-                                Shoot();
-                            break;
-                    }
-
-                    if (agent != null && agent.isActiveAndEnabled && !isJumpAttacking && !isDashing && 
-                        agent.remainingDistance <= agent.stoppingDistance)
-                        faceTarget();
+                    StartJumpAttack();
+                    return true;
                 }
 
-                return true;
-            }
-        }
+                if (ShouldDashAttack())
+                {
+                    StartDashAttack();
+                    return true;
+                }
 
-        if (!enableTurretMode && agent != null && agent.isActiveAndEnabled && !isJumpAttacking && !isDashing) 
+                // Set destination to player position if agent is active and not in special attack
+                if (agent != null && agent.isActiveAndEnabled && !isJumpAttacking && !isDashing)
+                {
+                    try
+                    {
+                        agent.SetDestination(playerPos);
+                        agent.stoppingDistance = stoppingDistOrig;
+                    }
+                    catch (System.Exception e)
+                    {
+                        Debug.LogWarning($"Could not set destination: {e.Message}");
+                    }
+                }
+
+                // Handle attacks based on enemy type
+                switch (enemyType)
+                {
+                    case EnemyType.Melee:
+                        if (distanceToPlayer <= meleeRange && attackTimer >= attackRate)
+                            meleeAttack();
+                        break;
+                    case EnemyType.Shooter:
+                        if (shootTimer >= shootRate && !isBursting)
+                            Shoot();
+                        break;
+                    case EnemyType.Hybrid:
+                        if (distanceToPlayer <= meleeRange && attackTimer >= attackRate)
+                            meleeAttack();
+                        else if (shootTimer >= shootRate && !isBursting)
+                            Shoot();
+                        break;
+                }
+                if (agent != null && agent.isActiveAndEnabled && !isJumpAttacking && !isDashing &&
+                    agent.remainingDistance <= agent.stoppingDistance)
+                    faceTarget();
+                return true;
+        }
+        if (agent != null && agent.isActiveAndEnabled && !isJumpAttacking && !isDashing)
             agent.stoppingDistance = 0;
         return false;
     }
@@ -1119,7 +1112,7 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
         if (other.CompareTag("Player"))
         {
             playerInTrigger = false;
-            if (!enableTurretMode && agent != null && agent.isActiveAndEnabled && !isJumpAttacking && !isDashing) 
+            if (agent != null && agent.isActiveAndEnabled && !isJumpAttacking && !isDashing)
                 agent.stoppingDistance = 0;
         }
     }
