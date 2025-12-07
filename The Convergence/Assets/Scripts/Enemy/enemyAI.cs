@@ -607,7 +607,7 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
         }
     }
 
-    // NEW METHOD: Find ground position with better detection
+    //Find ground position with detection
     Vector3 FindGroundPosition(Vector3 position)
     {
         // Try downward raycast first
@@ -913,7 +913,7 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
         isBursting = true;
         currentBurstCount = 0;
 
-        while (currentBurstCount < bulletsPerBurst && currentTurretState == TurretState.Firing)
+        while (currentBurstCount < bulletsPerBurst)
         {
             Shoot();
             currentBurstCount++;
@@ -945,7 +945,7 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
     // Check if should roam or patrol
     void checkRoamOrPatrol()
     {
-        if (enableTurretMode || agent == null || !agent.isActiveAndEnabled || isJumpAttacking || isDashing) return;
+        if (agent == null || !agent.isActiveAndEnabled || isJumpAttacking || isDashing) return;
 
         if (agent.remainingDistance < 0.01f && roamTimer >= roamPauseTime)
         {
