@@ -80,11 +80,6 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
     [Range(0.1f, 5f)][SerializeField] float specialAttackCheckInterval = 0.5f; // How often to check for special attacks
     [Range(10f, 200f)][SerializeField] float maxPlayerTrackingDistance = 50f; // Max distance to track player for special attacks
 
-    [Header("**** Burst Fire Settings ****")]
-    [Range(1, 20)][SerializeField] int bulletsPerBurst = 3;
-    [Range(0.01f, 2f)][SerializeField] float timeBetweenBurstShots = 0.1f;
-    [Range(0.1f, 10f)][SerializeField] float timeBetweenBursts = 1f;
-
     [Header("**** Behavior Toggles ****")]
     public bool useAnimations = true; // Toggle all animation logic on/off
     public bool usePatrol = true; // Toggle patrol behavior
@@ -114,7 +109,13 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
     [SerializeField] private ItemDrop itemDrop;
 
     [Header("**** Currency Drop ****")]
-    [Range(0,1000)][SerializeField] private int currencyDropAmount = 10; // Amount of currency this enemy drops
+    [Range(0, 1000)][SerializeField] private int currencyDropAmount = 10; // Amount of currency this enemy drops
+
+    [Header("**** Boss Settings ****")]
+    [SerializeField] bool isBoss = false;
+    [SerializeField] GameObject bossDeathEffect; // Optional visual effect
+
+    public bool IsBoss => isBoss;
 
     public EnemyType EnemyTypeValue => enemyType;
 
@@ -154,10 +155,7 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
     private Vector3 lastPlayerPosition;
     private Vector3 playerVelocity;
 
-    // Burst fire variables
-    private bool isBursting = false;
-    private int currentBurstCount = 0;
-    private Coroutine burstCoroutine;
+
 
     // Special attack tracking variables
     private float specialAttackCheckTimer = 0f;
@@ -905,28 +903,6 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
         }
     }
 
-    // Burst fire coroutine
-    IEnumerator BurstFire()
-    {
-        isBursting = true;
-        currentBurstCount = 0;
-
-        while (currentBurstCount < bulletsPerBurst)
-        {
-            Shoot();
-            currentBurstCount++;
-
-            if (currentBurstCount < bulletsPerBurst)
-            {
-                yield return new WaitForSeconds(timeBetweenBurstShots);
-            }
-        }
-
-        shootTimer = 0;
-        yield return new WaitForSeconds(timeBetweenBursts);
-        isBursting = false;
-        burstCoroutine = null;
-    }
 
     // Play step sound
     IEnumerator playStep()
@@ -1070,13 +1046,13 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
                             meleeAttack();
                         break;
                     case EnemyType.Shooter:
-                        if (shootTimer >= shootRate && !isBursting)
+                        if (shootTimer >= shootRate)
                             Shoot();
                         break;
                     case EnemyType.Hybrid:
                         if (distanceToPlayer <= meleeRange && attackTimer >= attackRate)
                             meleeAttack();
-                        else if (shootTimer >= shootRate && !isBursting)
+                        else if (shootTimer >= shootRate)
                             Shoot();
                         break;
                 }
@@ -1161,27 +1137,55 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
         // Cancel any special attacks
         if (isDashing) EndDash();
         if (isJumpAttacking) CancelJumpAttack();
-        if (isBursting && burstCoroutine != null) StopCoroutine(burstCoroutine);
 
         // Play death audio
         if (audDeath.Length > 0 && aud != null)
             aud.PlayOneShot(audDeath[Random.Range(0, audDeath.Length)], audDeathVol);
 
-        // Update game goal
-        gamemanager.instance.updateGameGoal(-1);
-
-        // Drop items
-        if (itemDrop != null)
-            itemDrop.TryDrop();
-
-        // Drop currency (automatically added to player)
-        if (currencyDropAmount > 0 && RiftShardManager.Instance != null)
+        // Handle boss defeat differently
+        if (isBoss)
         {
-            RiftShardManager.Instance.Add(currencyDropAmount);
-        }
+            // Boss defeated - trigger the win condition
+            Debug.Log("BOSS DEFEATED!");
 
-        // Destroy immediately without animation or delay
-        Destroy(gameObject);
+            // Show boss death effect if assigned
+            if (bossDeathEffect != null)
+                Instantiate(bossDeathEffect, transform.position, Quaternion.identity);
+
+            // Call the special boss defeat method in gamemanager
+            gamemanager.instance.OnLevel4BossDefeated();
+
+            // Drop items (boss usually drops more/loot)
+            if (itemDrop != null)
+                itemDrop.TryDrop();
+
+            // Drop currency
+            if (currencyDropAmount > 0 && RiftShardManager.Instance != null)
+            {
+                RiftShardManager.Instance.Add(currencyDropAmount * 5); // Boss gives 5x currency
+            }
+
+            // Destroy the boss
+            Destroy(gameObject);
+        }
+        else
+        {
+            // Regular enemy - update game goal
+            gamemanager.instance.updateGameGoal(-1);
+
+            // Drop items
+            if (itemDrop != null)
+                itemDrop.TryDrop();
+
+            // Drop currency
+            if (currencyDropAmount > 0 && RiftShardManager.Instance != null)
+            {
+                RiftShardManager.Instance.Add(currencyDropAmount);
+            }
+
+            // Destroy immediately without animation or delay
+            Destroy(gameObject);
+        }
     }
 
     IEnumerator flashRed()

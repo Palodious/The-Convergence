@@ -125,20 +125,26 @@ public class gamemanager : MonoBehaviour
         if (gameGoalCountText != null)
             gameGoalCountText.text = gameGoalCount.ToString("F0");
 
-        // Only allow winning if we actually had objectives and this is not level 4
-        // Level 4 win condition is handled separately by OnLevel4BossDefeated()
+        // Only check win condition if we actually had objectives
         if (objectivesInitialized && gameGoalCount <= 0)
         {
-            // Check if this is NOT level 4 (boss level)
-            if (SceneManager.GetActiveScene().buildIndex != 4)
+            string currentSceneName = SceneManager.GetActiveScene().name;
+
+            // Check if this is the boss level (Level 4)
+            if (currentSceneName == "Game Play Scene L4")
             {
-                // Normal level win condition: all enemies defeated
+                // For Level 4, DO NOT trigger win here - wait for boss defeat
+                // The win will be triggered by OnLevel4BossDefeated() instead
+                Debug.Log("All enemies defeated on Level 4, but waiting for boss defeat...");
+            }
+            else
+            {
+                // For other levels (1-3): trigger win when all enemies are defeated
                 statePause();
                 menuActive = menuWin;
                 if (menuActive != null)
                     menuActive.SetActive(true);
             }
-            // If this IS level 4, DO NOT trigger win here - wait for boss defeat
         }
     }
 
