@@ -21543,6 +21543,91 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 36b4cee33c5a95b4fa7f0ae6bdb49564, type: 3}
+--- !u!1001 &1424014186
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 2386844079612238430, guid: 3eaf5ab7cbc4dc643938703e8477159d, type: 3}
+      propertyPath: m_Name
+      value: Sylvaron the Thornlord
+      objectReference: {fileID: 0}
+    - target: {fileID: 3486284169759874003, guid: 3eaf5ab7cbc4dc643938703e8477159d, type: 3}
+      propertyPath: id
+      value: 3a9f611258de41288e501f285d3f7ebb
+      objectReference: {fileID: 0}
+    - target: {fileID: 4159686176907690539, guid: 3eaf5ab7cbc4dc643938703e8477159d, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -123.38401
+      objectReference: {fileID: 0}
+    - target: {fileID: 4159686176907690539, guid: 3eaf5ab7cbc4dc643938703e8477159d, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.32
+      objectReference: {fileID: 0}
+    - target: {fileID: 4159686176907690539, guid: 3eaf5ab7cbc4dc643938703e8477159d, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -134.05
+      objectReference: {fileID: 0}
+    - target: {fileID: 4159686176907690539, guid: 3eaf5ab7cbc4dc643938703e8477159d, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.04055223
+      objectReference: {fileID: 0}
+    - target: {fileID: 4159686176907690539, guid: 3eaf5ab7cbc4dc643938703e8477159d, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4159686176907690539, guid: 3eaf5ab7cbc4dc643938703e8477159d, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0.99917746
+      objectReference: {fileID: 0}
+    - target: {fileID: 4159686176907690539, guid: 3eaf5ab7cbc4dc643938703e8477159d, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4159686176907690539, guid: 3eaf5ab7cbc4dc643938703e8477159d, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4159686176907690539, guid: 3eaf5ab7cbc4dc643938703e8477159d, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: -175.352
+      objectReference: {fileID: 0}
+    - target: {fileID: 4159686176907690539, guid: 3eaf5ab7cbc4dc643938703e8477159d, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6568540164268579822, guid: 3eaf5ab7cbc4dc643938703e8477159d, type: 3}
+      propertyPath: isBoss
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6568540164268579822, guid: 3eaf5ab7cbc4dc643938703e8477159d, type: 3}
+      propertyPath: dashSpeed
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 6568540164268579822, guid: 3eaf5ab7cbc4dc643938703e8477159d, type: 3}
+      propertyPath: dashDuration
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 6568540164268579822, guid: 3eaf5ab7cbc4dc643938703e8477159d, type: 3}
+      propertyPath: canDashAttack
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6568540164268579822, guid: 3eaf5ab7cbc4dc643938703e8477159d, type: 3}
+      propertyPath: dashAttackRange
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 6568540164268579822, guid: 3eaf5ab7cbc4dc643938703e8477159d, type: 3}
+      propertyPath: dashAttackCooldown
+      value: 10
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 3eaf5ab7cbc4dc643938703e8477159d, type: 3}
 --- !u!1 &1424882406
 GameObject:
   m_ObjectHideFlags: 0
@@ -27484,6 +27569,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3223279366962485447, guid: 3ab160847a317064fa01563a9a0ddbed, type: 3}
+      propertyPath: m_NavMeshData
+      value: 
+      objectReference: {fileID: 23800000, guid: a3366735144936f4fbbf9c65588a0be7, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -33025,3 +33114,4 @@ SceneRoots:
   - {fileID: 1407908382}
   - {fileID: 1650813215}
   - {fileID: 1688846088}
+  - {fileID: 1424014186}
