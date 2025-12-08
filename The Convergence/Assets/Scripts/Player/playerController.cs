@@ -49,7 +49,6 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
     private static int persistentKeyCount = 0;
 
     // Track if we're starting from the first scene
-    private static bool hasStartedFromFirstScene = false;
     private static int lastSceneIndex = -1;
 
     public int ShootDamage => shootDamage;
@@ -87,19 +86,29 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
 
     void Awake()
     {
-        // Reset persistent data if starting from first scene (Scene 0)
+        // Get the current scene index
         int currentSceneIndex = SceneManager.GetActiveScene().buildIndex;
 
-        if (currentSceneIndex == 0 && !hasStartedFromFirstScene)
+        if (currentSceneIndex == 1)
         {
-            // We're starting from the first scene, reset everything
-            ResetPersistentData();
-            hasStartedFromFirstScene = true;
+            // This will persist between Editor play sessions
+            int lastPlayedScene = PlayerPrefs.GetInt("LastPlayedScene", -1);
+
+            // If we were not in scene 0 last time we played, reset persistent data
+            if (lastPlayedScene != 1 && lastPlayedScene != -1)
+            {
+                ResetPersistentData();
+            }
+
+            // Update PlayerPrefs
+            PlayerPrefs.SetInt("LastPlayedScene", currentSceneIndex);
+            PlayerPrefs.Save();
         }
-        else if (currentSceneIndex == 0 && hasStartedFromFirstScene && lastSceneIndex > 0)
+        else if (currentSceneIndex > 0)
         {
-            // We're returning to first scene from a later scene (like when dying)
-            // Don't reset - keep the data
+            // Save current scene to PlayerPrefs
+            PlayerPrefs.SetInt("LastPlayedScene", currentSceneIndex);
+            PlayerPrefs.Save();
         }
 
         lastSceneIndex = currentSceneIndex;
@@ -107,7 +116,7 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
 
     void Start()
     {
-        controller = GetComponent<CharacterController>();   // FIX
+        controller = GetComponent<CharacterController>();
 
         HPOrig = HP;
         originalHeight = controller.height;
