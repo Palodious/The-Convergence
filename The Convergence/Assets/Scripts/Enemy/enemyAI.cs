@@ -606,23 +606,44 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
     //Find ground position with detection
     Vector3 FindGroundPosition(Vector3 position)
     {
-        // Try downward raycast first
-        RaycastHit hit;
-        if (Physics.Raycast(position + Vector3.up * 3f, Vector3.down, out hit, 10f, ~ignoreLayer))
+        // multiple raycasts from different heights
+        float[] raycastHeights = { 10f, 5f, 2f, 0.5f };
+
+        foreach (float height in raycastHeights)
         {
-            return hit.point;
+            Vector3 rayStart = position + Vector3.up * height;
+            RaycastHit hit;
+
+            // Cast downward
+            if (Physics.Raycast(rayStart, Vector3.down, out hit, height + 5f, ~ignoreLayer))
+            {
+                // Make sure we're not hitting ourselves or other enemies
+                if (!hit.collider.CompareTag("Enemy") && hit.collider.gameObject != gameObject)
+                {
+                    // Check if the surface is flat
+                    if (Vector3.Angle(hit.normal, Vector3.up) < 45f)
+                    {
+                        return hit.point;
+                    }
+                }
+            }
         }
 
-        // Try sphere cast for better detection
-        if (Physics.SphereCast(position + Vector3.up * 3f, 0.5f, Vector3.down, out hit, 10f, ~ignoreLayer))
+        // Try a sphere cast as fallback
+        RaycastHit sphereHit;
+        if (Physics.SphereCast(position + Vector3.up * 5f, 1f, Vector3.down, out sphereHit, 10f, ~ignoreLayer))
         {
-            return hit.point;
+            if (!sphereHit.collider.CompareTag("Enemy") && sphereHit.collider.gameObject != gameObject)
+            {
+                return sphereHit.point;
+            }
         }
 
-        return Vector3.zero;
+        // If no ground found, return the original position
+        Debug.LogWarning($"No suitable ground found at {position}, using original position");
+        return position;
     }
 
-    // Start dash attack
     void StartDashAttack()
     {
         if (isDashing || gamemanager.instance.player == null) return;
@@ -1094,15 +1115,29 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
     // Handle taking damage
     public void takeDamage(int amount)
     {
-        // Prevent multiple death triggers or damage during special states
-        if (!isAlive || isDashing || isJumpAttacking) return;
+        if (!isAlive) return;
 
         HP -= amount;
 
-        // Make enemy aware of the player
-        if (gamemanager.instance.player != null && agent != null && agent.isActiveAndEnabled && !isJumpAttacking && !isDashing)
+        // Still allow damage during special attacks
+        if (isDashing || isJumpAttacking)
         {
-            // Only set destination if agent is active and not in special attack
+            StartCoroutine(flashSpecialAttackColor());
+        }
+        else
+        {
+            StartCoroutine(flashRed());
+        }
+
+        if (amount > 5 && (isDashing || isJumpAttacking))
+        {
+            if (isDashing) EndDash();
+            if (isJumpAttacking) CancelJumpAttack();
+        }
+
+        // Make enemy aware of the player
+        if (gamemanager.instance.player != null && agent != null && agent.isActiveAndEnabled)
+        {
             try
             {
                 agent.SetDestination(gamemanager.instance.player.transform.position);
@@ -1113,7 +1148,7 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
             }
         }
 
-        // Play hurt audio
+        // Play hurt audio (even during special attacks)
         if (audHurt.Length > 0 && aud != null)
             aud.PlayOneShot(audHurt[Random.Range(0, audHurt.Length)], audHurtVol);
 
@@ -1122,11 +1157,13 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
         {
             Die();
         }
-        else
-        {
-            // Flash red to indicate damage
-            StartCoroutine(flashRed());
-        }
+    }
+
+    IEnumerator flashSpecialAttackColor()
+    {
+        model.material.color = Color.yellow; // Yellow for special attack resistance
+        yield return new WaitForSeconds(0.1f);
+        model.material.color = colorOrig;
     }
 
     // Handle enemy death
