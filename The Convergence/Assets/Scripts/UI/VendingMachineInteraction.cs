@@ -12,13 +12,17 @@ public class VendingMachineInteraction : MonoBehaviour
 
     private void Update()
     {
-        if (playerIsNearby && Input.GetKeyDown(KeyCode.E))
+        if (!playerIsNearby)
+            return;
+
+        if (Input.GetKeyDown(KeyCode.E))
         {
             ToggleStoreUI();
         }
-        if (playerIsNearby && Input.GetKeyDown(KeyCode.Escape))
+
+        if (Input.GetKeyDown(KeyCode.Escape) && storeUIPanel.activeSelf)
         {
-            storeUIPanel.SetActive(false);
+            SetStoreOpen(false);
         }
     }
 
@@ -26,7 +30,7 @@ public class VendingMachineInteraction : MonoBehaviour
     {
         if (other.gameObject.CompareTag("Player"))
         {
-            playerIsNearby=true;
+            playerIsNearby = true;
 
             if (interactionPromptText != null)
             {
@@ -41,7 +45,6 @@ public class VendingMachineInteraction : MonoBehaviour
         {
             playerIsNearby = false;
 
-            
             if (interactionPromptText != null)
             {
                 interactionPromptText.gameObject.SetActive(false);
@@ -49,34 +52,36 @@ public class VendingMachineInteraction : MonoBehaviour
 
             if (storeUIPanel.activeSelf)
             {
-                storeUIPanel.SetActive(false);
+                SetStoreOpen(false);
             }
         }
     }
-
 
     private void ToggleStoreUI()
     {
-        bool isUIVisible = storeUIPanel.activeSelf;
-        storeUIPanel.SetActive(!isUIVisible);
+        bool open = !storeUIPanel.activeSelf;
+        SetStoreOpen(open);
+    }
 
-        if (!isUIVisible)
+    private void SetStoreOpen(bool open)
+    {
+        storeUIPanel.SetActive(open);
+
+        if (open)
         {
             if (Store.Instance != null)
             {
-                Store.Instance.OnStoreOpened();
+                Store.Instance.SetStoreOpen();
+
+                gamemanager.instance.statePause();
             }
-            Time.timeScale = 0f;
-            Cursor.lockState = CursorLockMode.None;
-            Cursor.visible = true;
-        }
-        else
-        {
-            Time.timeScale = 1f;
-            Cursor.lockState = CursorLockMode.Locked;
-            Cursor.visible = false;
+            else
+            {
+                storeUIPanel.SetActive(false);
+
+                gamemanager.instance.stateUnpause();
+            }
         }
     }
-    
-    
-}
+
+ }

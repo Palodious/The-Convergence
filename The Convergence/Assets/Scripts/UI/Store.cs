@@ -232,7 +232,7 @@ public class Store : MonoBehaviour
 
     }
 
-    public void OnStoreOpened()
+    public void SetStoreOpen()
     {
         RefreshAllButtonDisplays();
     }
