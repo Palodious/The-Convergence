@@ -95,7 +95,7 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
 
         if (!gamemanager.instance.isPaused)
         {
-            // helpful debug ray showing camera center forward (not required)
+            // helpful debug ray showing camera center forward
             Debug.DrawRay(Camera.main.transform.position, Camera.main.transform.forward * shootDist, Color.red);
 
             shootTimer += Time.deltaTime;
@@ -131,33 +131,42 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
             }
         }
 
-        //camera-relative movement (keeps lower-body independent)
+        // Get input
         float h = Input.GetAxis("Horizontal");
         float v = Input.GetAxis("Vertical");
 
-        Vector3 camF = Camera.main.transform.forward;
-        Vector3 camR = Camera.main.transform.right;
-        camF.y = 0f;
-        camR.y = 0f;
-        camF.Normalize();
-        camR.Normalize();
+        // Get camera vectors
+        Vector3 camForward = Camera.main.transform.forward;
+        Vector3 camRight = Camera.main.transform.right;
+        camForward.y = 0f;
+        camRight.y = 0f;
+        camForward.Normalize();
+        camRight.Normalize();
 
-        Vector3 camMove = camR * h + camF * v;
-        moveDir = camMove.normalized;
+        // Calculate movement direction relative to camera
+        moveDir = (camForward * v + camRight * h).normalized;
 
-        // Move the character (lower-body will face movement direction when not aiming)
+        // Apply movement
         controller.Move(moveDir * speed * Time.deltaTime);
 
-        // If not aiming: rotate lower-body to face movement direction (classic TPS)
-        if (!isAiming)
+        if (isAiming)
         {
-            if (moveDir.sqrMagnitude > 0.001f)
+            Vector3 aimDirection = camForward;
+            if (aimDirection.sqrMagnitude > 0.001f)
             {
-                Quaternion targetRot = Quaternion.LookRotation(moveDir);
-                transform.rotation = Quaternion.Slerp(transform.rotation, targetRot, Time.deltaTime * 10f);
+                Quaternion targetRotation = Quaternion.LookRotation(aimDirection);
+                transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * 15f);
             }
         }
-        // If aiming, do NOT forcibly rotate lower-body: upper-body (spine) will aim independently (via IK script)
+        else
+        {
+            if (v > 0.1f) // Moving forward
+            {
+                // Rotate to face movement direction
+                Quaternion targetRotation = Quaternion.LookRotation(moveDir);
+                transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * 10f);
+            }
+        }
 
         jump();
         controller.Move(playerVel * Time.deltaTime);
