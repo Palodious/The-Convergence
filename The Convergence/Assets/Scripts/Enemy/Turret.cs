@@ -34,7 +34,7 @@ public class Turret : MonoBehaviour, IDamage
     [Range(-180, 180)][SerializeField] float maxHorizontalAngle = 90f;
     [Range(-90, 90)][SerializeField] float minVerticalAngle = -30f;
     [Range(-90, 90)][SerializeField] float maxVerticalAngle = 30f;
-    
+
     [Header("**** Firing Settings ****")]
     [SerializeField] FireMode fireMode = FireMode.Single;
     [SerializeField] bool burstFireEnabled = false;
@@ -42,7 +42,7 @@ public class Turret : MonoBehaviour, IDamage
     [Range(0.05f, 1f)][SerializeField] float burstDelay = 0.1f;
     [Range(0.1f, 3f)][SerializeField] float burstCooldown = 1f;
 
-    [Header("**** Visual FOV Display ****")] 
+    [Header("**** Visual FOV Display ****")]
     [SerializeField] bool showFOV = true;
     [SerializeField] Color fovColor = new Color(1f, 0f, 0f, 0.3f); // RED with transparency (alpha 0.3)
     [SerializeField] Color detectionColor = new Color(1f, 0f, 0f, 0.6f); // Brighter red when detecting
@@ -70,6 +70,7 @@ public class Turret : MonoBehaviour, IDamage
     private Vector3 baseStartRotation;
     private Vector3 headStartRotation;
     private Color currentFOVColor;
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -105,21 +106,21 @@ public class Turret : MonoBehaviour, IDamage
         {
             Vector3 directionToTarget = (target.position - transform.position).normalized;
 
-            // Check if target is within FOV cone
-            if (IsInFOV(directionToTarget))
+            // Check line of sight FIRST - if we can see the target, we should rotate toward it
+            if (HasLineOfSight())
             {
-                // Check line of sight
-                if (HasLineOfSight())
+                if (!hasTarget)
                 {
-                    if (!hasTarget)
-                    {
-                        OnTargetAcquired();
-                        hasTarget = true;
-                    }
+                    OnTargetAcquired();
+                    hasTarget = true;
+                }
 
-                    // Rotate to face target
-                    RotateTowardsTarget(directionToTarget);
+                // Always rotate toward target when in range and visible
+                RotateTowardsTarget(directionToTarget);
 
+                // Check if target is within FOV cone for shooting
+                if (IsInFOV(directionToTarget))
+                {
                     // Check firing conditions
                     if (!isFiring && fireTimer >= 1f / fireRate)
                     {
@@ -134,11 +135,6 @@ public class Turret : MonoBehaviour, IDamage
                         }
                     }
                 }
-                else if (hasTarget)
-                {
-                    OnTargetLost();
-                    hasTarget = false;
-                }
             }
             else if (hasTarget)
             {
@@ -151,6 +147,7 @@ public class Turret : MonoBehaviour, IDamage
             OnTargetLost();
             hasTarget = false;
         }
+
         // Update fire timer
         if (!isFiring && !isBursting)
             fireTimer += Time.deltaTime;
@@ -163,6 +160,7 @@ public class Turret : MonoBehaviour, IDamage
     bool IsInFOV(Vector3 directionToTarget)
     {
         if (turretHead == null) return false;
+
         // Calculate horizontal angle
         Vector3 flatDirection = new Vector3(directionToTarget.x, 0, directionToTarget.z);
         Vector3 flatForward = new Vector3(turretHead.forward.x, 0, turretHead.forward.z);
@@ -173,6 +171,7 @@ public class Turret : MonoBehaviour, IDamage
 
         return horizontalAngle <= horizontalFOV / 2f && verticalAngle <= verticalFOV / 2f;
     }
+
     bool HasLineOfSight()
     {
         if (target == null || turretHead == null) return false;
@@ -194,37 +193,65 @@ public class Turret : MonoBehaviour, IDamage
 
         return true;
     }
+
     void RotateTowardsTarget(Vector3 directionToTarget)
     {
-        if (turretBase == null || turretHead == null) return;
+        if (turretBase == null || turretHead == null)
+        {
+            if (debugMode) Debug.LogError("Turret: Base or Head transform is null!");
+            return;
+        }
 
         // Horizontal rotation (Y axis)
         Vector3 flatDirection = new Vector3(directionToTarget.x, 0, directionToTarget.z);
         if (flatDirection != Vector3.zero)
         {
-            Quaternion targetBaseRotation = Quaternion.LookRotation(flatDirection);
+            Quaternion targetBaseRotation = Quaternion.LookRotation(flatDirection, Vector3.up);
 
-            // Clamp horizontal rotation
+            // Get target rotation in local space for clamping
             float targetY = targetBaseRotation.eulerAngles.y;
-            float currentY = turretBase.eulerAngles.y;
 
-            // Convert to -180 to 180 range
+            // Convert to -180 to 180 range for easier clamping
             if (targetY > 180) targetY -= 360;
-            if (currentY > 180) currentY -= 360;
 
+            // Clamp the target Y angle
             targetY = Mathf.Clamp(targetY, minHorizontalAngle, maxHorizontalAngle);
 
+            // Convert back to 0-360 range if needed
+            if (targetY < 0) targetY += 360;
+
+            // Apply rotation with smoothing
             Quaternion clampedBaseRotation = Quaternion.Euler(0, targetY, 0);
-            turretBase.rotation = Quaternion.Slerp(turretBase.rotation, clampedBaseRotation, rotationSpeed * Time.deltaTime);
+            turretBase.localRotation = Quaternion.Slerp(
+                turretBase.localRotation,
+                clampedBaseRotation,
+                rotationSpeed * Time.deltaTime
+            );
         }
 
-        // Vertical rotation (X axis)
-        float verticalAngle = Mathf.Asin(directionToTarget.y / directionToTarget.magnitude) * Mathf.Rad2Deg;
+        // Vertical rotation (X axis) - FIXED: Use Atan2 instead of Asin for better angle calculation
+        float verticalAngle = Mathf.Atan2(directionToTarget.y,
+            new Vector3(directionToTarget.x, 0, directionToTarget.z).magnitude) * Mathf.Rad2Deg;
+
+        // Clamp vertical angle
         verticalAngle = Mathf.Clamp(verticalAngle, minVerticalAngle, maxVerticalAngle);
 
+        // Apply vertical rotation with smoothing
         Quaternion targetHeadRotation = Quaternion.Euler(-verticalAngle, 0, 0);
-        turretHead.localRotation = Quaternion.Slerp(turretHead.localRotation, targetHeadRotation, rotationSpeed * Time.deltaTime);
+        turretHead.localRotation = Quaternion.Slerp(
+            turretHead.localRotation,
+            targetHeadRotation,
+            rotationSpeed * Time.deltaTime
+        );
+
+        // Debug visualization
+        if (debugMode)
+        {
+            Debug.DrawRay(turretHead.position, directionToTarget * range, Color.blue);
+            Debug.DrawRay(turretHead.position, turretHead.forward * range, Color.green);
+        }
     }
+
     void Fire()
     {
         if (projectilePrefab == null || projectileSpawnPoint == null) return;
@@ -258,6 +285,7 @@ public class Turret : MonoBehaviour, IDamage
         // Reset firing state
         StartCoroutine(ResetFiringState());
     }
+
     IEnumerator BurstFire()
     {
         isBursting = true;
@@ -271,6 +299,7 @@ public class Turret : MonoBehaviour, IDamage
         yield return new WaitForSeconds(burstCooldown);
         isBursting = false;
     }
+
     IEnumerator ResetFiringState()
     {
         yield return new WaitForSeconds(0.1f);
@@ -293,6 +322,7 @@ public class Turret : MonoBehaviour, IDamage
 
         currentFOVColor = fovColor;
     }
+
     // IDamage interface implementation
     public void takeDamage(int amount)
     {
@@ -311,6 +341,7 @@ public class Turret : MonoBehaviour, IDamage
 
         Destroy(gameObject);
     }
+
     // FOV Visualization
     void CreateFOVVisualization()
     {
@@ -330,6 +361,7 @@ public class Turret : MonoBehaviour, IDamage
         fovMaterial.color = currentFOVColor;
         meshRenderer.material = fovMaterial;
     }
+
     void UpdateFOVVisualization()
     {
         if (fovMesh == null || turretHead == null) return;
@@ -414,6 +446,7 @@ public class Turret : MonoBehaviour, IDamage
             }
         }
     }
+
     void OnDrawGizmosSelected()
     {
         if (!debugMode) return;
@@ -453,6 +486,7 @@ public class Turret : MonoBehaviour, IDamage
     {
         target = newTarget;
     }
+
     public void SetFireMode(FireMode mode)
     {
         fireMode = mode;
