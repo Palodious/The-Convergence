@@ -1,25 +1,44 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class Door : MonoBehaviour
 {
     [Header("~=~= Door Settings =~=~")]
-    // Regular door requirement settings
     [SerializeField] bool requiresKey = false;
     [SerializeField] bool requiresEnemiesDefeated = true;
-    [Range(1, 10)] [SerializeField] int keysRequired = 1; // How many keys needed
+    [Range(1, 10)][SerializeField] int keysRequired = 1;
+
+    [Header("~=~= Interaction Settings =~=~")]
+    [SerializeField] KeyCode interactionKey = KeyCode.E;
+    [SerializeField] float interactionRange = 3f;
 
     [Header("~=~= Slide Settings =~=~")]
-    [Range(0.5f, 10f)] [SerializeField] float slideDistance = 3f; // How far upward the door moves when opened
+    [Range(0.5f, 10f)][SerializeField] float slideDistance = 3f;
+    [Range(0.1f, 10f)][SerializeField] float slideSpeed = 2f;
 
-    [Range(0.1f, 10f)] [SerializeField] float slideSpeed = 2f; // How fast the door slides up
+    [Header("~=~= Scene Settings =~=~")]
+    [SerializeField] bool loadNextScene = false;
+    [SerializeField] string sceneName = "";
+    [SerializeField] int sceneBuildIndex = -1;
+    [SerializeField] float sceneLoadDelay = 0.5f;
 
     private bool isOpen = false;
-    private Vector3 closedPos; // Stores the starting position so we know where to slide from
+    private Vector3 closedPos;
+    private Transform playerTransform;
+    private bool isPlayerInRange = false;
 
     private void Awake()
     {
-        // Save the door's initial position
         closedPos = transform.position;
+    }
+
+    private void Update()
+    {
+        // Check for E key press when player is in range
+        if (Input.GetKeyDown(interactionKey) && isPlayerInRange && !isOpen)
+        {
+            TryOpenDoor();
+        }
     }
 
     private void OnTriggerEnter(Collider other)
@@ -27,7 +46,34 @@ public class Door : MonoBehaviour
         if (isOpen) return;
         if (!other.CompareTag("Player")) return;
 
-        playerController player = other.GetComponent<playerController>();
+        // Set player reference and range flag
+        playerTransform = other.transform;
+        isPlayerInRange = true;
+
+        // Optional: Show UI prompt here
+        Debug.Log("Press E to open door");
+    }
+
+    private void OnTriggerExit(Collider other)
+    {
+        if (!other.CompareTag("Player")) return;
+
+        isPlayerInRange = false;
+        playerTransform = null;
+
+        // Optional: Hide UI prompt here
+    }
+
+    void TryOpenDoor()
+    {
+        // Additional distance check (optional but good practice)
+        if (playerTransform != null &&
+            Vector3.Distance(transform.position, playerTransform.position) > interactionRange)
+        {
+            return;
+        }
+
+        playerController player = playerTransform.GetComponent<playerController>();
         if (player == null) return;
 
         bool canOpen = true;
@@ -35,7 +81,6 @@ public class Door : MonoBehaviour
         // Check key requirement if needed
         if (requiresKey)
         {
-            // Access the static keyCount using the class name
             canOpen = canOpen && (playerController.keyCount >= keysRequired);
         }
 
@@ -65,6 +110,7 @@ public class Door : MonoBehaviour
     void OpenDoor()
     {
         isOpen = true;
+        isPlayerInRange = false; // Prevent further interactions
 
         // Start sliding the door upward
         StartCoroutine(SlideUp());
@@ -74,10 +120,8 @@ public class Door : MonoBehaviour
 
     private System.Collections.IEnumerator SlideUp()
     {
-        // Determine where the door should end up
         Vector3 targetPos = closedPos + new Vector3(0, slideDistance, 0);
 
-        // Move the door smoothly toward that point
         while (Vector3.Distance(transform.position, targetPos) > 0.01f)
         {
             transform.position = Vector3.MoveTowards(
@@ -86,10 +130,49 @@ public class Door : MonoBehaviour
                 slideSpeed * Time.deltaTime
             );
 
-            yield return null; // Wait until next frame
+            yield return null;
         }
 
-        // Make sure the door finishes exactly in the correct position
         transform.position = targetPos;
+
+        // Load scene after door has opened
+        if (loadNextScene)
+        {
+            yield return new WaitForSeconds(sceneLoadDelay);
+            LoadNextScene();
+        }
+    }
+
+    void LoadNextScene()
+    {
+        if (!string.IsNullOrEmpty(sceneName))
+        {
+            SceneManager.LoadScene(sceneName);
+        }
+        else if (sceneBuildIndex >= 0)
+        {
+            SceneManager.LoadScene(sceneBuildIndex);
+        }
+        else
+        {
+            int currentSceneIndex = SceneManager.GetActiveScene().buildIndex;
+            int nextSceneIndex = currentSceneIndex + 1;
+
+            if (nextSceneIndex < SceneManager.sceneCountInBuildSettings)
+            {
+                SceneManager.LoadScene(nextSceneIndex);
+            }
+            else
+            {
+                Debug.LogWarning("No next scene available in build settings!");
+            }
+        }
+    }
+
+    // Optional: Visualize interaction range in editor
+    private void OnDrawGizmosSelected()
+    {
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawWireSphere(transform.position, interactionRange);
     }
 }

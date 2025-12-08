@@ -12,23 +12,21 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
     {
         Melee,
         Shooter,
-        Hybrid,
-        Turret
+        Hybrid
     }
 
-    [Header("~=~= Layers =~=~")]
+    [Header("**** Layers ****")]
     [SerializeField] LayerMask ignoreLayer;
-    [Header("~=~= Enemy Type =~=~")]
+    [Header("**** Enemy Type ****")]
     [SerializeField] EnemyType enemyType;
 
-    [Header("~=~= Components =~=~")]
+    [Header("**** Components ****")]
     [SerializeField] NavMeshAgent agent;
     [SerializeField] Animator anim;
     [SerializeField] Renderer model;
     [SerializeField] Transform headPos;
-    [SerializeField] Transform turretHead;
 
-    [Header("~=~= Stats =~=~")]
+    [Header("**** Stats ****")]
     bool isAlive = true;
     [Range(1, 300)][SerializeField] int HP;
     [Range(1, 360)][SerializeField] int FOV;
@@ -38,30 +36,19 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
     [Range(0.1f, 10f)][SerializeField] float animTransSpeed;
     [Range(5f, 100f)][SerializeField] float sightRange = 20f;
 
-    [Header("~=~= Shooter Settings =~=~")]
+    [Header("**** Shooter Settings ****")]
     [SerializeField] GameObject projectile;
     [Range(0.1f, 10f)][SerializeField] float shootRate;
     [SerializeField] Transform shootPOS;
 
-    [Header("~=~= Melee Settings =~=~")]
+    [Header("**** Melee Settings ****")]
     [SerializeField] Transform meleePos; // Position from which melee attacks are measured
     [SerializeField] GameObject meleeDamage; // GameObject with damage.cs attached
     [Range(0.1f, 10f)][SerializeField] float meleeRange; // Distance at which enemy can hit player
     [Range(0.1f, 10f)][SerializeField] float attackRate;  // Cooldown between attacks
     [Range(1, 50)][SerializeField] int meleeDamageAmount;
 
-    [Header("~=~= Turret Settings =~=~")]
-    [SerializeField] bool enableTurretMode = false; // Toggle turret behavior
-    [SerializeField] Transform[] turretRotationAxes; // Axes to rotate (e.g., head, base)
-    [Range(0.1f, 100f)][SerializeField] float turretRotationSpeed = 5f;
-    [Range(0.1f, 50f)][SerializeField] float idleRotationSpeed = 10f; // Speed when idle
-    [Range(-180, 180)][SerializeField] float minHorizontalAngle = -45f;
-    [Range(-180, 180)][SerializeField] float maxHorizontalAngle = 45f;
-    [Range(-90, 90)][SerializeField] float minVerticalAngle = -20f;
-    [Range(-90, 90)][SerializeField] float maxVerticalAngle = 20f;
-    [SerializeField] bool independentVerticalRotation = false; // Vertical rotates separately
-
-    [Header("~=~= Jump Attack Settings =~=~")]
+    [Header("**** Jump Attack Settings ****")]
     [SerializeField] bool canJumpAttack = false;
     [Range(0.1f, 10f)][SerializeField] float jumpForce;
     [Range(1f, 50f)][SerializeField] float jumpAttackRange; // Max distance to trigger jump
@@ -71,18 +58,16 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
     [Range(0.5f, 15f)][SerializeField] float jumpAttackRadius; // Damage radius on landing
     [SerializeField] float jumpTimer;
 
-    // NEW JUMP ATTACK VARIABLES - ARC STYLE
-    [Header("~=~= Jump Attack Arc Settings =~=~")]
+    [Header("**** Jump Attack Arc Settings ****")]
     [Range(1f, 20f)][SerializeField] float jumpHeight = 3f; // Max height of jump arc
     [Range(0.1f, 5f)][SerializeField] float jumpDuration = 1f; // Total time of jump
     [SerializeField] AnimationCurve jumpCurve = AnimationCurve.EaseInOut(0, 0, 1, 1); // Jump arc curve
     [SerializeField] GameObject jumpLandingEffect; // Optional effect when landing
     [Range(0f, 1f)][SerializeField] float jumpDamageDelay = 0.1f; // Delay before applying damage after landing
-    [SerializeField] bool showJumpArcDebug = false; // Show debug line for jump arc
     [Range(0f, 1f)][SerializeField] float jumpWindupTime = 0.2f; // Time before jumping starts
     [Range(0f, 3f)][SerializeField] float landingDistanceFromPlayer = 0.5f; // How close to land to player (0 = on player, larger = further away)
 
-    [Header("~=~= Dash Attack Settings =~=~")]
+    [Header("**** Dash Attack Settings ****")]
     [SerializeField] bool canDashAttack = false;
     [Range(2f, 50f)][SerializeField] float dashSpeed;
     [Range(0.1f, 5f)][SerializeField] float dashDuration;
@@ -91,18 +76,11 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
     [Range(0.5f, 30f)][SerializeField] float dashAttackCooldown;
     [Range(1.1f, 10f)][SerializeField] float playerFleeingThreshold; // How fast player must be moving away
 
-    [Header("~=~= Special Attack Tracking =~=~")]
+    [Header("**** Special Attack Tracking ****")]
     [Range(0.1f, 5f)][SerializeField] float specialAttackCheckInterval = 0.5f; // How often to check for special attacks
     [Range(10f, 200f)][SerializeField] float maxPlayerTrackingDistance = 50f; // Max distance to track player for special attacks
 
-    // Burst Fire Settings
-    [Header("~=~= Burst Fire Settings =~=~")]
-    [SerializeField] bool useBurstFire = false;
-    [Range(1, 20)][SerializeField] int bulletsPerBurst = 3;
-    [Range(0.01f, 2f)][SerializeField] float timeBetweenBurstShots = 0.1f;
-    [Range(0.1f, 10f)][SerializeField] float timeBetweenBursts = 1f;
-
-    [Header("~=~= Behavior Toggles =~=~")]
+    [Header("**** Behavior Toggles ****")]
     public bool useAnimations = true; // Toggle all animation logic on/off
     public bool usePatrol = true; // Toggle patrol behavior
     public bool useRoam = true; // Toggle roaming behavior
@@ -130,6 +108,15 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
 
     [SerializeField] private ItemDrop itemDrop;
 
+    [Header("**** Currency Drop ****")]
+    [Range(0, 1000)][SerializeField] private int currencyDropAmount = 10; // Amount of currency this enemy drops
+
+    [Header("**** Boss Settings ****")]
+    [SerializeField] bool isBoss = false;
+    [SerializeField] GameObject bossDeathEffect; // Optional visual effect
+
+    public bool IsBoss => isBoss;
+
     public EnemyType EnemyTypeValue => enemyType;
 
     Color colorOrig;
@@ -142,18 +129,12 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
     Vector3 startingPos;
     float stoppingDistOrig;
 
-    [Header("~=~= Patrol Points =~=~")]
+    [Header("**** Patrol Points ****")]
     [SerializeField] Transform[] patrolPoints; // Optional patrol points
     int patrolIndex = 0;
     [SerializeField] string patrolSourceId;
 
     bool isPlayingStep;
-
-    // Turret variables
-    private bool isTurretActive = false;
-    private Vector3[] initialRotations;
-    private float currentIdleRotation = 0f;
-    private float idleRotationDirection = 1f;
 
     // Jump Attack variables
     private float jumpAttackTimer = 1f;
@@ -174,14 +155,7 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
     private Vector3 lastPlayerPosition;
     private Vector3 playerVelocity;
 
-    // Burst fire variables
-    private bool isBursting = false;
-    private int currentBurstCount = 0;
-    private Coroutine burstCoroutine;
 
-    // Turret state tracking
-    private enum TurretState { Idle, Acquiring, Firing }
-    private TurretState currentTurretState = TurretState.Idle;
 
     // Special attack tracking variables
     private float specialAttackCheckTimer = 0f;
@@ -220,12 +194,6 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
 
         if (itemDrop == null)
             itemDrop = GetComponent<ItemDrop>();
-
-        // Initialize turret
-        if (enableTurretMode)
-        {
-            InitializeTurret();
-        }
 
         // Start continuous player tracking for special attacks
         if (canJumpAttack || canDashAttack)
@@ -273,20 +241,20 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
         // Periodically check for special attacks even when not in direct combat
         if (specialAttackCheckTimer >= specialAttackCheckInterval && playerTracked)
         {
-            CheckSpecialAttacks(lastKnownPlayerPosition, 
+            CheckSpecialAttacks(lastKnownPlayerPosition,
                 Vector3.Distance(transform.position, lastKnownPlayerPosition));
             specialAttackCheckTimer = 0f;
         }
 
         // Play footsteps if moving and not performing special attacks
-        if (!enableTurretMode && !isJumpAttacking && !isDashing && 
+        if (!isJumpAttacking && !isDashing &&
             agent != null && agent.isActiveAndEnabled && agent.velocity.magnitude > 0.1f && !isPlayingStep)
         {
             StartCoroutine(playStep());
         }
 
         // Update movement animation speed if enabled and not performing special attacks
-        if (useAnimations && anim != null && !enableTurretMode && !isJumpAttacking && !isDashing &&
+        if (useAnimations && anim != null && !isJumpAttacking && !isDashing &&
             agent != null && agent.isActiveAndEnabled)
         {
             float agentSpeedCur = agent.velocity.magnitude;
@@ -295,56 +263,17 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
         }
 
         // Track roam timer only when not moving and not performing special attacks
-        if (!enableTurretMode && !isJumpAttacking && !isDashing && 
+        if (!isJumpAttacking && !isDashing &&
             agent != null && agent.isActiveAndEnabled && agent.remainingDistance < 0.01f)
             roamTimer += Time.deltaTime;
 
-        // Handle different enemy behaviors based on type and mode
-        if (enableTurretMode)
-        {
-            HandleTurretBehavior();
-        }
-        else if (!isJumpAttacking && !isDashing) // Only handle mobile behavior if not in special attack
+        // Handle mobile behavior if not in special attack
+        if (!isJumpAttacking && !isDashing) // Only handle mobile behavior if not in special attack
         {
             HandleMobileBehavior();
         }
     }
-
-    // Separate behavior handler for turrets
-    void HandleTurretBehavior()
-    {
-        // Turret doesn't move or roam
-        if (playerInTrigger && canSeePlayer())
-        {
-            currentTurretState = TurretState.Acquiring;
-            RotateTurretToTarget();
-
-            // Check if we should start firing
-            if (angleToPlayer <= FOV && shootTimer >= shootRate && !isBursting)
-            {
-                currentTurretState = TurretState.Firing;
-
-                if (useBurstFire)
-                {
-                    if (burstCoroutine == null)
-                    {
-                        burstCoroutine = StartCoroutine(BurstFire());
-                    }
-                }
-                else
-                {
-                    Shoot();
-                    shootTimer = 0;
-                }
-            }
-        }
-        else
-        {
-            currentTurretState = TurretState.Idle;
-            IdleTurretRotation();
-        }
-    }
-
+    
     // Separate behavior handler for mobile enemies
     void HandleMobileBehavior()
     {
@@ -462,112 +391,6 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
         }
         
         return false;
-    }
-
-    // Initialize turret specific settings
-    void InitializeTurret()
-    {
-        isTurretActive = true;
-        if (agent != null)
-            agent.enabled = false; // Disable NavMeshAgent for turrets
-
-        // Store initial rotations for each rotation axis
-        if (turretRotationAxes != null && turretRotationAxes.Length > 0)
-        {
-            initialRotations = new Vector3[turretRotationAxes.Length];
-            for (int i = 0; i < turretRotationAxes.Length; i++)
-            {
-                if (turretRotationAxes[i] != null)
-                {
-                    initialRotations[i] = turretRotationAxes[i].localEulerAngles;
-                }
-            }
-        }
-
-        // If no turret axes specified, use headPos
-        if (turretRotationAxes == null || turretRotationAxes.Length == 0)
-        {
-            turretRotationAxes = new Transform[1] { headPos };
-            initialRotations = new Vector3[1] { headPos.localEulerAngles };
-        }
-    }
-
-    // Rotate turret when idle
-    void IdleTurretRotation()
-    {
-        if (turretRotationAxes == null || turretRotationAxes.Length == 0)
-            return;
-
-        // Smooth idle rotation
-        currentIdleRotation += idleRotationSpeed * Time.deltaTime * idleRotationDirection;
-
-        // Reverse direction at limits
-        if (currentIdleRotation >= maxHorizontalAngle || currentIdleRotation <= minHorizontalAngle)
-        {
-            idleRotationDirection *= -1;
-            currentIdleRotation = Mathf.Clamp(currentIdleRotation, minHorizontalAngle, maxHorizontalAngle);
-        }
-
-        // Apply rotation to the first axis
-        if (turretRotationAxes[0] != null)
-        {
-            Vector3 newRotation = turretRotationAxes[0].localEulerAngles;
-            newRotation.y = initialRotations[0].y + currentIdleRotation;
-            turretRotationAxes[0].localEulerAngles = newRotation;
-        }
-    }
-
-    // Rotate turret to face player - KEPT ORIGINAL
-    void RotateTurretToTarget()
-    {
-        if (turretRotationAxes == null || turretRotationAxes.Length == 0)
-            return;
-
-        Vector3 playerPos = gamemanager.instance.player.transform.position;
-
-        // Calculate direction to player
-        Vector3 directionToPlayer = playerPos - turretRotationAxes[0].position;
-        directionToPlayer.y = 0; // Keep horizontal rotation separate
-
-        // Calculate angles
-        float targetHorizontalAngle = Mathf.Atan2(directionToPlayer.x, directionToPlayer.z) * Mathf.Rad2Deg;
-
-        // Clamp horizontal rotation
-        targetHorizontalAngle = Mathf.Clamp(
-            targetHorizontalAngle,
-            initialRotations[0].y + minHorizontalAngle,
-            initialRotations[0].y + maxHorizontalAngle
-        );
-
-        // Apply horizontal rotation to first axis
-        Quaternion targetHorizontalRotation = Quaternion.Euler(0, targetHorizontalAngle, 0);
-        turretRotationAxes[0].rotation = Quaternion.Slerp(
-            turretRotationAxes[0].rotation,
-            targetHorizontalRotation,
-            turretRotationSpeed * Time.deltaTime
-        );
-
-        // Handle vertical rotation if enabled
-        if (independentVerticalRotation && turretRotationAxes.Length > 1 && turretRotationAxes[1] != null)
-        {
-            Vector3 directionToPlayerVertical = playerPos - turretRotationAxes[1].position;
-            float verticalAngle = Vector3.Angle(turretRotationAxes[1].forward, directionToPlayerVertical);
-            Vector3 cross = Vector3.Cross(turretRotationAxes[1].forward, directionToPlayerVertical);
-
-            // Determine if angle is up or down
-            if (cross.x > 0) verticalAngle = -verticalAngle;
-
-            // Clamp vertical rotation
-            verticalAngle = Mathf.Clamp(verticalAngle, minVerticalAngle, maxVerticalAngle);
-
-            // Apply vertical rotation to second axis
-            Quaternion targetVerticalRotation = Quaternion.Euler(verticalAngle, 0, 0);
-            turretRotationAxes[1].localRotation = Quaternion.Slerp(
-                turretRotationAxes[1].localRotation,
-                targetVerticalRotation,
-                turretRotationSpeed * Time.deltaTime
-            );
-        }
     }
 
     // Track player velocity for dash attack prediction
@@ -780,7 +603,7 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
         }
     }
 
-    // NEW METHOD: Find ground position with better detection
+    //Find ground position with detection
     Vector3 FindGroundPosition(Vector3 position)
     {
         // Try downward raycast first
@@ -1080,28 +903,6 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
         }
     }
 
-    // Burst fire coroutine
-    IEnumerator BurstFire()
-    {
-        isBursting = true;
-        currentBurstCount = 0;
-
-        while (currentBurstCount < bulletsPerBurst && currentTurretState == TurretState.Firing)
-        {
-            Shoot();
-            currentBurstCount++;
-
-            if (currentBurstCount < bulletsPerBurst)
-            {
-                yield return new WaitForSeconds(timeBetweenBurstShots);
-            }
-        }
-
-        shootTimer = 0;
-        yield return new WaitForSeconds(timeBetweenBursts);
-        isBursting = false;
-        burstCoroutine = null;
-    }
 
     // Play step sound
     IEnumerator playStep()
@@ -1118,7 +919,7 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
     // Check if should roam or patrol
     void checkRoamOrPatrol()
     {
-        if (enableTurretMode || agent == null || !agent.isActiveAndEnabled || isJumpAttacking || isDashing) return;
+        if (agent == null || !agent.isActiveAndEnabled || isJumpAttacking || isDashing) return;
 
         if (agent.remainingDistance < 0.01f && roamTimer >= roamPauseTime)
         {
@@ -1180,19 +981,19 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
     bool canSeePlayer()
     {
         if (gamemanager.instance.player == null) return false;
-        
+
         Vector3 playerPos = gamemanager.instance.player.transform.position;
         lastKnownPlayerPosition = playerPos; // Update last known position
         playerTracked = true;
 
-        // Use turret head position if available, otherwise use regular headPos
-        Transform lookPoint = enableTurretMode && turretHead != null ? turretHead : headPos;
+        // Use head position
+        Transform lookPoint = headPos;
         playerDir = playerPos - lookPoint.position;
         float distanceToPlayer = playerDir.magnitude;
 
         if (distanceToPlayer > sightRange)
         {
-            if (!enableTurretMode && agent != null && agent.isActiveAndEnabled && !isJumpAttacking && !isDashing) 
+            if (agent != null && agent.isActiveAndEnabled && !isJumpAttacking && !isDashing)
                 agent.stoppingDistance = 0;
             return false;
         }
@@ -1200,7 +1001,7 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
         angleToPlayer = Vector3.Angle(playerDir, lookPoint.forward);
         if (angleToPlayer > FOV)
         {
-            if (!enableTurretMode && agent != null && agent.isActiveAndEnabled && !isJumpAttacking && !isDashing) 
+            if (agent != null && agent.isActiveAndEnabled && !isJumpAttacking && !isDashing)
                 agent.stoppingDistance = 0;
             return false;
         }
@@ -1209,65 +1010,58 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
         if (Physics.Raycast(lookPoint.position, playerDir.normalized, out hit, sightRange, ~ignoreLayer))
         {
             if (hit.collider.CompareTag("Player"))
-            {
-                if (!enableTurretMode)
+            
+                // Check for special attacks
+                if (ShouldJumpAttack())
                 {
-                    // Check for special attacks
-                    if (ShouldJumpAttack())
-                    {
-                        StartJumpAttack();
-                        return true;
-                    }
-
-                    if (ShouldDashAttack())
-                    {
-                        StartDashAttack();
-                        return true;
-                    }
-
-                    // Set destination to player position if agent is active and not in special attack
-                    if (agent != null && agent.isActiveAndEnabled && !isJumpAttacking && !isDashing)
-                    {
-                        try
-                        {
-                            agent.SetDestination(playerPos);
-                            agent.stoppingDistance = stoppingDistOrig;
-                        }
-                        catch (System.Exception e)
-                        {
-                            Debug.LogWarning($"Could not set destination: {e.Message}");
-                        }
-                    }
-
-                    // Handle attacks based on enemy type
-                    switch (enemyType)
-                    {
-                        case EnemyType.Melee:
-                            if (distanceToPlayer <= meleeRange && attackTimer >= attackRate)
-                                meleeAttack();
-                            break;
-                        case EnemyType.Shooter:
-                            if (shootTimer >= shootRate && !isBursting)
-                                Shoot();
-                            break;
-                        case EnemyType.Hybrid:
-                            if (distanceToPlayer <= meleeRange && attackTimer >= attackRate)
-                                meleeAttack();
-                            else if (shootTimer >= shootRate && !isBursting)
-                                Shoot();
-                            break;
-                    }
-
-                    if (agent != null && agent.isActiveAndEnabled && !isJumpAttacking && !isDashing && 
-                        agent.remainingDistance <= agent.stoppingDistance)
-                        faceTarget();
+                    StartJumpAttack();
+                    return true;
                 }
 
-                return true;
-            }
-        }
+                if (ShouldDashAttack())
+                {
+                    StartDashAttack();
+                    return true;
+                }
 
-        if (!enableTurretMode && agent != null && agent.isActiveAndEnabled && !isJumpAttacking && !isDashing) 
+                // Set destination to player position if agent is active and not in special attack
+                if (agent != null && agent.isActiveAndEnabled && !isJumpAttacking && !isDashing)
+                {
+                    try
+                    {
+                        agent.SetDestination(playerPos);
+                        agent.stoppingDistance = stoppingDistOrig;
+                    }
+                    catch (System.Exception e)
+                    {
+                        Debug.LogWarning($"Could not set destination: {e.Message}");
+                    }
+                }
+
+                // Handle attacks based on enemy type
+                switch (enemyType)
+                {
+                    case EnemyType.Melee:
+                        if (distanceToPlayer <= meleeRange && attackTimer >= attackRate)
+                            meleeAttack();
+                        break;
+                    case EnemyType.Shooter:
+                        if (shootTimer >= shootRate)
+                            Shoot();
+                        break;
+                    case EnemyType.Hybrid:
+                        if (distanceToPlayer <= meleeRange && attackTimer >= attackRate)
+                            meleeAttack();
+                        else if (shootTimer >= shootRate)
+                            Shoot();
+                        break;
+                }
+                if (agent != null && agent.isActiveAndEnabled && !isJumpAttacking && !isDashing &&
+                    agent.remainingDistance <= agent.stoppingDistance)
+                    faceTarget();
+                return true;
+        }
+        if (agent != null && agent.isActiveAndEnabled && !isJumpAttacking && !isDashing)
             agent.stoppingDistance = 0;
         return false;
     }
@@ -1292,7 +1086,7 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
         if (other.CompareTag("Player"))
         {
             playerInTrigger = false;
-            if (!enableTurretMode && agent != null && agent.isActiveAndEnabled && !isJumpAttacking && !isDashing) 
+            if (agent != null && agent.isActiveAndEnabled && !isJumpAttacking && !isDashing)
                 agent.stoppingDistance = 0;
         }
     }
@@ -1305,8 +1099,8 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
 
         HP -= amount;
 
-        // Make enemy aware of the player if not a turret
-        if (!enableTurretMode && gamemanager.instance.player != null && agent != null && agent.isActiveAndEnabled && !isJumpAttacking && !isDashing)
+        // Make enemy aware of the player
+        if (gamemanager.instance.player != null && agent != null && agent.isActiveAndEnabled && !isJumpAttacking && !isDashing)
         {
             // Only set destination if agent is active and not in special attack
             try
@@ -1339,24 +1133,56 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
     private void Die()
     {
         isAlive = false;
-        
+
         // Cancel any special attacks
         if (isDashing) EndDash();
         if (isJumpAttacking) CancelJumpAttack();
-        if (isBursting && burstCoroutine != null) StopCoroutine(burstCoroutine);
-        
+
         // Play death audio
         if (audDeath.Length > 0 && aud != null)
             aud.PlayOneShot(audDeath[Random.Range(0, audDeath.Length)], audDeathVol);
 
-        // Update game goal
-        gamemanager.instance.updateGameGoal(-1);
+        // Check if this is the boss enemy
+        if (isBoss)
+        {
+            Debug.Log("=== BOSS DEFEATED ===");
 
-        // Drop items
-        if (itemDrop != null)
-            itemDrop.TryDrop();
+            // Show boss death effect if assigned
+            if (bossDeathEffect != null)
+                Instantiate(bossDeathEffect, transform.position, Quaternion.identity);
 
-        // Destroy immediately without animation or delay
+            // Call the special boss defeat method in gamemanager
+            // This is the ONLY way to trigger the win condition in the entire game
+            gamemanager.instance.OnLevel4BossDefeated();
+
+            // Drop special boss loot
+            if (itemDrop != null)
+                itemDrop.TryDrop();
+
+            // Drop currency (boss gives extra)
+            if (currencyDropAmount > 0 && RiftShardManager.Instance != null)
+            {
+                RiftShardManager.Instance.Add(currencyDropAmount * 5); // Boss gives 5x currency
+            }
+        }
+        else
+        {
+            // REGULAR ENEMY (NOT BOSS)
+            // Update game goal count (for tracking only - no win condition)
+            gamemanager.instance.updateGameGoal(-1);
+
+            // Drop regular loot
+            if (itemDrop != null)
+                itemDrop.TryDrop();
+
+            // Drop regular currency
+            if (currencyDropAmount > 0 && RiftShardManager.Instance != null)
+            {
+                RiftShardManager.Instance.Add(currencyDropAmount);
+            }
+        }
+
+        // Destroy the enemy object
         Destroy(gameObject);
     }
 
@@ -1422,23 +1248,6 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
         }
     }
 
-    // Method to toggle turret mode at runtime
-    public void SetTurretMode(bool active)
-    {
-        enableTurretMode = active;
-
-        if (enableTurretMode)
-        {
-            InitializeTurret();
-        }
-        else
-        {
-            if (agent != null)
-                agent.enabled = true;
-            isTurretActive = false;
-        }
-    }
-
     // Set patrol points
     public void SetPatrolPoints(Transform[] points, string sourceId = null)
     {
@@ -1455,36 +1264,12 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
     // Draw gizmos for visualization
     void OnDrawGizmosSelected()
     {
-        if (enableTurretMode && turretRotationAxes != null && turretRotationAxes.Length > 0 && turretRotationAxes[0] != null)
-        {
-            // Draw FOV cone
-            Gizmos.color = Color.yellow;
-            float halfFOV = FOV / 2.0f;
-            Quaternion leftRayRotation = Quaternion.AngleAxis(-halfFOV, Vector3.up);
-            Quaternion rightRayRotation = Quaternion.AngleAxis(halfFOV, Vector3.up);
-            Vector3 leftRayDirection = leftRayRotation * turretRotationAxes[0].forward;
-            Vector3 rightRayDirection = rightRayRotation * turretRotationAxes[0].forward;
-
-            Gizmos.DrawRay(turretRotationAxes[0].position, leftRayDirection * sightRange);
-            Gizmos.DrawRay(turretRotationAxes[0].position, rightRayDirection * sightRange);
-
-            // Draw rotation limits
-            Gizmos.color = Color.blue;
-            Quaternion minRotation = Quaternion.Euler(0, minHorizontalAngle, 0);
-            Quaternion maxRotation = Quaternion.Euler(0, maxHorizontalAngle, 0);
-            Vector3 minDirection = minRotation * turretRotationAxes[0].forward;
-            Vector3 maxDirection = maxRotation * turretRotationAxes[0].forward;
-
-            Gizmos.DrawRay(turretRotationAxes[0].position, minDirection * sightRange);
-            Gizmos.DrawRay(turretRotationAxes[0].position, maxDirection * sightRange);
-        }
-
         // Draw jump attack range and radius
         if (canJumpAttack)
         {
             Gizmos.color = Color.green;
             Gizmos.DrawWireSphere(transform.position, jumpAttackRange);
-            
+
             Gizmos.color = Color.red;
             Gizmos.DrawWireSphere(transform.position, jumpAttackRadius);
         }
@@ -1519,7 +1304,6 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
             patrolIndex = patrolIndex,
             hasDestination = false,
             destination = Vector3.zero,
-            isTurretActive = isTurretActive, // Save turret state
             patrolSourceId = patrolSourceId,
             jumpAttackTimer = this.jumpAttackTimer,
             dashAttackTimer = this.dashAttackTimer
@@ -1554,7 +1338,6 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
 
         // Restore combat state
         HP = s.hp;
-        isTurretActive = s.isTurretActive; // Restore turret state
 
         // Restore roam / patrol internals
         startingPos = s.startingPos;

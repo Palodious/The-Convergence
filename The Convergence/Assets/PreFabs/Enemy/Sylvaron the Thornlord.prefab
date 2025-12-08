@@ -1378,6 +1378,7 @@ MonoBehaviour:
   roamDist: 15
   roamPauseTime: 5
   animTransSpeed: 8
+  sightRange: 20
   projectile: {fileID: 4705637938062420806, guid: dc66ec9d49639764a91941412154893b, type: 3}
   shootRate: 0.6
   shootPOS: {fileID: 3229506511216438736}
@@ -1403,6 +1404,37 @@ MonoBehaviour:
   jumpAttackDamage: 15
   jumpAttackRadius: 4.04
   jumpTimer: 2
+  jumpHeight: 3
+  jumpDuration: 1
+  jumpCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  jumpLandingEffect: {fileID: 0}
+  jumpDamageDelay: 0.1
+  showJumpArcDebug: 0
+  jumpWindupTime: 0.2
+  landingDistanceFromPlayer: 0.5
   canDashAttack: 0
   dashSpeed: 2
   dashDuration: 0.1
@@ -1410,6 +1442,8 @@ MonoBehaviour:
   minDashDistance: 4
   dashAttackCooldown: 0.5
   playerFleeingThreshold: 1.1
+  specialAttackCheckInterval: 0.5
+  maxPlayerTrackingDistance: 50
   useBurstFire: 0
   bulletsPerBurst: 3
   timeBetweenBurstShots: 0.1
@@ -1435,8 +1469,13 @@ MonoBehaviour:
   audDeathVol: 0.15
   audJumpAttack: []
   audJumpAttackVol: 0
+  audJumpWindup: {fileID: 0}
+  audJumpWindupVol: 0.5
+  audJumpLanding: {fileID: 0}
+  audJumpLandingVol: 0.7
   audDash: []
   audDashVol: 0.5
+  coinRewardAmount: 25
   itemDrop: {fileID: 0}
   patrolPoints: []
   patrolSourceId: 
