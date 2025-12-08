@@ -89,7 +89,7 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
         // Check if we're starting a new game session
         int currentSceneIndex = SceneManager.GetActiveScene().buildIndex;
 
-        if (currentSceneIndex == 0 && isNewGameSession)
+        if (currentSceneIndex == 1 && isNewGameSession)
         {
             // Reset all static data when starting from first scene
             ResetStaticData();
@@ -108,7 +108,7 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
         // Check if we have persistent data (from previous scene)
         int currentSceneIndex = SceneManager.GetActiveScene().buildIndex;
 
-        if (currentSceneIndex > 0 && persistentGunList.Count > 0)
+        if (currentSceneIndex > 1 && persistentGunList.Count > 1)
         {
             // Load persistent data (but not on first scene)
             LoadPersistentData();
