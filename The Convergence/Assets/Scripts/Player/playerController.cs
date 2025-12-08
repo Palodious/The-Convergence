@@ -41,6 +41,12 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
     // CHANGE: Replace static bool with static int for key count
     public static int keyCount = 0;
 
+    // Add static variables to persist data between scenes
+    private static List<gunStats> persistentGunList = new List<gunStats>();
+    private static int persistentGunListPos = 0;
+    private static int persistentHP = 100;
+    private static int persistentKeyCount = 0;
+
     public int ShootDamage => shootDamage;
     float originalHeight; // remember height for uncrouch  
     int originalSpeed; // store original speed  
@@ -81,7 +87,18 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
         HPOrig = HP;
         originalHeight = controller.height;
         originalSpeed = speed;
-        respawn();
+
+        // Check if we have persistent data (from previous scene)
+        if (persistentGunList.Count > 0)
+        {
+            // Load persistent data
+            LoadPersistentData();
+        }
+        else
+        {
+            // First scene - initialize
+            respawn();
+        }
     }
 
     void Update()
@@ -103,7 +120,57 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
         }
 
         sprint();
+    }
 
+    void LoadPersistentData()
+    {
+        // Clear current guns
+        gunList.Clear();
+
+        // Add persistent guns
+        foreach (var gun in persistentGunList)
+        {
+            getGunStats(gun);
+        }
+
+        // Set current gun
+        if (persistentGunList.Count > 0)
+        {
+            gunListPos = Mathf.Clamp(persistentGunListPos, 0, persistentGunList.Count - 1);
+            changeGun();
+        }
+
+        // Set HP
+        HP = persistentHP;
+        if (HP > HPOrig) HP = HPOrig;
+
+        // Set key count
+        keyCount = persistentKeyCount;
+
+        // Move to spawn point
+        if (gamemanager.instance != null && gamemanager.instance.spawnPoint != null)
+        {
+            controller.enabled = false;
+            transform.position = gamemanager.instance.spawnPoint.transform.position;
+            controller.enabled = true;
+        }
+
+        updatePlayerUI();
+    }
+
+    void SavePersistentData()
+    {
+        // Save to static variables
+        persistentGunList = new List<gunStats>(gunList);
+        persistentGunListPos = gunListPos;
+        persistentHP = HP;
+        persistentKeyCount = keyCount;
+    }
+
+    // Call this when transitioning to a new scene
+    public void PrepareForSceneTransition()
+    {
+        SavePersistentData();
     }
 
     void movement()

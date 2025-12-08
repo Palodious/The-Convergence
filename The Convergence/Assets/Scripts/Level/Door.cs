@@ -145,6 +145,19 @@ public class Door : MonoBehaviour
 
     void LoadNextScene()
     {
+        // Find and save player data before loading next scene
+        GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
+        if (playerObj != null)
+        {
+            playerController player = playerObj.GetComponent<playerController>();
+            if (player != null)
+            {
+                // Call the method to save persistent data
+                player.PrepareForSceneTransition();
+                Debug.Log("Player data saved for scene transition");
+            }
+        }
+
         if (!string.IsNullOrEmpty(sceneName))
         {
             SceneManager.LoadScene(sceneName);
