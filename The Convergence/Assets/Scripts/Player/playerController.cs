@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine.SceneManagement; // Add this for SceneManager
 
 public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
 {
@@ -47,6 +48,10 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
     private static int persistentHP = 100;
     private static int persistentKeyCount = 0;
 
+    // Track if we're starting from the first scene
+    private static bool hasStartedFromFirstScene = false;
+    private static int lastSceneIndex = -1;
+
     public int ShootDamage => shootDamage;
     float originalHeight; // remember height for uncrouch  
     int originalSpeed; // store original speed  
@@ -80,6 +85,26 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
     [HideInInspector] public bool isAiming; // true while holding Fire2
     [Range(0f, 1f)] public float aimMoveSpeed = 8f; // how fast upper-body aims/IK blends
 
+    void Awake()
+    {
+        // Reset persistent data if starting from first scene (Scene 0)
+        int currentSceneIndex = SceneManager.GetActiveScene().buildIndex;
+
+        if (currentSceneIndex == 0 && !hasStartedFromFirstScene)
+        {
+            // We're starting from the first scene, reset everything
+            ResetPersistentData();
+            hasStartedFromFirstScene = true;
+        }
+        else if (currentSceneIndex == 0 && hasStartedFromFirstScene && lastSceneIndex > 0)
+        {
+            // We're returning to first scene from a later scene (like when dying)
+            // Don't reset - keep the data
+        }
+
+        lastSceneIndex = currentSceneIndex;
+    }
+
     void Start()
     {
         controller = GetComponent<CharacterController>();   // FIX
@@ -89,14 +114,14 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
         originalSpeed = speed;
 
         // Check if we have persistent data (from previous scene)
-        if (persistentGunList.Count > 0)
+        if (persistentGunList.Count > 0 && SceneManager.GetActiveScene().buildIndex > 0)
         {
-            // Load persistent data
+            // Load persistent data (but not on first scene)
             LoadPersistentData();
         }
         else
         {
-            // First scene - initialize
+            // First scene or no persistent data - initialize fresh
             respawn();
         }
     }
@@ -120,6 +145,16 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
         }
 
         sprint();
+    }
+
+    void ResetPersistentData()
+    {
+        persistentGunList.Clear();
+        persistentGunListPos = 0;
+        persistentHP = HP; // Use the HP from inspector, not 100
+        persistentKeyCount = 0;
+        keyCount = 0;
+        Debug.Log("Persistent data reset for new game session");
     }
 
     void LoadPersistentData()
@@ -165,6 +200,7 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
         persistentGunListPos = gunListPos;
         persistentHP = HP;
         persistentKeyCount = keyCount;
+        Debug.Log($"Saved persistent data: {gunList.Count} guns, {HP} HP, {keyCount} keys");
     }
 
     // Call this when transitioning to a new scene
@@ -175,6 +211,7 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
 
     void movement()
     {
+        // ... [rest of your movement code remains exactly the same] ...
         if (controller.isGrounded)
         {
             if (playerVel.y < 0) playerVel.y = -2f;
@@ -258,6 +295,7 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
 
     IEnumerator playStep()
     {
+        // ... [rest of playStep remains the same] ...
         isPlayingStep = true;
         aud.PlayOneShot(audStep[Random.Range(0, audStep.Length)], audStepVol);
 
@@ -269,12 +307,14 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
 
     void sprint()
     {
+        // ... [rest of sprint remains the same] ...
         if (Input.GetButtonDown("Sprint")) { speed *= sprintMod; isSprinting = true; }
         else if (Input.GetButtonUp("Sprint")) { speed /= sprintMod; isSprinting = false; }
     }
 
     void jump()
     {
+        // ... [rest of jump remains the same] ...
         if (Input.GetButtonDown("Jump") && jumpCount < maxJumps)
         {
             playerVel.y = JumpSpeed;
@@ -286,6 +326,7 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
 
     void crouch()
     {
+        // ... [rest of crouch remains the same] ...
         if (!isCrouching)
         {
             isCrouching = true;
@@ -296,6 +337,7 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
 
     void uncrouch()
     {
+        // ... [rest of uncrouch remains the same] ...
         if (isCrouching)
         {
             isCrouching = false;
@@ -306,6 +348,7 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
 
     void StartGlide()
     {
+        // ... [rest of StartGlide remains the same] ...
         if (!controller.isGrounded && !isGliding)
         {
             isGliding = true;
@@ -315,11 +358,13 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
 
     void StopGlide()
     {
+        // ... [rest of StopGlide remains the same] ...
         if (isGliding) isGliding = false;
     }
 
     void shoot()
     {
+        // ... [rest of shoot remains the same] ...
         if (gunList.Count == 0) return;
 
         shootTimer = 0;
@@ -368,6 +413,7 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
     // IK is handled by a separate script (PlayerIKController) using rightHandIKTarget.
     public void takeDamage(int amount)
     {
+        // ... [rest of takeDamage remains the same] ...
         HP -= amount;
         updatePlayerUI();
         StartCoroutine(screenFlashDamage());
@@ -380,12 +426,14 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
 
     public void updatePlayerUI()
     {
+        // ... [rest of updatePlayerUI remains the same] ...
         if (gamemanager.instance.playerHPBar != null)
             gamemanager.instance.playerHPBar.fillAmount = (float)HP / HPOrig;
     }
 
     IEnumerator screenFlashDamage()
     {
+        // ... [rest of screenFlashDamage remains the same] ...
         var gm = gamemanager.instance;
         if (gm == null || gm.playerDamagePanel == null)
             yield break;
@@ -423,6 +471,7 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
     // After loading, call this to rebuild the visual gun model.
     public void RestoreGunVisual(int index)
     {
+        // ... [rest of RestoreGunVisual remains the same] ...
         if (gunList == null || gunList.Count == 0)
             return;
 
@@ -432,6 +481,7 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
 
     public void GetItem(ScriptableObject item)
     {
+        // ... [rest of GetItem remains the same] ...
         if (item is gunStats gun)
         {
             getGunStats(gun);
@@ -456,6 +506,7 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
     // Updated to use key count instead of boolean
     public void GiveKey(keyStats key)
     {
+        // ... [rest of GiveKey remains the same] ...
         keyCount += key.keyCount;
         Debug.Log($"Player picked up {key.keyCount} {key.keyName}(s)! Total keys: {keyCount}");
 
@@ -480,6 +531,7 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
     // Updated to use key count instead of boolean
     public bool UseKey()
     {
+        // ... [rest of UseKey remains the same] ...
         if (keyCount > 0)
         {
             keyCount--;
@@ -495,6 +547,7 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
 
     public void UseMedkitFromPickup(medkitStats medkit)
     {
+        // ... [rest of UseMedkitFromPickup remains the same] ...
         int healAmount = medkit.healAmount;
         HP += healAmount;
         if (HP > HPOrig) HP = HPOrig;
@@ -514,6 +567,7 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
 
     public void getGunStats(gunStats gun)
     {
+        // ... [rest of getGunStats remains the same] ...
         if (gunList.Contains(gun))
         {
             gunListPos = gunList.IndexOf(gun);
@@ -529,6 +583,7 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
 
     void changeGun()
     {
+        // ... [rest of changeGun remains the same] ...
         if (gunList.Count == 0) return;
 
         shootDamage = gunList[gunListPos].shootDamage;
@@ -553,6 +608,7 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
 
     void selectGun()
     {
+        // ... [rest of selectGun remains the same] ...
         if (gunList.Count < 2) return;
 
         float scroll = Input.GetAxis("Mouse ScrollWheel");
@@ -574,6 +630,7 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
 
     public void respawn()
     {
+        // ... [rest of respawn remains the same] ...
         Debug.Log("controller = " + controller);
         Debug.Log("gamemanager.instance = " + gamemanager.instance);
         Debug.Log("spawnPoint = " + gamemanager.instance?.spawnPoint);
