@@ -40,12 +40,6 @@ public class Turret : MonoBehaviour, IDamage
     [Range(0.05f, 1f)][SerializeField] float burstDelay = 0.1f;
     [Range(0.1f, 3f)][SerializeField] float burstCooldown = 1f;
 
-    [Header("**** Visual FOV Display ****")]
-    [SerializeField] bool showFOV = true;
-    [SerializeField] Color fovColor = new Color(1f, 0f, 0f, 0.3f); // RED with transparency (alpha 0.3)
-    [SerializeField] Color detectionColor = new Color(1f, 0f, 0f, 0.6f); // Brighter red when detecting
-    [Range(10, 50)][SerializeField] int fovSegments = 30;
-
     [Header("**** Effects ****")]
     [SerializeField] AudioSource audioSource;
     [SerializeField] AudioClip shootSound;
@@ -53,19 +47,13 @@ public class Turret : MonoBehaviour, IDamage
     [SerializeField] ParticleSystem muzzleFlash;
     [SerializeField] GameObject destructionEffect;
 
-    [Header("**** Debug ****")]
-    [SerializeField] bool debugMode = false;
-
     // State variables
     private Transform target;
     private float fireTimer;
     private bool isFiring = false;
     private bool isBursting = false;
     private Coroutine burstCoroutine;
-    private Material fovMaterial;
-    private Mesh fovMesh;
     private bool hasTarget = false;
-    private Color currentFOVColor;
     private Quaternion initialRotation; // Store initial rotation for clamping
 
     void Start()
@@ -74,17 +62,9 @@ public class Turret : MonoBehaviour, IDamage
         GameObject player = GameObject.FindGameObjectWithTag("Player");
         if (player != null)
             target = player.transform;
-        else if (debugMode)
-            Debug.LogWarning("Turret: No player found with tag 'Player'");
 
         // Store initial rotation for clamping
         initialRotation = transform.rotation;
-
-        // Create FOV visualization if enabled
-        if (showFOV)
-            CreateFOVVisualization();
-
-        currentFOVColor = fovColor;
     }
 
     void Update()
@@ -107,12 +87,12 @@ public class Turret : MonoBehaviour, IDamage
                     hasTarget = true;
                 }
 
-                // Rotate entire turret towards target
-                RotateTowardsTarget(directionToTarget);
-
                 // Check if target is within FOV cone for shooting
                 if (IsInFOV(directionToTarget))
                 {
+                    // Rotate turret towards target within limits
+                    RotateTowardsTarget(directionToTarget);
+
                     // Check firing conditions
                     if (!isFiring && !isBursting && fireTimer >= 1f / fireRate)
                     {
@@ -143,19 +123,24 @@ public class Turret : MonoBehaviour, IDamage
         // Update fire timer
         if (!isFiring && !isBursting)
             fireTimer += Time.deltaTime;
-
-        // Update FOV visualization
-        if (showFOV)
-            UpdateFOVVisualization();
     }
 
     bool IsInFOV(Vector3 directionToTarget)
     {
-        // Calculate angle between turret forward and direction to target
-        float angleToTarget = Vector3.Angle(transform.forward, directionToTarget);
+        // Convert target direction to local space
+        Vector3 localTargetDir = transform.InverseTransformDirection(directionToTarget);
 
-        // Check if within the cone defined by FOV
-        return angleToTarget <= Mathf.Min(horizontalFOV, verticalFOV) / 2f;
+        // Calculate horizontal angle (around Y axis)
+        float horizontalAngle = Mathf.Atan2(localTargetDir.x, localTargetDir.z) * Mathf.Rad2Deg;
+
+        // Calculate vertical angle (around X axis)
+        float verticalAngle = Mathf.Atan2(-localTargetDir.y, localTargetDir.z) * Mathf.Rad2Deg;
+
+        // Check if within both horizontal and vertical FOV
+        bool inHorizontalFOV = Mathf.Abs(horizontalAngle) <= horizontalFOV / 2f;
+        bool inVerticalFOV = Mathf.Abs(verticalAngle) <= verticalFOV / 2f;
+
+        return inHorizontalFOV && inVerticalFOV;
     }
 
     bool HasLineOfSight()
@@ -219,13 +204,6 @@ public class Turret : MonoBehaviour, IDamage
             finalRotation,
             rotationSpeed * Time.deltaTime
         );
-
-        // Debug visualization
-        if (debugMode)
-        {
-            Debug.DrawRay(transform.position, directionToTarget * range, Color.blue);
-            Debug.DrawRay(transform.position, transform.forward * range, Color.green);
-        }
     }
 
     void Fire()
@@ -284,19 +262,13 @@ public class Turret : MonoBehaviour, IDamage
 
     void OnTargetAcquired()
     {
-        if (debugMode) Debug.Log("Turret: Target acquired!");
-
         if (audioSource != null && detectionSound != null)
             audioSource.PlayOneShot(detectionSound);
-
-        currentFOVColor = detectionColor;
     }
 
     void OnTargetLost()
     {
-        if (debugMode) Debug.Log("Turret: Target lost!");
-
-        currentFOVColor = fovColor;
+        // Nothing needed here for now
     }
 
     // IDamage interface implementation
@@ -316,108 +288,6 @@ public class Turret : MonoBehaviour, IDamage
             Instantiate(destructionEffect, transform.position, Quaternion.identity);
 
         Destroy(gameObject);
-    }
-
-    // FOV Visualization
-    void CreateFOVVisualization()
-    {
-        GameObject fovVisual = new GameObject("FOV_Visualization");
-        fovVisual.transform.SetParent(transform);
-        fovVisual.transform.localPosition = Vector3.zero;
-        fovVisual.transform.localRotation = Quaternion.identity;
-
-        MeshFilter meshFilter = fovVisual.AddComponent<MeshFilter>();
-        MeshRenderer meshRenderer = fovVisual.AddComponent<MeshRenderer>();
-
-        fovMesh = new Mesh();
-        meshFilter.mesh = fovMesh;
-
-        // Create material for FOV visualization
-        fovMaterial = new Material(Shader.Find("Transparent/Diffuse"));
-        fovMaterial.color = currentFOVColor;
-        meshRenderer.material = fovMaterial;
-    }
-
-    void UpdateFOVVisualization()
-    {
-        if (fovMesh == null) return;
-
-        List<Vector3> vertices = new List<Vector3>();
-        List<int> triangles = new List<int>();
-
-        float horizontalStep = horizontalFOV / fovSegments;
-        float verticalStep = verticalFOV / fovSegments;
-        float halfHorizontalFOV = horizontalFOV / 2f;
-        float halfVerticalFOV = verticalFOV / 2f;
-
-        // Create cone vertices
-        vertices.Add(Vector3.zero); // Center point (tip of cone)
-
-        for (int v = 0; v <= fovSegments; v++)
-        {
-            float verticalAngle = -halfVerticalFOV + (verticalStep * v);
-
-            for (int h = 0; h <= fovSegments; h++)
-            {
-                float horizontalAngle = -halfHorizontalFOV + (horizontalStep * h);
-
-                // Convert spherical coordinates to Cartesian
-                float x = Mathf.Sin(horizontalAngle * Mathf.Deg2Rad);
-                float y = Mathf.Sin(verticalAngle * Mathf.Deg2Rad);
-                float z = Mathf.Cos(horizontalAngle * Mathf.Deg2Rad) * Mathf.Cos(verticalAngle * Mathf.Deg2Rad);
-
-                Vector3 point = new Vector3(x, y, z) * range;
-                vertices.Add(point);
-            }
-        }
-
-        // Create triangles for cone
-        int vertexCount = fovSegments + 1;
-
-        for (int v = 0; v < fovSegments; v++)
-        {
-            for (int h = 0; h < fovSegments; h++)
-            {
-                int current = 1 + (v * vertexCount) + h;
-                int next = current + 1;
-                int below = current + vertexCount;
-                int belowNext = below + 1;
-
-                // Create two triangles for each quad
-                triangles.Add(0);
-                triangles.Add(current);
-                triangles.Add(next);
-
-                triangles.Add(0);
-                triangles.Add(next);
-                triangles.Add(belowNext);
-
-                triangles.Add(0);
-                triangles.Add(belowNext);
-                triangles.Add(below);
-
-                triangles.Add(0);
-                triangles.Add(below);
-                triangles.Add(current);
-            }
-        }
-
-        fovMesh.Clear();
-        fovMesh.vertices = vertices.ToArray();
-        fovMesh.triangles = triangles.ToArray();
-        fovMesh.RecalculateNormals();
-
-        // Update material color
-        if (fovMaterial != null)
-            fovMaterial.color = currentFOVColor;
-
-        // Position the FOV visualization with the turret
-        GameObject fovVisual = GameObject.Find("FOV_Visualization");
-        if (fovVisual != null)
-        {
-            fovVisual.transform.position = transform.position;
-            fovVisual.transform.rotation = transform.rotation;
-        }
     }
 
     // Public methods for external control
@@ -443,4 +313,8 @@ public class Turret : MonoBehaviour, IDamage
         minVerticalAngle = minVert;
         maxVerticalAngle = maxVert;
     }
+
+    public int GetHealth() => health;
+    public int GetMaxHealth() => 100;
+    public bool HasTarget() => hasTarget;
 }

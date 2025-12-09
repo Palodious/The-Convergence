@@ -627,15 +627,15 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5305551613361319555}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -214.44359, y: 0.12, z: -130.34}
+  m_LocalRotation: {x: -0.030335108, y: 0.51147705, z: 0.023118736, w: 0.8584501}
+  m_LocalPosition: {x: -107.289795, y: 0.012707561, z: -287.48236}
   m_LocalScale: {x: 0.17755426, y: 0.13662967, z: 0.1999651}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2388494469956356219}
   - {fileID: 6884858857666792439}
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: -4.343, y: 61.555, z: 0.498}
 --- !u!114 &-6868155533678741046
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -648,10 +648,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4851fc00c4fa29b47a967fb303db3bb9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Turret
-  turretBase: {fileID: 0}
-  turretHead: {fileID: 0}
-  projectileSpawnPoint: {fileID: 0}
-  projectilePrefab: {fileID: 0}
+  projectileSpawnPoint: {fileID: 7154527414575151517}
+  projectilePrefab: {fileID: 4705637938062420806, guid: 006ca5450a142324ab16a3c205be62f8, type: 3}
   targetLayer:
     serializedVersion: 2
     m_Bits: 8
@@ -670,21 +668,16 @@ MonoBehaviour:
   maxHorizontalAngle: 90
   minVerticalAngle: -30
   maxVerticalAngle: 30
-  fireMode: 0
-  burstFireEnabled: 0
+  fireMode: 1
+  burstFireEnabled: 1
   burstCount: 3
   burstDelay: 0.1
-  burstCooldown: 1
-  showFOV: 1
-  fovColor: {r: 1, g: 0, b: 0, a: 0.3}
-  detectionColor: {r: 1, g: 0, b: 0, a: 0.6}
-  fovSegments: 30
+  burstCooldown: 0.18
   audioSource: {fileID: 0}
   shootSound: {fileID: 0}
   detectionSound: {fileID: 0}
   muzzleFlash: {fileID: 0}
   destructionEffect: {fileID: 0}
-  debugMode: 0
 --- !u!1 &6187088819544799483
 GameObject:
   m_ObjectHideFlags: 0
