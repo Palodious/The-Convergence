@@ -535,17 +535,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 431223416}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
---- !u!114 &450866478 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 9125500908015699645, guid: f9cb63262ab343044a4dbdfabca5a845, type: 3}
-  m_PrefabInstance: {fileID: 4632344348644240603}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
 --- !u!1001 &469850041
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2187,11 +2176,15 @@ PrefabInstance:
     - target: {fileID: 2011094439437967380, guid: 399dfc45c0d6d9c4886ebb12cbb14803, type: 3}
       propertyPath: doorText
       value: 
-      objectReference: {fileID: 450866478}
+      objectReference: {fileID: 0}
     - target: {fileID: 2011094439437967380, guid: 399dfc45c0d6d9c4886ebb12cbb14803, type: 3}
       propertyPath: doorPopupUI
       value: 
       objectReference: {fileID: 132274105}
+    - target: {fileID: 2011094439437967380, guid: 399dfc45c0d6d9c4886ebb12cbb14803, type: 3}
+      propertyPath: requiredKey
+      value: 
+      objectReference: {fileID: 11400000, guid: 9204d912efc754849a17450330846859, type: 2}
     - target: {fileID: 2011094439437967380, guid: 399dfc45c0d6d9c4886ebb12cbb14803, type: 3}
       propertyPath: loadNextScene
       value: 1

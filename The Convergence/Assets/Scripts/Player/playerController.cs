@@ -39,16 +39,16 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
     [SerializeField] AudioClip audMedkit; // Sound for using a medkit
     [Range(0, 1)][SerializeField] float audMedkitVol = 1f; // Volume for medkit use
 
-    // CHANGE: Replace static bool with static int for key count
-    public static int keyCount = 0;
+    [Header("~=~= Keys =~=~")]
+    [SerializeField] List<keyStats> keyList = new List<keyStats>();
 
     // Add static variables to persist data between scenes
     private static List<gunStats> persistentGunList = new List<gunStats>();
+    private static List<keyStats> persistentKeyList = new List<keyStats>(); // NEW: Persistent key list
     private static int persistentGunListPos = 0;
     private static int persistentHP = 100;
-    private static int persistentKeyCount = 0;
 
-    // NEW: Track if this is a new game session
+
     private static bool isNewGameSession = true;
 
     public int ShootDamage => shootDamage;
@@ -99,16 +99,16 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
 
     void Start()
     {
-        controller = GetComponent<CharacterController>();   // FIX
+        controller = GetComponent<CharacterController>();
 
         HPOrig = HP;
         originalHeight = controller.height;
         originalSpeed = speed;
 
-        // Check if we have persistent data (from previous scene)
+        // Check if we have persistent data (from previous scene )
         int currentSceneIndex = SceneManager.GetActiveScene().buildIndex;
 
-        if (currentSceneIndex > 1 && persistentGunList.Count > 1)
+        if (currentSceneIndex > 1 && (persistentGunList.Count > 0 || persistentKeyList.Count > 0))
         {
             // Load persistent data (but not on first scene)
             LoadPersistentData();
@@ -120,14 +120,13 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
         }
     }
 
-    // NEW: Reset all static data
+
     void ResetStaticData()
     {
         persistentGunList.Clear();
+        persistentKeyList.Clear();
         persistentGunListPos = 0;
         persistentHP = HP; // Use the HP from inspector
-        persistentKeyCount = 0;
-        keyCount = 0;
         Debug.Log("Static data reset for new game session");
     }
 
@@ -135,11 +134,19 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
     {
         // Clear current guns
         gunList.Clear();
+        // Clear current keys
+        keyList.Clear();
 
         // Add persistent guns
         foreach (var gun in persistentGunList)
         {
             getGunStats(gun);
+        }
+
+        // Add persistent keys
+        foreach (var key in persistentKeyList)
+        {
+            AddKeyToList(key);
         }
 
         // Set current gun
@@ -152,9 +159,6 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
         // Set HP
         HP = persistentHP;
         if (HP > HPOrig) HP = HPOrig;
-
-        // Set key count
-        keyCount = persistentKeyCount;
 
         // Move to spawn point
         if (gamemanager.instance != null && gamemanager.instance.spawnPoint != null)
@@ -171,9 +175,9 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
     {
         // Save to static variables
         persistentGunList = new List<gunStats>(gunList);
+        persistentKeyList = new List<keyStats>(keyList);
         persistentGunListPos = gunListPos;
         persistentHP = HP;
-        persistentKeyCount = keyCount;
     }
 
     // Call this when transitioning to a new scene
@@ -476,44 +480,79 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
 
         if (item is keyStats key)
         {
-            GiveKey(key);
+            AddKeyToList(key);
             return;
         }
 
         Debug.LogWarning("Picked up unknown item: " + item.name);
     }
 
-    // Updated to use key count instead of boolean
-    public void GiveKey(keyStats key)
+    // Add key to list (similar to getGunStats for guns)
+    void AddKeyToList(keyStats key)
     {
-        keyCount += key.keyCount;
-        Debug.Log($"Player picked up {key.keyCount} {key.keyName}(s)! Total keys: {keyCount}");
-
-        // Look for any lights that weren't originally on the player
-        Light[] allLights = GetComponentsInChildren<Light>();
-        foreach (Light light in allLights)
+        if (!keyList.Contains(key))
         {
-            // Check if this light is part of the player's original setup
-            if (light != null && !light.gameObject.CompareTag("PlayerLight"))
+            keyList.Add(key);
+            Debug.Log($"Player picked up {key.keyName}! Total keys: {keyList.Count}");
+
+            // Remove any non-player lights
+            Light[] allLights = GetComponentsInChildren<Light>();
+            foreach (Light light in allLights)
             {
-                light.enabled = false;
-                Destroy(light);
+                if (light != null && !light.gameObject.CompareTag("PlayerLight"))
+                {
+                    light.enabled = false;
+                    Destroy(light);
+                }
+            }
+
+            if (key.pickupEffect != null)
+            {
+                Instantiate(key.pickupEffect, transform.position, Quaternion.identity);
             }
         }
-
-        if (key.pickupEffect != null)
+        else
         {
-            Instantiate(key.pickupEffect, transform.position, Quaternion.identity);
+            Debug.Log($"Player already has {key.keyName}");
         }
     }
 
-    // Updated to use key count instead of boolean
-    public bool UseKey()
+    // Check if player has a specific key
+    public bool HasKey(keyStats key)
     {
-        if (keyCount > 0)
+        return keyList.Contains(key);
+    }
+
+    // Check if player has any key
+    public bool HasAnyKey()
+    {
+        return keyList.Count > 0;
+    }
+
+    // Use/remove a specific key from the list
+    public bool UseKey(keyStats key)
+    {
+        if (keyList.Contains(key))
         {
-            keyCount--;
-            Debug.Log($"Player used a key! Keys remaining: {keyCount}");
+            keyList.Remove(key);
+            Debug.Log($"Player used {key.keyName}! Keys remaining: {keyList.Count}");
+            return true;
+        }
+        else
+        {
+            Debug.Log($"Player doesn't have {key.keyName}!");
+            return false;
+        }
+    }
+
+    // Use/remove any key
+    public bool UseAnyKey()
+    {
+        if (keyList.Count > 0)
+        {
+            keyStats usedKey = keyList[0]; // Use the first key
+            keyList.RemoveAt(0);
+            Debug.Log($"Player used a key ({usedKey.keyName})! Keys remaining: {keyList.Count}");
             return true;
         }
         else
@@ -521,6 +560,23 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
             Debug.Log("No keys to use!");
             return false;
         }
+    }
+
+    // Get count of specific key type
+    public int GetKeyCount(keyStats key)
+    {
+        int count = 0;
+        foreach (var k in keyList)
+        {
+            if (k == key) count++;
+        }
+        return count;
+    }
+
+    // Get total key count
+    public int GetTotalKeyCount()
+    {
+        return keyList.Count;
     }
 
     public void UseMedkitFromPickup(medkitStats medkit)
@@ -622,7 +678,7 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
         public bool canUseMedkit;
         public float medkitCooldown;
         public int gunListPos;
-        public int keyCount; // Save key count
+        public List<keyStats> keyList; // Save key list
     }
 
     object ISaveable.CaptureState() => CaptureState();
@@ -638,7 +694,7 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
             canUseMedkit = this.canUseMedkit,
             medkitCooldown = this.medkitCooldown,
             gunListPos = this.gunListPos,
-            keyCount = playerController.keyCount // Save key count
+            keyList = new List<keyStats>(keyList) // Save key list
         };
     }
 
@@ -658,8 +714,12 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
             gunListPos = Mathf.Clamp(data.gunListPos, 0, gunList.Count - 1);
             changeGun();
         }
-        // Restore key count
-        playerController.keyCount = data.keyCount;
+
+        // Restore key list
+        if (data.keyList != null)
+        {
+            keyList = new List<keyStats>(data.keyList);
+        }
 
         if (isCrouching)
         {

@@ -2,13 +2,15 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using TMPro; // If you're using TextMeshPro
+using System.Collections; // Add this for IEnumerator
 
 public class Door : MonoBehaviour
 {
     [Header("~=~= Door Settings =~=~")]
     [SerializeField] bool requiresKey = false;
     [SerializeField] bool requiresEnemiesDefeated = true;
-    [Range(1, 10)][SerializeField] int keysRequired = 1;
+    [SerializeField] keyStats requiredKey; // NEW: Specific key required (if requiresKey is true)
+    [SerializeField] int keysRequired = 1; // Number of keys required
 
     [Header("~=~= Interaction Settings =~=~")]
     [SerializeField] KeyCode interactionKey = KeyCode.E;
@@ -16,8 +18,7 @@ public class Door : MonoBehaviour
 
     [Header("~=~= UI Settings =~=~")]
     [SerializeField] GameObject doorPopupUI; // Assign your popup UI GameObject here
-    [SerializeField] TextMeshProUGUI doorText; // If using TextMeshPro
-                                               // [SerializeField] Text doorText; // If using regular Unity UI Text
+    [SerializeField] Text doorText;
 
     [Header("~=~= Slide Settings =~=~")]
     [Range(0.5f, 10f)][SerializeField] float slideDistance = 3f;
@@ -33,12 +34,12 @@ public class Door : MonoBehaviour
     private Vector3 closedPos;
     private Transform playerTransform;
     private bool isPlayerInRange = false;
+    private playerController playerControllerRef; // Cache player controller reference
 
     private void Awake()
     {
         closedPos = transform.position;
 
-        // Initialize UI - hide it at start
         if (doorPopupUI != null)
         {
             doorPopupUI.SetActive(false);
@@ -47,7 +48,6 @@ public class Door : MonoBehaviour
 
     private void Update()
     {
-        // Check for E key press when player is in range
         if (Input.GetKeyDown(interactionKey) && isPlayerInRange && !isOpen)
         {
             TryOpenDoor();
@@ -59,11 +59,11 @@ public class Door : MonoBehaviour
         if (isOpen) return;
         if (!other.CompareTag("Player")) return;
 
-        // Set player reference and range flag
         playerTransform = other.transform;
         isPlayerInRange = true;
 
-        // Show UI prompt
+        playerControllerRef = playerTransform.GetComponent<playerController>();
+
         ShowDoorPrompt();
     }
 
@@ -73,8 +73,8 @@ public class Door : MonoBehaviour
 
         isPlayerInRange = false;
         playerTransform = null;
+        playerControllerRef = null;
 
-        // Hide UI prompt
         HideDoorPrompt();
     }
 
@@ -84,23 +84,35 @@ public class Door : MonoBehaviour
         {
             doorPopupUI.SetActive(true);
 
-            // Update text based on requirements
             if (doorText != null)
             {
                 if (requiresKey)
                 {
-                    // Get current key count from player
                     int playerKeyCount = 0;
-                    if (playerTransform != null)
+                    bool hasRequiredKey = false;
+
+                    if (playerControllerRef != null)
                     {
-                        playerController player = playerTransform.GetComponent<playerController>();
-                        if (player != null)
+                        if (requiredKey != null)
                         {
-                            playerKeyCount = playerController.keyCount;
+                            hasRequiredKey = playerControllerRef.HasKey(requiredKey);
+                            playerKeyCount = playerControllerRef.GetKeyCount(requiredKey);
+                        }
+                        else
+                        {
+                            playerKeyCount = playerControllerRef.GetTotalKeyCount();
+                            hasRequiredKey = playerControllerRef.HasAnyKey();
                         }
                     }
 
-                    doorText.text = $"Press E to open door\nKeys: {playerKeyCount}/{keysRequired}";
+                    if (requiredKey != null)
+                    {
+                        doorText.text = $"Press E to open door\n{requiredKey.keyName}: {playerKeyCount}/{keysRequired}";
+                    }
+                    else
+                    {
+                        doorText.text = $"Press E to open door\nKeys: {playerKeyCount}/{keysRequired}";
+                    }
                 }
                 else
                 {
@@ -124,22 +136,27 @@ public class Door : MonoBehaviour
 
     void TryOpenDoor()
     {
-        // Additional distance check (optional but good practice)
         if (playerTransform != null &&
             Vector3.Distance(transform.position, playerTransform.position) > interactionRange)
         {
             return;
         }
 
-        playerController player = playerTransform.GetComponent<playerController>();
-        if (player == null) return;
+        if (playerControllerRef == null) return;
 
         bool canOpen = true;
 
-        // Check key requirement if needed
         if (requiresKey)
         {
-            canOpen = canOpen && (playerController.keyCount >= keysRequired);
+            if (requiredKey != null)
+            {
+                int keyCount = playerControllerRef.GetKeyCount(requiredKey);
+                canOpen = canOpen && (keyCount >= keysRequired);
+            }
+            else
+            {
+                canOpen = canOpen && (playerControllerRef.GetTotalKeyCount() >= keysRequired);
+            }
         }
 
         // Check enemies requirement if needed
@@ -150,38 +167,72 @@ public class Door : MonoBehaviour
 
         if (canOpen)
         {
-            if (requiresKey && playerController.keyCount >= keysRequired)
+            bool keysUsed = false;
+
+            if (requiresKey)
             {
-                // Spend the required number of keys
-                for (int i = 0; i < keysRequired; i++)
-                    player.UseKey();
+                if (requiredKey != null)
+                {
+                    for (int i = 0; i < keysRequired; i++)
+                    {
+                        keysUsed = playerControllerRef.UseKey(requiredKey);
+                        if (!keysUsed) break;
+                    }
+                }
+                else
+                {
+                    for (int i = 0; i < keysRequired; i++)
+                    {
+                        keysUsed = playerControllerRef.UseAnyKey();
+                        if (!keysUsed) break;
+                    }
+                }
+
+                if (!keysUsed)
+                {
+                    Debug.Log("Failed to use keys!");
+                    return;
+                }
             }
 
-            OpenDoor(); // Door is allowed to open
+            OpenDoor();
         }
         else
         {
             Debug.Log("Cannot open door. Requirements not met.");
-            // Optional: Show a different message when requirements aren't met
+            // Show a different message when requirements aren't met
             if (doorText != null)
             {
                 string requirementMessage = "";
-                if (requiresKey && playerController.keyCount < keysRequired)
+                if (requiresKey)
                 {
-                    requirementMessage = $"Need {keysRequired - playerController.keyCount} more key(s)";
+                    if (requiredKey != null)
+                    {
+                        int keyCount = playerControllerRef.GetKeyCount(requiredKey);
+                        if (keyCount < keysRequired)
+                        {
+                            requirementMessage = $"Need {keysRequired - keyCount} more {requiredKey.keyName}(s)";
+                        }
+                    }
+                    else
+                    {
+                        int totalKeys = playerControllerRef.GetTotalKeyCount();
+                        if (totalKeys < keysRequired)
+                        {
+                            requirementMessage = $"Need {keysRequired - totalKeys} more key(s)";
+                        }
+                    }
                 }
                 else if (requiresEnemiesDefeated && gamemanager.instance.GetGameGoalCount() > 0)
                 {
                     requirementMessage = $"Defeat {gamemanager.instance.GetGameGoalCount()} more enemy(ies)";
                 }
 
-                // Temporarily show requirement message
                 if (!string.IsNullOrEmpty(requirementMessage))
                 {
                     string originalText = doorText.text;
                     doorText.text = requirementMessage;
 
-                    // Optionally revert back after a delay
                     Invoke(nameof(UpdateDoorText), 1.5f);
                 }
             }
@@ -190,20 +241,22 @@ public class Door : MonoBehaviour
 
     private void UpdateDoorText()
     {
-        if (doorText != null && isPlayerInRange && !isOpen)
+        if (doorText != null && isPlayerInRange && !isOpen && playerControllerRef != null)
         {
             if (requiresKey)
             {
                 int playerKeyCount = 0;
-                if (playerTransform != null)
+
+                if (requiredKey != null)
                 {
-                    playerController player = playerTransform.GetComponent<playerController>();
-                    if (player != null)
-                    {
-                        playerKeyCount = playerController.keyCount;
-                    }
+                    playerKeyCount = playerControllerRef.GetKeyCount(requiredKey);
+                    doorText.text = $"Press E to open door\n{requiredKey.keyName}: {playerKeyCount}/{keysRequired}";
                 }
-                doorText.text = $"Press E to open door\nKeys: {playerKeyCount}/{keysRequired}";
+                else
+                {
+                    playerKeyCount = playerControllerRef.GetTotalKeyCount();
+                    doorText.text = $"Press E to open door\nKeys: {playerKeyCount}/{keysRequired}";
+                }
             }
             else
             {
@@ -215,18 +268,16 @@ public class Door : MonoBehaviour
     void OpenDoor()
     {
         isOpen = true;
-        isPlayerInRange = false; // Prevent further interactions
+        isPlayerInRange = false;
 
-        // Hide UI prompt
         HideDoorPrompt();
 
-        // Start sliding the door upward
         StartCoroutine(SlideUp());
 
         Debug.Log("Door opened!");
     }
 
-    private System.Collections.IEnumerator SlideUp()
+    private IEnumerator SlideUp()
     {
         Vector3 targetPos = closedPos + new Vector3(0, slideDistance, 0);
 
@@ -288,12 +339,5 @@ public class Door : MonoBehaviour
                 Debug.LogWarning("No next scene available in build settings!");
             }
         }
-    }
-
-    // Optional: Visualize interaction range in editor
-    private void OnDrawGizmosSelected()
-    {
-        Gizmos.color = Color.yellow;
-        Gizmos.DrawWireSphere(transform.position, interactionRange);
     }
 }

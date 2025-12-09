@@ -3,21 +3,13 @@ using UnityEngine;
 public class keyPickup : MonoBehaviour
 {
     [SerializeField] keyStats key;
-    [SerializeField] private bool isPickup = true; // Toggle for enemies dropping keys
+    [SerializeField] private bool isPickup = true;
 
     private void Start()
     {
-        // If this is attached to an enemy, the enemy should control whether it drops this
         if (!isPickup)
         {
             this.enabled = false;
-        }
-
-        // Check if player already has keys and self-destruct
-        if (playerController.keyCount > 0)
-        {
-            // Destroy this key if player already has some
-            //Destroy(gameObject);
         }
     }
 
@@ -33,9 +25,8 @@ public class keyPickup : MonoBehaviour
             Light keyLight = GetComponent<Light>();
             if (keyLight != null)
             {
-                // Detach from parent BEFORE destroying
                 keyLight.transform.SetParent(null);
-                Destroy(keyLight.gameObject); // Destroy the light GameObject completely
+                Destroy(keyLight.gameObject);
             }
 
             player.GetItem(key);
