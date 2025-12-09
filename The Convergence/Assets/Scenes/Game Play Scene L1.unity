@@ -333,6 +333,33 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 63b017899aae5ff4aa43b538ad0e287c, type: 3}
+--- !u!1 &290089258 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5820588852238277283, guid: 399dfc45c0d6d9c4886ebb12cbb14803, type: 3}
+  m_PrefabInstance: {fileID: 2245405025253214755}
+  m_PrefabAsset: {fileID: 0}
+--- !u!64 &290089262
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 290089258}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 5
+  m_Convex: 0
+  m_CookingOptions: 30
+  m_Mesh: {fileID: 4300004, guid: d38c6eb5eac83874ca4e1361ff5ff63c, type: 3}
 --- !u!4 &342238114 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 520143119304058338, guid: 399dfc45c0d6d9c4886ebb12cbb14803, type: 3}
@@ -1452,6 +1479,33 @@ MonoBehaviour:
   dropsKey: 1
   keyPrefab: {fileID: 4189237473474580957, guid: 00222f0a4e15b1c48915dfcb77310ff1, type: 3}
   keyDropChance: 0.05
+--- !u!1 &1673593358 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8600387202333382191, guid: 399dfc45c0d6d9c4886ebb12cbb14803, type: 3}
+  m_PrefabInstance: {fileID: 2245405025253214755}
+  m_PrefabAsset: {fileID: 0}
+--- !u!64 &1673593362
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1673593358}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 5
+  m_Convex: 0
+  m_CookingOptions: 30
+  m_Mesh: {fileID: 4300006, guid: d38c6eb5eac83874ca4e1361ff5ff63c, type: 3}
 --- !u!1001 &1715029963
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2204,6 +2258,12 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 3740002383394900123, guid: 399dfc45c0d6d9c4886ebb12cbb14803, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1503525379}
+    - targetCorrespondingSourceObject: {fileID: 8600387202333382191, guid: 399dfc45c0d6d9c4886ebb12cbb14803, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1673593362}
+    - targetCorrespondingSourceObject: {fileID: 5820588852238277283, guid: 399dfc45c0d6d9c4886ebb12cbb14803, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 290089262}
     - targetCorrespondingSourceObject: {fileID: 940871793949165948, guid: 399dfc45c0d6d9c4886ebb12cbb14803, type: 3}
       insertIndex: -1
       addedObject: {fileID: 209195312}
@@ -2603,6 +2663,10 @@ PrefabInstance:
     - target: {fileID: 925057490261081119, guid: a601aec151a45d14bbc780261b967181, type: 3}
       propertyPath: m_Name
       value: Player
+      objectReference: {fileID: 0}
+    - target: {fileID: 1015894156279453698, guid: a601aec151a45d14bbc780261b967181, type: 3}
+      propertyPath: HP
+      value: 1000
       objectReference: {fileID: 0}
     - target: {fileID: 1015894156279453698, guid: a601aec151a45d14bbc780261b967181, type: 3}
       propertyPath: audHurt.Array.size
