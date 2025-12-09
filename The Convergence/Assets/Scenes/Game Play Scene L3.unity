@@ -2372,6 +2372,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Enemy Spawner (1)
       objectReference: {fileID: 0}
+    - target: {fileID: 7993714650583370632, guid: e0dbd797383f16544bebff13f998dc17, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 8134648957674596171, guid: e0dbd797383f16544bebff13f998dc17, type: 3}
       propertyPath: m_LocalPosition.x
       value: 26.36
@@ -2530,7 +2534,7 @@ Transform:
   m_GameObject: {fileID: 330546483}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -13.500008, y: -4.79, z: 0}
+  m_LocalPosition: {x: -13.500008, y: -4.8, z: 0}
   m_LocalScale: {x: 1, y: 0.2, z: 10}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -4151,6 +4155,70 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 4073034636493676790, guid: 6fe490c9cf197954c84be32ab63ab787, type: 3}
   m_PrefabInstance: {fileID: 1256235190}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &499596865
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 499596866}
+  - component: {fileID: 499596867}
+  m_Layer: 0
+  m_Name: NavMesh Surface
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &499596866
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 499596865}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 580846985}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &499596867
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 499596865}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7a5ac11cc976e418e8d13136b07e1f52, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.AI.Navigation::Unity.AI.Navigation.NavMeshSurface
+  m_SerializedVersion: 0
+  m_AgentTypeID: 0
+  m_CollectObjects: 0
+  m_Size: {x: 10, y: 10, z: 10}
+  m_Center: {x: 0, y: 2, z: 0}
+  m_LayerMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_UseGeometry: 0
+  m_DefaultArea: 0
+  m_GenerateLinks: 0
+  m_IgnoreNavMeshAgent: 1
+  m_IgnoreNavMeshObstacle: 1
+  m_OverrideTileSize: 0
+  m_TileSize: 256
+  m_OverrideVoxelSize: 0
+  m_VoxelSize: 0.16666667
+  m_MinRegionArea: 2
+  m_NavMeshData: {fileID: 23800000, guid: 0561cd63da2a2ad48a3a239bf7a42fef, type: 2}
+  m_BuildHeightMesh: 0
 --- !u!1001 &501766684
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -5134,6 +5202,10 @@ PrefabInstance:
     - target: {fileID: 7993714650583370632, guid: e0dbd797383f16544bebff13f998dc17, type: 3}
       propertyPath: m_Name
       value: Enemy Spawner
+      objectReference: {fileID: 0}
+    - target: {fileID: 7993714650583370632, guid: e0dbd797383f16544bebff13f998dc17, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8134648957674596171, guid: e0dbd797383f16544bebff13f998dc17, type: 3}
       propertyPath: m_LocalPosition.x
@@ -7741,7 +7813,7 @@ Transform:
   m_GameObject: {fileID: 906410812}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -14.480003, y: -5.07, z: 0}
+  m_LocalPosition: {x: -14.480003, y: -5.14, z: 0}
   m_LocalScale: {x: 1, y: 0.2, z: 10}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -8997,15 +9069,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Door
   requiresKey: 0
   requiresEnemiesDefeated: 1
-  keysRequired: 1
+  requiredKey: {fileID: 0}
+  keysRequired: 0
   interactionKey: 101
-  interactionRange: 3
-  doorPopupUI: {fileID: 0}
+  interactionRange: 4
+  doorPopupUI: {fileID: 2098251529}
   doorText: {fileID: 0}
   slideDistance: 3
   slideSpeed: 2
   loadNextScene: 1
-  sceneName: Game Play Scene L4
+  sceneName: 
   sceneBuildIndex: -1
   sceneLoadDelay: 0.5
 --- !u!33 &1068197665
@@ -9227,8 +9300,8 @@ Transform:
   m_GameObject: {fileID: 1106560512}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -12.93, y: -5.7, z: 0}
-  m_LocalScale: {x: 1, y: 0.2, z: 10}
+  m_LocalPosition: {x: -12.47, y: -5.48, z: 0}
+  m_LocalScale: {x: 1, y: 1.529618, z: 10}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 432884220}
@@ -10594,6 +10667,10 @@ PrefabInstance:
     - target: {fileID: 3259630004105229835, guid: 9fece0eeb6bf21a47be625896bee55d6, type: 3}
       propertyPath: m_Name
       value: Enemy Spawn 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3259630004105229835, guid: 9fece0eeb6bf21a47be625896bee55d6, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4070105055624633129, guid: 9fece0eeb6bf21a47be625896bee55d6, type: 3}
       propertyPath: m_LocalPosition.x
@@ -12320,6 +12397,10 @@ PrefabInstance:
       propertyPath: m_LocalPosition.y
       value: 0.5
       objectReference: {fileID: 0}
+    - target: {fileID: 940359398572904078, guid: 71349d12ca19a83438bf5fc29848deea, type: 3}
+      propertyPath: m_NavMeshData
+      value: 
+      objectReference: {fileID: 23800000, guid: a93b86fb6d504eb4c8642c610499295b, type: 2}
     - target: {fileID: 968429298911888951, guid: 71349d12ca19a83438bf5fc29848deea, type: 3}
       propertyPath: m_LocalPosition.y
       value: 4.3200006
@@ -13138,15 +13219,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7505269893467805508, guid: 71349d12ca19a83438bf5fc29848deea, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -89.3
+      value: -78.02
       objectReference: {fileID: 0}
     - target: {fileID: 7505269893467805508, guid: 71349d12ca19a83438bf5fc29848deea, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -87.77
+      value: 2.27
       objectReference: {fileID: 0}
     - target: {fileID: 7505269893467805508, guid: 71349d12ca19a83438bf5fc29848deea, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -87.8
+      value: -86.65
       objectReference: {fileID: 0}
     - target: {fileID: 7505269893467805508, guid: 71349d12ca19a83438bf5fc29848deea, type: 3}
       propertyPath: m_LocalRotation.w
@@ -13410,6 +13491,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 8769834007949753907, guid: 71349d12ca19a83438bf5fc29848deea, type: 3}
       insertIndex: -1
       addedObject: {fileID: 432884220}
+    - targetCorrespondingSourceObject: {fileID: 8769834007949753907, guid: 71349d12ca19a83438bf5fc29848deea, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 499596866}
     - targetCorrespondingSourceObject: {fileID: 4519308589962368237, guid: 71349d12ca19a83438bf5fc29848deea, type: 3}
       insertIndex: 0
       addedObject: {fileID: 645583817}
@@ -19075,8 +19159,8 @@ Transform:
   m_GameObject: {fileID: 2095691947}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -15.440002, y: -5.35, z: 0}
-  m_LocalScale: {x: 1, y: 0.2, z: 10}
+  m_LocalPosition: {x: -15.440002, y: -5.5, z: 0}
+  m_LocalScale: {x: 1, y: 0.22206, z: 10}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 432884220}
@@ -19286,6 +19370,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Button
+--- !u!1 &2098251529 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5545031628772138565, guid: f9cb63262ab343044a4dbdfabca5a845, type: 3}
+  m_PrefabInstance: {fileID: 2098251525}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &2103366256 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 3181765038554556360, guid: 5ecb92245a2cee7428c7fba5d3d4e3aa, type: 3}
