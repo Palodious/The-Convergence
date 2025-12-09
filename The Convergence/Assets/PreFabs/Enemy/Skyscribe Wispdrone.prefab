@@ -69,13 +69,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::enemyAI
   ignoreLayer:
     serializedVersion: 2
-    m_Bits: 128
+    m_Bits: 192
   enemyType: 1
   agent: {fileID: 4143625095129991600}
   anim: {fileID: 0}
   model: {fileID: 8040678228756557300}
   headPos: {fileID: 5804238826743989315}
-  turretHead: {fileID: 0}
   HP: 50
   FOV: 60
   faceTargetSpeed: 100
@@ -91,15 +90,6 @@ MonoBehaviour:
   meleeRange: 0.1
   attackRate: 0.1
   meleeDamageAmount: 10
-  enableTurretMode: 0
-  turretRotationAxes: []
-  turretRotationSpeed: 5
-  idleRotationSpeed: 10
-  minHorizontalAngle: -45
-  maxHorizontalAngle: 45
-  minVerticalAngle: -20
-  maxVerticalAngle: 20
-  independentVerticalRotation: 0
   canJumpAttack: 0
   jumpForce: 0.1
   jumpAttackRange: 1
@@ -136,7 +126,6 @@ MonoBehaviour:
     m_RotationOrder: 4
   jumpLandingEffect: {fileID: 0}
   jumpDamageDelay: 0.1
-  showJumpArcDebug: 0
   jumpWindupTime: 0.2
   landingDistanceFromPlayer: 0.5
   canDashAttack: 0
@@ -146,12 +135,6 @@ MonoBehaviour:
   minDashDistance: 4
   dashAttackCooldown: 0.5
   playerFleeingThreshold: 1.1
-  specialAttackCheckInterval: 0.5
-  maxPlayerTrackingDistance: 50
-  useBurstFire: 0
-  bulletsPerBurst: 3
-  timeBetweenBurstShots: 0.1
-  timeBetweenBursts: 1
   useAnimations: 0
   usePatrol: 1
   useRoam: 0
@@ -178,8 +161,10 @@ MonoBehaviour:
   audJumpLandingVol: 0.7
   audDash: []
   audDashVol: 0.5
-  coinRewardAmount: 4
   itemDrop: {fileID: 0}
+  currencyDropAmount: 10
+  isBoss: 0
+  bossDeathEffect: {fileID: 0}
   patrolPoints:
   - {fileID: 0}
   - {fileID: 0}

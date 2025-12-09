@@ -70,19 +70,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::enemyAI
   ignoreLayer:
     serializedVersion: 2
-    m_Bits: 2048
+    m_Bits: 2112
   enemyType: 0
   agent: {fileID: 6259301409843038931}
   anim: {fileID: 2944604361103831847}
   model: {fileID: 6421731956221677993}
   headPos: {fileID: 780162373615375869}
-  turretHead: {fileID: 0}
   HP: 100
   FOV: 80
   faceTargetSpeed: 100
   roamDist: 20
   roamPauseTime: 3
   animTransSpeed: 8
+  sightRange: 20
   projectile: {fileID: 4705637938062420806, guid: ff62b65117c527244a483945471f67d0, type: 3}
   shootRate: 0.5
   shootPOS: {fileID: 3537618708243308596}
@@ -91,15 +91,6 @@ MonoBehaviour:
   meleeRange: 5
   attackRate: 0.5
   meleeDamageAmount: 1
-  enableTurretMode: 0
-  turretRotationAxes: []
-  turretRotationSpeed: 5
-  idleRotationSpeed: 10
-  minHorizontalAngle: -45
-  maxHorizontalAngle: 45
-  minVerticalAngle: -20
-  maxVerticalAngle: 20
-  independentVerticalRotation: 0
   canJumpAttack: 1
   jumpForce: 2.4
   jumpAttackRange: 10.8
@@ -108,6 +99,36 @@ MonoBehaviour:
   jumpAttackDamage: 4
   jumpAttackRadius: 2.03
   jumpTimer: 2
+  jumpHeight: 3
+  jumpDuration: 1
+  jumpCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  jumpLandingEffect: {fileID: 0}
+  jumpDamageDelay: 0.1
+  jumpWindupTime: 0.2
+  landingDistanceFromPlayer: 0.5
   canDashAttack: 1
   dashSpeed: 12.5
   dashDuration: 1.04
@@ -115,10 +136,6 @@ MonoBehaviour:
   minDashDistance: 9.2
   dashAttackCooldown: 7.04
   playerFleeingThreshold: 2.72
-  useBurstFire: 0
-  bulletsPerBurst: 3
-  timeBetweenBurstShots: 0.1
-  timeBetweenBursts: 1
   useAnimations: 1
   usePatrol: 0
   useRoam: 1
@@ -139,9 +156,16 @@ MonoBehaviour:
   audDeathVol: 0.15
   audJumpAttack: []
   audJumpAttackVol: 0
+  audJumpWindup: {fileID: 0}
+  audJumpWindupVol: 0.5
+  audJumpLanding: {fileID: 0}
+  audJumpLandingVol: 0.7
   audDash: []
   audDashVol: 0.5
   itemDrop: {fileID: 0}
+  currencyDropAmount: 10
+  isBoss: 0
+  bossDeathEffect: {fileID: 0}
   patrolPoints: []
   patrolSourceId: 
 --- !u!195 &6259301409843038931

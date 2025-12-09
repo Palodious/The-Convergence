@@ -76,10 +76,6 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
     [Range(0.5f, 30f)][SerializeField] float dashAttackCooldown;
     [Range(1.1f, 10f)][SerializeField] float playerFleeingThreshold; // How fast player must be moving away
 
-    [Header("**** Special Attack Tracking ****")]
-    [Range(0.1f, 5f)][SerializeField] float specialAttackCheckInterval = 0.5f; // How often to check for special attacks
-    [Range(10f, 200f)][SerializeField] float maxPlayerTrackingDistance = 50f; // Max distance to track player for special attacks
-
     [Header("**** Behavior Toggles ****")]
     public bool useAnimations = true; // Toggle all animation logic on/off
     public bool usePatrol = true; // Toggle patrol behavior
@@ -142,7 +138,6 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
     private Rigidbody rb;
     private bool wasKinematic;
     private Vector3 jumpTarget;
-    private Coroutine jumpCheckCoroutine;
     private Coroutine jumpCoroutine; // For arc jump coroutine
     private Vector3 jumpStartPosition;
     private bool hasLanded = false;
@@ -154,13 +149,6 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
     private float dashTimeRemaining;
     private Vector3 lastPlayerPosition;
     private Vector3 playerVelocity;
-
-
-
-    // Special attack tracking variables
-    private float specialAttackCheckTimer = 0f;
-    private bool playerTracked = false;
-    private Vector3 lastKnownPlayerPosition;
 
     void Start()
     {
@@ -185,7 +173,6 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
         if (gamemanager.instance.player != null)
         {
             lastPlayerPosition = gamemanager.instance.player.transform.position;
-            lastKnownPlayerPosition = lastPlayerPosition;
         }
 
         // Initialize patrol by setting the first patrol point as the destination
@@ -194,12 +181,6 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
 
         if (itemDrop == null)
             itemDrop = GetComponent<ItemDrop>();
-
-        // Start continuous player tracking for special attacks
-        if (canJumpAttack || canDashAttack)
-        {
-            StartCoroutine(ContinuousPlayerTracking());
-        }
     }
 
     void Update()
@@ -212,7 +193,6 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
         attackTimer += Time.deltaTime;
         jumpAttackTimer += Time.deltaTime;
         dashAttackTimer += Time.deltaTime;
-        specialAttackCheckTimer += Time.deltaTime;
 
         // Track player velocity for dash attack
         TrackPlayerVelocity();
@@ -236,14 +216,6 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
                     transform.rotation = Quaternion.LookRotation(lookDir);
             }
             return; // Skip other updates during jump
-        }
-
-        // Periodically check for special attacks even when not in direct combat
-        if (specialAttackCheckTimer >= specialAttackCheckInterval && playerTracked)
-        {
-            CheckSpecialAttacks(lastKnownPlayerPosition,
-                Vector3.Distance(transform.position, lastKnownPlayerPosition));
-            specialAttackCheckTimer = 0f;
         }
 
         // Play footsteps if moving and not performing special attacks
@@ -273,13 +245,13 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
             HandleMobileBehavior();
         }
     }
-    
+
     // Separate behavior handler for mobile enemies
     void HandleMobileBehavior()
     {
         // Already checked in Update(), but double-check for safety
         if (isJumpAttacking || isDashing) return;
-        
+
         if (playerInTrigger && !canSeePlayer())
         {
             checkRoamOrPatrol();
@@ -288,109 +260,6 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
         {
             checkRoamOrPatrol();
         }
-    }
-
-    // Continuously track player position even when not in direct sight
-    IEnumerator ContinuousPlayerTracking()
-    {
-        while (isAlive)
-        {
-            if (gamemanager.instance.player != null)
-            {
-                Vector3 playerPos = gamemanager.instance.player.transform.position;
-                float distanceToPlayer = Vector3.Distance(transform.position, playerPos);
-                
-                // Track player if within max tracking distance
-                if (distanceToPlayer <= maxPlayerTrackingDistance)
-                {
-                    playerTracked = true;
-                    lastKnownPlayerPosition = playerPos;
-                    
-                    // Check for special attacks even without direct line of sight
-                    CheckSpecialAttacks(playerPos, distanceToPlayer);
-                }
-                else
-                {
-                    playerTracked = false;
-                }
-            }
-            yield return new WaitForSeconds(0.3f); // Check every 0.3 seconds
-        }
-    }
-
-    // Check if special attacks should be triggered
-    void CheckSpecialAttacks(Vector3 playerPos, float distanceToPlayer)
-    {
-        // Don't check if already performing a special attack or if dead
-        if (isDashing || isJumpAttacking || !isAlive) return;
-        
-        // Check for jump attack opportunity
-        if (canJumpAttack && !isJumpAttacking && jumpAttackTimer >= jumpAttackCooldown)
-        {
-            float heightDifference = playerPos.y - transform.position.y;
-            
-            // Check if player is significantly above enemy (on an object/ledge)
-            if (heightDifference >= minHeightDifference && distanceToPlayer <= jumpAttackRange)
-            {
-                // Check if there's a clear path for jump
-                if (HasJumpPathToPlayer(playerPos))
-                {
-                    StartJumpAttack();
-                    return;
-                }
-            }
-        }
-        
-        // Check for dash attack opportunity
-        if (canDashAttack && !isDashing && dashAttackTimer >= dashAttackCooldown)
-        {
-            // Check distance conditions
-            if (distanceToPlayer >= minDashDistance && distanceToPlayer <= dashAttackRange)
-            {
-                // Check if player is moving away or if we need to close distance quickly
-                Vector3 directionToEnemy = (transform.position - playerPos).normalized;
-                float fleeingSpeed = Vector3.Dot(playerVelocity, directionToEnemy);
-                
-                // Dash if player is fleeing OR if we need to close distance to a ranged target
-                if (fleeingSpeed < -playerFleeingThreshold || 
-                    (enemyType == EnemyType.Melee && distanceToPlayer > meleeRange * 2f))
-                {
-                    StartDashAttack();
-                    return;
-                }
-            }
-        }
-    }
-
-    // Check if there's a viable jump path to the player
-    bool HasJumpPathToPlayer(Vector3 playerPos)
-    {
-        // Simple check: if player is directly above or has minimal horizontal obstruction
-        Vector3 horizontalDir = new Vector3(playerPos.x - transform.position.x, 0, playerPos.z - transform.position.z);
-        float horizontalDistance = horizontalDir.magnitude;
-        
-        // If player is almost directly above, allow jump
-        if (horizontalDistance < 2f)
-            return true;
-        
-        // Check for obstacles between enemy and player
-        Vector3 checkPos = transform.position + Vector3.up * 1f; // Start check from chest height
-        Vector3 targetPos = playerPos + Vector3.up * 0.5f; // Check to player's midsection
-        
-        RaycastHit hit;
-        if (Physics.Raycast(checkPos, (targetPos - checkPos).normalized, out hit, jumpAttackRange, ~ignoreLayer))
-        {
-            // If we hit the player directly, path is clear
-            if (hit.collider.CompareTag("Player"))
-                return true;
-            
-            // If we hit something else, check if we can jump over it
-            float obstacleHeight = hit.point.y - transform.position.y;
-            if (obstacleHeight < jumpHeight * 0.8f) // Can jump over obstacles up to 80% of jump height
-                return true;
-        }
-        
-        return false;
     }
 
     // Track player velocity for dash attack prediction
@@ -415,7 +284,7 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
         float heightDifference = playerPos.y - transform.position.y;
 
         // More aggressive: allow jump even if player is slightly lower but within range
-        return (heightDifference >= minHeightDifference || distanceToPlayer <= jumpAttackRange * 0.5f) 
+        return (heightDifference >= minHeightDifference || distanceToPlayer <= jumpAttackRange * 0.5f)
                && distanceToPlayer <= jumpAttackRange;
     }
 
@@ -458,7 +327,7 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
         {
             agent.isStopped = true;
             agent.velocity = Vector3.zero;
-            
+
             // Clear the path without using ResetPath()
             try
             {
@@ -471,10 +340,7 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
             }
         }
 
-        // Play windup animation and sound
-        if (useAnimations && anim != null)
-            anim.SetTrigger("JumpWindup");
-        
+        // Play windup sound only (no animation trigger since it doesn't exist yet)
         if (audJumpWindup != null && aud != null)
             aud.PlayOneShot(audJumpWindup, audJumpWindupVol);
 
@@ -491,14 +357,10 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
     // Coroutine to perform arc-style jump attack
     IEnumerator PerformArcJumpAttack()
     {
-        // Wait for windup animation
+        // Wait for windup time
         yield return new WaitForSeconds(jumpWindupTime);
 
-        // Play jump animation
-        if (useAnimations && anim != null)
-            anim.SetTrigger("JumpAttack");
-
-        // Play jump sound
+        // Play jump sound only (no animation trigger since it doesn't exist yet)
         if (audJumpAttack.Length > 0 && aud != null)
             aud.PlayOneShot(audJumpAttack[Random.Range(0, audJumpAttack.Length)], audJumpAttackVol);
 
@@ -644,6 +506,7 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
         return position;
     }
 
+    // Start dash attack
     void StartDashAttack()
     {
         if (isDashing || gamemanager.instance.player == null) return;
@@ -652,26 +515,46 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
         dashAttackTimer = 0f;
         dashTimeRemaining = dashDuration;
 
-        // Calculate dash direction with prediction
+        // Use raycast to get direct path to player
         Vector3 playerPos = gamemanager.instance.player.transform.position;
-        Vector3 playerPredictedPos = playerPos + playerVelocity * 0.3f; // Predict player movement
-        dashDirection = (playerPredictedPos - transform.position).normalized;
+        Vector3 rayDirection = (playerPos - transform.position).normalized;
+
+        // Raycast to check for clear path to player
+        RaycastHit hit;
+        if (Physics.Raycast(transform.position + Vector3.up * 0.5f, rayDirection, out hit, dashAttackRange * 2f, ~ignoreLayer))
+        {
+            if (hit.collider.CompareTag("Player"))
+            {
+                // Clear path to player, dash directly toward them
+                dashDirection = rayDirection;
+            }
+            else
+            {
+                // Something in the way, dash in player's general direction
+                dashDirection = rayDirection;
+            }
+        }
+        else
+        {
+            // No hit, dash in player's direction
+            dashDirection = rayDirection;
+        }
+
         dashDirection.y = 0; // Keep dash horizontal
 
         // Stop the agent during dash
-        if (agent != null && agent.isActiveAndEnabled) 
+        if (agent != null && agent.isActiveAndEnabled)
         {
             agent.isStopped = true;
             agent.velocity = Vector3.zero;
         }
 
-        // Play animation and sound
+        // Play animation and sound - ONLY set Speed, no DashAttack trigger
         if (useAnimations && anim != null)
         {
-            anim.SetTrigger("DashAttack");
             anim.SetFloat("Speed", dashSpeed); // Set animation speed to match dash
         }
-        
+
         if (audDash.Length > 0 && aud != null)
             aud.PlayOneShot(audDash[Random.Range(0, audDash.Length)], audDashVol);
 
@@ -684,14 +567,48 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
     void HandleDashMovement()
     {
         if (!isDashing) return;
-        
+
         dashTimeRemaining -= Time.deltaTime;
 
-        // Move with constant speed
-        Vector3 movement = dashDirection * dashSpeed * Time.deltaTime;
-        transform.position += movement;
+        // Update dash direction each frame using raycast to follow player
+        if (gamemanager.instance.player != null)
+        {
+            Vector3 playerPos = gamemanager.instance.player.transform.position;
+            Vector3 rayDirection = (playerPos - transform.position).normalized;
 
-        // Update animation speed during dash to keep enemy "running"
+            // Raycast to check line of sight to player
+            RaycastHit hit;
+            if (Physics.Raycast(transform.position + Vector3.up * 0.5f, rayDirection, out hit, dashAttackRange * 2f, ~ignoreLayer))
+            {
+                if (hit.collider.CompareTag("Player"))
+                {
+                    // Clear line of sight, update dash direction
+                    dashDirection = Vector3.Slerp(dashDirection, rayDirection, 10f * Time.deltaTime);
+                    dashDirection.y = 0;
+                    dashDirection.Normalize();
+                }
+            }
+
+            // Face the direction we're dashing
+            if (dashDirection != Vector3.zero)
+                transform.rotation = Quaternion.LookRotation(dashDirection);
+        }
+
+        // Check for wall collisions before moving
+        if (!CheckWallCollision())
+        {
+            // Move with constant speed
+            Vector3 movement = dashDirection * dashSpeed * Time.deltaTime;
+            transform.position += movement;
+        }
+        else
+        {
+            // Hit a wall, end dash
+            EndDash();
+            return;
+        }
+
+        // Update animation speed during dash
         if (useAnimations && anim != null)
             anim.SetFloat("Speed", dashSpeed);
 
@@ -714,8 +631,8 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
             }
         }
 
-        // End dash when time runs out or if we hit a wall
-        if (dashTimeRemaining <= 0 || CheckWallCollision())
+        // End dash when time runs out
+        if (dashTimeRemaining <= 0)
         {
             EndDash();
         }
@@ -724,9 +641,9 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
     // Check for wall collisions during dash
     bool CheckWallCollision()
     {
-        // Simple wall check using raycast
+        // Raycast forward to check for walls
         RaycastHit hit;
-        if (Physics.Raycast(transform.position, dashDirection, out hit, 1f, ~ignoreLayer))
+        if (Physics.Raycast(transform.position + Vector3.up * 0.5f, dashDirection, out hit, 1f, ~ignoreLayer))
         {
             if (!hit.collider.CompareTag("Player") && !hit.collider.isTrigger)
                 return true;
@@ -738,7 +655,7 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
     void EndDash()
     {
         if (!isDashing) return;
-        
+
         isDashing = false;
 
         // Reset animation speed
@@ -749,7 +666,7 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
         if (agent != null && agent.isActiveAndEnabled)
         {
             agent.isStopped = false;
-            
+
             // Resume chasing player if still alive
             if (gamemanager.instance.player != null && isAlive)
             {
@@ -769,14 +686,10 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
     void LandJumpAttack()
     {
         if (hasLanded || !isJumpAttacking) return;
-        
+
         hasLanded = true;
 
-        // Play landing animation
-        if (useAnimations && anim != null)
-            anim.SetTrigger("JumpLand");
-        
-        // Play landing sound
+        // Play landing sound only (no animation trigger since it doesn't exist yet)
         if (audJumpLanding != null && aud != null)
             aud.PlayOneShot(audJumpLanding, audJumpLandingVol);
 
@@ -864,7 +777,7 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
     void EndJumpAttack()
     {
         if (!isJumpAttacking) return;
-        
+
         isJumpAttacking = false;
         hasLanded = false;
 
@@ -872,7 +785,7 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
         if (agent != null && agent.isActiveAndEnabled)
         {
             agent.isStopped = false;
-            
+
             // Resume chasing player if still alive
             if (gamemanager.instance.player != null && isAlive)
             {
@@ -899,10 +812,10 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
     void CancelJumpAttack()
     {
         if (!isJumpAttacking) return;
-        
+
         isJumpAttacking = false;
         hasLanded = false;
-        
+
         // Re-enable agent movement if it exists
         if (agent != null && agent.isActiveAndEnabled)
         {
@@ -915,7 +828,7 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
                 Debug.LogWarning($"Could not re-enable agent after jump cancellation: {e.Message}");
             }
         }
-        
+
         // Stop jump coroutine
         if (jumpCoroutine != null)
         {
@@ -959,7 +872,7 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
     void roam()
     {
         if (agent == null || !agent.isActiveAndEnabled || isJumpAttacking || isDashing) return;
-        
+
         roamTimer = 0;
         agent.stoppingDistance = 0;
 
@@ -1004,12 +917,7 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
         if (gamemanager.instance.player == null) return false;
 
         Vector3 playerPos = gamemanager.instance.player.transform.position;
-        lastKnownPlayerPosition = playerPos; // Update last known position
-        playerTracked = true;
-
-        // Use head position
-        Transform lookPoint = headPos;
-        playerDir = playerPos - lookPoint.position;
+        playerDir = playerPos - headPos.position;
         float distanceToPlayer = playerDir.magnitude;
 
         if (distanceToPlayer > sightRange)
@@ -1019,7 +927,7 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
             return false;
         }
 
-        angleToPlayer = Vector3.Angle(playerDir, lookPoint.forward);
+        angleToPlayer = Vector3.Angle(playerDir, headPos.forward);
         if (angleToPlayer > FOV)
         {
             if (agent != null && agent.isActiveAndEnabled && !isJumpAttacking && !isDashing)
@@ -1028,10 +936,10 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
         }
 
         RaycastHit hit;
-        if (Physics.Raycast(lookPoint.position, playerDir.normalized, out hit, sightRange, ~ignoreLayer))
+        if (Physics.Raycast(headPos.position, playerDir.normalized, out hit, sightRange, ~ignoreLayer))
         {
             if (hit.collider.CompareTag("Player"))
-            
+            {
                 // Check for special attacks
                 if (ShouldJumpAttack())
                 {
@@ -1081,6 +989,7 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
                     agent.remainingDistance <= agent.stoppingDistance)
                     faceTarget();
                 return true;
+            }
         }
         if (agent != null && agent.isActiveAndEnabled && !isJumpAttacking && !isDashing)
             agent.stoppingDistance = 0;
@@ -1119,7 +1028,7 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
 
         HP -= amount;
 
-        // Still allow damage during special attacks
+        // Flash damage color
         if (isDashing || isJumpAttacking)
         {
             StartCoroutine(flashSpecialAttackColor());
@@ -1127,12 +1036,6 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
         else
         {
             StartCoroutine(flashRed());
-        }
-
-        if (amount > 5 && (isDashing || isJumpAttacking))
-        {
-            if (isDashing) EndDash();
-            if (isJumpAttacking) CancelJumpAttack();
         }
 
         // Make enemy aware of the player

@@ -611,6 +611,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 48851688841842002}
+  - component: {fileID: -6868155533678741046}
   m_Layer: 0
   m_Name: Turret
   m_TagString: Untagged
@@ -635,6 +636,55 @@ Transform:
   - {fileID: 6884858857666792439}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &-6868155533678741046
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5305551613361319555}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4851fc00c4fa29b47a967fb303db3bb9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Turret
+  turretBase: {fileID: 0}
+  turretHead: {fileID: 0}
+  projectileSpawnPoint: {fileID: 0}
+  projectilePrefab: {fileID: 0}
+  targetLayer:
+    serializedVersion: 2
+    m_Bits: 8
+  obstacleLayer:
+    serializedVersion: 2
+    m_Bits: 193
+  health: 100
+  damage: 20
+  range: 25
+  fireRate: 1
+  projectileSpeed: 10
+  rotationSpeed: 5
+  horizontalFOV: 120
+  verticalFOV: 60
+  minHorizontalAngle: -90
+  maxHorizontalAngle: 90
+  minVerticalAngle: -30
+  maxVerticalAngle: 30
+  fireMode: 0
+  burstFireEnabled: 0
+  burstCount: 3
+  burstDelay: 0.1
+  burstCooldown: 1
+  showFOV: 1
+  fovColor: {r: 1, g: 0, b: 0, a: 0.3}
+  detectionColor: {r: 1, g: 0, b: 0, a: 0.6}
+  fovSegments: 30
+  audioSource: {fileID: 0}
+  shootSound: {fileID: 0}
+  detectionSound: {fileID: 0}
+  muzzleFlash: {fileID: 0}
+  destructionEffect: {fileID: 0}
+  debugMode: 0
 --- !u!1 &6187088819544799483
 GameObject:
   m_ObjectHideFlags: 0
