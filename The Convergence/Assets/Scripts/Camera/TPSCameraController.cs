@@ -12,16 +12,15 @@ public class TPSCameraController : MonoBehaviour
     // Base sensitivity set in Inspector
     [Range(50f, 500f)] public float baseMouseSensitivity = 200f;
 
-    [Range(50f, 500f)] public float mouseSensitivity = 200f;
+    //Preferences
+    private const string PREF_KEY = "mouse_sensitivity";
+    private float sensitivityMult = 1f;
+
     [Range(-80f, 0f)] public float minPitch = -40f;
     [Range(0f, 80f)] public float maxPitch = 60f;
 
     private float yaw;
     private float pitch;
-
-    //Preferences
-    private const string PREF_KEY = "mouse_sensitivity";
-    private float sensitivityMult = 1f;
 
     void Start()
     {
