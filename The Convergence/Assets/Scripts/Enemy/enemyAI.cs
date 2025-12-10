@@ -157,19 +157,22 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
         startingPos = transform.position;
 
         // Rigidbody setup for jump attack
+        // Rigidbody setup for jump attack (physics mode)
         if (canJumpAttack)
         {
             rb = GetComponent<Rigidbody>();
             if (rb == null)
-            {
                 rb = gameObject.AddComponent<Rigidbody>();
-                rb.isKinematic = true;
-                rb.useGravity = false;
-            }
-            wasKinematic = rb.isKinematic;
+
+            // Physics-based jump - enable gravity first and then allow physics to move the enemy
+            rb.isKinematic = false;
+            rb.useGravity = true;
+
+            // Prevent rotation from physics so model stays upright
+            rb.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ;
         }
 
-        // Initialize player position tracking for dash
+         // Initialize player position tracking for dash
         if (gamemanager.instance.player != null)
         {
             lastPlayerPosition = gamemanager.instance.player.transform.position;
@@ -312,38 +315,140 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
     }
 
     // Start jump attack
+
     void StartJumpAttack()
     {
-        if (isJumpAttacking || gamemanager.instance.player == null) return;
+        if (isJumpAttacking || gamemanager.instance.player == null || rb == null) return; //added rb null check
 
         isJumpAttacking = true;
         jumpAttackTimer = 0f;
         hasLanded = false;
-        jumpStartPosition = transform.position;
-        jumpTarget = gamemanager.instance.player.transform.position;
 
-        // Stop and freeze agent updates so transform movement is priority
+        // Stop NavMeshAgent entirely while physics jump is active
         if (agent != null && agent.isActiveAndEnabled)
         {
             agent.isStopped = true;
-            agent.velocity = Vector3.zero;
-            agent.updatePosition = false;
-            agent.updateRotation = false;
+            agent.enabled = false; // disable agent to avoid conflicts with physics
         }
 
-        // Play windup sound only (no animation trigger since it doesn't exist yet)
+        // Windup sound
         if (audJumpWindup != null && aud != null)
             aud.PlayOneShot(audJumpWindup, audJumpWindupVol);
+        //add animation trigger when available
 
-        // Face player during jump windup
-        Vector3 lookDir = new Vector3(jumpTarget.x - transform.position.x, 0, jumpTarget.z - transform.position.z);
-        if (lookDir != Vector3.zero)
-            transform.rotation = Quaternion.LookRotation(lookDir);
+        // Vector3's to find landing enemy near player
+        Vector3 playerPos = gamemanager.instance.player.transform.position;
+        Vector3 toPlayer = (playerPos - transform.position);
+        toPlayer.y = 0;
+        Vector3 landingCandidate = playerPos - toPlayer.normalized * Mathf.Max(0.1f, landingDistanceFromPlayer);
 
-        // Start the jump coroutine
-        if (jumpCoroutine != null) StopCoroutine(jumpCoroutine);
-        jumpCoroutine = StartCoroutine(PerformArcJumpAttack());
+        // Vector3 to find ground area near the potential landing spot
+        Vector3 groundLanding = FindGroundPosition(landingCandidate);
+        if (groundLanding == Vector3.zero)
+            groundLanding = FindGroundPosition(playerPos) != Vector3.zero ? FindGroundPosition(playerPos) : transform.position + toPlayer.normalized * 1f;
+
+        // Compute launch velocity to reach groundLanding with desired jumpHeight
+        float apexHeight = Mathf.Max(1f, jumpHeight); // ensure positive apex height
+        Vector3 launchVelocity = CalculateLaunchVelocity(transform.position, groundLanding, apexHeight);
+
+        // Apply launch velocity
+        rb.velocity = Vector3.zero; // clear existing velocity
+        rb.AddForce(launchVelocity, ForceMode.VelocityChange);
+
+        // Play jump sound
+        if (audJumpAttack.Length > 0 && aud != null)
+            aud.PlayOneShot(audJumpAttack[Random.Range(0, audJumpAttack.Length)], audJumpAttackVol);
     }
+
+    // Calculate launch velocity for jump attack
+    Vector3 CalculateLaunchVelocity(Vector3 start, Vector3 target, float apexHeight)
+    {
+        // Gravity (negative)
+        float g = Physics.gravity.y;
+
+        // Ensure apex is above both points
+        float highest = Mathf.Max(start.y, target.y) + apexHeight;
+
+        // Time to maxHeight from start
+        float timeUp = Mathf.Sqrt(2f * (highest - start.y) / -g);
+
+        // Time from maxHeight to target
+        float timeDown = Mathf.Sqrt(2f * (highest - target.y) / -g);
+
+        float totalTime = timeUp + timeDown;
+        if (totalTime <= 0.001f) totalTime = 0.5f;
+
+        // Horizontal velocity
+        Vector3 horizontalDisplacement = new Vector3(target.x - start.x, 0, target.z - start.z);
+        Vector3 horizontalVelocity = horizontalDisplacement / totalTime;
+
+        // Vertical velocity for ascent
+        float verticalVelocity = Mathf.Sqrt(-2f * g * (highest - start.y));
+
+        Vector3 result = horizontalVelocity + Vector3.up * verticalVelocity;
+        return result;
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (!isJumpAttacking) return;
+
+        // Ignore collisions with other enemies or triggers
+        if (collision.collider.CompareTag("Enemy") || collision.collider.isTrigger) return;
+
+        // Check layer mask to ensure it's ground
+        if (((1 << collision.gameObject.layer) & ignoreLayer) != 0) return;
+
+        // Enemy has LANDED - apply landing logic once
+        if (!hasLanded)
+        {
+            hasLanded = true;
+
+            // Play landing sound and effect
+            if (audJumpLanding != null && aud != null)
+                aud.PlayOneShot(audJumpLanding, audJumpLandingVol);
+
+            if (jumpLandingEffect != null)
+                Instantiate(jumpLandingEffect, transform.position, Quaternion.identity);
+
+            // Apply jumpDamage after a short delay to allow for landing impact
+            StartCoroutine(ApplyJumpDamage());
+
+            // Then end jump attack after a brief moment to allow for landing effects
+            StartCoroutine(EndJumpAfterDelay(0.2f));
+        }
+    }
+
+   
+    IEnumerator EndJumpAfterDelay(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+
+        // Re-enable agent and warp to current position
+        if (agent != null)
+        {
+            try
+            {
+                agent.enabled = true;
+                agent.Warp(transform.position);
+                agent.isStopped = false;
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogWarning($"Could not re-enable agent after physics jump: {e.Message}");
+            }
+        }
+
+        // Reset back to kinematic again to transform movement after landing
+        if (rb != null)
+        {
+           rb.isKinematic = true;
+        }
+
+        isJumpAttacking = false;
+        hasLanded = false;
+    }
+
 
     // Coroutine to perform arc-style jump attack
     IEnumerator PerformArcJumpAttack()
