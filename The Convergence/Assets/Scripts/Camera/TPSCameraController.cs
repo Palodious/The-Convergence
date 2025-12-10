@@ -8,12 +8,20 @@ public class TPSCameraController : MonoBehaviour
 
     [Header("Camera Settings")]
     [Range(1f, 20f)] public float followSpeed = 10f;
+
+    // Base sensitivity set in Inspector
+    [Range(50f, 500f)] public float baseMouseSensitivity = 200f;
+
     [Range(50f, 500f)] public float mouseSensitivity = 200f;
     [Range(-80f, 0f)] public float minPitch = -40f;
     [Range(0f, 80f)] public float maxPitch = 60f;
 
     private float yaw;
     private float pitch;
+
+    //Preferences
+    private const string PREF_KEY = "mouse_sensitivity";
+    private float sensitivityMult = 1f;
 
     void Start()
     {
@@ -24,14 +32,23 @@ public class TPSCameraController : MonoBehaviour
         {
             target = gamemanager.instance.player.transform;
         }
+
+        // Load once on start
+        sensitivityMult = PlayerPrefs.GetFloat(PREF_KEY, 1.0f);
     }
 
     void LateUpdate()
     {
         if (target == null) return;
 
-        yaw += Input.GetAxis("Mouse X") * mouseSensitivity * Time.deltaTime;
-        pitch -= Input.GetAxis("Mouse Y") * mouseSensitivity * Time.deltaTime;
+        sensitivityMult = PlayerPrefs.GetFloat(PREF_KEY, 1.0f);
+
+        float effectiveSensitivity = baseMouseSensitivity * sensitivityMult;
+        float mouseX = Input.GetAxis("Mouse X") * effectiveSensitivity * Time.deltaTime;
+        float mouseY = Input.GetAxis("Mouse Y") * effectiveSensitivity * Time.deltaTime;
+
+        yaw += mouseX;
+        pitch -= mouseY;
         pitch = Mathf.Clamp(pitch, minPitch, maxPitch);
 
         Quaternion rot = Quaternion.Euler(pitch, yaw, 0);
