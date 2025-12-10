@@ -10,8 +10,10 @@ public class sceneLoadTrigger : MonoBehaviour
     {
         // Only trigger for the player
         if (other.CompareTag("Player"))
-        {
-            SceneLoader.LoadSceneWithLoadingScreen(sceneName);
-        }
+            return;
+
+            SaveManager.PendingLoad = false;
+
+        SceneLoader.LoadSceneWithLoadingScreen(sceneName);
     }
 }

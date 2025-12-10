@@ -13654,7 +13654,11 @@ PrefabInstance:
     - {fileID: 660658723275814905, guid: 71349d12ca19a83438bf5fc29848deea, type: 3}
     - {fileID: 6767623224703722678, guid: 71349d12ca19a83438bf5fc29848deea, type: 3}
     - {fileID: 3149424948910559539, guid: 71349d12ca19a83438bf5fc29848deea, type: 3}
+    - {fileID: 2800143083821510887, guid: 71349d12ca19a83438bf5fc29848deea, type: 3}
     m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: 5802878944107499598, guid: 71349d12ca19a83438bf5fc29848deea, type: 3}
+      insertIndex: 0
+      addedObject: {fileID: 2098251530}
     - targetCorrespondingSourceObject: {fileID: 1385682974421836551, guid: 71349d12ca19a83438bf5fc29848deea, type: 3}
       insertIndex: 0
       addedObject: {fileID: 139424659}
@@ -14037,6 +14041,11 @@ Transform:
 --- !u!4 &1391146696 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7726491862845174040, guid: 71349d12ca19a83438bf5fc29848deea, type: 3}
+  m_PrefabInstance: {fileID: 1391146694}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &1391146697 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 5802878944107499598, guid: 71349d12ca19a83438bf5fc29848deea, type: 3}
   m_PrefabInstance: {fileID: 1391146694}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1392762031
@@ -19543,7 +19552,7 @@ PrefabInstance:
   serializedVersion: 2
   m_Modification:
     serializedVersion: 3
-    m_TransformParent: {fileID: 0}
+    m_TransformParent: {fileID: 1391146697}
     m_Modifications:
     - target: {fileID: 1865551947802006824, guid: f9cb63262ab343044a4dbdfabca5a845, type: 3}
       propertyPath: continueButton
@@ -19669,6 +19678,11 @@ MonoBehaviour:
 --- !u!1 &2098251529 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 5545031628772138565, guid: f9cb63262ab343044a4dbdfabca5a845, type: 3}
+  m_PrefabInstance: {fileID: 2098251525}
+  m_PrefabAsset: {fileID: 0}
+--- !u!224 &2098251530 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 4898222299525946154, guid: f9cb63262ab343044a4dbdfabca5a845, type: 3}
   m_PrefabInstance: {fileID: 2098251525}
   m_PrefabAsset: {fileID: 0}
 --- !u!4 &2103366256 stripped
@@ -20473,7 +20487,6 @@ GameObject:
 SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
-  - {fileID: 2098251525}
   - {fileID: 1391146694}
   - {fileID: 3085531452118685324}
   - {fileID: 1261678698}

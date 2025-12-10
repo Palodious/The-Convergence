@@ -26,7 +26,7 @@ public class SFXManager : MonoBehaviour
         if (Instance == null)
         {
             Instance = this;
-            DontDestroyOnLoad(gameObject); // Optional: persist across scenes
+            DontDestroyOnLoad(gameObject); // Persist across scenes
         }
         else
         {

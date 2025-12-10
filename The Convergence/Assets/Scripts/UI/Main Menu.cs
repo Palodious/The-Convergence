@@ -54,6 +54,8 @@ public class MainMenu : MonoBehaviour
         if (SFXManager.Instance != null)
             SFXManager.Instance.PlaySound("UI_Click");
 
+        SaveManager.PendingLoad = false;
+
         SceneLoader.LoadSceneWithLoadingScreen(firstLevelSceneName);
     }
 

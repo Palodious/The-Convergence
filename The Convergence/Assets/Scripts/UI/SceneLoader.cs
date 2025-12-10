@@ -9,7 +9,7 @@ public static class SceneLoader
     // Remember where we came from
     public static string previousSceneName;
 
-    private const string LoadingSceneName = "LoadingScene";
+    private const string LoadingSceneName = "Loading Scene";
 
     public static void LoadSceneWithLoadingScreen(string sceneToLoad)
     {
