@@ -352,7 +352,7 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
         Vector3 launchVelocity = CalculateLaunchVelocity(transform.position, groundLanding, apexHeight);
 
         // Apply launch velocity
-        rb.velocity = Vector3.zero; // clear existing velocity
+        rb.linearVelocity = Vector3.zero; // clear existing velocity
         rb.AddForce(launchVelocity, ForceMode.VelocityChange);
 
         // Play jump sound
