@@ -54,7 +54,7 @@ public class MainMenu : MonoBehaviour
         if (SFXManager.Instance != null)
             SFXManager.Instance.PlaySound("UI_Click");
 
-        SceneManager.LoadScene(firstLevelSceneName);
+        SceneLoader.LoadSceneWithLoadingScreen(firstLevelSceneName);
     }
 
     // Called by Continue button – only works if a save exists
@@ -88,7 +88,7 @@ public class MainMenu : MonoBehaviour
         SaveManager.PendingLoad = true;
 
         // Load whatever scene was saved.
-        SceneManager.LoadScene(data.scene);
+        SceneLoader.LoadSceneWithLoadingScreen(data.scene);
     }
 
     // Called by Options button
