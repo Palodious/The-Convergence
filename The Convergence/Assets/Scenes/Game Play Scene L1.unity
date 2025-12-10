@@ -2401,11 +2401,36 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6177476386228228489, guid: f9cb63262ab343044a4dbdfabca5a845, type: 3}
+      propertyPath: audioSource
+      value: 
+      objectReference: {fileID: 9101981161799750934}
+    - target: {fileID: 6177476386228228489, guid: f9cb63262ab343044a4dbdfabca5a845, type: 3}
+      propertyPath: effects.Array.data[0].volume
+      value: 0.4
+      objectReference: {fileID: 0}
+    - target: {fileID: 6177476386228228489, guid: f9cb63262ab343044a4dbdfabca5a845, type: 3}
+      propertyPath: effects.Array.data[1].volume
+      value: 0.4
+      objectReference: {fileID: 0}
+    - target: {fileID: 6177476386228228489, guid: f9cb63262ab343044a4dbdfabca5a845, type: 3}
+      propertyPath: effects.Array.data[2].volume
+      value: 0.4
+      objectReference: {fileID: 0}
+    - target: {fileID: 6177476386228228489, guid: f9cb63262ab343044a4dbdfabca5a845, type: 3}
+      propertyPath: effects.Array.data[3].volume
+      value: 0.4
+      objectReference: {fileID: 0}
+    - target: {fileID: 6177476386228228489, guid: f9cb63262ab343044a4dbdfabca5a845, type: 3}
+      propertyPath: effects.Array.data[5].volume
+      value: 0.4
+      objectReference: {fileID: 0}
     - target: {fileID: 7573563460594621129, guid: f9cb63262ab343044a4dbdfabca5a845, type: 3}
       propertyPath: m_Name
       value: UI
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 7998107309664236884, guid: f9cb63262ab343044a4dbdfabca5a845, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
@@ -2669,6 +2694,14 @@ PrefabInstance:
       value: 1000
       objectReference: {fileID: 0}
     - target: {fileID: 1015894156279453698, guid: a601aec151a45d14bbc780261b967181, type: 3}
+      propertyPath: audHurtVol
+      value: 0.3
+      objectReference: {fileID: 0}
+    - target: {fileID: 1015894156279453698, guid: a601aec151a45d14bbc780261b967181, type: 3}
+      propertyPath: audJumpVol
+      value: 0.3
+      objectReference: {fileID: 0}
+    - target: {fileID: 1015894156279453698, guid: a601aec151a45d14bbc780261b967181, type: 3}
       propertyPath: audHurt.Array.size
       value: 3
       objectReference: {fileID: 0}
@@ -2753,6 +2786,11 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a601aec151a45d14bbc780261b967181, type: 3}
+--- !u!82 &9101981161799750934 stripped
+AudioSource:
+  m_CorrespondingSourceObject: {fileID: 5741623359585124471, guid: a601aec151a45d14bbc780261b967181, type: 3}
+  m_PrefabInstance: {fileID: 9101981161799750933}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
