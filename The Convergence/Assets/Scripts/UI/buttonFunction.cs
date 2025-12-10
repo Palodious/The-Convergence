@@ -10,7 +10,11 @@ public class buttonFunction : MonoBehaviour
     public void restart()
     {
         Time.timeScale = 1f;
+        SaveManager.PendingLoad = false;
+
+        string currentScene = SceneManager.GetActiveScene().name;
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+
         gamemanager.instance.stateUnpause();
     }
     public void quit()
@@ -29,13 +33,18 @@ public class buttonFunction : MonoBehaviour
     public void loadLevel(int lvl)
     {
         Time.timeScale = 1f;
-        SceneManager.LoadScene(lvl);
+        SaveManager.PendingLoad = false;
+
+        string sceneName = SceneManager.GetSceneByBuildIndex(lvl).name;
+        SceneLoader.LoadSceneWithLoadingScreen(sceneName);
+
         gamemanager.instance.stateUnpause();
     }
     public void mainMenu()
     {
         Time.timeScale = 1f;
-        SceneManager.LoadScene("Main Menu");
+        SaveManager.PendingLoad = false;
+        SceneLoader.LoadSceneWithLoadingScreen("Main Menu");
     }
 
 }
