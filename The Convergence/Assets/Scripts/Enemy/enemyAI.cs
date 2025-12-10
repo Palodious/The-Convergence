@@ -322,22 +322,13 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
         jumpStartPosition = transform.position;
         jumpTarget = gamemanager.instance.player.transform.position;
 
-        // Instead of disabling, just stop the agent and clear velocity
+        // Stop and freeze agent updates so transform movement is priority
         if (agent != null && agent.isActiveAndEnabled)
         {
             agent.isStopped = true;
             agent.velocity = Vector3.zero;
-
-            // Clear the path without using ResetPath()
-            try
-            {
-                agent.SetDestination(transform.position);
-            }
-            catch (System.Exception e)
-            {
-                // If that fails, just log it and continue
-                Debug.Log($"Could not clear agent path: {e.Message}");
-            }
+            agent.updatePosition = false;
+            agent.updateRotation = false;
         }
 
         // Play windup sound only (no animation trigger since it doesn't exist yet)
