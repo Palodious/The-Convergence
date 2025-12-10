@@ -348,113 +348,116 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
     // Coroutine to perform arc-style jump attack
     IEnumerator PerformArcJumpAttack()
     {
-        // Wait for windup time
         yield return new WaitForSeconds(jumpWindupTime);
 
-        // Play jump sound only (no animation trigger since it doesn't exist yet)
         if (audJumpAttack.Length > 0 && aud != null)
             aud.PlayOneShot(audJumpAttack[Random.Range(0, audJumpAttack.Length)], audJumpAttackVol);
 
         Vector3 startPos = transform.position;
-        Vector3 playerPos = gamemanager.instance.player.transform.position;
+        Vector3 playerPos = gamemanager.instance.player != null ? gamemanager.instance.player.transform.position : jumpTarget;
 
-        // Calculate direction to player
-        Vector3 toPlayer = (playerPos - startPos).normalized;
+        Vector3 toPlayer = (playerPos - startPos);
+        toPlayer.y = 0;
+        Vector3 toPlayerDir = toPlayer.normalized;
 
-        // Calculate landing position: Use the adjustable landingDistanceFromPlayer
-        Vector3 endPos = playerPos - (toPlayer * Mathf.Max(0.1f, landingDistanceFromPlayer));
+        Vector3 desiredEnd = playerPos - toPlayerDir * Mathf.Max(0.1f, landingDistanceFromPlayer);
 
-        // Ensure the player will be within damage radius
-        float distanceToPlayerAfterLanding = Vector3.Distance(endPos, playerPos);
-        if (distanceToPlayerAfterLanding > jumpAttackRadius * 0.7f)
-        {
-            // Adjust landing position to ensure player is within damage radius
-            endPos = playerPos - (toPlayer * (jumpAttackRadius * 0.5f));
-        }
+        // Ensure player is within damage radius; adjust if needed
+        if (Vector3.Distance(desiredEnd, playerPos) > jumpAttackRadius * 0.7f)
+            desiredEnd = playerPos - toPlayerDir * (jumpAttackRadius * 0.5f);
 
-        // Use more accurate ground finding
-        Vector3 finalLandingPos = FindGroundPosition(endPos);
+        // Find ground for desired end
+        Vector3 finalLandingPos = FindGroundPosition(desiredEnd);
 
-        // If no ground found, try positions around the player
+        // If FindGroundPosition failed, try circle samples around player
         if (finalLandingPos == Vector3.zero)
         {
-            // Try positions in a circle around the player
             for (int i = 0; i < 8; i++)
             {
                 float angle = i * 45f;
                 Vector3 testPos = playerPos + Quaternion.Euler(0, angle, 0) * Vector3.forward * landingDistanceFromPlayer;
                 finalLandingPos = FindGroundPosition(testPos);
-                if (finalLandingPos != Vector3.zero)
-                    break;
+                if (finalLandingPos != Vector3.zero) break;
             }
-
-            // If still no ground, use start position
-            if (finalLandingPos == Vector3.zero)
-                finalLandingPos = startPos;
         }
 
-        endPos = finalLandingPos;
+        // If still failed, fallback to startPos (safe fallback)
+        if (finalLandingPos == Vector3.zero)
+            finalLandingPos = startPos;
 
-        // Calculate horizontal distance
-        Vector3 horizontalDirection = new Vector3(endPos.x - startPos.x, 0, endPos.z - startPos.z);
+        // Try to find a nearby NavMesh point for the landing
+        Vector3 navLanding = finalLandingPos;
+        NavMeshHit navHit;
+        if (NavMesh.SamplePosition(finalLandingPos, out navHit, 2.0f, NavMesh.AllAreas))
+            navLanding = navHit.position;
+
+        // Horizontal path
+        Vector3 horizontalDirection = new Vector3(navLanding.x - startPos.x, 0, navLanding.z - startPos.z);
         float horizontalDistance = horizontalDirection.magnitude;
-
-        // If distance is very small, add minimum jump
         if (horizontalDistance < 0.5f)
         {
-            horizontalDirection = toPlayer;
+            horizontalDirection = toPlayerDir;
             horizontalDistance = 1f;
-            endPos = startPos + horizontalDirection * horizontalDistance;
-            endPos.y = FindGroundPosition(endPos).y;
+            navLanding = startPos + horizontalDirection * horizontalDistance;
+            Vector3 ground = FindGroundPosition(navLanding);
+            if (ground != Vector3.zero) navLanding = ground;
         }
 
         Vector3 horizontalNormalized = horizontalDirection.normalized;
-
-        // Adjust jump duration based on distance
         float actualJumpDuration = jumpDuration * Mathf.Clamp(horizontalDistance / 10f, 0.5f, 2f);
 
         float elapsedTime = 0f;
-
         while (elapsedTime < actualJumpDuration && isJumpAttacking)
         {
             elapsedTime += Time.deltaTime;
             float normalizedTime = elapsedTime / actualJumpDuration;
 
-            // Calculate position along horizontal path
             float horizontalProgress = normalizedTime;
             Vector3 horizontalPosition = startPos + horizontalNormalized * (horizontalDistance * horizontalProgress);
 
-            // Calculate vertical position using jump curve
             float verticalOffset = jumpCurve.Evaluate(normalizedTime) * jumpHeight;
-
-            // Combine positions
             Vector3 newPosition = horizontalPosition;
             newPosition.y = startPos.y + verticalOffset;
 
-            // Apply position
             transform.position = newPosition;
 
-            // Apply rotation during jump (look at target)
-            Vector3 lookDirection = (playerPos - transform.position);
-            lookDirection.y = 0;
-            if (lookDirection != Vector3.zero)
-                transform.rotation = Quaternion.LookRotation(lookDirection);
+            // Face player while airborne
+            if (gamemanager.instance.player != null)
+            {
+                Vector3 lookDirection = gamemanager.instance.player.transform.position - transform.position;
+                lookDirection.y = 0;
+                if (lookDirection != Vector3.zero)
+                    transform.rotation = Quaternion.LookRotation(lookDirection);
+            }
 
             yield return null;
         }
 
-        // Ensure we end at the calculated landing position
         if (isJumpAttacking)
         {
-            // Final ground snap to prevent sliding
-            Vector3 groundPos = FindGroundPosition(endPos);
-            if (groundPos != Vector3.zero)
-                endPos = groundPos;
+            // Snap to final landing position (use navLanding if available)
+            transform.position = navLanding;
 
-            transform.position = endPos;
+            // Play landing and apply damage
             LandJumpAttack();
+
+            // Ensure agent is placed on navmesh and resumes
+            if (agent != null && agent.isActiveAndEnabled)
+            {
+                // Warp agent to navLanding to avoid agent snapping back
+                try
+                {
+                    agent.Warp(navLanding);
+                }
+                catch (System.Exception e)
+                {
+                    Debug.LogWarning($"Warp failed: {e.Message}");
+                }
+            }
         }
     }
+
+
 
     //Find ground position with detection
     Vector3 FindGroundPosition(Vector3 position)
