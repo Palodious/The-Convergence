@@ -475,35 +475,29 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
         {
             Vector3 rayStart = position + Vector3.up * height;
             RaycastHit hit;
-
             // Cast downward
             if (Physics.Raycast(rayStart, Vector3.down, out hit, height + 5f, ~ignoreLayer))
             {
                 // Make sure we're not hitting ourselves or other enemies
-                if (!hit.collider.CompareTag("Enemy") && hit.collider.gameObject != gameObject)
+                if (hit.collider != null && hit.collider.gameObject != gameObject && !hit.collider.CompareTag("Enemy"))
                 {
                     // Check if the surface is flat
                     if (Vector3.Angle(hit.normal, Vector3.up) < 45f)
-                    {
                         return hit.point;
-                    }
                 }
             }
         }
 
-        // Try a sphere cast as fallback
+        // SphereCast fallback
         RaycastHit sphereHit;
         if (Physics.SphereCast(position + Vector3.up * 5f, 1f, Vector3.down, out sphereHit, 10f, ~ignoreLayer))
         {
-            if (!sphereHit.collider.CompareTag("Enemy") && sphereHit.collider.gameObject != gameObject)
-            {
+            if (sphereHit.collider != null && sphereHit.collider.gameObject != gameObject && !sphereHit.collider.CompareTag("Enemy"))
                 return sphereHit.point;
-            }
         }
 
-        // If no ground found, return the original position
-        Debug.LogWarning($"No suitable ground found at {position}, using original position");
-        return position;
+        // No ground found
+        return Vector3.zero;
     }
 
     // Start dash attack
