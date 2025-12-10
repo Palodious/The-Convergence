@@ -762,6 +762,7 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
     }
 
     // End jump attack and return to normal state
+
     void EndJumpAttack()
     {
         if (!isJumpAttacking) return;
@@ -769,22 +770,19 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
         isJumpAttacking = false;
         hasLanded = false;
 
-        // Re-enable agent movement
+        // Restore enemyAI movement AND update flags
         if (agent != null && agent.isActiveAndEnabled)
         {
             agent.isStopped = false;
+            agent.updatePosition = true;
+            agent.updateRotation = true;
+
 
             // Resume chasing player if still alive
             if (gamemanager.instance.player != null && isAlive)
             {
-                try
-                {
-                    agent.SetDestination(gamemanager.instance.player.transform.position);
-                }
-                catch (System.Exception e)
-                {
-                    Debug.LogWarning($"Could not set destination after jump: {e.Message}");
-                }
+                try { agent.SetDestination(gamemanager.instance.player.transform.position); }
+                catch (System.Exception e) { Debug.LogWarning($"Could not set destination after jump: {e.Message}"); }
             }
         }
 
