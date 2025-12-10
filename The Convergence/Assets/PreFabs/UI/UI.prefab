@@ -6316,8 +6316,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2748857233067732190}
-  - component: {fileID: 6177476386228228489}
   - component: {fileID: 2372023607773770552}
+  - component: {fileID: 6177476386228228489}
   m_Layer: 0
   m_Name: EffectsManager
   m_TagString: Untagged
@@ -6342,6 +6342,37 @@ Transform:
   - {fileID: 1568603024332213214}
   m_Father: {fileID: 4898222299525946154}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2372023607773770552
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1893078974311822473}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cc6f4c3be575a9b4bafae859afa0e0d3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SFXManager
+  sounds:
+  - soundName: UI_Hover
+    clip: {fileID: 8300000, guid: 6974135862c24c84cb0d6f3089100d7c, type: 3}
+  - soundName: UI_Click
+    clip: {fileID: 8300000, guid: a7988d4b993eaa0489369d257fa459cb, type: 3}
+  - soundName: UI_Back
+    clip: {fileID: 8300000, guid: be103af55728c4c4abd9fc668037d988, type: 3}
+  - soundName: UI_Open
+    clip: {fileID: 8300000, guid: ed045cd25b8ec924b822517c271f5aea, type: 3}
+  - soundName: UI_Close
+    clip: {fileID: 8300000, guid: 4fc3b9661335bf5479e6f1a1423c7c24, type: 3}
+  - soundName: UI_Error
+    clip: {fileID: 8300000, guid: 29f83994d90e794418a0c2d0a79dcd20, type: 3}
+  - soundName: UI_Apply
+    clip: {fileID: 8300000, guid: 6fb59720465b7d04996977c551945450, type: 3}
+  - soundName: UI_MoveSlider
+    clip: {fileID: 8300000, guid: e7b99873ad7af604faf8baab2b66be78, type: 3}
+  sfxSource: {fileID: 4397564024907520551}
+  loopSource: {fileID: 3340642634541898473}
 --- !u!114 &6177476386228228489
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6386,37 +6417,6 @@ MonoBehaviour:
     soundEffect: {fileID: 8300000, guid: dfe0a944577aedb41ae0e6b66c2a0d93, type: 3}
     volume: 0.5
   audioSource: {fileID: 0}
---- !u!114 &2372023607773770552
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1893078974311822473}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cc6f4c3be575a9b4bafae859afa0e0d3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::SFXManager
-  sounds:
-  - soundName: UI_Hover
-    clip: {fileID: 8300000, guid: 6974135862c24c84cb0d6f3089100d7c, type: 3}
-  - soundName: UI_Click
-    clip: {fileID: 8300000, guid: a7988d4b993eaa0489369d257fa459cb, type: 3}
-  - soundName: UI_Back
-    clip: {fileID: 8300000, guid: be103af55728c4c4abd9fc668037d988, type: 3}
-  - soundName: UI_Open
-    clip: {fileID: 8300000, guid: ed045cd25b8ec924b822517c271f5aea, type: 3}
-  - soundName: UI_Close
-    clip: {fileID: 8300000, guid: 4fc3b9661335bf5479e6f1a1423c7c24, type: 3}
-  - soundName: UI_Error
-    clip: {fileID: 8300000, guid: 29f83994d90e794418a0c2d0a79dcd20, type: 3}
-  - soundName: UI_Apply
-    clip: {fileID: 8300000, guid: 6fb59720465b7d04996977c551945450, type: 3}
-  - soundName: UI_MoveSlider
-    clip: {fileID: 8300000, guid: e7b99873ad7af604faf8baab2b66be78, type: 3}
-  sfxSource: {fileID: 4397564024907520551}
-  loopSource: {fileID: 3340642634541898473}
 --- !u!1 &1925633191922492829
 GameObject:
   m_ObjectHideFlags: 0
