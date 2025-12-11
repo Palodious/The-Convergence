@@ -37,9 +37,9 @@ public class gamemanager : MonoBehaviour
     public bool isPaused;
 
     float timeScaleOrig;
-    public TextMeshProUGUI coinTextDisplay;
+    [Header("~=~= Currency UI =~=~")]
+    [SerializeField] private TextMeshProUGUI riftShardTextDisplay;
 
-    public int currentCoins = 0;
 
     void Awake()
     {
@@ -55,11 +55,30 @@ public class gamemanager : MonoBehaviour
 
     private void Start()
     {
+        if (RiftShardManager.Instance != null)
+        {
+            RiftShardManager.Instance.OnShardAmountChanged += UpdateCoinDisplay;
+            // Initialize the display with the current amount
+            UpdateCoinDisplay(RiftShardManager.Instance.Amount);
+        }
+        else
+        {
+            Debug.LogWarning("RiftShardManager not found in scene. Coin display will not update.");
+        }
+
         // If we came here via Main Menu's Continue, auto-load the save.
         if (SaveManager.PendingLoad)
         {
             SaveManager.PendingLoad = false;
             LoadGame();
+        }
+    }
+
+    private void OnDestroy()
+    {
+        if (RiftShardManager.Instance != null)
+        {
+            RiftShardManager.Instance.OnShardAmountChanged -= UpdateCoinDisplay;
         }
     }
 
@@ -318,12 +337,13 @@ public class gamemanager : MonoBehaviour
         }
     }
 
-    private void UpdateCoinDisplay()
+    private void UpdateCoinDisplay(int newAmount)
     {
-        if (coinTextDisplay != null)
+        if (riftShardTextDisplay != null)
         {
             // Sets the text to show the current coin amount
-            coinTextDisplay.text = $":{currentCoins}";
+            // You can format this string as needed, e.g., $"{newAmount} SHARDS"
+            riftShardTextDisplay.text = $":{newAmount}";
         }
     }
 

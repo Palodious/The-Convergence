@@ -57,6 +57,9 @@ public class Store : MonoBehaviour
     public List<StoreItem> consumableItems = new List<StoreItem>();
     private List<StoreButtonUI> registeredButtons = new List<StoreButtonUI>();
 
+    [Header("~=~= UI References =~=~")]
+    [SerializeField] private GameObject storeUIPanel;
+
     public void RegisterButton(StoreButtonUI button)
     {
         registeredButtons.Add(button);
@@ -127,7 +130,7 @@ public class Store : MonoBehaviour
         }
 
 
-        if (item.type == ItemType.Upgrade )
+        if (item.type == ItemType.Upgrade)
         {
 
             if (playerState.purchasedIds.Contains(item.id))
@@ -136,7 +139,7 @@ public class Store : MonoBehaviour
                 return false;
             }
 
-            if(item.quantity <= 0)
+            if (item.quantity <= 0)
             {
                 reason = "Out of Stock";
                 return false;
@@ -185,9 +188,9 @@ public class Store : MonoBehaviour
                     }
                 }
 
-                        // Mark as purchased, effectively setting its quantity to 0
-                        playerState.purchasedIds.Add(item.id);
-                        item.quantity = 0;
+                // Mark as purchased, effectively setting its quantity to 0
+                playerState.purchasedIds.Add(item.id);
+                item.quantity = 0;
 
             }
             else if (item.type == ItemType.Consumable)
@@ -219,7 +222,7 @@ public class Store : MonoBehaviour
             Debug.LogWarning($"Failed to purchase Item ID: {itemId}. Reason: {reason}");
         }
 
-        
+
     }
 
     public StoreItem FindItemById(int id)
@@ -253,9 +256,35 @@ public class Store : MonoBehaviour
     }
 
 
+    public void ExitStore()
+    {
+        if (storeUIPanel != null)
+        {
+            storeUIPanel.SetActive(false);
 
+        }
+        else
+        {
+            Debug.LogWarning("Store UI Panel reference is missing on the Store script. Cannot hide panel.");
+        }
+        if (Time.timeScale == 0f)
+        {
+            Time.timeScale = 1f;
+        }
+        if (gamemanager.instance != null)
+        {
+            gamemanager.instance.stateUnpause();
+            Debug.Log("Store closed and game resumed.");
+        }
+
+    }
     public void SetStoreOpen()
     {
         RefreshAllButtonDisplays();
+        if (storeUIPanel != null)
+        {
+            storeUIPanel.SetActive(true);
+            
+        }
     }
 }
