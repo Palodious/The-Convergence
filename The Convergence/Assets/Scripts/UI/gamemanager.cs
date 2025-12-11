@@ -251,6 +251,7 @@ public class gamemanager : MonoBehaviour
         if (gameGoalCountText != null)
             gameGoalCountText.text = gameGoalCount.ToString("F0");
 
+        SaveManager.IsLoadingFromSave = false;
         stateUnpause();
     }
 

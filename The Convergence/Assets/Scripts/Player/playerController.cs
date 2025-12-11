@@ -105,6 +105,12 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
         originalHeight = controller.height;
         originalSpeed = speed;
 
+        if (SaveManager.IsLoadingFromSave)
+        {
+            Debug.Log("playerController.Start: IsLoadingFromSave = true, skipping respawn/persistent init.");
+            return;
+        }
+
         // Check if we have persistent data (from previous scene )
         int currentSceneIndex = SceneManager.GetActiveScene().buildIndex;
 
