@@ -160,7 +160,7 @@ GameObject:
   m_Component:
   - component: {fileID: 122947376}
   m_Layer: 0
-  m_Name: RightHandIKTarget
+  m_Name: rightHandIKTarget
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -174,12 +174,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 122947375}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.47486943, y: 0.51419634, z: -0.5360868, w: -0.47192392}
-  m_LocalPosition: {x: -0.0012324327, y: 0.08587053, z: -0.010083401}
-  m_LocalScale: {x: 0.9139097, y: 0.7826563, z: 0.7791801}
+  m_LocalRotation: {x: 0.000000056619108, y: -0.000000044137547, z: 0.000000016524545, w: 1}
+  m_LocalPosition: {x: 0.8166765, y: 1.5363545, z: -0.054524016}
+  m_LocalScale: {x: 0.91390973, y: 0.7826564, z: 0.7791803}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 4563222267786867208}
+  m_Father: {fileID: 7622110352564742597}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &230898154 stripped
 GameObject:
@@ -201,8 +201,15 @@ MonoBehaviour:
   animator: {fileID: 7622110352564742604}
   rightHandIKTarget: {fileID: 285625289}
   leftHandIKTarget: {fileID: 377198376}
+  aimTarget: {fileID: 0}
   rightHandIKWeight: 1
   leftHandIKWeight: 1
+  lookAtIKWeight: 0
+  lookAtBodyWeight: 0.3
+  lookAtHeadWeight: 0.7
+  lookAtEyesWeight: 0
+  lookAtClampWeight: 0.5
+  weightSmoothSpeed: 8
 --- !u!4 &285625289 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7664787667938962592, guid: 4ce157fba902fd249a1c991759addada, type: 3}
@@ -228,8 +235,15 @@ MonoBehaviour:
   animator: {fileID: 7622110352564742604}
   rightHandIKTarget: {fileID: 2083088029}
   leftHandIKTarget: {fileID: 1599221430}
+  aimTarget: {fileID: 0}
   rightHandIKWeight: 1
   leftHandIKWeight: 1
+  lookAtIKWeight: 0
+  lookAtBodyWeight: 0.3
+  lookAtHeadWeight: 0.7
+  lookAtEyesWeight: 0
+  lookAtClampWeight: 0.5
+  weightSmoothSpeed: 8
 --- !u!1001 &372863016
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -352,8 +366,15 @@ MonoBehaviour:
   animator: {fileID: 7622110352564742604}
   rightHandIKTarget: {fileID: 714298578}
   leftHandIKTarget: {fileID: 1688365814}
+  aimTarget: {fileID: 0}
   rightHandIKWeight: 1
   leftHandIKWeight: 1
+  lookAtIKWeight: 0
+  lookAtBodyWeight: 0.3
+  lookAtHeadWeight: 0.7
+  lookAtEyesWeight: 0
+  lookAtClampWeight: 0.5
+  weightSmoothSpeed: 8
 --- !u!1 &624205892
 GameObject:
   m_ObjectHideFlags: 0
@@ -364,7 +385,7 @@ GameObject:
   m_Component:
   - component: {fileID: 624205893}
   m_Layer: 0
-  m_Name: LeftHandIKTarget
+  m_Name: leftHandIKTarget
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -378,12 +399,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 624205892}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.47003648, y: 0.5106944, z: -0.53748095, w: 0.4789272}
-  m_LocalPosition: {x: -0.0016253404, y: 0.078551546, z: -0.009497743}
-  m_LocalScale: {x: 0.91390973, y: 0.78265643, z: 0.7791803}
+  m_LocalRotation: {x: -0.000000017888793, y: -0.000000088811014, z: 0.000000018150747, w: 1}
+  m_LocalPosition: {x: -0.809169, y: 1.5363545, z: -0.054524038}
+  m_LocalScale: {x: 0.91390985, y: 0.7826565, z: 0.77918017}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 8996532223563782147}
+  m_Father: {fileID: 7622110352564742597}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &714298578 stripped
 Transform:
@@ -744,6 +765,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 53044918652000237, guid: 5ec6d5f46ebc54348ba5517a99b20633, type: 3}
+      propertyPath: m_Name
+      value: RightHandIK
+      objectReference: {fileID: 0}
     - target: {fileID: 1626224805286992964, guid: 5ec6d5f46ebc54348ba5517a99b20633, type: 3}
       propertyPath: m_LocalPosition.x
       value: 1.417
@@ -787,6 +812,10 @@ PrefabInstance:
     - target: {fileID: 3563017330958320772, guid: 5ec6d5f46ebc54348ba5517a99b20633, type: 3}
       propertyPath: id
       value: 8cae7f9c7b6543458d8c5744e20152bd
+      objectReference: {fileID: 0}
+    - target: {fileID: 3738678863104214576, guid: 5ec6d5f46ebc54348ba5517a99b20633, type: 3}
+      propertyPath: m_Name
+      value: LeftHandIK
       objectReference: {fileID: 0}
     - target: {fileID: 5950267001763509478, guid: 5ec6d5f46ebc54348ba5517a99b20633, type: 3}
       propertyPath: m_Name
@@ -1796,7 +1825,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7262758584695894367}
-  - component: {fileID: 7262758584695894368}
   m_Layer: 3
   m_Name: Gun Model
   m_TagString: Untagged
@@ -2776,7 +2804,6 @@ Transform:
   - {fileID: 3919382553466226088}
   - {fileID: 6370913483093076684}
   - {fileID: 6042827429115025726}
-  - {fileID: 122947376}
   m_Father: {fileID: 393256115646576744}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!23 &4589272360917405762
@@ -2853,6 +2880,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7622110352564742597}
   - component: {fileID: 7622110352564742599}
+  - component: {fileID: 7622110352564742605}
   - component: {fileID: 7622110352564742602}
   - component: {fileID: 7622110352564742604}
   - component: {fileID: 3936867626757692814}
@@ -3431,6 +3459,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 217781887476160049, guid: 4ce157fba902fd249a1c991759addada, type: 3}
+      propertyPath: m_Name
+      value: LeftHandIK
+      objectReference: {fileID: 0}
     - target: {fileID: 1070632586094627505, guid: 4ce157fba902fd249a1c991759addada, type: 3}
       propertyPath: m_Name
       value: Gun Pickup - SMG
@@ -3478,6 +3510,10 @@ PrefabInstance:
     - target: {fileID: 5399549164977757889, guid: 4ce157fba902fd249a1c991759addada, type: 3}
       propertyPath: id
       value: da352ee585c943d198c86aac9db6bd0c
+      objectReference: {fileID: 0}
+    - target: {fileID: 7271821026949259713, guid: 4ce157fba902fd249a1c991759addada, type: 3}
+      propertyPath: m_Name
+      value: RightHandIK
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -3646,6 +3682,14 @@ PrefabInstance:
     - target: {fileID: 5805082395274130021, guid: d7d047e4d2c50e64a929e6077bcbd75b, type: 3}
       propertyPath: m_Name
       value: Gun Pickup - Rifle
+      objectReference: {fileID: 0}
+    - target: {fileID: 7044745169876215827, guid: d7d047e4d2c50e64a929e6077bcbd75b, type: 3}
+      propertyPath: m_Name
+      value: LeftHandIK
+      objectReference: {fileID: 0}
+    - target: {fileID: 7109901755688036794, guid: d7d047e4d2c50e64a929e6077bcbd75b, type: 3}
+      propertyPath: m_Name
+      value: RightHandIK
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -3880,23 +3924,6 @@ Transform:
   - {fileID: 61994438}
   m_Father: {fileID: 7622110352564742597}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &7262758584695894368
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2472113193000969044}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 45e72b0b765a4444bb63bbf7717feb60, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::PlayerIKController
-  animator: {fileID: 7622110352564742604}
-  rightHandIKTarget: {fileID: 2083088029}
-  leftHandIKTarget: {fileID: 1599221430}
-  rightHandIKWeight: 1
-  leftHandIKWeight: 1
 --- !u!1 &7293962992130793608
 GameObject:
   m_ObjectHideFlags: 0
@@ -4014,6 +4041,8 @@ Transform:
   m_LocalScale: {x: 1.0942, y: 1.2777, z: 1.2834}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 122947376}
+  - {fileID: 624205893}
   - {fileID: 7871330085407443647}
   - {fileID: 7262758584695894367}
   m_Father: {fileID: 0}
@@ -4065,6 +4094,7 @@ MonoBehaviour:
   gunModel: {fileID: 2472113193000969044}
   aimTarget: {fileID: 0}
   rightHandIKTarget: {fileID: 4563222267786867208}
+  leftHandIKTarget: {fileID: 0}
   isAiming: 0
   aimMoveSpeed: 1
 --- !u!143 &7622110352564742600
@@ -4261,6 +4291,30 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &7622110352564742605
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4653696265568747075}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 45e72b0b765a4444bb63bbf7717feb60, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerIKController
+  animator: {fileID: 7622110352564742604}
+  rightHandIKTarget: {fileID: 122947376}
+  leftHandIKTarget: {fileID: 624205893}
+  aimTarget: {fileID: 0}
+  rightHandIKWeight: 1
+  leftHandIKWeight: 1
+  lookAtIKWeight: 0
+  lookAtBodyWeight: 0.3
+  lookAtHeadWeight: 0.7
+  lookAtEyesWeight: 0
+  lookAtClampWeight: 0.5
+  weightSmoothSpeed: 8
 --- !u!23 &7650663569349655276
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -4779,7 +4833,6 @@ Transform:
   - {fileID: 7423494172101953605}
   - {fileID: 9014284327886658975}
   - {fileID: 6982917908769816982}
-  - {fileID: 624205893}
   m_Father: {fileID: 4625547395216667449}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &9014284327886658975
