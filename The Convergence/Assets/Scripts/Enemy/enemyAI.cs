@@ -1035,21 +1035,6 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
     // Check if enemy can see player
     bool canSeePlayer()
     {
-        if (waveModeActive && !ignoreWaveMode)
-        {
-            if (gamemanager.instance.player == null) return false;
-
-            Vector3 playerPos = gamemanager.instance.player.transform.position;
-            float distanceToPlayer = Vector3.Distance(transform.position, playerPos);
-
-            // In wave mode, "see" player if within detection range
-            if (distanceToPlayer <= waveModeRange)
-            {
-                playerDir = playerPos - headPos.position;
-                return true;
-            }
-            return false;
-        }
         if (gamemanager.instance.player == null) return false;
 
         Vector3 playerPos = gamemanager.instance.player.transform.position;
@@ -1452,7 +1437,7 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
             anim.Update(0f);
         }
     }
-    
+   
     public void EnableWaveMode()
     {
         waveModeActive = true;
