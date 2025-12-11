@@ -8,6 +8,7 @@ using static UnityEngine.ParticleSystem;
 
 public class enemyAI : MonoBehaviour, IDamage, ISaveable
 {
+
     public enum EnemyType
     {
         Melee,
@@ -75,11 +76,16 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
     [Range(0.5f, 30f)][SerializeField] float minDashDistance; // Min distance (don't dash if too close)
     [Range(0.5f, 30f)][SerializeField] float dashAttackCooldown;
     [Range(1.1f, 10f)][SerializeField] float playerFleeingThreshold; // How fast player must be moving away
+    
+    [Header("**** Wave Mode Settings ****")]
+    [SerializeField] bool ignoreWaveMode = false;
+    [Range(0, 200)][SerializeField] float waveModeRange = 200f;
 
     [Header("**** Behavior Toggles ****")]
     public bool useAnimations = true; // Toggle all animation logic on/off
     public bool usePatrol = true; // Toggle patrol behavior
     public bool useRoam = true; // Toggle roaming behavior
+    public bool waveModeActive = false; // toggle for wave mode
 
     [Header("~=~= Audio =~=~")]
     [SerializeField] AudioSource aud;
@@ -156,6 +162,10 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
         stoppingDistOrig = agent.stoppingDistance;
         startingPos = transform.position;
 
+        if (gamemanager.instance != null && gamemanager.instance.IsWaveModeActive)
+        {
+            waveModeActive = true;
+        }
         // Rigidbody setup for jump attack (transform-arc or physics mode)
         if (canJumpAttack)
         {
