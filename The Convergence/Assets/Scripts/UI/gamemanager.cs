@@ -72,6 +72,7 @@ public class gamemanager : MonoBehaviour
                 statePause();
                 menuActive = menuPause;
                 menuActive.SetActive(true);
+                PlayMenuMusic(menuActive);
             }
             else if (menuActive == menuPause)
             {
@@ -89,6 +90,14 @@ public class gamemanager : MonoBehaviour
         if (playerScript != null)
             playerScript.enabled = false;
 
+        // PAUSE CURRENT LEVEL GAMEPLAY MUSIC (via tag on prefab)
+        var gameplayMusic = GameObject.FindWithTag("GameplayMusic")?.GetComponent<AudioSource>();
+        if (gameplayMusic != null)
+        {
+            gameplayMusic.Pause();
+            Debug.Log("Paused gameplay music");
+        }
+
         if (SFXManager.Instance != null)
             SFXManager.Instance.PlaySound("UI_Open");
     }
@@ -99,6 +108,21 @@ public class gamemanager : MonoBehaviour
         Time.timeScale = timeScaleOrig;
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
+
+        // resume level music
+        var gameplayMusic = GameObject.FindWithTag("GameplayMusic")?.GetComponent<AudioSource>();
+
+        if (menuActive != null)
+        {
+            StopMenuMusic(menuActive);
+        }
+
+        if (gameplayMusic != null)
+        {
+            gameplayMusic.UnPause();
+            Debug.Log("Resumed gameplay music");
+        }
+
         if (menuActive != null)
         {
             menuActive.SetActive(false);
@@ -136,11 +160,10 @@ public class gamemanager : MonoBehaviour
             statePause();
             menuActive = menuWin;
             if (menuActive != null)
+            {
                 menuActive.SetActive(true);
-        }
-        else
-        {
-            Debug.LogError($"Boss defeated on wrong level! Current scene: {currentSceneName}. Boss should only be on 'Game Play Scene L4'");
+                PlayMenuMusic(menuActive);
+            }
         }
     }
 
@@ -149,7 +172,10 @@ public class gamemanager : MonoBehaviour
         statePause();
         menuActive = menuLose;
         if (menuActive != null)
+        {
             menuActive.SetActive(true);
+            PlayMenuMusic(menuActive);
+        }
     }
 
     // Save & Load system
@@ -310,4 +336,34 @@ public class gamemanager : MonoBehaviour
             UpdateCoinDisplay();
         }
     }
+
+
+    //Music management for menus 
+    //plays menu music from the given menu GameObject
+    private void PlayMenuMusic(GameObject menuGO)
+    {
+        var musicSource = menuGO.GetComponentInChildren<AudioSource>();
+        if (musicSource != null)
+        {
+            musicSource.Play();
+            Debug.Log($"Playing menu music from {menuGO.name}");
+        }
+        else
+        {
+            Debug.LogWarning($"No AudioSource found in children of {menuGO.name}");
+        }
+    }
+    //stops menu music from the given menu GameObject
+    private void StopMenuMusic(GameObject menuGO)
+    {
+        var musicSource = menuGO.GetComponentInChildren<AudioSource>();
+        if (musicSource != null)
+        {
+            musicSource.Stop();
+            Debug.Log($"Stopped menu music from {menuGO.name}");
+        }
+    }
+
+
+
 }
