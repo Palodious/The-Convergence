@@ -1565,11 +1565,11 @@ PrefabInstance:
     - target: {fileID: 4057195010217244734, guid: 0030769a9114a2a47b69cf9de9066d6b, type: 3}
       propertyPath: storeUIPanel
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 1724895337}
     - target: {fileID: 4057195010217244734, guid: 0030769a9114a2a47b69cf9de9066d6b, type: 3}
       propertyPath: interactionPromptText
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 1724895336}
     - target: {fileID: 6822723391109821725, guid: 0030769a9114a2a47b69cf9de9066d6b, type: 3}
       propertyPath: m_LocalPosition.x
       value: -201.99744
@@ -3241,6 +3241,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1007850531531873773, guid: 0030769a9114a2a47b69cf9de9066d6b, type: 3}
+      propertyPath: storeUIPanel
+      value: 
+      objectReference: {fileID: 1724895337}
+    - target: {fileID: 1007850531531873773, guid: 0030769a9114a2a47b69cf9de9066d6b, type: 3}
+      propertyPath: interactionPromptText
+      value: 
+      objectReference: {fileID: 1724895336}
     - target: {fileID: 1021029969222291096, guid: 0030769a9114a2a47b69cf9de9066d6b, type: 3}
       propertyPath: m_Name
       value: vending_soda (1)
@@ -3285,18 +3293,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 8935942208309477503, guid: 0030769a9114a2a47b69cf9de9066d6b, type: 3}
-      propertyPath: m_IsTrigger
-      value: 1
-      objectReference: {fileID: 0}
-    m_RemovedComponents:
-    - {fileID: 4057195010217244734, guid: 0030769a9114a2a47b69cf9de9066d6b, type: 3}
+    m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 1021029969222291096, guid: 0030769a9114a2a47b69cf9de9066d6b, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1966023631}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 0030769a9114a2a47b69cf9de9066d6b, type: 3}
 --- !u!1 &1117558378
 GameObject:
@@ -4674,10 +4674,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 7573563460594621129, guid: f9cb63262ab343044a4dbdfabca5a845, type: 3}
-      propertyPath: m_Name
-      value: UI
-      objectReference: {fileID: 0}
     - target: {fileID: 4898222299525946154, guid: f9cb63262ab343044a4dbdfabca5a845, type: 3}
       propertyPath: m_Pivot.x
       value: 0
@@ -4758,12 +4754,31 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7573563460594621129, guid: f9cb63262ab343044a4dbdfabca5a845, type: 3}
+      propertyPath: m_Name
+      value: UI
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
-    m_RemovedGameObjects:
-    - {fileID: 1893078974311822473, guid: f9cb63262ab343044a4dbdfabca5a845, type: 3}
+    m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f9cb63262ab343044a4dbdfabca5a845, type: 3}
+--- !u!114 &1724895336 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3295115129481856395, guid: f9cb63262ab343044a4dbdfabca5a845, type: 3}
+  m_PrefabInstance: {fileID: 1724895335}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
+--- !u!1 &1724895337 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2540472401188465201, guid: f9cb63262ab343044a4dbdfabca5a845, type: 3}
+  m_PrefabInstance: {fileID: 1724895335}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1783338269
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -4941,25 +4956,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1964564489}
   m_Mesh: {fileID: 4300020, guid: 856f086268c2c1b4f8f1d4b9bc614217, type: 3}
---- !u!1 &1966023630 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 1021029969222291096, guid: 0030769a9114a2a47b69cf9de9066d6b, type: 3}
-  m_PrefabInstance: {fileID: 1075593784}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &1966023631
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1966023630}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 086bc461dd7ddc9468b56b19b51fd96c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::VendingMachineInteraction
-  storeUIPanel: {fileID: 0}
-  interactionPromptText: {fileID: 0}
 --- !u!1 &1969420870
 GameObject:
   m_ObjectHideFlags: 0
