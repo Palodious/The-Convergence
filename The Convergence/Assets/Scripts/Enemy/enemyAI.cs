@@ -162,10 +162,11 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
         stoppingDistOrig = agent.stoppingDistance;
         startingPos = transform.position;
 
-        if (gamemanager.instance != null && gamemanager.instance.IsWaveModeActive)
-        {
-            waveModeActive = true;
-        }
+       // if (gamemanager.instance != null && gamemanager.instance.IsWaveModeActive)
+        //{
+       //     waveModeActive = true;
+       // }
+        
         // Rigidbody setup for jump attack (transform-arc or physics mode)
         if (canJumpAttack)
         {
