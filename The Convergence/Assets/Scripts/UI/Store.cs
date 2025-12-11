@@ -1,6 +1,14 @@
 using UnityEngine;
 using System.Collections.Generic;
 
+public enum GunType
+{
+    SMG,
+    Rifle,
+    AR,
+    None,
+}
+
 [System.Serializable]
 public class StoreItem
 {
@@ -8,8 +16,9 @@ public class StoreItem
     public string itemName;
     public int cost;
     public ItemType type; // Upgrade, Consumable
-
-    
+    public GunType gunType = GunType.None;
+    public string upgradeStat = "";
+    public float upgradeAmount = 0f;
     public string state;
 
     public int quantity = 1;
@@ -32,6 +41,7 @@ public enum ItemType
     Consumable, // Multiple purchases allowed
    
 }
+
 
 
 public class Store : MonoBehaviour
@@ -79,20 +89,20 @@ public class Store : MonoBehaviour
     private void InitializeStoreData()
     {
 
-        upgradeItems.Add(new StoreItem { id = 101, itemName = "SMG Upgrade I", cost = 5, type = ItemType.Upgrade });
-        upgradeItems.Add(new StoreItem { id = 102, itemName = "SMG A Upgrade II", cost = 10, type = ItemType.Upgrade });
-        upgradeItems.Add(new StoreItem { id = 103, itemName = "SMG A Upgrade III", cost = 15, type = ItemType.Upgrade });
-        upgradeItems.Add(new StoreItem { id = 104, itemName = "SMG A Upgrade IV (MAX)", cost = 20, type = ItemType.Upgrade });
+        upgradeItems.Add(new StoreItem { id = 101, itemName = "SMG Upgrade I", cost = 5, type = ItemType.Upgrade, gunType = GunType.SMG, upgradeStat = "ammo", upgradeAmount = 5f });
+        upgradeItems.Add(new StoreItem { id = 102, itemName = "SMG Upgrade II", cost = 10, type = ItemType.Upgrade, gunType = GunType.SMG, upgradeStat = "damage", upgradeAmount = 5f });
+        upgradeItems.Add(new StoreItem { id = 103, itemName = "SMG Upgrade III", cost = 15, type = ItemType.Upgrade, gunType = GunType.SMG, upgradeStat = "rate", upgradeAmount = 5f });
+        upgradeItems.Add(new StoreItem { id = 104, itemName = "SMG Upgrade IIII", cost = 20, type = ItemType.Upgrade, gunType = GunType.SMG, upgradeStat = "distance", upgradeAmount = 5f });
 
-        upgradeItems.Add(new StoreItem { id = 111, itemName = "Rifle Upgrade I", cost = 5, type = ItemType.Upgrade });
-        upgradeItems.Add(new StoreItem { id = 112, itemName = "Rifle Upgrade II", cost = 10, type = ItemType.Upgrade });
-        upgradeItems.Add(new StoreItem { id = 113, itemName = "Rifle Upgrade III", cost = 15, type = ItemType.Upgrade });
-        upgradeItems.Add(new StoreItem { id = 114, itemName = "Rifle Upgrade IV (MAX)", cost = 20, type = ItemType.Upgrade });
+        upgradeItems.Add(new StoreItem { id = 111, itemName = "Rifle Upgrade I", cost = 5, type = ItemType.Upgrade, gunType = GunType.Rifle, upgradeStat = "ammo", upgradeAmount = 5f });
+        upgradeItems.Add(new StoreItem { id = 112, itemName = "Rifle Upgrade II", cost = 10, type = ItemType.Upgrade, gunType = GunType.Rifle, upgradeStat = "damage", upgradeAmount = 5f });
+        upgradeItems.Add(new StoreItem { id = 113, itemName = "Rifle Upgrade III", cost = 15, type = ItemType.Upgrade, gunType = GunType.Rifle, upgradeStat = "rate", upgradeAmount = 5f });
+        upgradeItems.Add(new StoreItem { id = 114, itemName = "Rifle Upgrade IIII", cost = 20, type = ItemType.Upgrade, gunType = GunType.Rifle, upgradeStat = "distance", upgradeAmount = 5f });
 
-        upgradeItems.Add(new StoreItem { id = 121, itemName = "AR Upgrade I", cost = 5, type = ItemType.Upgrade });
-        upgradeItems.Add(new StoreItem { id = 122, itemName = "AR Upgrade II", cost = 10, type = ItemType.Upgrade });
-        upgradeItems.Add(new StoreItem { id = 123, itemName = "AR Upgrade III", cost = 15, type = ItemType.Upgrade });
-        upgradeItems.Add(new StoreItem { id = 124, itemName = "AR Upgrade IV (MAX)", cost = 20, type = ItemType.Upgrade });
+        upgradeItems.Add(new StoreItem { id = 121, itemName = "AR Upgrade I", cost = 5, type = ItemType.Upgrade, gunType = GunType.AR, upgradeStat = "ammo", upgradeAmount = 5f });
+        upgradeItems.Add(new StoreItem { id = 122, itemName = "AR Upgrade II", cost = 10, type = ItemType.Upgrade, gunType = GunType.AR, upgradeStat = "damage", upgradeAmount = 5f });
+        upgradeItems.Add(new StoreItem { id = 123, itemName = "AR Upgrade III", cost = 15, type = ItemType.Upgrade, gunType = GunType.AR, upgradeStat = "rate", upgradeAmount = 5f });
+        upgradeItems.Add(new StoreItem { id = 124, itemName = "AR Upgrade IIII", cost = 20, type = ItemType.Upgrade, gunType = GunType.AR, upgradeStat = "distance", upgradeAmount = 5f });
 
         upgradeItems.Add(new StoreItem { id = 201, itemName = "Health Upgrade I", cost = 10, type = ItemType.Upgrade });
         upgradeItems.Add(new StoreItem { id = 202, itemName = "Health Upgrade II", cost = 20, type = ItemType.Upgrade });
@@ -164,10 +174,20 @@ public class Store : MonoBehaviour
             // Apply Effect based on Type
             if (item.type == ItemType.Upgrade)
             {
-                // Mark as purchased, effectively setting its quantity to 0
-                playerState.purchasedIds.Add(item.id);
+                if (item.gunType != GunType.None)
+                {
+                    gunStats targetGun = GunUpgradeManager.Instance.GetGunStats(item.gunType);
 
-                item.quantity = 0;
+                    if (targetGun != null)
+                    {
+                        targetGun.ApplyUpgrade(item.upgradeStat, item.upgradeAmount);
+                        Debug.Log($"Applied {item.itemName} to {item.gunType}. New {item.upgradeStat}: {targetGun.shootDamage} (example stat)");
+                    }
+                }
+
+                        // Mark as purchased, effectively setting its quantity to 0
+                        playerState.purchasedIds.Add(item.id);
+                        item.quantity = 0;
 
             }
             else if (item.type == ItemType.Consumable)
