@@ -1314,6 +1314,7 @@ GameObject:
   - component: {fileID: 3692946239600984159}
   - component: {fileID: 4121909897967337052}
   - component: {fileID: 7793829858010845652}
+  - component: {fileID: -1628996032577305087}
   - component: {fileID: 8664107061421733554}
   - component: {fileID: -3898658822286414359}
   m_Layer: 6
@@ -1392,15 +1393,15 @@ MonoBehaviour:
   attackRate: 0.5
   meleeDamageAmount: 1
   canJumpAttack: 1
-  jumpForce: 1
-  jumpAttackRange: 10
+  jumpForce: 2
+  jumpAttackRange: 5.5
   minHeightDifference: 1
-  jumpAttackCooldown: 5
-  jumpAttackDamage: 6
+  jumpAttackCooldown: 6
+  jumpAttackDamage: 3
   jumpAttackRadius: 1.75
   jumpTimer: 1
-  jumpHeight: 2
-  jumpDuration: 1
+  jumpHeight: 3.5
+  jumpDuration: 0.8
   jumpCurve:
     serializedVersion: 2
     m_Curve:
@@ -1556,6 +1557,33 @@ CapsuleCollider:
   m_Height: 2
   m_Direction: 1
   m_Center: {x: 0, y: 0.8, z: 0}
+--- !u!54 &-1628996032577305087
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4229121175722213460}
+  serializedVersion: 5
+  m_Mass: 1
+  m_LinearDamping: 0
+  m_AngularDamping: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 1
+  m_IsKinematic: 1
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 1
 --- !u!135 &8664107061421733554
 SphereCollider:
   m_ObjectHideFlags: 0

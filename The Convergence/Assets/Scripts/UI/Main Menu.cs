@@ -52,9 +52,11 @@ public class MainMenu : MonoBehaviour
     public void StartGame()
     {
         if (SFXManager.Instance != null)
-            SFXManager.Instance.PlaySound("UI_Click");
+
+        SFXManager.Instance.PlaySound("UI_Click");
 
         SaveManager.PendingLoad = false;
+        SaveManager.IsLoadingFromSave = false;
 
         SceneLoader.LoadSceneWithLoadingScreen(firstLevelSceneName);
     }
@@ -63,6 +65,7 @@ public class MainMenu : MonoBehaviour
     public void ContinueGame()
     {
         if (SaveManager.Instance == null)
+
         {
             Debug.LogWarning("Continue pressed but no SaveManager in the Main Menu scene.");
 
@@ -88,6 +91,7 @@ public class MainMenu : MonoBehaviour
 
         // Tell the next scene's gamemanager to auto-load on Awake.
         SaveManager.PendingLoad = true;
+        SaveManager.IsLoadingFromSave = true;
 
         // Load whatever scene was saved.
         SceneLoader.LoadSceneWithLoadingScreen(data.scene);

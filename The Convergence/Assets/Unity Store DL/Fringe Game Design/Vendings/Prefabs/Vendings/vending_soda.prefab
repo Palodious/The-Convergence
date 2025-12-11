@@ -12,8 +12,8 @@ GameObject:
   - component: {fileID: 5390116143392255196}
   - component: {fileID: 3422922753964331883}
   - component: {fileID: 8935942208309477503}
-  - component: {fileID: 4057195010217244734}
   - component: {fileID: 7225360260383084568}
+  - component: {fileID: 1007850531531873773}
   m_Layer: 0
   m_Name: vending_soda
   m_TagString: Untagged
@@ -113,20 +113,6 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 4.899986, y: 3.7999997, z: 3.9000187}
   m_Center: {x: 0.0000021453461, y: 1.9000005, z: 1.4999852}
---- !u!114 &4057195010217244734
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1021029969222291096}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 086bc461dd7ddc9468b56b19b51fd96c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::VendingMachineInteraction
-  storeUIPanel: {fileID: 0}
-  interactionPromptText: {fileID: 0}
 --- !u!64 &7225360260383084568
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -149,3 +135,17 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 603752552611887232, guid: b2dfce70f4c1afa42834582af78cafe4, type: 3}
+--- !u!114 &1007850531531873773
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1021029969222291096}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 086bc461dd7ddc9468b56b19b51fd96c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::VendingMachineInteraction
+  storeUIPanel: {fileID: 0}
+  interactionPromptText: {fileID: 0}
