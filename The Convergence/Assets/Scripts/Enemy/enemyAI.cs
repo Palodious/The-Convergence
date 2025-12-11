@@ -162,10 +162,10 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
         stoppingDistOrig = agent.stoppingDistance;
         startingPos = transform.position;
 
-       // if (gamemanager.instance != null && gamemanager.instance.IsWaveModeActive)
-        //{
-       //     waveModeActive = true;
-       // }
+      if (gamemanager.instance != null && gamemanager.instance.IsWaveModeActive)
+      {
+            waveModeActive = true;
+      }
         
         // Rigidbody setup for jump attack (transform-arc or physics mode)
         if (canJumpAttack)
@@ -1035,6 +1035,21 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
     // Check if enemy can see player
     bool canSeePlayer()
     {
+        if (waveModeActive && !ignoreWaveMode)
+        {
+            if (gamemanager.instance.player == null) return false;
+
+            Vector3 playerPos = gamemanager.instance.player.transform.position;
+            float distanceToPlayer = Vector3.Distance(transform.position, playerPos);
+
+            // In wave mode, "see" player if within detection range
+            if (distanceToPlayer <= waveModeRange)
+            {
+                playerDir = playerPos - headPos.position;
+                return true;
+            }
+            return false;
+        }
         if (gamemanager.instance.player == null) return false;
 
         Vector3 playerPos = gamemanager.instance.player.transform.position;
@@ -1436,5 +1451,29 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
             anim.Rebind();
             anim.Update(0f);
         }
+    }
+    
+    public void EnableWaveMode()
+    {
+        waveModeActive = true;
+        if (agent != null && agent.isActiveAndEnabled)
+        {
+            agent.stoppingDistance = stoppingDistOrig;
+        }
+    }
+    public void DisableWaveMode()
+    {
+        waveModeActive = false;
+    }
+
+    public void ToggleWaveMode()
+    {
+        waveModeActive = !waveModeActive;
+    }
+
+    // Optionally, add a method to set wave mode range
+    public void SetWaveModeRange(float newRange)
+    {
+        waveModeRange = newRange;
     }
 }
