@@ -48,7 +48,6 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
     private static int persistentGunListPos = 0;
     private static int persistentHP = 100;
 
-
     private static bool isNewGameSession = true;
 
     public int ShootDamage => shootDamage;
@@ -83,6 +82,8 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
     [Header("~=~= TPS / Aiming Settings =~=~")]
     public Transform aimTarget; // assign empty AimTarget in front of player
     public Transform rightHandIKTarget; // assign empty child at gun grip
+    public Transform leftHandIKTarget; // assign empty child for left hand support
+    private PlayerIKController ikController; // Reference to IK controller
     [HideInInspector] public bool isAiming; // true while holding Fire2
     [Range(0f, 1f)] public float aimMoveSpeed = 8f; // how fast upper-body aims/IK blends
 
@@ -107,13 +108,16 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
         originalHeight = controller.height;
         originalSpeed = speed;
 
+        // Initialize IK system
+        InitializeIKSystem();
+
         if (SaveManager.IsLoadingFromSave)
         {
             Debug.Log("playerController.Start: IsLoadingFromSave = true, skipping respawn/persistent init.");
             return;
         }
 
-        // Check if we have persistent data (from previous scene )
+        // Check if we have persistent data (from previous scene)
         int currentSceneIndex = SceneManager.GetActiveScene().buildIndex;
 
         if (currentSceneIndex > 1 && (persistentGunList.Count > 0 || persistentKeyList.Count > 0))
@@ -128,6 +132,61 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
         }
     }
 
+    void InitializeIKSystem()
+    {
+        // Get or add IK controller
+        ikController = GetComponent<PlayerIKController>();
+        if (ikController == null)
+            ikController = GetComponentInChildren<PlayerIKController>();
+
+        if (ikController == null)
+        {
+            Debug.LogWarning("No PlayerIKController found. Adding one...");
+            ikController = gameObject.AddComponent<PlayerIKController>();
+        }
+
+        // Create IK target objects if they don't exist
+        if (rightHandIKTarget == null)
+        {
+            GameObject rightIK = new GameObject("RightHandIKTarget");
+            rightIK.transform.SetParent(transform);
+            rightIK.transform.localPosition = new Vector3(0.2f, 1.5f, 0.3f); // Default position
+            rightHandIKTarget = rightIK.transform;
+        }
+
+        if (leftHandIKTarget == null)
+        {
+            GameObject leftIK = new GameObject("LeftHandIKTarget");
+            leftIK.transform.SetParent(transform);
+            leftIK.transform.localPosition = new Vector3(-0.2f, 1.5f, 0.3f); // Default position
+            leftHandIKTarget = leftIK.transform;
+        }
+
+        // Set up aim target if not assigned
+        if (aimTarget == null && Camera.main != null)
+        {
+            GameObject aimObj = new GameObject("AimTarget");
+            aimTarget = aimObj.transform;
+            aimTarget.SetParent(Camera.main.transform);
+            aimTarget.localPosition = Vector3.forward * 10f;
+        }
+
+        // Sync with IK controller
+        if (ikController != null)
+        {
+            if (ikController.animator == null && animator != null)
+                ikController.animator = animator;
+
+            if (ikController.rightHandIKTarget == null)
+                ikController.rightHandIKTarget = rightHandIKTarget;
+
+            if (ikController.leftHandIKTarget == null)
+                ikController.leftHandIKTarget = leftHandIKTarget;
+
+            if (ikController.aimTarget == null)
+                ikController.aimTarget = aimTarget;
+        }
+    }
 
     void ResetStaticData()
     {
@@ -203,6 +262,12 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
         if (animator != null)
             animator.SetBool("IsAiming", isAiming);
 
+        // Update IK based on aiming state
+        if (isAiming)
+            UpdateIKDuringAim();
+        else
+            UpdateIKDuringHipFire();
+
         if (!gamemanager.instance.isPaused)
         {
             // helpful debug ray showing camera center forward
@@ -213,6 +278,30 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
         }
 
         sprint();
+    }
+
+    void UpdateIKDuringAim()
+    {
+        if (!isAiming || ikController == null) return;
+
+        // Set IK weights for aiming
+        ikController.SetIKWeights(1f, 1f, 0.5f);
+
+        // Update animator parameter for blend trees
+        if (animator != null)
+            animator.SetFloat("AimBlend", Mathf.Lerp(animator.GetFloat("AimBlend"), 1f, Time.deltaTime * aimMoveSpeed));
+    }
+
+    void UpdateIKDuringHipFire()
+    {
+        if (isAiming || ikController == null) return;
+
+        // Set IK weights for hip fire (lower weights)
+        ikController.SetIKWeights(0.3f, 0.1f, 0f);
+
+        // Update animator parameter for blend trees
+        if (animator != null)
+            animator.SetFloat("AimBlend", Mathf.Lerp(animator.GetFloat("AimBlend"), 0f, Time.deltaTime * aimMoveSpeed));
     }
 
     void movement()
@@ -403,7 +492,6 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
         }
     }
 
-    // IK is handled by a separate script (PlayerIKController) using rightHandIKTarget.
     public void takeDamage(int amount)
     {
         HP -= amount;
@@ -637,6 +725,59 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
         GameObject newGunModel = Instantiate(gunList[gunListPos].gunModel, gunModel.transform);
         newGunModel.transform.localPosition = Vector3.zero;
         newGunModel.transform.localRotation = Quaternion.identity;
+
+        // Update IK targets from the new gun
+        UpdateIKTargetsFromGun(newGunModel);
+    }
+
+    void UpdateIKTargetsFromGun(GameObject gunObject)
+    {
+        if (gunObject == null || ikController == null) return;
+
+        // Find IK targets on the gun using recursive search
+        Transform gunRightHandIK = FindDeepChild(gunObject.transform, "RightHandIK");
+        Transform gunLeftHandIK = FindDeepChild(gunObject.transform, "LeftHandIK");
+
+        // Pass the gun's IK targets to the IK controller
+        ikController.UpdateGunIKTargets(gunRightHandIK, gunLeftHandIK);
+
+        // If gun doesn't have IK targets, use our default targets
+        if (gunRightHandIK == null)
+        {
+            // Position the right hand IK target at a reasonable default
+            rightHandIKTarget.SetParent(gunObject.transform);
+            rightHandIKTarget.localPosition = new Vector3(0.05f, -0.03f, 0.2f);
+            rightHandIKTarget.localRotation = Quaternion.identity;
+
+            // Tell IK controller to use our default target
+            ikController.UpdateGunIKTargets(rightHandIKTarget, null);
+        }
+
+        if (gunLeftHandIK == null)
+        {
+            // Position the left hand IK target at a reasonable default
+            leftHandIKTarget.SetParent(gunObject.transform);
+            leftHandIKTarget.localPosition = new Vector3(-0.05f, -0.02f, 0.4f);
+            leftHandIKTarget.localRotation = Quaternion.identity;
+
+            // Tell IK controller to use our default target
+            ikController.UpdateGunIKTargets(null, leftHandIKTarget);
+        }
+    }
+
+    // Recursive helper to find deep children
+    Transform FindDeepChild(Transform parent, string childName)
+    {
+        foreach (Transform child in parent)
+        {
+            if (child.name == childName)
+                return child;
+
+            Transform result = FindDeepChild(child, childName);
+            if (result != null)
+                return result;
+        }
+        return null;
     }
 
     void selectGun()
