@@ -330,18 +330,18 @@ public class gamemanager : MonoBehaviour
                 allEnemies.Remove(enemy);
         }
 
-        public void EnableGlobalWaveMode()
-        {
-            IsWaveModeActive = true;
-            foreach (var enemy in allEnemies)
-            {
-                if (enemy != null && !enemy.ignoreWaveMode)
-                {
-                    enemy.EnableWaveMode();
-                    enemy.SetWaveModeRange(globalWaveModeRange);
-                }
-            }
-        }
+       // public void EnableGlobalWaveMode()
+       // {
+       //     IsWaveModeActive = true;
+       //     foreach (var enemy in allEnemies)
+       //     {
+       //         if (enemy != null && !enemy.ignoreWaveMode)
+       //         {
+       //             enemy.EnableWaveMode();
+       //             enemy.SetWaveModeRange(globalWaveModeRange);
+       //         }
+       //     }
+       // }
 
         public void DisableGlobalWaveMode()
         {
