@@ -390,11 +390,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 310595369717098536, guid: d7d047e4d2c50e64a929e6077bcbd75b, type: 3}
   m_PrefabInstance: {fileID: 6649246694542722008}
   m_PrefabAsset: {fileID: 0}
---- !u!224 &777169638 stripped
-RectTransform:
-  m_CorrespondingSourceObject: {fileID: 3606416084514478557, guid: f9cb63262ab343044a4dbdfabca5a845, type: 3}
-  m_PrefabInstance: {fileID: 372863016}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1093319580
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3862,8 +3857,8 @@ Transform:
   m_GameObject: {fileID: 2472113193000969044}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.118, y: 1.5316, z: 0.3}
-  m_LocalScale: {x: 0.59119, y: 0.5923173, z: 0.8828847}
+  m_LocalPosition: {x: 0.118, y: 1.5316, z: 0.327}
+  m_LocalScale: {x: 0.59119, y: 0.5923173, z: 1.0579607}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 4063590315609091496}
@@ -4068,7 +4063,7 @@ MonoBehaviour:
   damageBoost: 1
   gunList: []
   gunModel: {fileID: 2472113193000969044}
-  aimTarget: {fileID: 777169638}
+  aimTarget: {fileID: 0}
   rightHandIKTarget: {fileID: 4563222267786867208}
   isAiming: 0
   aimMoveSpeed: 1
