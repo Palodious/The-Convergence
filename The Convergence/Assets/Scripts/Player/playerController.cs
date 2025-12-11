@@ -74,6 +74,8 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
     [SerializeField] GameObject gunModel;
     int gunListPos;
 
+    [HideInInspector] public gunStats activeGunStats;
+
     [Header("~=~= Medkit Settings =~=~")]
     private bool canUseMedkit = true;
     private float medkitCooldown = 0f;
@@ -360,47 +362,43 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
 
     void shoot()
     {
-        if (gunList.Count == 0) return;
+        if (activeGunStats == null) return;
 
+        if (shootTimer < activeGunStats.shootRate) return;
         shootTimer = 0;
 
-        if (gunList.Count > 0)
-        {
-            aud.pitch = Random.Range(0.9f, 1.1f);
-            gunStats gunPos = gunList[gunListPos];
-            aud.PlayOneShot(gunPos.shootSound[Random.Range(0, gunPos.shootSound.Length)], gunPos.shootSoundVol);
-        }
+        aud.pitch = Random.Range(0.9f, 1.1f);
+        aud.PlayOneShot(activeGunStats.shootSound[Random.Range(0, activeGunStats.shootSound.Length)], activeGunStats.shootSoundVol);
+
 
         // fire from gunModel toward the AimTarget
         if (aimTarget != null && gunModel != null)
         {
             Vector3 shootDir = (aimTarget.position - gunModel.transform.position).normalized;
-            if (Physics.Raycast(gunModel.transform.position, shootDir, out RaycastHit hit, shootDist, ~ignoreLayer))
+            if (Physics.Raycast(gunModel.transform.position, shootDir, out RaycastHit hit, activeGunStats.shootDist, ~ignoreLayer))
             {
                 Debug.Log(hit.collider.name);
 
                 IDamage dmg = hit.collider.GetComponent<IDamage>();
                 if (dmg != null)
                 {
-                    dmg.takeDamage(Mathf.RoundToInt(shootDamage * damageBoost));
+                    dmg.takeDamage(Mathf.RoundToInt(activeGunStats.shootDamage * damageBoost));
                 }
 
-                if (gunList.Count > 0)
-                    Instantiate(gunList[gunListPos].hitEffect, hit.point, Quaternion.identity);
+                Instantiate(activeGunStats.hitEffect, hit.point, Quaternion.identity);
             }
         }
         else
         {
-            if (Physics.Raycast(Camera.main.transform.position, Camera.main.transform.forward, out RaycastHit hit2, shootDist, ~ignoreLayer))
+            if (Physics.Raycast(Camera.main.transform.position, Camera.main.transform.forward, out RaycastHit hit2, activeGunStats.shootDist, ~ignoreLayer))
             {
                 IDamage dmg = hit2.collider.GetComponent<IDamage>();
                 if (dmg != null)
                 {
-                    dmg.takeDamage(Mathf.RoundToInt(shootDamage * damageBoost));
+                    dmg.takeDamage(Mathf.RoundToInt(activeGunStats.shootDamage * damageBoost));
                 }
 
-                if (gunList.Count > 0)
-                    Instantiate(gunList[gunListPos].hitEffect, hit2.point, Quaternion.identity);
+                Instantiate(activeGunStats.hitEffect, hit2.point, Quaternion.identity);
             }
         }
     }
@@ -623,9 +621,7 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
     {
         if (gunList.Count == 0) return;
 
-        shootDamage = gunList[gunListPos].shootDamage;
-        shootDist = gunList[gunListPos].shootDist;
-        shootRate = gunList[gunListPos].shootRate;
+        activeGunStats = gunList[gunListPos];
 
         Transform[] children = new Transform[gunModel.transform.childCount];
         for (int i = 0; i < gunModel.transform.childCount; i++)
