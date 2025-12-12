@@ -268,6 +268,25 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
     // Separate behavior handler for mobile enemies
     void HandleMobileBehavior()
     {
+        float distanceToPlayer = Vector3.Distance(transform.position, gamemanager.instance.player.transform.position);
+        // Handle attacks based on enemy type
+        switch (enemyType)
+        {
+            case EnemyType.Melee:
+                if (distanceToPlayer <= meleeRange && attackTimer >= attackRate)
+                    meleeAttack();
+                break;
+            case EnemyType.Shooter:
+                if (shootTimer >= shootRate)
+                    Shoot();
+                break;
+            case EnemyType.Hybrid:
+                if (distanceToPlayer <= meleeRange && attackTimer >= attackRate)
+                    meleeAttack();
+                else if (shootTimer >= shootRate)
+                    Shoot();
+                break;
+        }
         // Already checked in Update(), but double-check for safety
         if (isJumpAttacking || isDashing) return;
 
@@ -1121,24 +1140,7 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
                     }
                 }
 
-                // Handle attacks based on enemy type
-                switch (enemyType)
-                {
-                    case EnemyType.Melee:
-                        if (distanceToPlayer <= meleeRange && attackTimer >= attackRate)
-                            meleeAttack();
-                        break;
-                    case EnemyType.Shooter:
-                        if (shootTimer >= shootRate)
-                            Shoot();
-                        break;
-                    case EnemyType.Hybrid:
-                        if (distanceToPlayer <= meleeRange && attackTimer >= attackRate)
-                            meleeAttack();
-                        else if (shootTimer >= shootRate)
-                            Shoot();
-                        break;
-                }
+                
                 if (agent != null && agent.isActiveAndEnabled && !isJumpAttacking && !isDashing &&
                     agent.remainingDistance <= agent.stoppingDistance)
                     faceTarget();
