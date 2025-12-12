@@ -44,6 +44,9 @@ public class SaveManager : MonoBehaviour
     // Set to true by the Main Menu Continue button before loading a saved scene.
     public static bool PendingLoad = false;
 
+    // True while we are loading a save into a freshly loaded scene.
+    public static bool IsLoadingFromSave = false;
+
     // This is where my save file gets written. Unity gives me a platform-safe path.
     string SavePath => Path.Combine(Application.persistentDataPath, "savegame.json");
 

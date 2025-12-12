@@ -6,6 +6,7 @@ using UnityEngine.XR;
 using static UnityEngine.GraphicsBuffer;
 using static UnityEngine.ParticleSystem;
 
+[RequireComponent(typeof(Rigidbody))]
 public class enemyAI : MonoBehaviour, IDamage, ISaveable
 {
 
@@ -50,7 +51,7 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
     [Range(1, 50)][SerializeField] int meleeDamageAmount;
 
     [Header("**** Jump Attack Settings ****")]
-    [SerializeField] bool canJumpAttack = false;
+    [SerializeField] bool canJumpAttack = true;
     [Range(0.1f, 10f)][SerializeField] float jumpForce;
     [Range(1f, 50f)][SerializeField] float jumpAttackRange; // Max distance to trigger jump
     [Range(0.1f, 10f)][SerializeField] float minHeightDifference; // How much higher player must be

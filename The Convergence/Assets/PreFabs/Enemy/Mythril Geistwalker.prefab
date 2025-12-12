@@ -1393,15 +1393,15 @@ MonoBehaviour:
   attackRate: 0.5
   meleeDamageAmount: 1
   canJumpAttack: 1
-  jumpForce: 1
-  jumpAttackRange: 10
+  jumpForce: 2
+  jumpAttackRange: 5.5
   minHeightDifference: 1
-  jumpAttackCooldown: 5
-  jumpAttackDamage: 6
+  jumpAttackCooldown: 6
+  jumpAttackDamage: 3
   jumpAttackRadius: 1.75
   jumpTimer: 1
-  jumpHeight: 2
-  jumpDuration: 1
+  jumpHeight: 3.5
+  jumpDuration: 0.8
   jumpCurve:
     serializedVersion: 2
     m_Curve:
@@ -1583,7 +1583,7 @@ Rigidbody:
   m_IsKinematic: 1
   m_Interpolate: 0
   m_Constraints: 0
-  m_CollisionDetection: 0
+  m_CollisionDetection: 1
 --- !u!135 &8664107061421733554
 SphereCollider:
   m_ObjectHideFlags: 0

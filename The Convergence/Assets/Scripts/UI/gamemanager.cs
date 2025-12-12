@@ -37,9 +37,9 @@ public class gamemanager : MonoBehaviour
     public bool isPaused;
 
     float timeScaleOrig;
-    public TextMeshProUGUI coinTextDisplay;
+    [Header("~=~= Currency UI =~=~")]
+    [SerializeField] private TextMeshProUGUI riftShardTextDisplay;
 
-    public int currentCoins = 0;
 
     void Awake()
     {
@@ -55,11 +55,30 @@ public class gamemanager : MonoBehaviour
 
     private void Start()
     {
+        if (RiftShardManager.Instance != null)
+        {
+            RiftShardManager.Instance.OnShardAmountChanged += UpdateCoinDisplay;
+            // Initialize the display with the current amount
+            UpdateCoinDisplay(RiftShardManager.Instance.Amount);
+        }
+        else
+        {
+            Debug.LogWarning("RiftShardManager not found in scene. Coin display will not update.");
+        }
+
         // If we came here via Main Menu's Continue, auto-load the save.
         if (SaveManager.PendingLoad)
         {
             SaveManager.PendingLoad = false;
             LoadGame();
+        }
+    }
+
+    private void OnDestroy()
+    {
+        if (RiftShardManager.Instance != null)
+        {
+            RiftShardManager.Instance.OnShardAmountChanged -= UpdateCoinDisplay;
         }
     }
 
@@ -72,6 +91,7 @@ public class gamemanager : MonoBehaviour
                 statePause();
                 menuActive = menuPause;
                 menuActive.SetActive(true);
+                PlayMenuMusic(menuActive);
             }
             else if (menuActive == menuPause)
             {
@@ -89,6 +109,14 @@ public class gamemanager : MonoBehaviour
         if (playerScript != null)
             playerScript.enabled = false;
 
+        // PAUSE CURRENT LEVEL GAMEPLAY MUSIC (via tag on prefab)
+        var gameplayMusic = GameObject.FindWithTag("GameplayMusic")?.GetComponent<AudioSource>();
+        if (gameplayMusic != null)
+        {
+            gameplayMusic.Pause();
+            Debug.Log("Paused gameplay music");
+        }
+
         if (SFXManager.Instance != null)
             SFXManager.Instance.PlaySound("UI_Open");
     }
@@ -99,6 +127,21 @@ public class gamemanager : MonoBehaviour
         Time.timeScale = timeScaleOrig;
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
+
+        // resume level music
+        var gameplayMusic = GameObject.FindWithTag("GameplayMusic")?.GetComponent<AudioSource>();
+
+        if (menuActive != null)
+        {
+            StopMenuMusic(menuActive);
+        }
+
+        if (gameplayMusic != null)
+        {
+            gameplayMusic.UnPause();
+            Debug.Log("Resumed gameplay music");
+        }
+
         if (menuActive != null)
         {
             menuActive.SetActive(false);
@@ -136,11 +179,10 @@ public class gamemanager : MonoBehaviour
             statePause();
             menuActive = menuWin;
             if (menuActive != null)
+            {
                 menuActive.SetActive(true);
-        }
-        else
-        {
-            Debug.LogError($"Boss defeated on wrong level! Current scene: {currentSceneName}. Boss should only be on 'Game Play Scene L4'");
+                PlayMenuMusic(menuActive);
+            }
         }
     }
 
@@ -149,7 +191,10 @@ public class gamemanager : MonoBehaviour
         statePause();
         menuActive = menuLose;
         if (menuActive != null)
+        {
             menuActive.SetActive(true);
+            PlayMenuMusic(menuActive);
+        }
     }
 
     // Save & Load system
@@ -251,6 +296,7 @@ public class gamemanager : MonoBehaviour
         if (gameGoalCountText != null)
             gameGoalCountText.text = gameGoalCount.ToString("F0");
 
+        SaveManager.IsLoadingFromSave = false;
         stateUnpause();
     }
 
@@ -291,22 +337,39 @@ public class gamemanager : MonoBehaviour
         }
     }
 
-    private void UpdateCoinDisplay()
+    private void UpdateCoinDisplay(int newAmount)
     {
-        if (coinTextDisplay != null)
+        if (riftShardTextDisplay != null)
         {
             // Sets the text to show the current coin amount
-            coinTextDisplay.text = $":{currentCoins}";
+            // You can format this string as needed, e.g., $"{newAmount} SHARDS"
+            riftShardTextDisplay.text = $":{newAmount}";
         }
     }
 
-    public void AddCoins(int amount)
+    //Music management for menus 
+    //plays menu music from the given menu GameObject
+    private void PlayMenuMusic(GameObject menuGO)
     {
-        if (amount > 0)
+        var musicSource = menuGO.GetComponentInChildren<AudioSource>();
+        if (musicSource != null)
         {
-            currentCoins += amount;
-
-            UpdateCoinDisplay();
+            musicSource.Play();
+            Debug.Log($"Playing menu music from {menuGO.name}");
+        }
+        else
+        {
+            Debug.LogWarning($"No AudioSource found in children of {menuGO.name}");
+        }
+    }
+    //stops menu music from the given menu GameObject
+    private void StopMenuMusic(GameObject menuGO)
+    {
+        var musicSource = menuGO.GetComponentInChildren<AudioSource>();
+        if (musicSource != null)
+        {
+            musicSource.Stop();
+            Debug.Log($"Stopped menu music from {menuGO.name}");
         }
     }
     
