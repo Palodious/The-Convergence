@@ -271,12 +271,61 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
         // Already checked in Update(), but double-check for safety
         if (isJumpAttacking || isDashing) return;
 
-        if (playerInTrigger && !canSeePlayer())
+        if (ShouldTargetPlayer())
         {
-            checkRoamOrPatrol();
+            // Set destination to player
+            if (agent != null && agent.isActiveAndEnabled)
+            {
+                try
+                {
+                    agent.SetDestination(gamemanager.instance.player.transform.position);
+                    agent.stoppingDistance = stoppingDistOrig;
+                }
+                catch (System.Exception e)
+                {
+                    Debug.LogWarning($"Could not set destination: {e.Message}");
+                }
+            }
+
+            // Check for special attacks
+            if (ShouldJumpAttack())
+            {
+                StartJumpAttack();
+                return;
+            }
+
+            if (ShouldDashAttack())
+            {
+                StartDashAttack();
+                return;
+            }
+
+            // Handle attacks based on enemy type
+            float distanceToPlayer = Vector3.Distance(transform.position, gamemanager.instance.player.transform.position);
+            switch (enemyType)
+            {
+                case EnemyType.Melee:
+                    if (distanceToPlayer <= meleeRange && attackTimer >= attackRate)
+                        meleeAttack();
+                    break;
+                case EnemyType.Shooter:
+                    if (shootTimer >= shootRate)
+                        Shoot();
+                    break;
+                case EnemyType.Hybrid:
+                    if (distanceToPlayer <= meleeRange && attackTimer >= attackRate)
+                        meleeAttack();
+                    else if (shootTimer >= shootRate)
+                        Shoot();
+                    break;
+            }
+
+            if (agent != null && agent.isActiveAndEnabled && agent.remainingDistance <= agent.stoppingDistance)
+                faceTarget();
         }
-        else if (!playerInTrigger)
+        else
         {
+            // If we shouldn't target the player, then roam or patrol
             checkRoamOrPatrol();
         }
     }
