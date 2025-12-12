@@ -347,17 +347,6 @@ public class gamemanager : MonoBehaviour
         }
     }
 
-    public void AddCoins(int amount)
-    {
-        if (amount > 0)
-        {
-            currentCoins += amount;
-
-            UpdateCoinDisplay();
-        }
-    }
-
-
     //Music management for menus 
     //plays menu music from the given menu GameObject
     private void PlayMenuMusic(GameObject menuGO)
@@ -383,7 +372,4 @@ public class gamemanager : MonoBehaviour
             Debug.Log($"Stopped menu music from {menuGO.name}");
         }
     }
-
-
-
 }
