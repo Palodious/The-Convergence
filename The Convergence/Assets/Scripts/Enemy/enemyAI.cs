@@ -79,7 +79,6 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
     [Range(1.1f, 10f)][SerializeField] float playerFleeingThreshold; // How fast player must be moving away
     
     [Header("**** Wave Mode Settings ****")]
-    [SerializeField] bool ignoreWaveMode = false;
     [Range(0, 200)][SerializeField] float waveModeRange = 200f;
 
     [Header("**** Behavior Toggles ****")]
@@ -87,6 +86,7 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
     public bool usePatrol = true; // Toggle patrol behavior
     public bool useRoam = true; // Toggle roaming behavior
     public bool waveModeActive = false; // toggle for wave mode
+    public bool ignoreWaveMode;
 
     [Header("~=~= Audio =~=~")]
     [SerializeField] AudioSource aud;
