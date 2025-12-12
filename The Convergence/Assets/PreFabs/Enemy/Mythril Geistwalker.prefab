@@ -1442,28 +1442,37 @@ MonoBehaviour:
   useRoam: 1
   aud: {fileID: -3898658822286414359}
   audStep:
-  - {fileID: 8300000, guid: 38a0296c2c86d224ca857874d3981336, type: 3}
-  audStepVol: 0.15
+  - {fileID: 8300000, guid: 81d6cc9391967574c8d850e15adec10c, type: 3}
+  - {fileID: 8300000, guid: 98e92f012ca7aac4cb5a10875b88f2b2, type: 3}
+  - {fileID: 8300000, guid: 7d82cae6003b3164db683bd79ee012f4, type: 3}
+  - {fileID: 8300000, guid: 552ce8157933395458d559fdee898974, type: 3}
+  audStepVol: 0.22
   audHurt:
-  - {fileID: 8300000, guid: a7384201d2881e34b9c93f5c4f019521, type: 3}
+  - {fileID: 8300000, guid: f2c643d9991326f44b1224002f9c61fd, type: 3}
   audHurtVol: 0.15
   audShoot:
-  - {fileID: 8300000, guid: e3e8e067a986b10459c413dada21bf01, type: 3}
+  - {fileID: 0}
   audShootVol: 0
   audMelee:
-  - {fileID: 8300000, guid: 65f8912a6f857334392200929d5c69a9, type: 3}
+  - {fileID: 8300000, guid: 8b23b175a78d6b5458322e3a6c9905d0, type: 3}
+  - {fileID: 8300000, guid: 323e15cfe809e114ab92c9f4b25e8bc2, type: 3}
   audMeleeVol: 0.15
   audDeath:
-  - {fileID: 8300000, guid: 2fbbe83cecd56e245a5ad0d73572b05f, type: 3}
-  audDeathVol: 0.15
-  audJumpAttack: []
-  audJumpAttackVol: 0
-  audJumpWindup: {fileID: 0}
-  audJumpWindupVol: 0.5
-  audJumpLanding: {fileID: 0}
-  audJumpLandingVol: 0.7
-  audDash: []
-  audDashVol: 0.5
+  - {fileID: 8300000, guid: 9e7f13718dc1fd44eaba0d14caa0355d, type: 3}
+  audDeathVol: 0.23
+  audJumpAttack:
+  - {fileID: 8300000, guid: 323e15cfe809e114ab92c9f4b25e8bc2, type: 3}
+  - {fileID: 8300000, guid: 929fd214252d7034d93c9463bf63e091, type: 3}
+  audJumpAttackVol: 0.33
+  audJumpWindup: {fileID: 8300000, guid: 0eb673dc31e22fd4a8f158be386c8053, type: 3}
+  audJumpWindupVol: 0.35
+  audJumpLanding: {fileID: 8300000, guid: 70e7167513d7e94498a3c57ac72e5491, type: 3}
+  audJumpLandingVol: 0.41
+  audDash:
+  - {fileID: 8300000, guid: 63b4155ef41540f4685302a83db73e5e, type: 3}
+  - {fileID: 8300000, guid: 2cd1432e8b64c5f47a8ef0c6c1aa49c6, type: 3}
+  - {fileID: 8300000, guid: 63b4155ef41540f4685302a83db73e5e, type: 3}
+  audDashVol: 0.36
   itemDrop: {fileID: 0}
   currencyDropAmount: 10
   isBoss: 0
