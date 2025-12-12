@@ -49,7 +49,7 @@ public class Store : MonoBehaviour
     public static Store Instance;
 
     [Header("Player State (Runtime)")]
-    public int Coin = 50;
+    
     public PlayerState playerState = new PlayerState();
 
     [Header("Store Data")]
@@ -123,14 +123,14 @@ public class Store : MonoBehaviour
     public bool CanBuyItem(StoreItem item, out string reason)
     {
 
-        if (Coin < item.cost)
+        if (RiftShardManager.Instance == null || RiftShardManager.Instance.Amount < item.cost)
         {
-            reason = "Not Enough Coins";
+            reason = "Not Enough Rift Shards";
             return false;
         }
 
 
-        if (item.type == ItemType.Upgrade)
+            if (item.type == ItemType.Upgrade)
         {
 
             if (playerState.purchasedIds.Contains(item.id))
@@ -168,14 +168,21 @@ public class Store : MonoBehaviour
 
             return false;
         }
+        if (item.type == ItemType.Upgrade && playerState.purchasedIds.Contains(item.id))
+        {
+            Debug.LogWarning($"CRITICAL BLOCK: Purchase of already-owned upgrade (ID: {itemId}) blocked inside BuyItem.");
+            return false;
+        }
 
         if (CanBuyItem(item, out string reason))
         {
-            // Deduct Coins
-            Coin -= item.cost;
+            if (!RiftShardManager.Instance.TrySpend(item.cost))
+            {
+                return false;
+            }
 
-            // Apply Effect based on Type
-            if (item.type == ItemType.Upgrade)
+                // Apply Effect based on Type
+                if (item.type == ItemType.Upgrade)
             {
                 if (item.gunType != GunType.None)
                 {
@@ -211,14 +218,22 @@ public class Store : MonoBehaviour
 
     public void PurchaseItemButton(int itemId)
     {
+        StoreItem item = FindItemById(itemId);
+        if (!CanBuyItem(item, out string reason))
+        {
+            Debug.LogWarning($"Failed to initiate purchase for Item ID: {itemId}. Reason: {reason}");
+            
+            RefreshAllButtonDisplays();
+            return;
+        }
         bool success = BuyItem(itemId);
         if (success)
         {
-            Debug.Log($"Successfully purchased Item ID: {itemId}. Coins remaining: {Coin}");
+            Debug.Log($"Successfully purchased Item ID: {itemId}. Shards remaining: {RiftShardManager.Instance.Amount}");
         }
         else
         {
-            CanBuyItem(FindItemById(itemId), out string reason);
+            CanBuyItem(FindItemById(itemId), out reason);
             Debug.LogWarning($"Failed to purchase Item ID: {itemId}. Reason: {reason}");
         }
 
