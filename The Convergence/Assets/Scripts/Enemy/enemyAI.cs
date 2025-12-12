@@ -1120,6 +1120,25 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
                         Debug.LogWarning($"Could not set destination: {e.Message}");
                     }
                 }
+
+                // Handle attacks based on enemy type
+                switch (enemyType)
+                {
+                    case EnemyType.Melee:
+                        if (distanceToPlayer <= meleeRange && attackTimer >= attackRate)
+                            meleeAttack();
+                        break;
+                    case EnemyType.Shooter:
+                        if (shootTimer >= shootRate)
+                            Shoot();
+                        break;
+                    case EnemyType.Hybrid:
+                        if (distanceToPlayer <= meleeRange && attackTimer >= attackRate)
+                            meleeAttack();
+                        else if (shootTimer >= shootRate)
+                            Shoot();
+                        break;
+                }
                 if (agent != null && agent.isActiveAndEnabled && !isJumpAttacking && !isDashing &&
                     agent.remainingDistance <= agent.stoppingDistance)
                     faceTarget();
