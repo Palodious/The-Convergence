@@ -8,7 +8,7 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
     [Header("~=~= Components =~=~")]
     [SerializeField] CharacterController controller;
     [SerializeField] LayerMask ignoreLayer;
-    public Animator animator; // assign your model's Animator here (added for aim/animation)
+    public Animator animator;
 
     [Header("~=~= Player Stats =~=~")]
     [Range(1, 1000)][SerializeField] int HP;
@@ -44,7 +44,7 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
 
     // Add static variables to persist data between scenes
     private static List<gunStats> persistentGunList = new List<gunStats>();
-    private static List<keyStats> persistentKeyList = new List<keyStats>(); // NEW: Persistent key list
+    private static List<keyStats> persistentKeyList = new List<keyStats>();
     private static int persistentGunListPos = 0;
     private static int persistentHP = 100;
 
@@ -65,6 +65,7 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
     bool isGliding; // glide state  
     bool isSprinting;
     bool isPlayingStep;
+    bool isReloading; // Track reload state
 
     [HideInInspector] public float damageBoost = 1f;
 
@@ -127,7 +128,6 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
         }
         else
         {
-            // First scene or no persistent data - initialize fresh
             respawn();
         }
     }
@@ -193,37 +193,31 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
         persistentGunList.Clear();
         persistentKeyList.Clear();
         persistentGunListPos = 0;
-        persistentHP = HP; // Use the HP from inspector
+        persistentHP = HP;
         Debug.Log("Static data reset for new game session");
     }
 
     void LoadPersistentData()
     {
-        // Clear current guns
         gunList.Clear();
-        // Clear current keys
         keyList.Clear();
 
-        // Add persistent guns
         foreach (var gun in persistentGunList)
         {
             getGunStats(gun);
         }
 
-        // Add persistent keys
         foreach (var key in persistentKeyList)
         {
             AddKeyToList(key);
         }
 
-        // Set current gun
         if (persistentGunList.Count > 0)
         {
             gunListPos = Mathf.Clamp(persistentGunListPos, 0, persistentGunList.Count - 1);
             changeGun();
         }
 
-        // Set HP
         HP = persistentHP;
         if (HP > HPOrig) HP = HPOrig;
 
@@ -247,7 +241,6 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
         persistentHP = HP;
     }
 
-    // Call this when transitioning to a new scene
     public void PrepareForSceneTransition()
     {
         SavePersistentData();
@@ -256,7 +249,7 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
     void Update()
     {
         // read aiming input (hold-to-aim)
-        isAiming = Input.GetButton("Fire2"); // right mouse by default
+        isAiming = Input.GetButton("Fire2"); // right mouse
 
         // set animator param if available
         if (animator != null)
@@ -275,6 +268,11 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
 
             shootTimer += Time.deltaTime;
             movement();
+
+            if (Input.GetKeyDown(KeyCode.R) && !isReloading && activeGunStats != null)
+            {
+                Reload();
+            }
         }
 
         sprint();
@@ -344,6 +342,60 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
         // Calculate movement direction relative to camera
         moveDir = (camForward * v + camRight * h).normalized;
 
+        if (animator != null)
+        {
+            // Idle/Walk Forward
+            animator.SetFloat("Basic", moveDir.magnitude * (isSprinting ? sprintMod : 1f));
+
+            if (moveDir.magnitude < 0.1f)
+            {
+                animator.SetTrigger("Idle");
+            }
+            else if (v > 0.1f && !isSprinting)
+            {
+                animator.SetTrigger("Walk");
+            }
+            else if (v > 0.1f && isSprinting)
+            {
+                animator.SetTrigger("Sprint");
+            }
+
+            if (!controller.isGrounded && playerVel.y > 0)
+            {
+                animator.SetTrigger("Jump");
+            }
+
+            if (h < -0.1f)
+            {
+                animator.SetTrigger("Strafe Left");
+            }
+            else if (h > 0.1f)
+            {
+                animator.SetTrigger("Strafe Right");
+            }
+
+            if (v < -0.1f)
+            {
+                animator.SetTrigger("Walk backwards");
+            }
+
+            animator.SetBool("Crouch", isCrouching);
+
+            // Rifle animations
+            if (isAiming)
+            {
+                if (moveDir.magnitude > 0.1f)
+                {
+                    animator.SetTrigger("Rifle Aim run");
+                }
+
+                if (!controller.isGrounded && playerVel.y > 0)
+                {
+                    animator.SetTrigger("Rifle jump");
+                }
+            }
+        }
+
         // Apply movement
         controller.Move(moveDir * speed * Time.deltaTime);
 
@@ -379,7 +431,7 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
         }
         else if (isGliding) StopGlide();
 
-        if (Input.GetButton("Fire1") && shootTimer >= shootRate)
+        if (Input.GetButton("Fire1") && shootTimer >= shootRate && !isReloading && activeGunStats != null && activeGunStats.ammoCur > 0)
         {
             shoot();
         }
@@ -456,9 +508,16 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
         if (shootTimer < activeGunStats.shootRate) return;
         shootTimer = 0;
 
+        // Use ammo
+        activeGunStats.ammoCur--;
+
+        if (animator != null)
+        {
+            animator.SetTrigger("Shoot");
+        }
+
         aud.pitch = Random.Range(0.9f, 1.1f);
         aud.PlayOneShot(activeGunStats.shootSound[Random.Range(0, activeGunStats.shootSound.Length)], activeGunStats.shootSoundVol);
-
 
         // fire from gunModel toward the AimTarget
         if (aimTarget != null && gunModel != null)
@@ -497,6 +556,19 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
         HP -= amount;
         updatePlayerUI();
         StartCoroutine(screenFlashDamage());
+
+        // ANIMATION: Death (trigger if HP <= 0)
+        if (animator != null)
+        {
+            if (HP <= 0)
+            {
+                animator.SetTrigger("Death");
+            }
+            else
+            {
+                animator.SetTrigger("Hurt");
+            }
+        }
 
         aud.pitch = Random.Range(0.9f, 1.1f);
         aud.PlayOneShot(audHurt[Random.Range(0, audHurt.Length)], audHurtVol);
@@ -540,13 +612,11 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
         updatePlayerUI();
     }
 
-    // Expose which gun slot I'm using so the save system can store it.
     public int GetCurrentGunIndex()
     {
         return gunListPos;
     }
 
-    // After loading, call this to rebuild the visual gun model.
     public void RestoreGunVisual(int index)
     {
         if (gunList == null || gunList.Count == 0)
@@ -579,7 +649,6 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
         Debug.LogWarning("Picked up unknown item: " + item.name);
     }
 
-    // Add key to list (similar to getGunStats for guns)
     void AddKeyToList(keyStats key)
     {
         if (!keyList.Contains(key))
@@ -609,19 +678,16 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
         }
     }
 
-    // Check if player has a specific key
     public bool HasKey(keyStats key)
     {
         return keyList.Contains(key);
     }
 
-    // Check if player has any key
     public bool HasAnyKey()
     {
         return keyList.Count > 0;
     }
 
-    // Use/remove a specific key from the list
     public bool UseKey(keyStats key)
     {
         if (keyList.Contains(key))
@@ -637,7 +703,6 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
         }
     }
 
-    // Use/remove any key
     public bool UseAnyKey()
     {
         if (keyList.Count > 0)
@@ -654,7 +719,6 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
         }
     }
 
-    // Get count of specific key type
     public int GetKeyCount(keyStats key)
     {
         int count = 0;
@@ -665,7 +729,6 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
         return count;
     }
 
-    // Get total key count
     public int GetTotalKeyCount()
     {
         return keyList.Count;
@@ -726,7 +789,6 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
         newGunModel.transform.localPosition = Vector3.zero;
         newGunModel.transform.localRotation = Quaternion.identity;
 
-        // Update IK targets from the new gun
         UpdateIKTargetsFromGun(newGunModel);
     }
 
@@ -765,7 +827,6 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
         }
     }
 
-    // Recursive helper to find deep children
     Transform FindDeepChild(Transform parent, string childName)
     {
         foreach (Transform child in parent)
@@ -778,6 +839,51 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
                 return result;
         }
         return null;
+    }
+
+    public void Reload()
+    {
+        // Don't reload if already reloading or if ammo is already full
+        if (isReloading || activeGunStats == null || activeGunStats.ammoCur >= activeGunStats.ammoMax)
+            return;
+
+        // Start reload process
+        isReloading = true;
+
+        // ANIMATION: Reload
+        if (animator != null)
+        {
+            animator.SetTrigger("Reload");
+        }
+
+        // Play reload sound
+        if (activeGunStats.reloadSound != null && activeGunStats.reloadSound.Length > 0)
+        {
+            aud.pitch = Random.Range(0.95f, 1.05f); // slight pitch variation
+            aud.PlayOneShot(activeGunStats.reloadSound[Random.Range(0, activeGunStats.reloadSound.Length)],
+                           activeGunStats.reloadSoundVol);
+        }
+
+        Debug.Log("Reloading weapon...");
+
+        // Start coroutine to complete reload after animation
+        StartCoroutine(CompleteReload());
+    }
+
+    IEnumerator CompleteReload()
+    {
+        // Wait for reload animation time (you can adjust this based on your animation length)
+        yield return new WaitForSeconds(1.5f); // Typical reload animation time
+
+        // Refill ammo
+        if (activeGunStats != null)
+        {
+            activeGunStats.ammoCur = activeGunStats.ammoMax;
+            Debug.Log($"Reload complete! Ammo: {activeGunStats.ammoCur}/{activeGunStats.ammoMax}");
+        }
+
+        // Reset reload state
+        isReloading = false;
     }
 
     void selectGun()
