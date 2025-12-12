@@ -8,7 +8,7 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
     [Header("~=~= Components =~=~")]
     [SerializeField] CharacterController controller;
     [SerializeField] LayerMask ignoreLayer;
-    public Animator animator; // assign your model's Animator here (added for aim/animation)
+    public Animator animator;
 
     [Header("~=~= Player Stats =~=~")]
     [Range(1, 1000)][SerializeField] int HP;
@@ -36,23 +36,22 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
     [Range(0, 1)][SerializeField] float audJumpVol;
     [SerializeField] AudioClip[] audHurt;
     [Range(0, 1)][SerializeField] float audHurtVol;
-    [SerializeField] AudioClip audMedkit; // Sound for using a medkit
-    [Range(0, 1)][SerializeField] float audMedkitVol = 1f; // Volume for medkit use
+    [SerializeField] AudioClip audMedkit;
+    [Range(0, 1)][SerializeField] float audMedkitVol = 1f; 
 
     [Header("~=~= Keys =~=~")]
     [SerializeField] List<keyStats> keyList = new List<keyStats>();
 
-    // Add static variables to persist data between scenes
     private static List<gunStats> persistentGunList = new List<gunStats>();
-    private static List<keyStats> persistentKeyList = new List<keyStats>(); // NEW: Persistent key list
+    private static List<keyStats> persistentKeyList = new List<keyStats>();
     private static int persistentGunListPos = 0;
     private static int persistentHP = 100;
 
     private static bool isNewGameSession = true;
 
     public int ShootDamage => shootDamage;
-    float originalHeight; // remember height for uncrouch  
-    int originalSpeed; // store original speed  
+    float originalHeight;  
+    int originalSpeed;  
 
     Vector3 moveDir;
     Vector3 playerVel;
@@ -61,8 +60,8 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
     int HPOrig;
     float shootTimer;
 
-    bool isCrouching;  // crouch state  
-    bool isGliding; // glide state  
+    bool isCrouching;
+    bool isGliding;
     bool isSprinting;
     bool isPlayingStep;
 
@@ -83,9 +82,9 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
     public Transform aimTarget; // assign empty AimTarget in front of player
     public Transform rightHandIKTarget; // assign empty child at gun grip
     public Transform leftHandIKTarget; // assign empty child for left hand support
-    private PlayerIKController ikController; // Reference to IK controller
+    private PlayerIKController ikController;
     [HideInInspector] public bool isAiming; // true while holding Fire2
-    [Range(0f, 1f)] public float aimMoveSpeed = 8f; // how fast upper-body aims/IK blends
+    [Range(0f, 1f)] public float aimMoveSpeed = 8f;
 
     void Awake()
     {
@@ -94,7 +93,6 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
 
         if (currentSceneIndex == 1 && isNewGameSession)
         {
-            // Reset all static data when starting from first scene
             ResetStaticData();
             isNewGameSession = false;
         }
@@ -108,7 +106,6 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
         originalHeight = controller.height;
         originalSpeed = speed;
 
-        // Initialize IK system
         InitializeIKSystem();
 
         if (SaveManager.IsLoadingFromSave)
@@ -117,7 +114,6 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
             return;
         }
 
-        // Check if we have persistent data (from previous scene)
         int currentSceneIndex = SceneManager.GetActiveScene().buildIndex;
 
         if (currentSceneIndex > 1 && (persistentGunList.Count > 0 || persistentKeyList.Count > 0))
@@ -127,14 +123,12 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
         }
         else
         {
-            // First scene or no persistent data - initialize fresh
             respawn();
         }
     }
 
     void InitializeIKSystem()
     {
-        // Get or add IK controller
         ikController = GetComponent<PlayerIKController>();
         if (ikController == null)
             ikController = GetComponentInChildren<PlayerIKController>();
@@ -145,7 +139,6 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
             ikController = gameObject.AddComponent<PlayerIKController>();
         }
 
-        // Create IK target objects if they don't exist
         if (rightHandIKTarget == null)
         {
             GameObject rightIK = new GameObject("RightHandIKTarget");
@@ -158,11 +151,10 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
         {
             GameObject leftIK = new GameObject("LeftHandIKTarget");
             leftIK.transform.SetParent(transform);
-            leftIK.transform.localPosition = new Vector3(-0.2f, 1.5f, 0.3f); // Default position
+            leftIK.transform.localPosition = new Vector3(-0.2f, 1.5f, 0.3f);
             leftHandIKTarget = leftIK.transform;
         }
 
-        // Set up aim target if not assigned
         if (aimTarget == null && Camera.main != null)
         {
             GameObject aimObj = new GameObject("AimTarget");
@@ -171,7 +163,6 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
             aimTarget.localPosition = Vector3.forward * 10f;
         }
 
-        // Sync with IK controller
         if (ikController != null)
         {
             if (ikController.animator == null && animator != null)
@@ -193,37 +184,31 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
         persistentGunList.Clear();
         persistentKeyList.Clear();
         persistentGunListPos = 0;
-        persistentHP = HP; // Use the HP from inspector
+        persistentHP = HP;
         Debug.Log("Static data reset for new game session");
     }
 
     void LoadPersistentData()
     {
-        // Clear current guns
         gunList.Clear();
-        // Clear current keys
         keyList.Clear();
 
-        // Add persistent guns
         foreach (var gun in persistentGunList)
         {
             getGunStats(gun);
         }
 
-        // Add persistent keys
         foreach (var key in persistentKeyList)
         {
             AddKeyToList(key);
         }
 
-        // Set current gun
         if (persistentGunList.Count > 0)
         {
             gunListPos = Mathf.Clamp(persistentGunListPos, 0, persistentGunList.Count - 1);
             changeGun();
         }
 
-        // Set HP
         HP = persistentHP;
         if (HP > HPOrig) HP = HPOrig;
 
@@ -240,14 +225,12 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
 
     void SavePersistentData()
     {
-        // Save to static variables
         persistentGunList = new List<gunStats>(gunList);
         persistentKeyList = new List<keyStats>(keyList);
         persistentGunListPos = gunListPos;
         persistentHP = HP;
     }
 
-    // Call this when transitioning to a new scene
     public void PrepareForSceneTransition()
     {
         SavePersistentData();
@@ -255,14 +238,11 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
 
     void Update()
     {
-        // read aiming input (hold-to-aim)
         isAiming = Input.GetButton("Fire2"); // right mouse by default
 
-        // set animator param if available
         if (animator != null)
             animator.SetBool("IsAiming", isAiming);
 
-        // Update IK based on aiming state
         if (isAiming)
             UpdateIKDuringAim();
         else
@@ -270,7 +250,6 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
 
         if (!gamemanager.instance.isPaused)
         {
-            // helpful debug ray showing camera center forward
             Debug.DrawRay(Camera.main.transform.position, Camera.main.transform.forward * shootDist, Color.red);
 
             shootTimer += Time.deltaTime;
@@ -284,10 +263,8 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
     {
         if (!isAiming || ikController == null) return;
 
-        // Set IK weights for aiming
         ikController.SetIKWeights(1f, 1f, 0.5f);
 
-        // Update animator parameter for blend trees
         if (animator != null)
             animator.SetFloat("AimBlend", Mathf.Lerp(animator.GetFloat("AimBlend"), 1f, Time.deltaTime * aimMoveSpeed));
     }
@@ -296,10 +273,8 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
     {
         if (isAiming || ikController == null) return;
 
-        // Set IK weights for hip fire (lower weights)
         ikController.SetIKWeights(0.3f, 0.1f, 0f);
 
-        // Update animator parameter for blend trees
         if (animator != null)
             animator.SetFloat("AimBlend", Mathf.Lerp(animator.GetFloat("AimBlend"), 0f, Time.deltaTime * aimMoveSpeed));
     }
@@ -311,7 +286,6 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
             if (playerVel.y < 0) playerVel.y = -2f;
             jumpCount = 0;
 
-            // play footstep audio if moving
             if (moveDir.normalized.magnitude > 0.3f && !isPlayingStep)
             {
                 StartCoroutine(playStep());
@@ -329,7 +303,6 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
             }
         }
 
-        // Get input
         float h = Input.GetAxis("Horizontal");
         float v = Input.GetAxis("Vertical");
 
@@ -344,7 +317,6 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
         // Calculate movement direction relative to camera
         moveDir = (camForward * v + camRight * h).normalized;
 
-        // Apply movement
         controller.Move(moveDir * speed * Time.deltaTime);
 
         if (isAiming)
@@ -540,13 +512,11 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
         updatePlayerUI();
     }
 
-    // Expose which gun slot I'm using so the save system can store it.
     public int GetCurrentGunIndex()
     {
         return gunListPos;
     }
 
-    // After loading, call this to rebuild the visual gun model.
     public void RestoreGunVisual(int index)
     {
         if (gunList == null || gunList.Count == 0)
@@ -579,7 +549,6 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
         Debug.LogWarning("Picked up unknown item: " + item.name);
     }
 
-    // Add key to list (similar to getGunStats for guns)
     void AddKeyToList(keyStats key)
     {
         if (!keyList.Contains(key))
@@ -609,19 +578,16 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
         }
     }
 
-    // Check if player has a specific key
     public bool HasKey(keyStats key)
     {
         return keyList.Contains(key);
     }
 
-    // Check if player has any key
     public bool HasAnyKey()
     {
         return keyList.Count > 0;
     }
 
-    // Use/remove a specific key from the list
     public bool UseKey(keyStats key)
     {
         if (keyList.Contains(key))
@@ -637,7 +603,6 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
         }
     }
 
-    // Use/remove any key
     public bool UseAnyKey()
     {
         if (keyList.Count > 0)
@@ -654,7 +619,6 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
         }
     }
 
-    // Get count of specific key type
     public int GetKeyCount(keyStats key)
     {
         int count = 0;
@@ -665,7 +629,6 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
         return count;
     }
 
-    // Get total key count
     public int GetTotalKeyCount()
     {
         return keyList.Count;
@@ -682,10 +645,9 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
         if (medkit.useEffect != null)
             Instantiate(medkit.useEffect, transform.position, Quaternion.identity);
 
-        // Play medkit audio
         if (audMedkit != null)
         {
-            aud.pitch = Random.Range(0.95f, 1.05f); // slight pitch variation
+            aud.pitch = Random.Range(0.95f, 1.05f);
             aud.PlayOneShot(audMedkit, audMedkitVol);
         }
     }
@@ -726,7 +688,6 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
         newGunModel.transform.localPosition = Vector3.zero;
         newGunModel.transform.localRotation = Quaternion.identity;
 
-        // Update IK targets from the new gun
         UpdateIKTargetsFromGun(newGunModel);
     }
 
@@ -738,10 +699,8 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
         Transform gunRightHandIK = FindDeepChild(gunObject.transform, "RightHandIK");
         Transform gunLeftHandIK = FindDeepChild(gunObject.transform, "LeftHandIK");
 
-        // Pass the gun's IK targets to the IK controller
         ikController.UpdateGunIKTargets(gunRightHandIK, gunLeftHandIK);
 
-        // If gun doesn't have IK targets, use our default targets
         if (gunRightHandIK == null)
         {
             // Position the right hand IK target at a reasonable default
@@ -749,7 +708,6 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
             rightHandIKTarget.localPosition = new Vector3(0.05f, -0.03f, 0.2f);
             rightHandIKTarget.localRotation = Quaternion.identity;
 
-            // Tell IK controller to use our default target
             ikController.UpdateGunIKTargets(rightHandIKTarget, null);
         }
 
@@ -760,12 +718,10 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
             leftHandIKTarget.localPosition = new Vector3(-0.05f, -0.02f, 0.4f);
             leftHandIKTarget.localRotation = Quaternion.identity;
 
-            // Tell IK controller to use our default target
             ikController.UpdateGunIKTargets(null, leftHandIKTarget);
         }
     }
 
-    // Recursive helper to find deep children
     Transform FindDeepChild(Transform parent, string childName)
     {
         foreach (Transform child in parent)
@@ -821,7 +777,7 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
         public bool canUseMedkit;
         public float medkitCooldown;
         public int gunListPos;
-        public List<keyStats> keyList; // Save key list
+        public List<keyStats> keyList;
     }
 
     object ISaveable.CaptureState() => CaptureState();
@@ -837,7 +793,7 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
             canUseMedkit = this.canUseMedkit,
             medkitCooldown = this.medkitCooldown,
             gunListPos = this.gunListPos,
-            keyList = new List<keyStats>(keyList) // Save key list
+            keyList = new List<keyStats>(keyList)
         };
     }
 
@@ -858,7 +814,6 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
             changeGun();
         }
 
-        // Restore key list
         if (data.keyList != null)
         {
             keyList = new List<keyStats>(data.keyList);
