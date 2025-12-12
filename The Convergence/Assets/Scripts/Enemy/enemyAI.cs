@@ -213,6 +213,8 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
         jumpAttackTimer += Time.deltaTime;
         dashAttackTimer += Time.deltaTime;
 
+        // Handle shoot cooldown logic
+        HandleShootCooldown();
         // Track player velocity for dash attack
         TrackPlayerVelocity();
 
@@ -1557,5 +1559,17 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
         }
 
         return false;
+    }
+    // Reset shoot timer if player is not visible for a while
+    void HandleShootCooldown()
+    {
+        if (gamemanager.instance == null || gamemanager.instance.player == null) return;
+
+        // Only reset timer if player is not visible for a significant time
+        if (!HasLineOfSightToPlayer() && shootTimer > shootRate * 2f)
+        {
+            // Reset to shootRate so enemy can shoot immediately when player becomes visible
+            shootTimer = shootRate;
+        }
     }
 }
