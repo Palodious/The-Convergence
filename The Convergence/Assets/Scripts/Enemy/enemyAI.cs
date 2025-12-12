@@ -1290,6 +1290,8 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
     // Shoot projectile
     void Shoot()
     {
+        if (shootTimer < shootRate) return;
+
         shootTimer = 0;
 
         if (audShoot.Length > 0 && aud != null)
