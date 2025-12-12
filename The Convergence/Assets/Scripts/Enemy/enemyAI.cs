@@ -301,24 +301,7 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
             }
 
             // Handle attacks based on enemy type
-            float distanceToPlayer = Vector3.Distance(transform.position, gamemanager.instance.player.transform.position);
-            switch (enemyType)
-            {
-                case EnemyType.Melee:
-                    if (distanceToPlayer <= meleeRange && attackTimer >= attackRate)
-                        meleeAttack();
-                    break;
-                case EnemyType.Shooter:
-                    if (shootTimer >= shootRate)
-                        Shoot();
-                    break;
-                case EnemyType.Hybrid:
-                    if (distanceToPlayer <= meleeRange && attackTimer >= attackRate)
-                        meleeAttack();
-                    else if (shootTimer >= shootRate)
-                        Shoot();
-                    break;
-            }
+           
 
             if (agent != null && agent.isActiveAndEnabled && agent.remainingDistance <= agent.stoppingDistance)
                 faceTarget();
