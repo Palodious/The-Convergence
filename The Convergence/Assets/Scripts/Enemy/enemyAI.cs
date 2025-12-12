@@ -1125,7 +1125,25 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
                     StartDashAttack();
                     return true;
                 }
-
+                // Handle attacks based on enemy type
+                switch (enemyType)
+                {
+                    case EnemyType.Melee:
+                        if (distanceToPlayer <= meleeRange && attackTimer >= attackRate)
+                            meleeAttack();
+                        break;
+                    case EnemyType.Shooter:
+                        // Use the same logic as HandleMobileBehavior
+                        if (CanShootAtPlayer())
+                            Shoot();
+                        break;
+                    case EnemyType.Hybrid:
+                        if (distanceToPlayer <= meleeRange && attackTimer >= attackRate)
+                            meleeAttack();
+                        else if (CanShootAtPlayer())
+                            Shoot();
+                        break;
+                }
                 // Set destination to player position if agent is active and not in special attack
                 if (agent != null && agent.isActiveAndEnabled && !isJumpAttacking && !isDashing)
                 {
