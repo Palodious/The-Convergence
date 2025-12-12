@@ -49,7 +49,7 @@ public class Store : MonoBehaviour
     public static Store Instance;
 
     [Header("Player State (Runtime)")]
-    public int Coin = 50;
+    
     public PlayerState playerState = new PlayerState();
 
     [Header("Store Data")]
@@ -123,14 +123,14 @@ public class Store : MonoBehaviour
     public bool CanBuyItem(StoreItem item, out string reason)
     {
 
-        if (Coin < item.cost)
+        if (RiftShardManager.Instance == null || RiftShardManager.Instance.Amount < item.cost)
         {
-            reason = "Not Enough Coins";
+            reason = "Not Enough Rift Shards";
             return false;
         }
 
 
-        if (item.type == ItemType.Upgrade)
+            if (item.type == ItemType.Upgrade)
         {
 
             if (playerState.purchasedIds.Contains(item.id))
@@ -171,11 +171,13 @@ public class Store : MonoBehaviour
 
         if (CanBuyItem(item, out string reason))
         {
-            // Deduct Coins
-            Coin -= item.cost;
+            if (!RiftShardManager.Instance.TrySpend(item.cost))
+            {
+                return false;
+            }
 
-            // Apply Effect based on Type
-            if (item.type == ItemType.Upgrade)
+                // Apply Effect based on Type
+                if (item.type == ItemType.Upgrade)
             {
                 if (item.gunType != GunType.None)
                 {
@@ -214,7 +216,7 @@ public class Store : MonoBehaviour
         bool success = BuyItem(itemId);
         if (success)
         {
-            Debug.Log($"Successfully purchased Item ID: {itemId}. Coins remaining: {Coin}");
+            Debug.Log($"Successfully purchased Item ID: {itemId}. Shards remaining: {RiftShardManager.Instance.Amount}");
         }
         else
         {
