@@ -168,6 +168,11 @@ public class Store : MonoBehaviour
 
             return false;
         }
+        if (item.type == ItemType.Upgrade && playerState.purchasedIds.Contains(item.id))
+        {
+            Debug.LogWarning($"CRITICAL BLOCK: Purchase of already-owned upgrade (ID: {itemId}) blocked inside BuyItem.");
+            return false;
+        }
 
         if (CanBuyItem(item, out string reason))
         {
@@ -213,6 +218,14 @@ public class Store : MonoBehaviour
 
     public void PurchaseItemButton(int itemId)
     {
+        StoreItem item = FindItemById(itemId);
+        if (!CanBuyItem(item, out string reason))
+        {
+            Debug.LogWarning($"Failed to initiate purchase for Item ID: {itemId}. Reason: {reason}");
+            
+            RefreshAllButtonDisplays();
+            return;
+        }
         bool success = BuyItem(itemId);
         if (success)
         {
@@ -220,7 +233,7 @@ public class Store : MonoBehaviour
         }
         else
         {
-            CanBuyItem(FindItemById(itemId), out string reason);
+            CanBuyItem(FindItemById(itemId), out reason);
             Debug.LogWarning($"Failed to purchase Item ID: {itemId}. Reason: {reason}");
         }
 
