@@ -1462,4 +1462,17 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
     {
         waveModeRange = newRange;
     }
+    bool ShouldTargetPlayer()
+    {
+        if (gamemanager.instance.player == null) return false;
+
+        if (waveModeActive)
+        {
+            float distanceToPlayer = Vector3.Distance(transform.position, gamemanager.instance.player.transform.position);
+            if (distanceToPlayer <= waveModeRange)
+                return true;
+        }
+
+        return playerInTrigger || canSeePlayer();
+    }
 }
