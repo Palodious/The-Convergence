@@ -277,13 +277,13 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
                     meleeAttack();
                 break;
             case EnemyType.Shooter:
-                if (shootTimer >= shootRate)
+                if (CanShootAtPlayer())
                     Shoot();
                 break;
             case EnemyType.Hybrid:
                 if (distanceToPlayer <= meleeRange && attackTimer >= attackRate)
                     meleeAttack();
-                else if (shootTimer >= shootRate)
+                else if (CanShootAtPlayer())
                     Shoot();
                 break;
         }
@@ -1510,5 +1510,34 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
         }
 
         return playerInTrigger || canSeePlayer();
+    }
+    // Check if enemy can shoot at player
+    bool CanShootAtPlayer()
+    {
+        if (gamemanager.instance == null || gamemanager.instance.player == null) return false;
+
+        // Check if enough time has passed
+        if (shootTimer < shootRate) return false;
+
+        // Check if enemy has line of sight to player
+        return HasLineOfSightToPlayer();
+    }
+
+    // Check if enemy has clear line of sight to player
+    bool HasLineOfSightToPlayer()
+    {
+        if (gamemanager.instance == null || gamemanager.instance.player == null) return false;
+
+        Vector3 playerPos = gamemanager.instance.player.transform.position;
+        Vector3 directionToPlayer = (playerPos - shootPOS.position).normalized;
+        float distanceToPlayer = Vector3.Distance(shootPOS.position, playerPos);
+
+        RaycastHit hit;
+        if (Physics.Raycast(shootPOS.position, directionToPlayer, out hit, distanceToPlayer, ~ignoreLayer))
+        {
+            return hit.collider.CompareTag("Player");
+        }
+
+        return false;
     }
 }
