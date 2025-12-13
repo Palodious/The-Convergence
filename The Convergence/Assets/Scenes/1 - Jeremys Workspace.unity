@@ -189,6 +189,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1535764272095204067, guid: f9cb63262ab343044a4dbdfabca5a845, type: 3}
+      propertyPath: menuActive
+      value: 
+      objectReference: {fileID: 0}
     - target: {fileID: 4898222299525946154, guid: f9cb63262ab343044a4dbdfabca5a845, type: 3}
       propertyPath: m_Pivot.x
       value: 0
@@ -6103,11 +6107,14 @@ MonoBehaviour:
   damageBoost: 1
   gunList: []
   gunModel: {fileID: 2472113193000969044}
+  activeGunStats: {fileID: 0}
   aimTarget: {fileID: 0}
   rightHandIKTarget: {fileID: 4563222267786867208}
   leftHandIKTarget: {fileID: 0}
-  isAiming: 0
-  aimMoveSpeed: 1
+  reloadSound: {fileID: 0}
+  reloadSoundVol: 1
+  reloadTime: 1.5
+  ammoTextDisplay: {fileID: 0}
 --- !u!143 &7622110352564742600
 CharacterController:
   m_ObjectHideFlags: 0
