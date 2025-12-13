@@ -1135,7 +1135,6 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
                             meleeAttack();
                         break;
                     case EnemyType.Shooter:
-                        // Use the same logic as HandleMobileBehavior
                         if (CanShootAtPlayer())
                             Shoot();
                         break;
@@ -1513,7 +1512,6 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
         waveModeActive = !waveModeActive;
     }
 
-    // Optionally, add a method to set wave mode range
     public void SetWaveModeRange(float newRange)
     {
         waveModeRange = newRange;
@@ -1531,22 +1529,21 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
 
         return playerInTrigger || canSeePlayer();
     }
-    // Check if enemy can shoot at player
     bool CanShootAtPlayer()
     {
         if (gamemanager.instance == null || gamemanager.instance.player == null) return false;
 
-        // Check if enough time has passed
         if (shootTimer < shootRate) return false;
 
-        // Check if enemy has line of sight to player
         return HasLineOfSightToPlayer();
     }
 
-    // Check if enemy has clear line of sight to player
     bool HasLineOfSightToPlayer()
     {
         if (gamemanager.instance == null || gamemanager.instance.player == null) return false;
+
+        // Melee enemies check
+        if (enemyType == EnemyType.Melee) return false;
 
         Vector3 playerPos = gamemanager.instance.player.transform.position;
         Vector3 directionToPlayer = (playerPos - shootPOS.position).normalized;
@@ -1560,15 +1557,12 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
 
         return false;
     }
-    // Reset shoot timer if player is not visible for a while
     void HandleShootCooldown()
     {
         if (gamemanager.instance == null || gamemanager.instance.player == null) return;
 
-        // Only reset timer if player is not visible for a significant time
         if (!HasLineOfSightToPlayer() && shootTimer > shootRate * 2f)
         {
-            // Reset to shootRate so enemy can shoot immediately when player becomes visible
             shootTimer = shootRate;
         }
     }
