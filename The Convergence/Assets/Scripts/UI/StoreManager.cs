@@ -14,7 +14,7 @@ public class StoreManager : MonoBehaviour
 
     void Start()
     {
-        playerRef = FindObjectOfType<playerController>();
+        playerRef = Object.FindFirstObjectByType<playerController>();
     }
 
     public void BuyDamageUpgrade()
