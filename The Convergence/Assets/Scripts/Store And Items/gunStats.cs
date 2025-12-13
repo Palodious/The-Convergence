@@ -1,7 +1,6 @@
 using UnityEngine;
 
 [CreateAssetMenu]
-
 public class gunStats : ScriptableObject
 {
     public GameObject gunModel;
@@ -15,6 +14,9 @@ public class gunStats : ScriptableObject
     public ParticleSystem hitEffect;
     public AudioClip[] shootSound;
     [Range(0, 1)] public float shootSoundVol;
+
+    public AudioClip[] reloadSound;
+    [Range(0, 1)] public float reloadSoundVol = 1f;
 
     public void ApplyUpgrade(string upgradeType, float amount)
     {
@@ -42,4 +44,3 @@ public class gunStats : ScriptableObject
         }
     }
 }
-

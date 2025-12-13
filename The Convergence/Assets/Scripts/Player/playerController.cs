@@ -37,7 +37,7 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
     [SerializeField] AudioClip[] audHurt;
     [Range(0, 1)][SerializeField] float audHurtVol;
     [SerializeField] AudioClip audMedkit;
-    [Range(0, 1)][SerializeField] float audMedkitVol = 1f; 
+    [Range(0, 1)][SerializeField] float audMedkitVol = 1f;
 
     [Header("~=~= Keys =~=~")]
     [SerializeField] List<keyStats> keyList = new List<keyStats>();
@@ -50,8 +50,8 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
     private static bool isNewGameSession = true;
 
     public int ShootDamage => shootDamage;
-    float originalHeight;  
-    int originalSpeed;  
+    float originalHeight;
+    int originalSpeed;
 
     Vector3 moveDir;
     Vector3 playerVel;
@@ -84,8 +84,16 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
     public Transform rightHandIKTarget; // assign empty child at gun grip
     public Transform leftHandIKTarget; // assign empty child for left hand support
     private PlayerIKController ikController;
-    [HideInInspector] public bool isAiming; // true while holding Fire2
-    [Range(0f, 1f)] public float aimMoveSpeed = 8f;
+
+    [Header("~=~= Reload Settings =~=~")]
+    [SerializeField] AudioClip reloadSound;
+    [Range(0, 1)][SerializeField] float reloadSoundVol = 1f;
+    [SerializeField] float reloadTime = 1.5f;
+    private bool isReloading = false;
+    private Coroutine reloadCoroutine;
+
+    [Header("~=~= UI References =~=~")]
+    [SerializeField] private TMPro.TextMeshProUGUI ammoTextDisplay;
 
     void Awake()
     {
@@ -110,6 +118,14 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
 
         InitializeIKSystem();
 
+        if (ammoTextDisplay == null)
+        {
+            // Look for ammo UI in the scene
+            GameObject ammoUI = GameObject.FindGameObjectWithTag("AmmoUI");
+            if (ammoUI != null)
+                ammoTextDisplay = ammoUI.GetComponent<TMPro.TextMeshProUGUI>();
+        }
+
         if (SaveManager.IsLoadingFromSave)
         {
             Debug.Log("playerController.Start: IsLoadingFromSave = true, skipping respawn/persistent init.");
@@ -127,6 +143,8 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
         {
             respawn();
         }
+
+        UpdateAmmoDisplay();
     }
 
     void InitializeIKSystem()
@@ -242,16 +260,6 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
 
     void Update()
     {
-        isAiming = Input.GetButton("Fire2"); // right mouse by default
-
-        if (animator != null)
-            animator.SetBool("IsAiming", isAiming);
-
-        if (isAiming)
-            UpdateIKDuringAim();
-        else
-            UpdateIKDuringHipFire();
-
         if (!gamemanager.instance.isPaused)
         {
             Debug.DrawRay(Camera.main.transform.position, Camera.main.transform.forward * shootDist, Color.red);
@@ -261,26 +269,6 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
         }
 
         sprint();
-    }
-
-    void UpdateIKDuringAim()
-    {
-        if (!isAiming || ikController == null) return;
-
-        ikController.SetIKWeights(1f, 1f, 0.5f);
-
-        if (animator != null)
-            animator.SetFloat("AimBlend", Mathf.Lerp(animator.GetFloat("AimBlend"), 1f, Time.deltaTime * aimMoveSpeed));
-    }
-
-    void UpdateIKDuringHipFire()
-    {
-        if (isAiming || ikController == null) return;
-
-        ikController.SetIKWeights(0.3f, 0.1f, 0f);
-
-        if (animator != null)
-            animator.SetFloat("AimBlend", Mathf.Lerp(animator.GetFloat("AimBlend"), 0f, Time.deltaTime * aimMoveSpeed));
     }
 
     void movement()
@@ -323,23 +311,11 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
 
         controller.Move(moveDir * speed * Time.deltaTime);
 
-        if (isAiming)
+        Vector3 aimDirection = camForward;
+        if (aimDirection.sqrMagnitude > 0.001f)
         {
-            Vector3 aimDirection = camForward;
-            if (aimDirection.sqrMagnitude > 0.001f)
-            {
-                Quaternion targetRotation = Quaternion.LookRotation(aimDirection);
-                transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * 15f);
-            }
-        }
-        else
-        {
-            if (v > 0.1f) // Moving forward
-            {
-                // Rotate to face movement direction
-                Quaternion targetRotation = Quaternion.LookRotation(moveDir);
-                transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * 10f);
-            }
+            Quaternion targetRotation = Quaternion.LookRotation(aimDirection);
+            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * 15f);
         }
 
         jump();
@@ -355,9 +331,14 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
         }
         else if (isGliding) StopGlide();
 
-        if (Input.GetButton("Fire1") && shootTimer >= shootRate)
+        if (Input.GetButton("Fire1") && shootTimer >= shootRate && !isReloading)
         {
             shoot();
+        }
+
+        if (Input.GetKeyDown(KeyCode.R) && !isReloading && activeGunStats != null)
+        {
+            Reload();
         }
 
         selectGun();
@@ -427,14 +408,24 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
 
     void shoot()
     {
-        if (activeGunStats == null) return;
+        if (activeGunStats == null || isReloading) return;
+
+        // Check if we have ammo if none auto reload
+        if (activeGunStats.ammoCur <= 0)
+        {
+            Reload();
+            return;
+        }
 
         if (shootTimer < activeGunStats.shootRate) return;
         shootTimer = 0;
 
+        activeGunStats.ammoCur--;
+
         aud.pitch = Random.Range(0.9f, 1.1f);
         aud.PlayOneShot(activeGunStats.shootSound[Random.Range(0, activeGunStats.shootSound.Length)], activeGunStats.shootSoundVol);
 
+        UpdateAmmoDisplay();
 
         // fire from gunModel toward the AimTarget
         if (aimTarget != null && gunModel != null)
@@ -465,6 +456,54 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
 
                 Instantiate(activeGunStats.hitEffect, hit2.point, Quaternion.identity);
             }
+        }
+    }
+
+    public void Reload()
+    {
+        if (activeGunStats == null || isReloading) return;
+
+        if (activeGunStats.ammoCur >= activeGunStats.ammoMax) return;
+
+        if (reloadCoroutine != null)
+        {
+            StopCoroutine(reloadCoroutine);
+        }
+        reloadCoroutine = StartCoroutine(ReloadCoroutine());
+    }
+
+    IEnumerator ReloadCoroutine()
+    {
+        isReloading = true;
+
+        if (reloadSound != null)
+        {
+            aud.pitch = Random.Range(0.95f, 1.05f);
+            aud.PlayOneShot(reloadSound, reloadSoundVol);
+        }
+
+        if (animator != null)
+        {
+            animator.SetTrigger("Reload");
+        }
+
+        yield return new WaitForSeconds(reloadTime);
+
+        activeGunStats.ammoCur = activeGunStats.ammoMax;
+
+        UpdateAmmoDisplay();
+
+        isReloading = false;
+        reloadCoroutine = null;
+    }
+
+    void UpdateAmmoDisplay()
+    {
+        if (activeGunStats == null) return;
+
+        if (ammoTextDisplay != null)
+        {
+            ammoTextDisplay.text = $"{activeGunStats.ammoCur}/{activeGunStats.ammoMax}";
         }
     }
 
@@ -693,6 +732,8 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
         newGunModel.transform.localRotation = Quaternion.identity;
 
         UpdateIKTargetsFromGun(newGunModel);
+
+        UpdateAmmoDisplay();
     }
 
     void UpdateIKTargetsFromGun(GameObject gunObject)
