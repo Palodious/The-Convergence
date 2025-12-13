@@ -157,7 +157,7 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
     private Vector3 lastPlayerPosition;
     private Vector3 playerVelocity;
 
-    void Awake()
+    void Start()
     {
         colorOrig = model.material.color;
         stoppingDistOrig = agent.stoppingDistance;
