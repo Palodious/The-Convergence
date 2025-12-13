@@ -213,6 +213,10 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
         jumpAttackTimer += Time.deltaTime;
         dashAttackTimer += Time.deltaTime;
 
+        if (!ignoreWaveMode && gamemanager.instance != null)
+        {
+            waveModeActive = gamemanager.instance.IsWaveModeActive;
+        }
         // Handle shoot cooldown logic
         HandleShootCooldown();
         // Track player velocity for dash attack
