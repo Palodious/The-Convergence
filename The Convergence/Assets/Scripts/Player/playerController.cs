@@ -11,7 +11,7 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
     public Animator animator;
 
     [Header("~=~= Player Stats =~=~")]
-    [Range(1, 150)][SerializeField] int HP;
+    [Range(1, 300)][SerializeField] int HP;
     [Range(1, 50)] public int speed;
     [Range(1, 10)][SerializeField] int sprintMod;
     [Range(1, 50)][SerializeField] int JumpSpeed;
@@ -500,13 +500,17 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
         reloadCoroutine = null;
     }
 
-    void UpdateAmmoDisplay()
+    public void UpdateAmmoDisplay()
     {
         if (activeGunStats == null) return;
 
         if (ammoTextDisplay != null)
         {
             ammoTextDisplay.text = $"{activeGunStats.ammoCur}/{activeGunStats.ammoMax}";
+        }
+        else
+        {
+            Debug.LogError("Ammo Text Display (TMPro component) is NULL in playerController!");
         }
     }
 
@@ -713,11 +717,12 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
         changeGun();
     }
 
-    void changeGun()
+    public void changeGun()
     {
         if (gunList.Count == 0) return;
 
-        activeGunStats = gunList[gunListPos];
+        gunStats originalStats = gunList[gunListPos];
+        activeGunStats = Instantiate(originalStats);
 
         Transform[] children = new Transform[gunModel.transform.childCount];
         for (int i = 0; i < gunModel.transform.childCount; i++)
@@ -901,7 +906,7 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
 
 
         updatePlayerUI();
-        Debug.Log($"Max HP upgraded by {increase}. New Max HP: {currentMaxHP}");
+        Debug.Log($"CONFIRM: Max HP upgraded by {increase}. New Max HP: {currentMaxHP}");
     }
 
 
