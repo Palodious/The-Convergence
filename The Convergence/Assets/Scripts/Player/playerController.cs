@@ -348,12 +348,10 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable, IAmm
             transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * 15f);
         }
 
-        // Handle grounded / gravity
         if (controller.isGrounded)
         {
             if (playerVel.y < 0) playerVel.y = -2f;
 
-            // Play step sounds
             if (moveDir.magnitude > 0.3f && !isPlayingStep)
             {
                 StartCoroutine(playStep());
@@ -367,20 +365,16 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable, IAmm
                 playerVel.y -= gravity * Time.deltaTime;
         }
 
-        // Jump
         jump();
 
-        // Move character
         Vector3 horizontalMove = moveDir * speed * Mathf.Clamp01(new Vector2(h, v).magnitude);
         Vector3 finalMove = horizontalMove;
         finalMove.y = playerVel.y;
         controller.Move(finalMove * Time.deltaTime);
 
-        // Crouch
         if (Input.GetKey(KeyCode.C)) crouch();
         else uncrouch();
 
-        // Glide
         if (!controller.isGrounded)
         {
             if (Input.GetKeyDown(KeyCode.G)) StartGlide();
@@ -391,22 +385,18 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable, IAmm
             StopGlide();
         }
 
-        // Shooting
         if (Input.GetButton("Fire1") && shootTimer >= shootRate && !isReloading)
         {
             shoot();
         }
 
-        // Reload
         if (Input.GetKeyDown(KeyCode.R) && !isReloading && activeGunStats != null)
         {
             Reload();
         }
 
-        // Gun selection
         selectGun();
 
-        // Sprint
         sprint();
     }
 
@@ -892,7 +882,6 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable, IAmm
             gunList.Add(gun);
             gunListPos = gunList.Count - 1;
 
-            // Initialize ammo data for new gun (from second script)
             gunAmmoInventory.Add(new GunAmmoData(gun));
         }
 
@@ -903,7 +892,6 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable, IAmm
     {
         if (gunList.Count == 0) return;
 
-        // Create a copy of gunStats to avoid modifying the original ScriptableObject
         gunStats originalStats = gunList[gunListPos];
         activeGunStats = Instantiate(originalStats);
 
@@ -1015,7 +1003,6 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable, IAmm
         public float medkitCooldown;
         public int gunListPos;
         public List<keyStats> keyList;
-        // Add ammo data
         public List<GunAmmoData> savedAmmoInventory;
     }
 
@@ -1034,7 +1021,6 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable, IAmm
             medkitCooldown = this.medkitCooldown,
             gunListPos = this.gunListPos,
             keyList = new List<keyStats>(keyList),
-            // Save ammo inventory
             savedAmmoInventory = new List<GunAmmoData>(gunAmmoInventory)
         };
     }
@@ -1062,7 +1048,6 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable, IAmm
             keyList = new List<keyStats>(data.keyList);
         }
 
-        // Restore ammo inventory
         if (data.savedAmmoInventory != null)
         {
             gunAmmoInventory = new List<GunAmmoData>(data.savedAmmoInventory);
