@@ -11,14 +11,18 @@ public class StoreButtonUI : MonoBehaviour
     [SerializeField] private Graphic buttonGraphic;
     [SerializeField] private Graphic[] extraGraphicsToFade;
     [SerializeField] private TextMeshProUGUI labelText;
+    [SerializeField] private TextMeshProUGUI costText;
 
     [SerializeField, Range(0.05f, 1f)] private float disabledAlpha = 0.35f;
     [SerializeField, Range(0.05f, 1f)] private float enabledAlpha = 1.0f;
 
     // Like "sold out" or "purchased"
-    [Header("Optional Label Swap")]
-    [SerializeField] private bool showPurchasedText = true;
-    [SerializeField] private string purchasedLabel = "PURCHASED";
+    [Header("Label Settings")]
+    [SerializeField] private bool showLevelOnUpgrades = true;
+    [SerializeField] private string levelFormat = "LEVEL {0}/{1}";
+    [SerializeField] private string maxedLabel = "MAXED";
+    [SerializeField] private string cannotAffordLabel = "NEED SHARDS";
+
     private string originalLabel;
 
 
@@ -36,16 +40,16 @@ public class StoreButtonUI : MonoBehaviour
 
         if (labelText != null)
             originalLabel = labelText.text;
+    }
 
+    private void OnEnable()
+    {
+        // Register when the UI actually becomes active.
         if (Store.Instance != null)
-        {
             Store.Instance.RegisterButton(this);
-        }
-        else
-        {
-            Debug.LogWarning($"StoreButtonUI on {gameObject.name}: Store.Instance is null at Awake(). " +
-                                $"Make sure Store exists in the scene before UI loads.");
-        }
+
+        // Also refresh the display when it shows up.
+        UpdateDisplay();
     }
 
     public void UpdateDisplay()
@@ -54,10 +58,12 @@ public class StoreButtonUI : MonoBehaviour
         if (button == null)
             return;
 
-        // If Store missing, hard-disable + gray out
+        // If Store missing, hard disable + gray out
         if (Store.Instance == null)
         {
             SetInteractable(false);
+            SetLabelSafe("STORE MISSING");
+            SetCostSafe("");
             return;
         }
 
@@ -67,24 +73,51 @@ public class StoreButtonUI : MonoBehaviour
         {
             Debug.LogWarning($"StoreButtonUI on {gameObject.name}: No StoreItem found for ID {itemID}");
             SetInteractable(false);
+            SetLabelSafe("INVALID");
+            SetCostSafe("");
             return;
         }
 
-        bool canBuy = Store.Instance.CanBuyItem(item, out string reason);
-        if (item.type == ItemType.Upgrade)
-        {
-            bool purchased = Store.Instance.playerState.purchasedIds.Contains(item.id);
+        int effectiveCost = Store.Instance.GetEffectiveCost(item);
+        SetCostSafe(effectiveCost.ToString());
 
-            SetInteractable(!purchased && canBuy);
-            if (labelText != null && showPurchasedText)
-            {
-                labelText.text = purchased ? purchasedLabel : (string.IsNullOrEmpty(originalLabel) ? labelText.text : originalLabel);
-            }
+        bool isMaxed = (item.type == ItemType.Upgrade) && Store.Instance.IsUpgradeMaxed(item);
+
+
+        bool canBuy = Store.Instance.CanBuyItem(item, out string reason);
+
+
+        if (isMaxed)
+        {
+            SetInteractable(false);
+            if (showLevelOnUpgrades)
+                SetLabelSafe(maxedLabel);
+            else
+                SetLabelSafe(originalLabel);
+
+            return;
+        }
+
+        //Only enable if player can buy, not maxed
+        SetInteractable(canBuy);
+
+        if (item.type == ItemType.Upgrade && showLevelOnUpgrades)
+        {
+            int lvl = Store.Instance.GetUpgradeLevel(item.id);
+            int max = Mathf.Max(1, item.maxLevel);
+
+            // Show level status
+            SetLabelSafe(string.Format(levelFormat, lvl, max));
+
+            if (!canBuy && reason == "Not Enough Rift Shards")
+                SetLabelSafe(cannotAffordLabel);
         }
         else
         {
-            // Consumables: always enabled if you can afford
-            SetInteractable(canBuy);
+            SetLabelSafe(originalLabel);
+
+            if (!canBuy && reason == "Not Enough Rift Shards")
+                SetLabelSafe(cannotAffordLabel);
         }
     }
 
@@ -98,11 +131,11 @@ public class StoreButtonUI : MonoBehaviour
         }
 
         if (button != null && !button.interactable)
-        {
-            Debug.LogWarning($"Click on {gameObject.name} blocked: Button is visually disabled.");
             return;
-        }
+
         Store.Instance.PurchaseItemButton(itemID);
+
+        // Update immediately
         UpdateDisplay();
     }
 
@@ -139,5 +172,23 @@ public class StoreButtonUI : MonoBehaviour
             c.a = targetAlpha;
             labelText.color = c;
         }
+        if (costText != null)
+        {
+            Color c = costText.color;
+            c.a = targetAlpha;
+            costText.color = c;
+        }
+    }
+
+    private void SetLabelSafe(string text)
+    {
+        if (labelText != null)
+            labelText.text = text;
+    }
+
+    private void SetCostSafe(string text)
+    {
+        if (costText != null)
+            costText.text = text;
     }
 }

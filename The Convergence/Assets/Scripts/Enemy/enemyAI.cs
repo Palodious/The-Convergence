@@ -1541,6 +1541,10 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
 
         if (shootTimer < shootRate) return false;
 
+        Vector3 checkPosition = headPos != null ? headPos.position : transform.position;
+        float distanceToPlayer = Vector3.Distance(checkPosition, gamemanager.instance.player.transform.position);
+        if (distanceToPlayer > sightRange) return false;
+
         return HasLineOfSightToPlayer();
     }
 

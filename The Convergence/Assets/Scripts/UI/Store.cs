@@ -19,6 +19,12 @@ public enum UpgradeStat
     MaxHP
 }
 
+public enum ItemType
+{
+    Upgrade,
+    Consumable,
+}
+
 [System.Serializable]
 public class StoreItem
 {
@@ -28,41 +34,46 @@ public class StoreItem
     public ItemType type; // Upgrade, Consumable
     public GunType gunType = GunType.None;
     public UpgradeStat upgradeStat;
-    public float upgradeAmount = 0f;
+
+    [Header("Upgrade Leveling (Upgrades Only)")]
+    public int maxLevel = 1;
+    public int baseCost = 0;
+    public int costPerLevel = 0;
+
+    public float baseAmount = 0f;
+    public float amountPerLevel = 0f;
+
     public int quantity = 1;
+}
+
+[System.Serializable]
+public class UpgradeLevelEntry 
+{
+    public int id;
+    public int level;
 }
 
 [System.Serializable]
 public class PlayerState
 {
-    // CONSUMABLES:
+    // CONSUMABLES
     public int potionCount = 0;
 
-    
-    public List<int> purchasedIds = new List<int>();
+
+    public List<UpgradeLevelEntry> upgradeLevels = new List<UpgradeLevelEntry>();
 }
-
-
-public enum ItemType
-{
-    Upgrade,    // Single, one-time purchase
-    Consumable, // Multiple purchases allowed
-   
-}
-
-
 
 public class Store : MonoBehaviour, ISaveable
 {
     public static Store Instance;
 
     [Header("Player State (Runtime)")]
-    
     public PlayerState playerState = new PlayerState();
 
     [Header("Store Data")]
     public List<StoreItem> upgradeItems = new List<StoreItem>();
     public List<StoreItem> consumableItems = new List<StoreItem>();
+
     private readonly List<StoreButtonUI> registeredButtons = new();
 
     [Header("~=~= UI References =~=~")]
@@ -72,7 +83,7 @@ public class Store : MonoBehaviour, ISaveable
     private struct StoreSaveData
     {
         public int potionCount;
-        public List<int> purchasedIds;
+        public List<UpgradeLevelEntry> upgradeLevels;
     }
 
     private void Awake()
@@ -80,6 +91,10 @@ public class Store : MonoBehaviour, ISaveable
         if (Instance == null)
         {
             Instance = this;
+
+            if (playerState == null)
+                playerState = new PlayerState();
+
             InitializeStoreData();
         }
         else
@@ -100,76 +115,142 @@ public class Store : MonoBehaviour, ISaveable
             button.UpdateDisplay();
     }
 
-    private void InitializeStoreData()
+    public StoreItem FindItemById(int id)
     {
-        upgradeItems.Add(new StoreItem { id = 101, itemName = "SMG Ammo Upgrade", cost = 5, type = ItemType.Upgrade, gunType = GunType.SMG, upgradeStat = UpgradeStat.Ammo, upgradeAmount = 5 });
-        upgradeItems.Add(new StoreItem { id = 102, itemName = "SMG Damage Upgrade", cost = 10, type = ItemType.Upgrade, gunType = GunType.SMG, upgradeStat = UpgradeStat.Damage, upgradeAmount = 5 });
-        upgradeItems.Add(new StoreItem { id = 103, itemName = "SMG Fire Rate Upgrade", cost = 15, type = ItemType.Upgrade, gunType = GunType.SMG, upgradeStat = UpgradeStat.Rate, upgradeAmount = 0.1f });
-        upgradeItems.Add(new StoreItem { id = 104, itemName = "SMG Distance Upgrade", cost = 20, type = ItemType.Upgrade, gunType = GunType.SMG, upgradeStat = UpgradeStat.Distance, upgradeAmount = 5 });
+        for (int i = 0; i < upgradeItems.Count; i++)
+            if (upgradeItems[i].id == id)
+                return upgradeItems[i];
 
-        upgradeItems.Add(new StoreItem { id = 111, itemName = "Rifle Ammo Upgrade", cost = 5, type = ItemType.Upgrade, gunType = GunType.Rifle, upgradeStat = UpgradeStat.Ammo, upgradeAmount = 5 });
-        upgradeItems.Add(new StoreItem { id = 112, itemName = "Rifle Damage Upgrade", cost = 10, type = ItemType.Upgrade, gunType = GunType.Rifle, upgradeStat = UpgradeStat.Damage, upgradeAmount = 5 });
-        upgradeItems.Add(new StoreItem { id = 113, itemName = "Rifle Fire Rate Upgrade", cost = 15, type = ItemType.Upgrade, gunType = GunType.Rifle, upgradeStat = UpgradeStat.Rate, upgradeAmount = 0.1f });
-        upgradeItems.Add(new StoreItem { id = 114, itemName = "Rifle Distance Upgrade", cost = 20, type = ItemType.Upgrade, gunType = GunType.Rifle, upgradeStat = UpgradeStat.Distance, upgradeAmount = 5 });
+        for (int i = 0; i < consumableItems.Count; i++)
+            if (consumableItems[i].id == id)
+                return consumableItems[i];
 
-        upgradeItems.Add(new StoreItem { id = 121, itemName = "AR Ammo Upgrade", cost = 5, type = ItemType.Upgrade, gunType = GunType.AR, upgradeStat = UpgradeStat.Ammo, upgradeAmount = 5 });
-        upgradeItems.Add(new StoreItem { id = 122, itemName = "AR Damage Upgrade", cost = 10, type = ItemType.Upgrade, gunType = GunType.AR, upgradeStat = UpgradeStat.Damage, upgradeAmount = 5 });
-        upgradeItems.Add(new StoreItem { id = 123, itemName = "AR Fire Rate Upgrade", cost = 15, type = ItemType.Upgrade, gunType = GunType.AR, upgradeStat = UpgradeStat.Rate, upgradeAmount = 0.1f });
-        upgradeItems.Add(new StoreItem { id = 124, itemName = "AR Distance Upgrade", cost = 20, type = ItemType.Upgrade, gunType = GunType.AR, upgradeStat = UpgradeStat.Distance, upgradeAmount = 5 });
-
-        upgradeItems.Add(new StoreItem { id = 201, itemName = "Max HP Upgrade I", cost = 10, type = ItemType.Upgrade, gunType = GunType.None, upgradeStat = UpgradeStat.MaxHP, upgradeAmount = 25 });
-        upgradeItems.Add(new StoreItem { id = 202, itemName = "Max HP Upgrade II", cost = 20, type = ItemType.Upgrade, gunType = GunType.None, upgradeStat = UpgradeStat.MaxHP, upgradeAmount = 50 });
-        upgradeItems.Add(new StoreItem { id = 203, itemName = "Max HP Upgrade III", cost = 30, type = ItemType.Upgrade, gunType = GunType.None, upgradeStat = UpgradeStat.MaxHP, upgradeAmount = 75 });
-        upgradeItems.Add(new StoreItem { id = 204, itemName = "Max HP Upgrade IV", cost = 40, type = ItemType.Upgrade, gunType = GunType.None, upgradeStat = UpgradeStat.MaxHP, upgradeAmount = 100 });
-
-        consumableItems.Add(new StoreItem { id = 301, itemName = "Health Potion", cost = 10, type = ItemType.Consumable, gunType = GunType.None, upgradeStat = UpgradeStat.MaxHP, upgradeAmount = 0 });
-        consumableItems.Add(new StoreItem { id = 302, itemName = "Health Potion+", cost = 20, type = ItemType.Consumable, gunType = GunType.None, upgradeStat = UpgradeStat.MaxHP, upgradeAmount = 0 });
-        consumableItems.Add(new StoreItem { id = 303, itemName = "Health Potion++", cost = 30, type = ItemType.Consumable, gunType = GunType.None, upgradeStat = UpgradeStat.MaxHP, upgradeAmount = 0 });
-        consumableItems.Add(new StoreItem { id = 304, itemName = "Health Potion MAX", cost = 40, type = ItemType.Consumable, gunType = GunType.None, upgradeStat = UpgradeStat.MaxHP, upgradeAmount = 0 });
+        return null;
     }
 
+    public int GetUpgradeLevel(int upgradeId)
+    {
+        if (playerState == null || playerState.upgradeLevels == null)
+            return 0;
+
+        for (int i = 0; i < playerState.upgradeLevels.Count; i++)
+        {
+            if (playerState.upgradeLevels[i].id == upgradeId)
+                return playerState.upgradeLevels[i].level;
+        }
+
+        return 0;
+    }
+
+    private void SetUpgradeLevel(int upgradeId, int newLevel)
+    {
+        if (playerState == null)
+            playerState = new PlayerState();
+
+        if (playerState.upgradeLevels == null)
+            playerState.upgradeLevels = new List<UpgradeLevelEntry>();
+
+        for (int i = 0; i < playerState.upgradeLevels.Count; i++)
+        {
+            if (playerState.upgradeLevels[i].id == upgradeId)
+            {
+                playerState.upgradeLevels[i].level = newLevel;
+                return;
+            }
+        }
+
+        playerState.upgradeLevels.Add(new UpgradeLevelEntry { id = upgradeId, level = newLevel });
+    }
+
+    public bool IsUpgradeMaxed(StoreItem item)
+    {
+        if (item == null) return true;
+        if (item.type != ItemType.Upgrade) return false;
+
+        int lvl = GetUpgradeLevel(item.id);
+        return lvl >= Mathf.Max(1, item.maxLevel);
+    }
+
+    public int GetEffectiveCost(StoreItem item)
+    {
+        if (item == null) return int.MaxValue;
+
+        if (item.type == ItemType.Consumable)
+            return Mathf.Max(0, item.cost);
+
+        int lvl = GetUpgradeLevel(item.id);
+        int cost = item.baseCost + (item.costPerLevel * lvl);
+        return Mathf.Max(0, cost);
+    }
+
+    public float GetEffectiveAmount(StoreItem item)
+    {
+        if (item == null) return 0f;
+
+        if (item.type != ItemType.Upgrade)
+            return 0f;
+
+        int lvl = GetUpgradeLevel(item.id);
+        float amt = item.baseAmount + (item.amountPerLevel * lvl);
+        return amt;
+    }
 
     public bool CanBuyItem(StoreItem item, out string reason)
     {
-
         if (item == null)
         {
             reason = "Invalid Item";
             return false;
         }
 
-        if (RiftShardManager.Instance == null || RiftShardManager.Instance.Amount < item.cost)
+        if (RiftShardManager.Instance == null)
         {
-            reason = "Not Enough Rift Shards";
+            reason = "Currency System Missing";
             return false;
         }
 
-
-        if (item.type == ItemType.Upgrade && playerState.purchasedIds.Contains(item.id))
+        if (item.type == ItemType.Upgrade && IsUpgradeMaxed(item))
         {
-            reason = "Already Purchased";
+            reason = "Maxed";
+            return false;
+        }
+
+        int cost = GetEffectiveCost(item);
+        if (RiftShardManager.Instance.Amount < cost)
+        {
+            reason = "Not Enough Rift Shards";
             return false;
         }
 
         reason = "Available";
         return true;
     }
+
+    public void PurchaseItemButton(int itemId)
+    {
+        BuyItem(itemId);
+    }
+
     public bool BuyItem(int itemId)
     {
         StoreItem item = FindItemById(itemId);
-        if (item == null)
-            return false;
+        if (item == null) return false;
 
-        if (!CanBuyItem(item, out _))
-            return false;
+        if (!CanBuyItem(item, out _)) return false;
 
-        if (!RiftShardManager.Instance.TrySpend(item.cost))
+        int cost = GetEffectiveCost(item);
+
+        if (!RiftShardManager.Instance.TrySpend(cost))
             return false;
 
         if (item.type == ItemType.Upgrade)
         {
-            ApplyUpgrade(item);
-            playerState.purchasedIds.Add(item.id);
+            float amount = GetEffectiveAmount(item);
+
+            ApplyUpgrade(item, amount);
+
+            int currentLevel = GetUpgradeLevel(item.id);
+            SetUpgradeLevel(item.id, currentLevel + 1);
         }
         else
         {
@@ -180,43 +261,38 @@ public class Store : MonoBehaviour, ISaveable
         return true;
     }
 
-    private void ApplyUpgrade(StoreItem item)
+    private void ApplyUpgrade(StoreItem item, float amount)
     {
-
         if (item == null) return;
 
         if (item.upgradeStat == UpgradeStat.MaxHP)
         {
-            gamemanager.instance.playerScript.ApplyHealthUpgrade(item.upgradeAmount);
+            if (gamemanager.instance != null && gamemanager.instance.playerScript != null)
+            {
+                gamemanager.instance.playerScript.ApplyHealthUpgrade(amount);
+            }
+            else
+            {
+                Debug.LogError("Store.ApplyUpgrade(MaxHP): gamemanager/playerScript missing.");
+            }
+            return;
+        }
+
+        if (GunUpgradeManager.Instance == null)
+        {
+            Debug.LogError("Store.ApplyUpgrade: GunUpgradeManager.Instance is null.");
             return;
         }
 
         gunStats gun = GunUpgradeManager.Instance.GetGunStats(item.gunType);
         if (gun == null)
         {
-            Debug.LogError($"Store: No gunStats found for {item.gunType}");
+            Debug.LogError($"Store.ApplyUpgrade: No gunStats found for {item.gunType}");
             return;
         }
 
-        gun.ApplyUpgrade(item.upgradeStat, item.upgradeAmount);
-    }
-
-    public void PurchaseItemButton(int itemId)
-    {
-        BuyItem(itemId);
-    }
-
-    public StoreItem FindItemById(int id)
-    {
-        foreach (var item in upgradeItems)
-            if (item.id == id)
-                return item;
-
-        foreach (var item in consumableItems)
-            if (item.id == id)
-                return item;
-
-        return null;
+        // Apply upgrade directly to the gun stats asset
+        gun.ApplyUpgrade(item.upgradeStat, amount);
     }
 
     public void SetStoreOpen()
@@ -232,7 +308,249 @@ public class Store : MonoBehaviour, ISaveable
         if (storeUIPanel != null)
             storeUIPanel.SetActive(false);
 
-        gamemanager.instance.stateUnpause();
+        if (gamemanager.instance != null)
+            gamemanager.instance.stateUnpause();
+    }
+
+
+    // Store Data Init
+    private void InitializeStoreData()
+    {
+
+        upgradeItems.Clear();
+        consumableItems.Clear();
+
+        // ---- SMG Upgrades ----
+        upgradeItems.Add(new StoreItem
+        {
+            id = 101,
+            itemName = "SMG Ammo Upgrade",
+            type = ItemType.Upgrade,
+            gunType = GunType.SMG,
+            upgradeStat = UpgradeStat.Ammo,
+
+            maxLevel = 4,
+            baseCost = 5,
+            costPerLevel = 5,
+            baseAmount = 5,
+            amountPerLevel = 0
+        });
+
+        upgradeItems.Add(new StoreItem
+        {
+            id = 102,
+            itemName = "SMG Damage Upgrade",
+            type = ItemType.Upgrade,
+            gunType = GunType.SMG,
+            upgradeStat = UpgradeStat.Damage,
+
+            maxLevel = 4,
+            baseCost = 10,
+            costPerLevel = 5,
+            baseAmount = 5,
+            amountPerLevel = 0
+        });
+
+        upgradeItems.Add(new StoreItem
+        {
+            id = 103,
+            itemName = "SMG Fire Rate Upgrade",
+            type = ItemType.Upgrade,
+            gunType = GunType.SMG,
+            upgradeStat = UpgradeStat.Rate,
+
+            maxLevel = 4,
+            baseCost = 15,
+            costPerLevel = 5,
+            baseAmount = 0.1f,
+            amountPerLevel = 0f
+        });
+
+        upgradeItems.Add(new StoreItem
+        {
+            id = 104,
+            itemName = "SMG Distance Upgrade",
+            type = ItemType.Upgrade,
+            gunType = GunType.SMG,
+            upgradeStat = UpgradeStat.Distance,
+
+            maxLevel = 4,
+            baseCost = 20,
+            costPerLevel = 5,
+            baseAmount = 5,
+            amountPerLevel = 0f
+        });
+
+        // ---- Rifle Upgrades ----
+        upgradeItems.Add(new StoreItem
+        {
+            id = 111,
+            itemName = "Rifle Ammo Upgrade",
+            type = ItemType.Upgrade,
+            gunType = GunType.Rifle,
+            upgradeStat = UpgradeStat.Ammo,
+
+            maxLevel = 4,
+            baseCost = 5,
+            costPerLevel = 5,
+            baseAmount = 5,
+            amountPerLevel = 0f
+        });
+
+        upgradeItems.Add(new StoreItem
+        {
+            id = 112,
+            itemName = "Rifle Damage Upgrade",
+            type = ItemType.Upgrade,
+            gunType = GunType.Rifle,
+            upgradeStat = UpgradeStat.Damage,
+
+            maxLevel = 4,
+            baseCost = 10,
+            costPerLevel = 5,
+            baseAmount = 5,
+            amountPerLevel = 0f
+        });
+
+        upgradeItems.Add(new StoreItem
+        {
+            id = 113,
+            itemName = "Rifle Fire Rate Upgrade",
+            type = ItemType.Upgrade,
+            gunType = GunType.Rifle,
+            upgradeStat = UpgradeStat.Rate,
+
+            maxLevel = 4,
+            baseCost = 15,
+            costPerLevel = 5,
+            baseAmount = 0.1f,
+            amountPerLevel = 0f
+        });
+
+        upgradeItems.Add(new StoreItem
+        {
+            id = 114,
+            itemName = "Rifle Distance Upgrade",
+            type = ItemType.Upgrade,
+            gunType = GunType.Rifle,
+            upgradeStat = UpgradeStat.Distance,
+
+            maxLevel = 4,
+            baseCost = 20,
+            costPerLevel = 5,
+            baseAmount = 5,
+            amountPerLevel = 0f
+        });
+
+        // ---- AR Upgrades ----
+        upgradeItems.Add(new StoreItem
+        {
+            id = 121,
+            itemName = "AR Ammo Upgrade",
+            type = ItemType.Upgrade,
+            gunType = GunType.AR,
+            upgradeStat = UpgradeStat.Ammo,
+
+            maxLevel = 4,
+            baseCost = 5,
+            costPerLevel = 5,
+            baseAmount = 5,
+            amountPerLevel = 0f
+        });
+
+        upgradeItems.Add(new StoreItem
+        {
+            id = 122,
+            itemName = "AR Damage Upgrade",
+            type = ItemType.Upgrade,
+            gunType = GunType.AR,
+            upgradeStat = UpgradeStat.Damage,
+
+            maxLevel = 4,
+            baseCost = 10,
+            costPerLevel = 5,
+            baseAmount = 5,
+            amountPerLevel = 0f
+        });
+
+        upgradeItems.Add(new StoreItem
+        {
+            id = 123,
+            itemName = "AR Fire Rate Upgrade",
+            type = ItemType.Upgrade,
+            gunType = GunType.AR,
+            upgradeStat = UpgradeStat.Rate,
+
+            maxLevel = 4,
+            baseCost = 15,
+            costPerLevel = 5,
+            baseAmount = 0.1f,
+            amountPerLevel = 0f
+        });
+
+        upgradeItems.Add(new StoreItem
+        {
+            id = 124,
+            itemName = "AR Distance Upgrade",
+            type = ItemType.Upgrade,
+            gunType = GunType.AR,
+            upgradeStat = UpgradeStat.Distance,
+
+            maxLevel = 4,
+            baseCost = 20,
+            costPerLevel = 5,
+            baseAmount = 5,
+            amountPerLevel = 0f
+        });
+
+        // ---- Max HP Upgrade, single button, multi-level ----
+        upgradeItems.Add(new StoreItem
+        {
+            id = 201,
+            itemName = "Max HP Upgrade",
+            type = ItemType.Upgrade,
+            gunType = GunType.None,
+            upgradeStat = UpgradeStat.MaxHP,
+
+            maxLevel = 4,
+            baseCost = 10,
+            costPerLevel = 10,
+            baseAmount = 25,
+            amountPerLevel = 25
+        });
+
+        // ---- Consumables ----
+        consumableItems.Add(new StoreItem
+        {
+            id = 301,
+            itemName = "Health Potion",
+            type = ItemType.Consumable,
+            cost = 10
+        });
+
+        consumableItems.Add(new StoreItem
+        {
+            id = 302,
+            itemName = "Health Potion+",
+            type = ItemType.Consumable,
+            cost = 20
+        });
+
+        consumableItems.Add(new StoreItem
+        {
+            id = 303,
+            itemName = "Health Potion++",
+            type = ItemType.Consumable,
+            cost = 30
+        });
+
+        consumableItems.Add(new StoreItem
+        {
+            id = 304,
+            itemName = "Health Potion MAX",
+            type = ItemType.Consumable,
+            cost = 40
+        });
     }
 
     object ISaveable.CaptureState() => CaptureState();
@@ -243,7 +561,9 @@ public class Store : MonoBehaviour, ISaveable
         return new StoreSaveData
         {
             potionCount = playerState != null ? playerState.potionCount : 0,
-            purchasedIds = playerState != null ? new List<int>(playerState.purchasedIds) : new List<int>()
+            upgradeLevels = (playerState != null && playerState.upgradeLevels != null)
+                ? new List<UpgradeLevelEntry>(playerState.upgradeLevels)
+                : new List<UpgradeLevelEntry>()
         };
     }
 
@@ -259,8 +579,8 @@ public class Store : MonoBehaviour, ISaveable
             playerState = new PlayerState();
 
         playerState.potionCount = s.potionCount;
-        playerState.purchasedIds = (s.purchasedIds != null) ? new List<int>(s.purchasedIds) : new List<int>();
-        RefreshAllButtonDisplays();
+        playerState.upgradeLevels = (s.upgradeLevels != null) ? new List<UpgradeLevelEntry>(s.upgradeLevels) : new List<UpgradeLevelEntry>();
 
+        RefreshAllButtonDisplays();
     }
 }
