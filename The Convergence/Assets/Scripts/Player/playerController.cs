@@ -362,6 +362,12 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable, IAmm
         }
 
         selectGun();
+
+        if (animator != null)
+        {
+            float basic = moveDir.normalized.magnitude;
+            animator.SetFloat("Basic", basic);
+        }
     }
 
     IEnumerator playStep()
@@ -441,7 +447,6 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable, IAmm
         if (shootTimer < activeGunStats.shootRate) return;
         shootTimer = 0;
 
-        // Decrease magazine ammo from GunAmmoData
         if (ammoData != null)
         {
             ammoData.currentAmmo--;
@@ -635,7 +640,7 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable, IAmm
             return;
         }
 
-        // NEW: Handle ammo pickups
+        // Handle ammo pickups
         if (item is AmmoStats ammo)
         {
             if (ammo.compatibleGun != null)
@@ -648,7 +653,6 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable, IAmm
         Debug.LogWarning("Picked up unknown item: " + item.name);
     }
 
-    // IAmmo Interface Implementation
     public void AddAmmo(int amount)
     {
         if (activeGunStats == null) return;
@@ -920,7 +924,7 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable, IAmm
         public float medkitCooldown;
         public int gunListPos;
         public List<keyStats> keyList;
-        // NEW: Add ammo data
+        // Add ammo data
         public List<GunAmmoData> savedAmmoInventory;
     }
 
@@ -939,7 +943,7 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable, IAmm
             medkitCooldown = this.medkitCooldown,
             gunListPos = this.gunListPos,
             keyList = new List<keyStats>(keyList),
-            // NEW: Save ammo inventory
+            // Save ammo inventory
             savedAmmoInventory = new List<GunAmmoData>(gunAmmoInventory)
         };
     }
@@ -967,7 +971,7 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable, IAmm
             keyList = new List<keyStats>(data.keyList);
         }
 
-        // NEW: Restore ammo inventory
+        // Restore ammo inventory
         if (data.savedAmmoInventory != null)
         {
             gunAmmoInventory = new List<GunAmmoData>(data.savedAmmoInventory);
