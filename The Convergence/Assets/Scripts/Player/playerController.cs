@@ -76,6 +76,23 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
 
     [HideInInspector] public gunStats activeGunStats;
 
+    [System.Serializable]
+    public class GunAmmoData
+    {
+        public gunStats gunType;
+        public int currentAmmo;
+        public int reserveAmmo;
+
+        public GunAmmoData(gunStats gun)
+        {
+            gunType = gun;
+            currentAmmo = gun.ammoMax;
+            reserveAmmo = gun.ammoMax * 3;
+        }
+    }
+
+    [SerializeField] private List<GunAmmoData> gunAmmoInventory = new List<GunAmmoData>();
+
     [Header("~=~= Medkit Settings =~=~")]
     private bool canUseMedkit = true;
     private float medkitCooldown = 0f;
@@ -918,6 +935,9 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
         public int gunListPos;
         public List<keyStats> keyList;
         public List<int> gunAmmoCur;
+
+        // Add ammo data
+        public List<GunAmmoData> savedAmmoInventory;
     }
 
     object ISaveable.CaptureState() => CaptureState();
@@ -935,7 +955,10 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
             medkitCooldown = this.medkitCooldown,
             gunListPos = this.gunListPos,
             keyList = new List<keyStats>(keyList),
-            gunAmmoCur = CaptureGunAmmoList()
+            gunAmmoCur = CaptureGunAmmoList(),
+
+            // Save ammo inventory
+            savedAmmoInventory = new List<GunAmmoData>(gunAmmoInventory)
         };
     }
 
