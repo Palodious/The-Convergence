@@ -27,8 +27,8 @@ public class StoreManager : MonoBehaviour
     {
         if (targetGunStats != null)
         {
-            targetGunStats.ApplyUpgrade("damage", damageUpgradeAmount);
-            Debug.Log($"Damage upgraded! New damage: {targetGunStats.shootDamage}");
+            targetGunStats.ApplyUpgrade("rate", rateUpgradeAmount);
+            Debug.Log($"Fire Rate upgraded! New rate: {targetGunStats.shootRate}");
         }
         else
         {
@@ -40,8 +40,8 @@ public class StoreManager : MonoBehaviour
     {
         if (targetGunStats != null)
         {
-            targetGunStats.ApplyUpgrade("damage", damageUpgradeAmount);
-            Debug.Log($"Damage upgraded! New damage: {targetGunStats.shootDamage}");
+            targetGunStats.ApplyUpgrade("distance", distanceUpgradeAmount);
+            Debug.Log($"Distance upgraded! New distance: {targetGunStats.shootDist}");
         }
         else
         {
@@ -53,8 +53,8 @@ public class StoreManager : MonoBehaviour
     {
         if (targetGunStats != null)
         {
-            targetGunStats.ApplyUpgrade("damage", damageUpgradeAmount);
-            Debug.Log($"Damage upgraded! New damage: {targetGunStats.shootDamage}");
+            targetGunStats.ApplyUpgrade("ammo", ammoUpgradeAmount);
+            Debug.Log($"Ammo upgraded! New Ammo: {targetGunStats.ammoMax}");
         }
         else
         {

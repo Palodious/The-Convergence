@@ -181,8 +181,9 @@ public class Store : MonoBehaviour
             {
                 return false;
             }
+            
 
-                // Apply Effect based on Type
+            // Apply Effect based on Type
             if (item.type == ItemType.Upgrade)
             {
                 if (item.gunType != GunType.None)
@@ -199,15 +200,18 @@ public class Store : MonoBehaviour
                 {
                     Debug.Log($"Max HP purchase detected (ID: {item.id}). Checking player references...");
 
-                    if (gamemanager.instance != null && gamemanager.instance.playerScript != null)
+
+                    if (gamemanager.instance == null)
                     {
-                        gamemanager.instance.playerScript.ApplyHealthUpgrade(item.upgradeAmount);
-                        Debug.Log($"Applied Health Upgrade: {item.itemName}. Increased Max HP by {item.upgradeAmount}");
+                        throw new System.Exception("Store CRASH TEST 1: gamemanager.instance is NULL.");
                     }
-                    else
+                    if (gamemanager.instance.playerScript == null)
                     {
-                        Debug.LogError("gamemanager or playerScript is missing. Cannot apply Max HP upgrade.");
+                        throw new System.Exception("Store CRASH TEST 2: gamemanager.instance.playerScript is NULL.");
                     }
+                    gamemanager.instance.playerScript.ApplyHealthUpgrade(item.upgradeAmount);
+                    Debug.LogError("gamemanager or playerScript is missing. Cannot apply Max HP upgrade.");
+                    
                 }
                     // Mark as purchased, effectively setting its quantity to 0
                     playerState.purchasedIds.Add(item.id);

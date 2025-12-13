@@ -901,7 +901,7 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
 
 
         updatePlayerUI();
-        Debug.Log($"Max HP upgraded by {increase}. New Max HP: {currentMaxHP}");
+        Debug.Log($"CONFIRM: Max HP upgraded by {increase}. New Max HP: {currentMaxHP}");
     }
 
 
