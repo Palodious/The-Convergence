@@ -372,4 +372,49 @@ public class gamemanager : MonoBehaviour
             Debug.Log($"Stopped menu music from {menuGO.name}");
         }
     }
+    
+
+        [Header("Wave Mode Settings")]
+        public bool IsWaveModeActive = false;
+        public float globalWaveModeRange = 100f;
+
+        private List<enemyAI> allEnemies = new List<enemyAI>();
+
+
+        public void RegisterEnemy(enemyAI enemy)
+        {
+            if (!allEnemies.Contains(enemy))
+                allEnemies.Add(enemy);
+        }
+
+        public void UnregisterEnemy(enemyAI enemy)
+        {
+            if (allEnemies.Contains(enemy))
+                allEnemies.Remove(enemy);
+        }
+
+       public void EnableGlobalWaveMode()
+       {
+            IsWaveModeActive = true;
+            foreach (var enemy in allEnemies)
+            {
+                if (enemy != null && !enemy.ignoreWaveMode)
+                {
+                    enemy.EnableWaveMode();
+                    enemy.SetWaveModeRange(globalWaveModeRange);
+                }
+            }
+       }
+
+        public void DisableGlobalWaveMode()
+        {
+            IsWaveModeActive = false;
+            foreach (var enemy in allEnemies)
+            {
+                if (enemy != null)
+                {
+                    enemy.DisableWaveMode();
+                }
+            }
+        }
 }

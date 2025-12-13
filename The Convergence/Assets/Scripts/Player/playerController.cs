@@ -36,36 +36,35 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
     [Range(0, 1)][SerializeField] float audJumpVol;
     [SerializeField] AudioClip[] audHurt;
     [Range(0, 1)][SerializeField] float audHurtVol;
-    [SerializeField] AudioClip audMedkit; // Sound for using a medkit
-    [Range(0, 1)][SerializeField] float audMedkitVol = 1f; // Volume for medkit use
+    [SerializeField] AudioClip audMedkit;
+    [Range(0, 1)][SerializeField] float audMedkitVol = 1f; 
 
     [Header("~=~= Keys =~=~")]
     [SerializeField] List<keyStats> keyList = new List<keyStats>();
 
-    // Add static variables to persist data between scenes
     private static List<gunStats> persistentGunList = new List<gunStats>();
     private static List<keyStats> persistentKeyList = new List<keyStats>();
     private static int persistentGunListPos = 0;
     private static int persistentHP = 100;
-
+    private static int persistentMaxHP = 100;
     private static bool isNewGameSession = true;
 
     public int ShootDamage => shootDamage;
-    float originalHeight; // remember height for uncrouch  
-    int originalSpeed; // store original speed  
+    float originalHeight;  
+    int originalSpeed;  
 
     Vector3 moveDir;
     Vector3 playerVel;
 
     int jumpCount;
-    int HPOrig;
+    int currentMaxHP;
+    int intialHP;
     float shootTimer;
 
-    bool isCrouching;  // crouch state  
-    bool isGliding; // glide state  
+    bool isCrouching;
+    bool isGliding;
     bool isSprinting;
     bool isPlayingStep;
-    bool isReloading; // Track reload state
 
     [HideInInspector] public float damageBoost = 1f;
 
@@ -84,9 +83,9 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
     public Transform aimTarget; // assign empty AimTarget in front of player
     public Transform rightHandIKTarget; // assign empty child at gun grip
     public Transform leftHandIKTarget; // assign empty child for left hand support
-    private PlayerIKController ikController; // Reference to IK controller
+    private PlayerIKController ikController;
     [HideInInspector] public bool isAiming; // true while holding Fire2
-    [Range(0f, 1f)] public float aimMoveSpeed = 8f; // how fast upper-body aims/IK blends
+    [Range(0f, 1f)] public float aimMoveSpeed = 8f;
 
     void Awake()
     {
@@ -95,7 +94,6 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
 
         if (currentSceneIndex == 1 && isNewGameSession)
         {
-            // Reset all static data when starting from first scene
             ResetStaticData();
             isNewGameSession = false;
         }
@@ -105,11 +103,11 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
     {
         controller = GetComponent<CharacterController>();
 
-        HPOrig = HP;
+        intialHP = HP;
+        currentMaxHP = intialHP;
         originalHeight = controller.height;
         originalSpeed = speed;
 
-        // Initialize IK system
         InitializeIKSystem();
 
         if (SaveManager.IsLoadingFromSave)
@@ -118,7 +116,6 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
             return;
         }
 
-        // Check if we have persistent data (from previous scene)
         int currentSceneIndex = SceneManager.GetActiveScene().buildIndex;
 
         if (currentSceneIndex > 1 && (persistentGunList.Count > 0 || persistentKeyList.Count > 0))
@@ -134,7 +131,6 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
 
     void InitializeIKSystem()
     {
-        // Get or add IK controller
         ikController = GetComponent<PlayerIKController>();
         if (ikController == null)
             ikController = GetComponentInChildren<PlayerIKController>();
@@ -145,7 +141,6 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
             ikController = gameObject.AddComponent<PlayerIKController>();
         }
 
-        // Create IK target objects if they don't exist
         if (rightHandIKTarget == null)
         {
             GameObject rightIK = new GameObject("RightHandIKTarget");
@@ -158,11 +153,10 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
         {
             GameObject leftIK = new GameObject("LeftHandIKTarget");
             leftIK.transform.SetParent(transform);
-            leftIK.transform.localPosition = new Vector3(-0.2f, 1.5f, 0.3f); // Default position
+            leftIK.transform.localPosition = new Vector3(-0.2f, 1.5f, 0.3f);
             leftHandIKTarget = leftIK.transform;
         }
 
-        // Set up aim target if not assigned
         if (aimTarget == null && Camera.main != null)
         {
             GameObject aimObj = new GameObject("AimTarget");
@@ -171,7 +165,6 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
             aimTarget.localPosition = Vector3.forward * 10f;
         }
 
-        // Sync with IK controller
         if (ikController != null)
         {
             if (ikController.animator == null && animator != null)
@@ -194,6 +187,7 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
         persistentKeyList.Clear();
         persistentGunListPos = 0;
         persistentHP = HP;
+        persistentMaxHP = HP;
         Debug.Log("Static data reset for new game session");
     }
 
@@ -219,7 +213,7 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
         }
 
         HP = persistentHP;
-        if (HP > HPOrig) HP = HPOrig;
+        if (HP > currentMaxHP) HP = currentMaxHP;
 
         // Move to spawn point
         if (gamemanager.instance != null && gamemanager.instance.spawnPoint != null)
@@ -234,11 +228,11 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
 
     void SavePersistentData()
     {
-        // Save to static variables
         persistentGunList = new List<gunStats>(gunList);
         persistentKeyList = new List<keyStats>(keyList);
         persistentGunListPos = gunListPos;
         persistentHP = HP;
+        persistentMaxHP = currentMaxHP;
     }
 
     public void PrepareForSceneTransition()
@@ -248,14 +242,11 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
 
     void Update()
     {
-        // read aiming input (hold-to-aim)
-        isAiming = Input.GetButton("Fire2"); // right mouse
+        isAiming = Input.GetButton("Fire2"); // right mouse by default
 
-        // set animator param if available
         if (animator != null)
             animator.SetBool("IsAiming", isAiming);
 
-        // Update IK based on aiming state
         if (isAiming)
             UpdateIKDuringAim();
         else
@@ -263,16 +254,10 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
 
         if (!gamemanager.instance.isPaused)
         {
-            // helpful debug ray showing camera center forward
             Debug.DrawRay(Camera.main.transform.position, Camera.main.transform.forward * shootDist, Color.red);
 
             shootTimer += Time.deltaTime;
             movement();
-
-            if (Input.GetKeyDown(KeyCode.R) && !isReloading && activeGunStats != null)
-            {
-                Reload();
-            }
         }
 
         sprint();
@@ -282,10 +267,8 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
     {
         if (!isAiming || ikController == null) return;
 
-        // Set IK weights for aiming
         ikController.SetIKWeights(1f, 1f, 0.5f);
 
-        // Update animator parameter for blend trees
         if (animator != null)
             animator.SetFloat("AimBlend", Mathf.Lerp(animator.GetFloat("AimBlend"), 1f, Time.deltaTime * aimMoveSpeed));
     }
@@ -294,10 +277,8 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
     {
         if (isAiming || ikController == null) return;
 
-        // Set IK weights for hip fire (lower weights)
         ikController.SetIKWeights(0.3f, 0.1f, 0f);
 
-        // Update animator parameter for blend trees
         if (animator != null)
             animator.SetFloat("AimBlend", Mathf.Lerp(animator.GetFloat("AimBlend"), 0f, Time.deltaTime * aimMoveSpeed));
     }
@@ -309,7 +290,6 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
             if (playerVel.y < 0) playerVel.y = -2f;
             jumpCount = 0;
 
-            // play footstep audio if moving
             if (moveDir.normalized.magnitude > 0.3f && !isPlayingStep)
             {
                 StartCoroutine(playStep());
@@ -327,7 +307,6 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
             }
         }
 
-        // Get input
         float h = Input.GetAxis("Horizontal");
         float v = Input.GetAxis("Vertical");
 
@@ -342,61 +321,6 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
         // Calculate movement direction relative to camera
         moveDir = (camForward * v + camRight * h).normalized;
 
-        if (animator != null)
-        {
-            // Idle/Walk Forward
-            animator.SetFloat("Basic", moveDir.magnitude * (isSprinting ? sprintMod : 1f));
-
-            if (moveDir.magnitude < 0.1f)
-            {
-                animator.SetTrigger("Idle");
-            }
-            else if (v > 0.1f && !isSprinting)
-            {
-                animator.SetTrigger("Walk");
-            }
-            else if (v > 0.1f && isSprinting)
-            {
-                animator.SetTrigger("Sprint");
-            }
-
-            if (!controller.isGrounded && playerVel.y > 0)
-            {
-                animator.SetTrigger("Jump");
-            }
-
-            if (h < -0.1f)
-            {
-                animator.SetTrigger("Strafe Left");
-            }
-            else if (h > 0.1f)
-            {
-                animator.SetTrigger("Strafe Right");
-            }
-
-            if (v < -0.1f)
-            {
-                animator.SetTrigger("Walk backwards");
-            }
-
-            animator.SetBool("Crouch", isCrouching);
-
-            // Rifle animations
-            if (isAiming)
-            {
-                if (moveDir.magnitude > 0.1f)
-                {
-                    animator.SetTrigger("Rifle Aim run");
-                }
-
-                if (!controller.isGrounded && playerVel.y > 0)
-                {
-                    animator.SetTrigger("Rifle jump");
-                }
-            }
-        }
-
-        // Apply movement
         controller.Move(moveDir * speed * Time.deltaTime);
 
         if (isAiming)
@@ -431,7 +355,7 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
         }
         else if (isGliding) StopGlide();
 
-        if (Input.GetButton("Fire1") && shootTimer >= shootRate && !isReloading && activeGunStats != null && activeGunStats.ammoCur > 0)
+        if (Input.GetButton("Fire1") && shootTimer >= shootRate)
         {
             shoot();
         }
@@ -508,16 +432,9 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
         if (shootTimer < activeGunStats.shootRate) return;
         shootTimer = 0;
 
-        // Use ammo
-        activeGunStats.ammoCur--;
-
-        if (animator != null)
-        {
-            animator.SetTrigger("Shoot");
-        }
-
         aud.pitch = Random.Range(0.9f, 1.1f);
         aud.PlayOneShot(activeGunStats.shootSound[Random.Range(0, activeGunStats.shootSound.Length)], activeGunStats.shootSoundVol);
+
 
         // fire from gunModel toward the AimTarget
         if (aimTarget != null && gunModel != null)
@@ -557,19 +474,6 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
         updatePlayerUI();
         StartCoroutine(screenFlashDamage());
 
-        // ANIMATION: Death (trigger if HP <= 0)
-        if (animator != null)
-        {
-            if (HP <= 0)
-            {
-                animator.SetTrigger("Death");
-            }
-            else
-            {
-                animator.SetTrigger("Hurt");
-            }
-        }
-
         aud.pitch = Random.Range(0.9f, 1.1f);
         aud.PlayOneShot(audHurt[Random.Range(0, audHurt.Length)], audHurtVol);
 
@@ -579,7 +483,7 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
     public void updatePlayerUI()
     {
         if (gamemanager.instance.playerHPBar != null)
-            gamemanager.instance.playerHPBar.fillAmount = (float)HP / HPOrig;
+            gamemanager.instance.playerHPBar.fillAmount = (float)HP / currentMaxHP;
     }
 
     IEnumerator screenFlashDamage()
@@ -738,17 +642,16 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
     {
         int healAmount = medkit.healAmount;
         HP += healAmount;
-        if (HP > HPOrig) HP = HPOrig;
+        if (HP > currentMaxHP) HP = currentMaxHP;
 
         updatePlayerUI();
 
         if (medkit.useEffect != null)
             Instantiate(medkit.useEffect, transform.position, Quaternion.identity);
 
-        // Play medkit audio
         if (audMedkit != null)
         {
-            aud.pitch = Random.Range(0.95f, 1.05f); // slight pitch variation
+            aud.pitch = Random.Range(0.95f, 1.05f);
             aud.PlayOneShot(audMedkit, audMedkitVol);
         }
     }
@@ -800,10 +703,8 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
         Transform gunRightHandIK = FindDeepChild(gunObject.transform, "RightHandIK");
         Transform gunLeftHandIK = FindDeepChild(gunObject.transform, "LeftHandIK");
 
-        // Pass the gun's IK targets to the IK controller
         ikController.UpdateGunIKTargets(gunRightHandIK, gunLeftHandIK);
 
-        // If gun doesn't have IK targets, use our default targets
         if (gunRightHandIK == null)
         {
             // Position the right hand IK target at a reasonable default
@@ -811,7 +712,6 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
             rightHandIKTarget.localPosition = new Vector3(0.05f, -0.03f, 0.2f);
             rightHandIKTarget.localRotation = Quaternion.identity;
 
-            // Tell IK controller to use our default target
             ikController.UpdateGunIKTargets(rightHandIKTarget, null);
         }
 
@@ -822,7 +722,6 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
             leftHandIKTarget.localPosition = new Vector3(-0.05f, -0.02f, 0.4f);
             leftHandIKTarget.localRotation = Quaternion.identity;
 
-            // Tell IK controller to use our default target
             ikController.UpdateGunIKTargets(null, leftHandIKTarget);
         }
     }
@@ -839,51 +738,6 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
                 return result;
         }
         return null;
-    }
-
-    public void Reload()
-    {
-        // Don't reload if already reloading or if ammo is already full
-        if (isReloading || activeGunStats == null || activeGunStats.ammoCur >= activeGunStats.ammoMax)
-            return;
-
-        // Start reload process
-        isReloading = true;
-
-        // ANIMATION: Reload
-        if (animator != null)
-        {
-            animator.SetTrigger("Reload");
-        }
-
-        // Play reload sound
-        if (activeGunStats.reloadSound != null && activeGunStats.reloadSound.Length > 0)
-        {
-            aud.pitch = Random.Range(0.95f, 1.05f); // slight pitch variation
-            aud.PlayOneShot(activeGunStats.reloadSound[Random.Range(0, activeGunStats.reloadSound.Length)],
-                           activeGunStats.reloadSoundVol);
-        }
-
-        Debug.Log("Reloading weapon...");
-
-        // Start coroutine to complete reload after animation
-        StartCoroutine(CompleteReload());
-    }
-
-    IEnumerator CompleteReload()
-    {
-        // Wait for reload animation time (you can adjust this based on your animation length)
-        yield return new WaitForSeconds(1.5f); // Typical reload animation time
-
-        // Refill ammo
-        if (activeGunStats != null)
-        {
-            activeGunStats.ammoCur = activeGunStats.ammoMax;
-            Debug.Log($"Reload complete! Ammo: {activeGunStats.ammoCur}/{activeGunStats.ammoMax}");
-        }
-
-        // Reset reload state
-        isReloading = false;
     }
 
     void selectGun()
@@ -914,7 +768,7 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
         Debug.Log("spawnPoint = " + gamemanager.instance?.spawnPoint);
 
         controller.transform.position = gamemanager.instance.spawnPoint.transform.position;
-        HP = HPOrig;
+        HP = currentMaxHP;
         updatePlayerUI();
     }
 
@@ -927,7 +781,7 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
         public bool canUseMedkit;
         public float medkitCooldown;
         public int gunListPos;
-        public List<keyStats> keyList; // Save key list
+        public List<keyStats> keyList;
     }
 
     object ISaveable.CaptureState() => CaptureState();
@@ -943,7 +797,7 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
             canUseMedkit = this.canUseMedkit,
             medkitCooldown = this.medkitCooldown,
             gunListPos = this.gunListPos,
-            keyList = new List<keyStats>(keyList) // Save key list
+            keyList = new List<keyStats>(keyList)
         };
     }
 
@@ -964,7 +818,6 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
             changeGun();
         }
 
-        // Restore key list
         if (data.keyList != null)
         {
             keyList = new List<keyStats>(data.keyList);
@@ -982,5 +835,26 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
         }
 
         updatePlayerUI();
+
     }
+
+    public void ApplyHealthUpgrade(float amount)
+    {
+        int increase = Mathf.RoundToInt(amount);
+
+        currentMaxHP += increase;
+
+
+        HP += increase;
+
+
+        if (HP > currentMaxHP) HP = currentMaxHP;
+
+
+
+        updatePlayerUI();
+        Debug.Log($"Max HP upgraded by {increase}. New Max HP: {currentMaxHP}");
+    }
+
+
 }
