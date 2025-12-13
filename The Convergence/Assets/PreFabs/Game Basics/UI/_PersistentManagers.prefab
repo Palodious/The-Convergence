@@ -129,6 +129,56 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!1 &182375320593561893
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2739135232043665945}
+  - component: {fileID: 2083292754390457041}
+  m_Layer: 0
+  m_Name: StoreSystem2
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2739135232043665945
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 182375320593561893}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 6695148313504361521}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2083292754390457041
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 182375320593561893}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e4ef1b7ae64167f4ea7f0138049b4032, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Store
+  playerState:
+    potionCount: 10
+    upgradeLevels: []
+  upgradeItems: []
+  consumableItems: []
+  storeUIPanel: {fileID: 0}
 --- !u!1 &2326327691633345418
 GameObject:
   m_ObjectHideFlags: 0
@@ -302,9 +352,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 66297cf21c0645b4aa5e40317cfeacf4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GunUpgradeManager
-  smgStats: {fileID: 0}
-  rifleStats: {fileID: 0}
-  arStats: {fileID: 0}
+  smgStats: {fileID: 11400000, guid: 9c7e12c69d50f724894ce8d954df12dd, type: 2}
+  rifleStats: {fileID: 11400000, guid: c147004ed0afc7544a357b2c7dd41b55, type: 2}
+  arStats: {fileID: 11400000, guid: e4a596252ddd867448cb8a98803cad63, type: 2}
 --- !u!1 &4123855188252575737
 GameObject:
   m_ObjectHideFlags: 0
@@ -340,6 +390,7 @@ Transform:
   - {fileID: 4244205969613795720}
   - {fileID: 5753896565666762832}
   - {fileID: 9148633409496718986}
+  - {fileID: 2739135232043665945}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &6786074954810237572
@@ -763,7 +814,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bc17a8abd102426469966b950f844635, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::RiftShardManager
-  amount: 10
+  amount: 50
 --- !u!1 &6588040155630360054
 GameObject:
   m_ObjectHideFlags: 0

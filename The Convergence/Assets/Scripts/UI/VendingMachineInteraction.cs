@@ -71,12 +71,18 @@ public class VendingMachineInteraction : MonoBehaviour
 
         if (open)
         {
-            // Open panel first
-            storeUIPanel.SetActive(true);
+
 
             // Refresh button displays / state
-            if (Store.Instance != null)
-                Store.Instance.SetStoreOpen();
+            if (Store.Instance == null)
+            {
+                Debug.LogError("StoreSystem is missing or inactive. Store UI will not open.");
+            return;
+            }
+
+            storeUIPanel.SetActive(true);
+
+            Store.Instance.SetStoreOpen();
 
             // Pause game
             if (gamemanager.instance != null)

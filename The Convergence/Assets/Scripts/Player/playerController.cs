@@ -721,8 +721,9 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
     {
         if (gunList.Count == 0) return;
 
-        gunStats originalStats = gunList[gunListPos];
-        activeGunStats = Instantiate(originalStats);
+        activeGunStats = gunList[gunListPos];
+        if (activeGunStats != null)
+            activeGunStats.ammoCur = Mathf.Clamp(activeGunStats.ammoCur, 0, activeGunStats.ammoMax);
 
         Transform[] children = new Transform[gunModel.transform.childCount];
         for (int i = 0; i < gunModel.transform.childCount; i++)
@@ -832,6 +833,7 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
         public float medkitCooldown;
         public int gunListPos;
         public List<keyStats> keyList;
+        public List<int> gunAmmoCur;
     }
 
     object ISaveable.CaptureState() => CaptureState();
@@ -848,8 +850,26 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
             canUseMedkit = this.canUseMedkit,
             medkitCooldown = this.medkitCooldown,
             gunListPos = this.gunListPos,
-            keyList = new List<keyStats>(keyList)
+            keyList = new List<keyStats>(keyList),
+            gunAmmoCur = CaptureGunAmmoList()
         };
+    }
+
+    private List<int> CaptureGunAmmoList()
+    {
+        var list = new List<int>();
+
+        if (gunList == null) return list;
+
+        for (int i = 0; i < gunList.Count; i++)
+        {
+            if (gunList[i] == null)
+                list.Add(0);
+            else
+                list.Add(gunList[i].ammoCur);
+        }
+
+        return list;
     }
 
     public void RestoreState(object state)
@@ -864,9 +884,22 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
         canUseMedkit = data.canUseMedkit;
         medkitCooldown = data.medkitCooldown;
 
+        if (data.gunAmmoCur != null && gunList != null)
+        {
+            int count = Mathf.Min(data.gunAmmoCur.Count, gunList.Count);
+
+            for (int i = 0; i < count; i++)
+            {
+                if (gunList[i] == null) continue;
+
+                gunList[i].ammoCur = Mathf.Clamp(data.gunAmmoCur[i], 0, gunList[i].ammoMax);
+            }
+        }
+
         if (gunList != null && gunList.Count > 0)
         {
             gunListPos = Mathf.Clamp(data.gunListPos, 0, gunList.Count - 1);
+
             changeGun();
         }
 
