@@ -77,7 +77,7 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
     [Range(0.5f, 30f)][SerializeField] float minDashDistance; // Min distance (don't dash if too close)
     [Range(0.5f, 30f)][SerializeField] float dashAttackCooldown;
     [Range(1.1f, 10f)][SerializeField] float playerFleeingThreshold; // How fast player must be moving away
-    
+
     [Header("**** Wave Mode Settings ****")]
     [Range(0, 200)][SerializeField] float waveModeRange = 200f;
 
@@ -163,11 +163,11 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
         stoppingDistOrig = agent.stoppingDistance;
         startingPos = transform.position;
 
-      if (gamemanager.instance != null && gamemanager.instance.IsWaveModeActive)
-      {
+        if (gamemanager.instance != null && gamemanager.instance.IsWaveModeActive)
+        {
             waveModeActive = true;
-      }
-        
+        }
+
         // Rigidbody setup for jump attack (transform-arc or physics mode)
         if (canJumpAttack)
         {
@@ -213,10 +213,6 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
         jumpAttackTimer += Time.deltaTime;
         dashAttackTimer += Time.deltaTime;
 
-        if (!ignoreWaveMode && gamemanager.instance != null)
-        {
-            waveModeActive = gamemanager.instance.IsWaveModeActive;
-        }
         // Handle shoot cooldown logic
         HandleShootCooldown();
         // Track player velocity for dash attack
@@ -326,7 +322,7 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
             }
 
             // Handle attacks based on enemy type
-           
+
 
             if (agent != null && agent.isActiveAndEnabled && agent.remainingDistance <= agent.stoppingDistance)
                 faceTarget();
@@ -483,7 +479,7 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
         }
     }
 
-   
+
     IEnumerator EndJumpAfterDelay(float delay)
     {
         yield return new WaitForSeconds(delay);
@@ -506,7 +502,7 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
         // Reset back to kinematic again to transform movement after landing
         if (rb != null)
         {
-           rb.isKinematic = true;
+            rb.isKinematic = true;
         }
 
         isJumpAttacking = false;
@@ -1163,7 +1159,7 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
                     }
                 }
 
-                
+
                 if (agent != null && agent.isActiveAndEnabled && !isJumpAttacking && !isDashing &&
                     agent.remainingDistance <= agent.stoppingDistance)
                     faceTarget();
@@ -1497,7 +1493,7 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
             anim.Update(0f);
         }
     }
-   
+
     public void EnableWaveMode()
     {
         waveModeActive = true;
@@ -1524,13 +1520,7 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
     {
         if (gamemanager.instance.player == null) return false;
 
-        bool currentWaveModeActive = waveModeActive;
-        if (!ignoreWaveMode && gamemanager.instance != null)
-        {
-            currentWaveModeActive = gamemanager.instance.IsWaveModeActive;
-        }
-
-        if (currentWaveModeActive)
+        if (waveModeActive)
         {
             float distanceToPlayer = Vector3.Distance(transform.position, gamemanager.instance.player.transform.position);
             if (distanceToPlayer <= waveModeRange)
