@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.SceneManagement;
 
-public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
+public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable, IAmmo
 {
     [Header("~=~= Components =~=~")]
     [SerializeField] CharacterController controller;
@@ -58,7 +58,7 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
     Vector3 playerVel;
 
     int jumpCount;
-    [SerializeField]int currentMaxHP;
+    [SerializeField] int currentMaxHP;
     int intialHP;
     float shootTimer;
 
@@ -75,6 +75,23 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
     int gunListPos;
 
     [HideInInspector] public gunStats activeGunStats;
+
+    [System.Serializable]
+    public class GunAmmoData
+    {
+        public gunStats gunType;
+        public int currentAmmo;
+        public int reserveAmmo;
+
+        public GunAmmoData(gunStats gun)
+        {
+            gunType = gun;
+            currentAmmo = gun.ammoMax;
+            reserveAmmo = gun.ammoMax * 3;
+        }
+    }
+
+    [SerializeField] private List<GunAmmoData> gunAmmoInventory = new List<GunAmmoData>();
 
     [Header("~=~= Medkit Settings =~=~")]
     private bool canUseMedkit = true;
@@ -413,8 +430,9 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
     {
         if (activeGunStats == null || isReloading) return;
 
-        // Check if we have ammo if none auto reload
-        if (activeGunStats.ammoCur <= 0)
+        gunStats originalGunStats = gunList[gunListPos];
+        GunAmmoData ammoData = gunAmmoInventory.Find(data => data.gunType == originalGunStats);
+        if (ammoData == null || ammoData.currentAmmo <= 0)
         {
             Reload();
             return;
@@ -423,7 +441,11 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
         if (shootTimer < activeGunStats.shootRate) return;
         shootTimer = 0;
 
-        activeGunStats.ammoCur--;
+        // Decrease magazine ammo from GunAmmoData
+        if (ammoData != null)
+        {
+            ammoData.currentAmmo--;
+        }
 
         aud.pitch = Random.Range(0.9f, 1.1f);
         aud.PlayOneShot(activeGunStats.shootSound[Random.Range(0, activeGunStats.shootSound.Length)], activeGunStats.shootSoundVol);
@@ -466,7 +488,9 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
     {
         if (activeGunStats == null || isReloading) return;
 
-        if (activeGunStats.ammoCur >= activeGunStats.ammoMax) return;
+        gunStats originalGunStats = gunList[gunListPos];
+        GunAmmoData ammoData = gunAmmoInventory.Find(data => data.gunType == originalGunStats);
+        if (ammoData == null || ammoData.currentAmmo >= activeGunStats.ammoMax) return;
 
         if (reloadCoroutine != null)
         {
@@ -492,7 +516,17 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
 
         yield return new WaitForSeconds(reloadTime);
 
-        activeGunStats.ammoCur = activeGunStats.ammoMax;
+        // Calculate how much ammo to reload from reserve
+        gunStats originalGunStats = gunList[gunListPos];
+        GunAmmoData ammoData = gunAmmoInventory.Find(data => data.gunType == originalGunStats);
+        if (ammoData != null)
+        {
+            int ammoNeeded = activeGunStats.ammoMax - ammoData.currentAmmo;
+            int ammoToTake = Mathf.Min(ammoNeeded, ammoData.reserveAmmo);
+
+            ammoData.currentAmmo += ammoToTake;
+            ammoData.reserveAmmo -= ammoToTake;
+        }
 
         UpdateAmmoDisplay();
 
@@ -506,7 +540,12 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
 
         if (ammoTextDisplay != null)
         {
-            ammoTextDisplay.text = $"{activeGunStats.ammoCur}/{activeGunStats.ammoMax}";
+            gunStats originalGunStats = gunList[gunListPos];
+            GunAmmoData ammoData = gunAmmoInventory.Find(data => data.gunType == originalGunStats);
+            if (ammoData != null)
+            {
+                ammoTextDisplay.text = $"{ammoData.currentAmmo}/{ammoData.reserveAmmo}";
+            }
         }
         else
         {
@@ -596,7 +635,53 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
             return;
         }
 
+        // NEW: Handle ammo pickups
+        if (item is AmmoStats ammo)
+        {
+            if (ammo.compatibleGun != null)
+            {
+                AddAmmo(ammo.ammoAmount);
+            }
+            return;
+        }
+
         Debug.LogWarning("Picked up unknown item: " + item.name);
+    }
+
+    // IAmmo Interface Implementation
+    public void AddAmmo(int amount)
+    {
+        if (activeGunStats == null) return;
+
+        gunStats originalGunStats = gunList[gunListPos];
+        GunAmmoData ammoData = gunAmmoInventory.Find(data => data.gunType == originalGunStats);
+        if (ammoData != null)
+        {
+            ammoData.reserveAmmo = Mathf.Min(ammoData.reserveAmmo + amount, GetMaxAmmo(activeGunStats));
+            UpdateAmmoDisplay();
+            Debug.Log($"Added {amount} ammo for {activeGunStats.name}. Reserve: {ammoData.reserveAmmo}");
+        }
+    }
+
+    public int GetCurrentAmmo(gunStats gunType)
+    {
+        gunStats originalGunStats = gunList[gunListPos];
+        GunAmmoData data = gunAmmoInventory.Find(d => d.gunType == gunType);
+        return data?.currentAmmo ?? 0;
+    }
+
+    public int GetMaxAmmo(gunStats gunType)
+    {
+        return gunType.ammoMax * 10;
+    }
+
+    public bool CanAddAmmo(gunStats gunType)
+    {
+        gunStats originalGunStats = gunList[gunListPos];
+        GunAmmoData data = gunAmmoInventory.Find(d => d.gunType == gunType);
+        if (data == null) return false;
+
+        return data.reserveAmmo < GetMaxAmmo(gunType);
     }
 
     void AddKeyToList(keyStats key)
@@ -712,6 +797,9 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
         {
             gunList.Add(gun);
             gunListPos = gunList.Count - 1;
+
+            // Initialize ammo data for new gun
+            gunAmmoInventory.Add(new GunAmmoData(gun));
         }
 
         changeGun();
@@ -832,6 +920,8 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
         public float medkitCooldown;
         public int gunListPos;
         public List<keyStats> keyList;
+        // NEW: Add ammo data
+        public List<GunAmmoData> savedAmmoInventory;
     }
 
     object ISaveable.CaptureState() => CaptureState();
@@ -848,7 +938,9 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
             canUseMedkit = this.canUseMedkit,
             medkitCooldown = this.medkitCooldown,
             gunListPos = this.gunListPos,
-            keyList = new List<keyStats>(keyList)
+            keyList = new List<keyStats>(keyList),
+            // NEW: Save ammo inventory
+            savedAmmoInventory = new List<GunAmmoData>(gunAmmoInventory)
         };
     }
 
@@ -873,6 +965,12 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
         if (data.keyList != null)
         {
             keyList = new List<keyStats>(data.keyList);
+        }
+
+        // NEW: Restore ammo inventory
+        if (data.savedAmmoInventory != null)
+        {
+            gunAmmoInventory = new List<GunAmmoData>(data.savedAmmoInventory);
         }
 
         if (isCrouching)
