@@ -15,8 +15,8 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable, IAmm
     [Range(1, 50)] public int speed;
     [Range(1, 10)][SerializeField] int sprintMod;
     [Range(1, 50)][SerializeField] int JumpSpeed;
-    [Range(1, 10)][SerializeField] int maxJumps;
     [Range(1, 50)][SerializeField] int gravity;
+    bool hasJumped;
 
     [Header("~=~= Shooting =~=~")]
     [Range(1, 100)][SerializeField] int shootDamage;
@@ -113,8 +113,17 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable, IAmm
     [Header("~=~= UI References =~=~")]
     [SerializeField] private TMPro.TextMeshProUGUI ammoTextDisplay;
 
+    [Header("~=~= Death Settings =~=~")]
+    [SerializeField] private float deathAnimationTime = 2f;
+    [SerializeField] private AudioClip deathSound;
+    [Range(0, 1)][SerializeField] private float deathSoundVol = 1f;
+    private bool isDead = false;
+
     void Awake()
     {
+        if (animator == null)
+            animator = GetComponent<Animator>();
+
         // Check if we're starting a new game session
         int currentSceneIndex = SceneManager.GetActiveScene().buildIndex;
 
@@ -293,32 +302,43 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable, IAmm
 
     void movement()
     {
-        if (controller.isGrounded)
-        {
-            if (playerVel.y < 0) playerVel.y = -2f;
-            jumpCount = 0;
+        float h = Input.GetAxis("Horizontal");
+        float v = Input.GetAxis("Vertical");
 
-            if (moveDir.normalized.magnitude > 0.3f && !isPlayingStep)
+        Vector3 inputDirection = new Vector3(h, 0, v);
+
+        if (inputDirection.magnitude > 0.1f)
+        {
+            Vector3 cameraForward = Camera.main.transform.forward;
+            cameraForward.y = 0;
+            cameraForward.Normalize();
+
+            Vector3 cameraRight = Camera.main.transform.right;
+            cameraRight.y = 0;
+            cameraRight.Normalize();
+
+            Vector3 moveInput = (cameraForward * v + cameraRight * h).normalized;
+
+            Vector3 localMove = transform.InverseTransformDirection(moveInput);
+
+            float animX = localMove.x;
+            float animY = localMove.z;
+
+            if (animator != null)
             {
-                StartCoroutine(playStep());
+                animator.SetFloat("MoveX", animX, 0.1f, Time.deltaTime);
+                animator.SetFloat("MoveY", isSprinting ? animY * 1.3f : animY, 0.1f, Time.deltaTime);
             }
         }
         else
         {
-            if (isGliding)
+            if (animator != null)
             {
-                playerVel.y = -glideGravity;
-            }
-            else
-            {
-                playerVel.y -= gravity * Time.deltaTime;
+                animator.SetFloat("MoveX", 0, 0.1f, Time.deltaTime);
+                animator.SetFloat("MoveY", 0, 0.1f, Time.deltaTime);
             }
         }
 
-        float h = Input.GetAxis("Horizontal");
-        float v = Input.GetAxis("Vertical");
-
-        // Get camera vectors
         Vector3 camForward = Camera.main.transform.forward;
         Vector3 camRight = Camera.main.transform.right;
         camForward.y = 0f;
@@ -326,20 +346,39 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable, IAmm
         camForward.Normalize();
         camRight.Normalize();
 
-        // Calculate movement direction relative to camera
-        moveDir = (camForward * v + camRight * h).normalized;
+        moveDir = camForward * v + camRight * h;
 
-        controller.Move(moveDir * speed * Time.deltaTime);
-
-        Vector3 aimDirection = camForward;
-        if (aimDirection.sqrMagnitude > 0.001f)
+        if (controller.isGrounded)
         {
-            Quaternion targetRotation = Quaternion.LookRotation(aimDirection);
+            if (playerVel.y < 0)
+                playerVel.y = -2f;
+
+            if (moveDir.magnitude > 0.3f && !isPlayingStep)
+            {
+                StartCoroutine(playStep());
+            }
+        }
+        else
+        {
+            if (isGliding)
+                playerVel.y = -glideGravity;
+            else
+                playerVel.y -= gravity * Time.deltaTime;
+        }
+
+        if (camForward.sqrMagnitude > 0.001f)
+        {
+            Quaternion targetRotation = Quaternion.LookRotation(camForward);
             transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * 15f);
         }
 
         jump();
-        controller.Move(playerVel * Time.deltaTime);
+
+        Vector3 horizontalMove = moveDir.normalized * speed * Mathf.Clamp01(new Vector2(h, v).magnitude);
+        Vector3 finalMove = horizontalMove;
+        finalMove.y = playerVel.y;
+
+        controller.Move(finalMove * Time.deltaTime);
 
         if (Input.GetKey(KeyCode.C)) crouch();
         else uncrouch();
@@ -349,7 +388,10 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable, IAmm
             if (Input.GetKeyDown(KeyCode.G)) StartGlide();
             if (Input.GetKeyUp(KeyCode.G)) StopGlide();
         }
-        else if (isGliding) StopGlide();
+        else if (isGliding)
+        {
+            StopGlide();
+        }
 
         if (Input.GetButton("Fire1") && shootTimer >= shootRate && !isReloading)
         {
@@ -362,12 +404,6 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable, IAmm
         }
 
         selectGun();
-
-        if (animator != null)
-        {
-            float basic = moveDir.normalized.magnitude;
-            animator.SetFloat("Basic", basic);
-        }
     }
 
     IEnumerator playStep()
@@ -383,16 +419,29 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable, IAmm
 
     void sprint()
     {
-        if (Input.GetButtonDown("Sprint")) { speed *= sprintMod; isSprinting = true; }
-        else if (Input.GetButtonUp("Sprint")) { speed /= sprintMod; isSprinting = false; }
+        bool forwardInput = Input.GetAxis("Vertical") > 0.1f;
+
+        isSprinting =
+            Input.GetKey(KeyCode.LeftShift) &&
+            controller.isGrounded &&
+            forwardInput &&
+            !isCrouching;
+
+        speed = isSprinting ? originalSpeed * sprintMod : originalSpeed;
     }
 
     void jump()
     {
-        if (Input.GetButtonDown("Jump") && jumpCount < maxJumps)
+        if (Input.GetButtonDown("Jump") && controller.isGrounded && !hasJumped)
         {
+            hasJumped = true;
             playerVel.y = JumpSpeed;
-            jumpCount++;
+
+            if (animator != null)
+            {
+                animator.SetTrigger("IsJumping");
+            }
+
             aud.pitch = Random.Range(0.9f, 1.1f);
             aud.PlayOneShot(audJump[Random.Range(0, audJump.Length)], audJumpVol);
         }
@@ -560,6 +609,8 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable, IAmm
 
     public void takeDamage(int amount)
     {
+        if (isDead) return; // Don't take damage if already dead
+
         HP -= amount;
         updatePlayerUI();
         StartCoroutine(screenFlashDamage());
@@ -567,7 +618,34 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable, IAmm
         aud.pitch = Random.Range(0.9f, 1.1f);
         aud.PlayOneShot(audHurt[Random.Range(0, audHurt.Length)], audHurtVol);
 
-        if (HP <= 0) gamemanager.instance.youLose();
+        if (HP <= 0 && !isDead)
+        {
+            StartCoroutine(Die());
+        }
+    }
+
+    private IEnumerator Die()
+    {
+        isDead = true;
+
+        controller.enabled = false;
+
+        if (animator != null)
+        {
+            animator.SetTrigger("Death");
+        }
+
+        if (deathSound != null)
+        {
+            aud.pitch = 1f;
+            aud.PlayOneShot(deathSound, deathSoundVol);
+        }
+
+        enabled = false;
+
+        yield return new WaitForSeconds(deathAnimationTime);
+
+        gamemanager.instance.youLose();
     }
 
     public void updatePlayerUI()
