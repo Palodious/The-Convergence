@@ -1307,7 +1307,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2386844079612238430}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0.99917746, z: -0, w: 0.04055223}
+  m_LocalRotation: {x: 0, y: -0.9991775, z: 0, w: 0.040550333}
   m_LocalPosition: {x: -210.52737, y: 0, z: 206.00153}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -1383,11 +1383,11 @@ MonoBehaviour:
   shootRate: 0.6
   shootPOS: {fileID: 3229506511216438736}
   meleePos: {fileID: 8236780978583843696}
-  meleeDamage: {fileID: 0}
+  meleeDamage: {fileID: 8381296811460731990, guid: 9ffc8f2d2217d4a4482ba46879159b4d, type: 3}
   meleeRange: 9
   attackRate: 0.5
   meleeDamageAmount: 1
-  canJumpAttack: 1
+  canJumpAttack: 0
   jumpForce: 3.5
   jumpAttackRange: 16.6
   minHeightDifference: 1.48
@@ -1432,9 +1432,12 @@ MonoBehaviour:
   minDashDistance: 4
   dashAttackCooldown: 0.5
   playerFleeingThreshold: 1.1
+  waveModeRange: 200
   useAnimations: 1
   usePatrol: 0
-  useRoam: 1
+  useRoam: 0
+  waveModeActive: 1
+  ignoreWaveMode: 0
   aud: {fileID: -3369015551279475159}
   audStep:
   - {fileID: 8300000, guid: 9b2d989f54557a648987639019145542, type: 3}
@@ -1475,7 +1478,7 @@ NavMeshAgent:
   m_Enabled: 1
   m_AgentTypeID: 0
   m_Radius: 0.5
-  m_Speed: 3.5
+  m_Speed: 1
   m_Acceleration: 8
   avoidancePriority: 50
   m_AngularSpeed: 120
@@ -2278,13 +2281,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3754638810889969889}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.0040138643, y: -0.9942709, z: 0.09889789, w: -0.040353548}
-  m_LocalPosition: {x: -19.4, y: 8.8, z: 285.9}
+  m_LocalRotation: {x: 0.09510828, y: -0.03881929, z: 0.011736847, w: 0.99464047}
+  m_LocalPosition: {x: -19.400002, y: 8.800047, z: 285.90057}
   m_LocalScale: {x: 99.99992, y: 100.00003, z: 100}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 3524677633190035441}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 10.959, y: 355.619, z: 0.932}
 --- !u!1 &3787126063839511139
 GameObject:
   m_ObjectHideFlags: 0

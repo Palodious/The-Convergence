@@ -46,7 +46,7 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
     private static List<keyStats> persistentKeyList = new List<keyStats>();
     private static int persistentGunListPos = 0;
     private static int persistentHP = 100;
-
+    private static int persistentMaxHP = 100;
     private static bool isNewGameSession = true;
 
     public int ShootDamage => shootDamage;
@@ -57,7 +57,8 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
     Vector3 playerVel;
 
     int jumpCount;
-    int HPOrig;
+    int currentMaxHP;
+    int intialHP;
     float shootTimer;
 
     bool isCrouching;
@@ -110,7 +111,8 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
     {
         controller = GetComponent<CharacterController>();
 
-        HPOrig = HP;
+        intialHP = HP;
+        currentMaxHP = intialHP;
         originalHeight = controller.height;
         originalSpeed = speed;
 
@@ -203,6 +205,7 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
         persistentKeyList.Clear();
         persistentGunListPos = 0;
         persistentHP = HP;
+        persistentMaxHP = HP;
         Debug.Log("Static data reset for new game session");
     }
 
@@ -228,7 +231,7 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
         }
 
         HP = persistentHP;
-        if (HP > HPOrig) HP = HPOrig;
+        if (HP > currentMaxHP) HP = currentMaxHP;
 
         // Move to spawn point
         if (gamemanager.instance != null && gamemanager.instance.spawnPoint != null)
@@ -247,6 +250,7 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
         persistentKeyList = new List<keyStats>(keyList);
         persistentGunListPos = gunListPos;
         persistentHP = HP;
+        persistentMaxHP = currentMaxHP;
     }
 
     public void PrepareForSceneTransition()
@@ -518,7 +522,7 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
     public void updatePlayerUI()
     {
         if (gamemanager.instance.playerHPBar != null)
-            gamemanager.instance.playerHPBar.fillAmount = (float)HP / HPOrig;
+            gamemanager.instance.playerHPBar.fillAmount = (float)HP / currentMaxHP;
     }
 
     IEnumerator screenFlashDamage()
@@ -677,7 +681,7 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
     {
         int healAmount = medkit.healAmount;
         HP += healAmount;
-        if (HP > HPOrig) HP = HPOrig;
+        if (HP > currentMaxHP) HP = currentMaxHP;
 
         updatePlayerUI();
 
@@ -805,7 +809,7 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
         Debug.Log("spawnPoint = " + gamemanager.instance?.spawnPoint);
 
         controller.transform.position = gamemanager.instance.spawnPoint.transform.position;
-        HP = HPOrig;
+        HP = currentMaxHP;
         updatePlayerUI();
     }
 
@@ -872,5 +876,26 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
         }
 
         updatePlayerUI();
+
     }
+
+    public void ApplyHealthUpgrade(float amount)
+    {
+        int increase = Mathf.RoundToInt(amount);
+
+        currentMaxHP += increase;
+
+
+        HP += increase;
+
+
+        if (HP > currentMaxHP) HP = currentMaxHP;
+
+
+
+        updatePlayerUI();
+        Debug.Log($"Max HP upgraded by {increase}. New Max HP: {currentMaxHP}");
+    }
+
+
 }
