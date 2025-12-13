@@ -375,7 +375,7 @@ public class gamemanager : MonoBehaviour
     
 
         [Header("Wave Mode Settings")]
-        public bool IsWaveModeActive = false;
+        public bool IsWaveModeActive = true;
         public float globalWaveModeRange = 100f;
 
         private List<enemyAI> allEnemies = new List<enemyAI>();
