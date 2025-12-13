@@ -3,6 +3,7 @@ using UnityEngine;
 [CreateAssetMenu]
 public class gunStats : ScriptableObject
 {
+    public GunType type;
     public GameObject gunModel;
 
     [Range(10, 50)] public int shootDamage;
@@ -36,7 +37,7 @@ public class gunStats : ScriptableObject
                 break;
             case "ammo":
                 ammoMax += Mathf.RoundToInt(amount);
-                ammoMax = Mathf.Clamp(ammoMax, 5, 50);
+                ammoMax = Mathf.Clamp(ammoMax, 5, 100);
                 break;
 
             default:

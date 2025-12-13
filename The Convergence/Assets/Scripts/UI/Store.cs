@@ -164,14 +164,10 @@ public class Store : MonoBehaviour
     {
         Debug.Log($"Attempting to purchase Item ID: {itemId}");
         StoreItem item = FindItemById(itemId);
-        if (item == null)
+        if (item == null || (item.type == ItemType.Upgrade && playerState.purchasedIds.Contains(item.id)))
         {
-
-            return false;
-        }
-        if (item.type == ItemType.Upgrade && playerState.purchasedIds.Contains(item.id))
-        {
-            Debug.LogWarning($"CRITICAL BLOCK: Purchase of already-owned upgrade (ID: {itemId}) blocked inside BuyItem.");
+            if (item == null) Debug.LogError($"Item ID {itemId} not found.");
+            else Debug.LogWarning($"CRITICAL BLOCK: Purchase of already-owned upgrade (ID: {itemId}) blocked inside BuyItem.");
             return false;
         }
 
@@ -181,7 +177,13 @@ public class Store : MonoBehaviour
             {
                 return false;
             }
-            
+
+            playerController player = null;
+
+            if (gamemanager.instance != null)
+            {
+                player = gamemanager.instance.playerScript;
+            }
 
             // Apply Effect based on Type
             if (item.type == ItemType.Upgrade)
@@ -194,28 +196,41 @@ public class Store : MonoBehaviour
                     {
                         targetGun.ApplyUpgrade(item.upgradeStat, item.upgradeAmount);
                         Debug.Log($"Applied {item.itemName} to {item.gunType}. New {item.upgradeStat}: {targetGun.shootDamage} (example stat)");
+
+                        if (item.upgradeStat.ToLower() == "ammo")
+                        {
+
+                            targetGun.ammoCur = targetGun.ammoMax;
+                            if (player != null && player.activeGunStats == targetGun)
+                            {
+                                player.UpdateAmmoDisplay();
+                                Debug.Log($"UI REFRESH: Ammo display updated for {item.gunType} to {targetGun.ammoCur}/{targetGun.ammoMax}.");
+                            }
+
+                        }
                     }
                 }
+
+
                 else if (item.upgradeStat.ToLower() == "maxhp")
                 {
                     Debug.Log($"Max HP purchase detected (ID: {item.id}). Checking player references...");
 
 
-                    if (gamemanager.instance == null)
+                    if (gamemanager.instance != null && gamemanager.instance.playerScript != null)
                     {
-                        throw new System.Exception("Store CRASH TEST 1: gamemanager.instance is NULL.");
+                        gamemanager.instance.playerScript.ApplyHealthUpgrade(item.upgradeAmount);
+                        Debug.Log($"Successfully applied Health Upgrade. Amount: +{item.upgradeAmount}");
                     }
-                    if (gamemanager.instance.playerScript == null)
+                    else
                     {
-                        throw new System.Exception("Store CRASH TEST 2: gamemanager.instance.playerScript is NULL.");
+                        Debug.LogError("Cannot apply Max HP upgrade: gamemanager.instance or playerScript is missing.");
                     }
-                    gamemanager.instance.playerScript.ApplyHealthUpgrade(item.upgradeAmount);
-                    Debug.LogError("gamemanager or playerScript is missing. Cannot apply Max HP upgrade.");
-                    
+
                 }
-                    // Mark as purchased, effectively setting its quantity to 0
-                    playerState.purchasedIds.Add(item.id);
-                    item.quantity = 0;
+                // Mark as purchased, effectively setting its quantity to 0
+                playerState.purchasedIds.Add(item.id);
+                item.quantity = 0;
 
             }
             else if (item.type == ItemType.Consumable)
@@ -229,10 +244,13 @@ public class Store : MonoBehaviour
         }
         else
         {
-
+  
             return false;
         }
     }
+    
+
+
 
     public void PurchaseItemButton(int itemId)
     {
