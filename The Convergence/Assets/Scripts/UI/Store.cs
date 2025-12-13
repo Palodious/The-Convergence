@@ -107,10 +107,10 @@ public class Store : MonoBehaviour
         upgradeItems.Add(new StoreItem { id = 123, itemName = "AR Upgrade III", cost = 15, type = ItemType.Upgrade, gunType = GunType.AR, upgradeStat = "rate", upgradeAmount = 5f });
         upgradeItems.Add(new StoreItem { id = 124, itemName = "AR Upgrade IIII", cost = 20, type = ItemType.Upgrade, gunType = GunType.AR, upgradeStat = "distance", upgradeAmount = 5f });
 
-        upgradeItems.Add(new StoreItem { id = 201, itemName = "Health Upgrade I", cost = 10, type = ItemType.Upgrade, upgradeStat = "maxhp", upgradeAmount = 10f });
-        upgradeItems.Add(new StoreItem { id = 202, itemName = "Health Upgrade II", cost = 20, type = ItemType.Upgrade, upgradeStat = "maxhp", upgradeAmount = 10f });
-        upgradeItems.Add(new StoreItem { id = 203, itemName = "Health Upgrade III", cost = 30, type = ItemType.Upgrade, upgradeStat = "maxhp", upgradeAmount = 10f });
-        upgradeItems.Add(new StoreItem { id = 204, itemName = "Health Upgrade IIII", cost = 40, type = ItemType.Upgrade, upgradeStat = "maxhp", upgradeAmount = 10f });
+        upgradeItems.Add(new StoreItem { id = 201, itemName = "Health Upgrade I", cost = 10, type = ItemType.Upgrade, upgradeStat = "maxhp", upgradeAmount = 25f });
+        upgradeItems.Add(new StoreItem { id = 202, itemName = "Health Upgrade II", cost = 20, type = ItemType.Upgrade, upgradeStat = "maxhp", upgradeAmount = 50f });
+        upgradeItems.Add(new StoreItem { id = 203, itemName = "Health Upgrade III", cost = 30, type = ItemType.Upgrade, upgradeStat = "maxhp", upgradeAmount = 75f });
+        upgradeItems.Add(new StoreItem { id = 204, itemName = "Health Upgrade IIII", cost = 40, type = ItemType.Upgrade, upgradeStat = "maxhp", upgradeAmount = 100f });
 
         consumableItems.Add(new StoreItem { id = 301, itemName = "Health Potion (10c)", cost = 10, type = ItemType.Consumable, state = "potionCount" });
         consumableItems.Add(new StoreItem { id = 302, itemName = "Health Potion (20c)", cost = 20, type = ItemType.Consumable, state = "potionCount" });
@@ -197,6 +197,8 @@ public class Store : MonoBehaviour
                 }
                 else if (item.upgradeStat.ToLower() == "maxhp")
                 {
+                    Debug.Log($"Max HP purchase detected (ID: {item.id}). Checking player references...");
+
                     if (gamemanager.instance != null && gamemanager.instance.playerScript != null)
                     {
                         gamemanager.instance.playerScript.ApplyHealthUpgrade(item.upgradeAmount);
