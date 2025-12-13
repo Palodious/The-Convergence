@@ -168,11 +168,6 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
             waveModeActive = true;
         }
 
-        if (gamemanager.instance != null)
-        {
-            gamemanager.instance.RegisterEnemy(this);
-        }
-
         // Rigidbody setup for jump attack (transform-arc or physics mode)
         if (canJumpAttack)
         {
