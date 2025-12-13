@@ -9,6 +9,7 @@ using static UnityEngine.ParticleSystem;
 [RequireComponent(typeof(Rigidbody))]
 public class enemyAI : MonoBehaviour, IDamage, ISaveable
 {
+
     public enum EnemyType
     {
         Melee,
@@ -76,11 +77,16 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
     [Range(0.5f, 30f)][SerializeField] float minDashDistance; // Min distance (don't dash if too close)
     [Range(0.5f, 30f)][SerializeField] float dashAttackCooldown;
     [Range(1.1f, 10f)][SerializeField] float playerFleeingThreshold; // How fast player must be moving away
+    
+    [Header("**** Wave Mode Settings ****")]
+    [Range(0, 200)][SerializeField] float waveModeRange = 200f;
 
     [Header("**** Behavior Toggles ****")]
     public bool useAnimations = true; // Toggle all animation logic on/off
     public bool usePatrol = true; // Toggle patrol behavior
     public bool useRoam = true; // Toggle roaming behavior
+    public bool waveModeActive = false; // toggle for wave mode
+    public bool ignoreWaveMode;
 
     [Header("~=~= Audio =~=~")]
     [SerializeField] AudioSource aud;
@@ -157,6 +163,11 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
         stoppingDistOrig = agent.stoppingDistance;
         startingPos = transform.position;
 
+      if (gamemanager.instance != null && gamemanager.instance.IsWaveModeActive)
+      {
+            waveModeActive = true;
+      }
+        
         // Rigidbody setup for jump attack (transform-arc or physics mode)
         if (canJumpAttack)
         {
@@ -202,6 +213,8 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
         jumpAttackTimer += Time.deltaTime;
         dashAttackTimer += Time.deltaTime;
 
+        // Handle shoot cooldown logic
+        HandleShootCooldown();
         // Track player velocity for dash attack
         TrackPlayerVelocity();
 
@@ -257,15 +270,66 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
     // Separate behavior handler for mobile enemies
     void HandleMobileBehavior()
     {
+        float distanceToPlayer = Vector3.Distance(transform.position, gamemanager.instance.player.transform.position);
+        // Handle attacks based on enemy type
+        switch (enemyType)
+        {
+            case EnemyType.Melee:
+                if (distanceToPlayer <= meleeRange && attackTimer >= attackRate)
+                    meleeAttack();
+                break;
+            case EnemyType.Shooter:
+                if (CanShootAtPlayer())
+                    Shoot();
+                break;
+            case EnemyType.Hybrid:
+                if (distanceToPlayer <= meleeRange && attackTimer >= attackRate)
+                    meleeAttack();
+                else if (CanShootAtPlayer())
+                    Shoot();
+                break;
+        }
         // Already checked in Update(), but double-check for safety
         if (isJumpAttacking || isDashing) return;
 
-        if (playerInTrigger && !canSeePlayer())
+        if (ShouldTargetPlayer())
         {
-            checkRoamOrPatrol();
+            // Set destination to player
+            if (agent != null && agent.isActiveAndEnabled)
+            {
+                try
+                {
+                    agent.SetDestination(gamemanager.instance.player.transform.position);
+                    agent.stoppingDistance = stoppingDistOrig;
+                }
+                catch (System.Exception e)
+                {
+                    Debug.LogWarning($"Could not set destination: {e.Message}");
+                }
+            }
+
+            // Check for special attacks
+            if (ShouldJumpAttack())
+            {
+                StartJumpAttack();
+                return;
+            }
+
+            if (ShouldDashAttack())
+            {
+                StartDashAttack();
+                return;
+            }
+
+            // Handle attacks based on enemy type
+           
+
+            if (agent != null && agent.isActiveAndEnabled && agent.remainingDistance <= agent.stoppingDistance)
+                faceTarget();
         }
-        else if (!playerInTrigger)
+        else
         {
+            // If we shouldn't target the player, then roam or patrol
             checkRoamOrPatrol();
         }
     }
@@ -1063,7 +1127,25 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
                     StartDashAttack();
                     return true;
                 }
-
+                // Handle attacks based on enemy type
+                switch (enemyType)
+                {
+                    case EnemyType.Melee:
+                        if (distanceToPlayer <= meleeRange && attackTimer >= attackRate)
+                            meleeAttack();
+                        break;
+                    case EnemyType.Shooter:
+                        // Use the same logic as HandleMobileBehavior
+                        if (CanShootAtPlayer())
+                            Shoot();
+                        break;
+                    case EnemyType.Hybrid:
+                        if (distanceToPlayer <= meleeRange && attackTimer >= attackRate)
+                            meleeAttack();
+                        else if (CanShootAtPlayer())
+                            Shoot();
+                        break;
+                }
                 // Set destination to player position if agent is active and not in special attack
                 if (agent != null && agent.isActiveAndEnabled && !isJumpAttacking && !isDashing)
                 {
@@ -1078,24 +1160,7 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
                     }
                 }
 
-                // Handle attacks based on enemy type
-                switch (enemyType)
-                {
-                    case EnemyType.Melee:
-                        if (distanceToPlayer <= meleeRange && attackTimer >= attackRate)
-                            meleeAttack();
-                        break;
-                    case EnemyType.Shooter:
-                        if (shootTimer >= shootRate)
-                            Shoot();
-                        break;
-                    case EnemyType.Hybrid:
-                        if (distanceToPlayer <= meleeRange && attackTimer >= attackRate)
-                            meleeAttack();
-                        else if (shootTimer >= shootRate)
-                            Shoot();
-                        break;
-                }
+                
                 if (agent != null && agent.isActiveAndEnabled && !isJumpAttacking && !isDashing &&
                     agent.remainingDistance <= agent.stoppingDistance)
                     faceTarget();
@@ -1247,6 +1312,8 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
     // Shoot projectile
     void Shoot()
     {
+        if (shootTimer < shootRate) return;
+
         shootTimer = 0;
 
         if (audShoot.Length > 0 && aud != null)
@@ -1425,6 +1492,84 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
         {
             anim.Rebind();
             anim.Update(0f);
+        }
+    }
+   
+    public void EnableWaveMode()
+    {
+        waveModeActive = true;
+        if (agent != null && agent.isActiveAndEnabled)
+        {
+            agent.stoppingDistance = stoppingDistOrig;
+        }
+    }
+    public void DisableWaveMode()
+    {
+        waveModeActive = false;
+    }
+
+    public void ToggleWaveMode()
+    {
+        waveModeActive = !waveModeActive;
+    }
+
+    // Optionally, add a method to set wave mode range
+    public void SetWaveModeRange(float newRange)
+    {
+        waveModeRange = newRange;
+    }
+    bool ShouldTargetPlayer()
+    {
+        if (gamemanager.instance.player == null) return false;
+
+        if (waveModeActive)
+        {
+            float distanceToPlayer = Vector3.Distance(transform.position, gamemanager.instance.player.transform.position);
+            if (distanceToPlayer <= waveModeRange)
+                return true;
+        }
+
+        return playerInTrigger || canSeePlayer();
+    }
+    // Check if enemy can shoot at player
+    bool CanShootAtPlayer()
+    {
+        if (gamemanager.instance == null || gamemanager.instance.player == null) return false;
+
+        // Check if enough time has passed
+        if (shootTimer < shootRate) return false;
+
+        // Check if enemy has line of sight to player
+        return HasLineOfSightToPlayer();
+    }
+
+    // Check if enemy has clear line of sight to player
+    bool HasLineOfSightToPlayer()
+    {
+        if (gamemanager.instance == null || gamemanager.instance.player == null) return false;
+
+        Vector3 playerPos = gamemanager.instance.player.transform.position;
+        Vector3 directionToPlayer = (playerPos - shootPOS.position).normalized;
+        float distanceToPlayer = Vector3.Distance(shootPOS.position, playerPos);
+
+        RaycastHit hit;
+        if (Physics.Raycast(shootPOS.position, directionToPlayer, out hit, distanceToPlayer, ~ignoreLayer))
+        {
+            return hit.collider.CompareTag("Player");
+        }
+
+        return false;
+    }
+    // Reset shoot timer if player is not visible for a while
+    void HandleShootCooldown()
+    {
+        if (gamemanager.instance == null || gamemanager.instance.player == null) return;
+
+        // Only reset timer if player is not visible for a significant time
+        if (!HasLineOfSightToPlayer() && shootTimer > shootRate * 2f)
+        {
+            // Reset to shootRate so enemy can shoot immediately when player becomes visible
+            shootTimer = shootRate;
         }
     }
 }
