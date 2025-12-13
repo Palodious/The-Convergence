@@ -1,18 +1,22 @@
-using Unity.VisualScripting;
 using UnityEngine;
 using TMPro;
 
 public class VendingMachineInteraction : MonoBehaviour
 {
+    [Header("Store UI")]
     public GameObject storeUIPanel;
 
-    private bool playerIsNearby = false;
-
+    [Header("Prompt UI")]
     public TextMeshProUGUI interactionPromptText;
+
+    private bool playerIsNearby = false;
 
     private void Update()
     {
         if (!playerIsNearby)
+            return;
+
+        if (storeUIPanel == null)
             return;
 
         if (Input.GetKeyDown(KeyCode.E))
@@ -41,21 +45,18 @@ public class VendingMachineInteraction : MonoBehaviour
 
     private void OnTriggerExit(Collider other)
     {
-        if (other.gameObject.CompareTag("Player"))
-        {
+        if (!other.CompareTag("Player"))
+            return;
             playerIsNearby = false;
 
             if (interactionPromptText != null)
-            {
                 interactionPromptText.gameObject.SetActive(false);
-            }
 
-            if (storeUIPanel.activeSelf)
-            {
+            if (storeUIPanel != null && storeUIPanel.activeSelf)
+        {
                 SetStoreOpen(false);
             }
         }
-    }
 
     private void ToggleStoreUI()
     {
@@ -65,23 +66,30 @@ public class VendingMachineInteraction : MonoBehaviour
 
     private void SetStoreOpen(bool open)
     {
-        storeUIPanel.SetActive(open);
+        if (storeUIPanel == null)
+            return;
 
         if (open)
         {
+            // Open panel first
+            storeUIPanel.SetActive(true);
+
+            // Refresh button displays / state
             if (Store.Instance != null)
-            {
                 Store.Instance.SetStoreOpen();
 
+            // Pause game
+            if (gamemanager.instance != null)
                 gamemanager.instance.statePause();
-            }
-            else
-            {
-                storeUIPanel.SetActive(false);
+        }
+        else
+        {
+            // Close panel
+            storeUIPanel.SetActive(false);
 
+            // Unpause game
+            if (gamemanager.instance != null)
                 gamemanager.instance.stateUnpause();
-            }
         }
     }
-
- }
+}

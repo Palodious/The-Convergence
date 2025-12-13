@@ -3,19 +3,41 @@ using UnityEngine.SceneManagement;
 
 public class buttonFunction : MonoBehaviour
 {
+
+    private void CleanupBeforeSceneChange()
+    {
+        if (Store.Instance != null)
+        {
+            Store.Instance.ExitStore();
+        }
+
+        // Ensure game is unpaused through gamemanager
+        if (gamemanager.instance != null)
+        {
+            gamemanager.instance.stateUnpause();
+        }
+        else
+        {
+            Time.timeScale = 1f;
+            Cursor.visible = false;
+            Cursor.lockState = CursorLockMode.Locked;
+        }
+        SaveManager.PendingLoad = false;
+    }
+
     public void resume()
     {
-        gamemanager.instance.stateUnpause();
+        if (gamemanager.instance != null)
+            gamemanager.instance.stateUnpause();
+        else
+            Time.timeScale = 1f;
     }
     public void restart()
     {
-        Time.timeScale = 1f;
-        SaveManager.PendingLoad = false;
+        CleanupBeforeSceneChange();
 
         string currentScene = SceneManager.GetActiveScene().name;
-        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
-
-        gamemanager.instance.stateUnpause();
+        SceneManager.LoadScene(currentScene);
     }
     public void quit()
     {
@@ -27,24 +49,21 @@ public class buttonFunction : MonoBehaviour
     }
     public void respawn()
     {
-        gamemanager.instance.playerScript.respawn();
-        gamemanager.instance.stateUnpause();
+        CleanupBeforeSceneChange();
+
+        if (gamemanager.instance != null && gamemanager.instance.playerScript != null)
+            gamemanager.instance.playerScript.respawn();
     }
     public void loadLevel(int lvl)
     {
-        Time.timeScale = 1f;
-        SaveManager.PendingLoad = false;
+        CleanupBeforeSceneChange();
 
         string sceneName = SceneManager.GetSceneByBuildIndex(lvl).name;
         SceneLoader.LoadSceneWithLoadingScreen(sceneName);
-
-        gamemanager.instance.stateUnpause();
     }
     public void mainMenu()
     {
-        Time.timeScale = 1f;
-        SaveManager.PendingLoad = false;
+        CleanupBeforeSceneChange();
         SceneLoader.LoadSceneWithLoadingScreen("Main Menu");
     }
-
 }
