@@ -694,6 +694,8 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
         {
             if (hit.collider.CompareTag("Player"))
             {
+
+
                 // Clear path to player, dash directly toward them
                 dashDirection = rayDirection;
             }
@@ -1115,6 +1117,10 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
         {
             if (hit.collider.CompareTag("Player"))
             {
+
+                if (MusicManager.Instance != null)
+                    MusicManager.Instance.ReportCombat();
+
                 // Check for special attacks
                 if (ShouldJumpAttack())
                 {

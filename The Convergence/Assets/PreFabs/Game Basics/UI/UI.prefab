@@ -10346,54 +10346,6 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
---- !u!1 &3456806218477633589
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 5038335474466792759}
-  - component: {fileID: 1269610025818918073}
-  m_Layer: 5
-  m_Name: SaveManager
-  m_TagString: UI
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!224 &5038335474466792759
-RectTransform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3456806218477633589}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 577428192745285418}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 100, y: 100}
-  m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &1269610025818918073
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3456806218477633589}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 225121c939eee154884d5321301eefed, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::SaveManager
 --- !u!1 &3487809905142561106
 GameObject:
   m_ObjectHideFlags: 0
@@ -12499,7 +12451,6 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 7656431164465668679}
-  - {fileID: 5038335474466792759}
   - {fileID: 3886422462787541347}
   - {fileID: 7036261875849731905}
   - {fileID: 3461106808111195177}
@@ -27208,144 +27159,128 @@ MonoBehaviour:
     cost: 5
     type: 0
     gunType: 0
-    upgradeStat: '"ammo"'
+    upgradeStat: 0
     upgradeAmount: 5
-    state: 
     quantity: 1
   - id: 102
     itemName: '"SMG Upgrade II"'
     cost: 10
     type: 0
     gunType: 3
-    upgradeStat: '"damage"'
+    upgradeStat: 0
     upgradeAmount: 5
-    state: 
     quantity: 1
   - id: 103
     itemName: '"SMG Upgrade III"'
     cost: 15
     type: 0
     gunType: 3
-    upgradeStat: '"rate"'
+    upgradeStat: 0
     upgradeAmount: 5
-    state: 
     quantity: 1
   - id: 104
     itemName: '"SMG Upgrade IIII"'
     cost: 20
     type: 0
     gunType: 3
-    upgradeStat: '"distance"'
+    upgradeStat: 0
     upgradeAmount: 5
-    state: 
     quantity: 1
   - id: 111
     itemName: '"Rifle Upgrade I"'
     cost: 5
     type: 0
     gunType: 1
-    upgradeStat: '"ammo"'
+    upgradeStat: 0
     upgradeAmount: 5
-    state: 
     quantity: 1
   - id: 112
     itemName: '"Rifle Upgrade II"'
     cost: 10
     type: 0
     gunType: 3
-    upgradeStat: '"damage"'
+    upgradeStat: 0
     upgradeAmount: 5
-    state: 
     quantity: 1
   - id: 113
     itemName: '"Rifle Upgrade III"'
     cost: 15
     type: 0
     gunType: 3
-    upgradeStat: '"rate"'
+    upgradeStat: 0
     upgradeAmount: 5
-    state: 
     quantity: 1
   - id: 114
     itemName: '"Rifle Upgrade IIII"'
     cost: 20
     type: 0
     gunType: 3
-    upgradeStat: '"distance"'
+    upgradeStat: 0
     upgradeAmount: 5
-    state: 
     quantity: 1
   - id: 121
     itemName: '"AR Upgrade I"'
     cost: 5
     type: 0
     gunType: 3
-    upgradeStat: '"ammo"'
+    upgradeStat: 0
     upgradeAmount: 5
-    state: 
     quantity: 1
   - id: 122
     itemName: '"AR Upgrad II"'
     cost: 10
     type: 0
     gunType: 3
-    upgradeStat: '"damage"'
+    upgradeStat: 0
     upgradeAmount: 5
-    state: 
     quantity: 1
   - id: 123
     itemName: '"AR Upgrade III"'
     cost: 15
     type: 0
     gunType: 3
-    upgradeStat: '"rate"'
+    upgradeStat: 0
     upgradeAmount: 5
-    state: 
     quantity: 1
   - id: 124
     itemName: '"AR Upgrade IIII"'
     cost: 20
     type: 0
     gunType: 3
-    upgradeStat: '"distance"'
+    upgradeStat: 0
     upgradeAmount: 5
-    state: 
     quantity: 1
   - id: 201
     itemName: '"Health Upgrade I"'
     cost: 10
     type: 0
     gunType: 3
-    upgradeStat: '"maxhp"'
-    upgradeAmount: 10
-    state: 
+    upgradeStat: 0
+    upgradeAmount: 25
     quantity: 1
   - id: 202
     itemName: '"Health Upgrade II"'
     cost: 20
     type: 0
     gunType: 3
-    upgradeStat: '"maxhp"'
-    upgradeAmount: 10
-    state: 
+    upgradeStat: 0
+    upgradeAmount: 50
     quantity: 1
   - id: 203
     itemName: Health Upgrade III
     cost: 30
     type: 0
     gunType: 3
-    upgradeStat: 
-    upgradeAmount: 0
-    state: 
+    upgradeStat: 0
+    upgradeAmount: 75
     quantity: 1
   - id: 204
     itemName: '"Health Upgrade IIII"'
     cost: 40
     type: 0
     gunType: 3
-    upgradeStat: '"maxhp"'
-    upgradeAmount: 10
-    state: 
+    upgradeStat: 0
+    upgradeAmount: 100
     quantity: 1
   consumableItems:
   - id: 301
@@ -27353,36 +27288,32 @@ MonoBehaviour:
     cost: 10
     type: 0
     gunType: 3
-    upgradeStat: 
+    upgradeStat: 0
     upgradeAmount: 0
-    state: 
     quantity: 1
   - id: 302
     itemName: Health Potion (20c)
     cost: 20
     type: 0
     gunType: 3
-    upgradeStat: 
+    upgradeStat: 0
     upgradeAmount: 0
-    state: 
     quantity: 1
   - id: 303
     itemName: Health Potion (30c)
     cost: 30
     type: 0
     gunType: 3
-    upgradeStat: 
+    upgradeStat: 0
     upgradeAmount: 0
-    state: 
     quantity: 1
   - id: 304
     itemName: Health Potion (40c)
     cost: 40
     type: 0
     gunType: 3
-    upgradeStat: 
+    upgradeStat: 0
     upgradeAmount: 0
-    state: 
     quantity: 1
   storeUIPanel: {fileID: 8793651545182648863}
 --- !u!1 &8819467401769378021

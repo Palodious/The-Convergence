@@ -1,7 +1,7 @@
 using UnityEngine;
 using System;
 
-public class RiftShardManager : MonoBehaviour
+public class RiftShardManager : MonoBehaviour, ISaveable
 {
     public static RiftShardManager Instance { get; private set; }
 
@@ -44,5 +44,32 @@ public class RiftShardManager : MonoBehaviour
         }
 
         return false;
+    }
+    [Serializable]
+    private struct RiftShardSaveData
+    {
+        public int amount;
+    }
+    object ISaveable.CaptureState() => CaptureState();
+    void ISaveable.RestoreState(object state) => RestoreState(state);
+
+    public object CaptureState()
+    {
+        return new RiftShardSaveData
+        {
+            amount = this.amount
+        };
+    }
+
+    public void RestoreState(object state)
+    {
+        if (state is not RiftShardSaveData s)
+        {
+            Debug.LogError($"RiftShardManager.RestoreState: expected RiftShardSaveData, got {state?.GetType()} on {name}");
+            return;
+        }
+
+        amount = Mathf.Max(0, s.amount);
+        OnShardAmountChanged?.Invoke(amount);
     }
 }

@@ -50,7 +50,18 @@ public class SaveManager : MonoBehaviour
     // This is where my save file gets written. Unity gives me a platform-safe path.
     string SavePath => Path.Combine(Application.persistentDataPath, "savegame.json");
 
-    void Awake() => Instance = this; // I keep a static reference so I can call it easily.
+    private void Awake()
+    {
+        if (Instance != null && Instance != this)
+        {
+            Debug.LogWarning("SaveManager: Duplicate instance detected. Destroying the new one.");
+            Destroy(gameObject);
+            return;
+        }
+
+        Instance = this;
+        DontDestroyOnLoad(gameObject);
+    }
 
     // This creates a new SaveData file, fills it with info, and writes it to disk.
     public void Save(GameObject player, int playerHP, int gameGoalCount)
@@ -72,12 +83,13 @@ public class SaveManager : MonoBehaviour
 
         // Loop through every SaveEntity in the scene (active and inactive) and grab their data.
         var saveEntities = UnityEngine.Object.FindObjectsByType<SaveEntity>(
-    FindObjectsInactive.Include,
-    FindObjectsSortMode.None
-);
+            FindObjectsInactive.Include,
+            FindObjectsSortMode.None
+        );
 
         foreach (var se in saveEntities)
         {
+            if (se == null) continue;
             var record = new EntityRecord
             {
                 id = se.Id,
@@ -109,9 +121,14 @@ public class SaveManager : MonoBehaviour
 
         // Convert the whole save into JSON and write it to disk safely.
         var json = JsonUtility.ToJson(data, false);
-        File.WriteAllText(SavePath + ".tmp", json);
+        string tmpPath = SavePath + ".tmp";
+
+        if (File.Exists(tmpPath)) File.Delete(tmpPath);
+        File.WriteAllText(tmpPath, json);
+
         if (File.Exists(SavePath)) File.Delete(SavePath);
-        File.Move(SavePath + ".tmp", SavePath);
+        File.Move(tmpPath, SavePath);
+
         Debug.Log($"Saved game to {SavePath}");
     }
 
@@ -138,7 +155,6 @@ public class SaveManager : MonoBehaviour
             while (!op.isDone) yield return null;
         }
 
-        // Get all SaveEntities currently in the scene and build a quick lookup by ID.
         // Get all SaveEntities currently in the scene and build a quick lookup by ID.
         var saveEntities = UnityEngine.Object.FindObjectsByType<SaveEntity>(
             FindObjectsInactive.Include,
