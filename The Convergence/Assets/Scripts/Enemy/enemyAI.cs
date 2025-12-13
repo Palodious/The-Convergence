@@ -165,7 +165,7 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
 
       if (gamemanager.instance != null && gamemanager.instance.IsWaveModeActive)
       {
-            waveModeActive = false;
+            waveModeActive = true;
       }
         
         // Rigidbody setup for jump attack (transform-arc or physics mode)
@@ -1520,7 +1520,13 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
     {
         if (gamemanager.instance.player == null) return false;
 
-        if (waveModeActive)
+        bool currentWaveModeActive = waveModeActive;
+        if (!ignoreWaveMode && gamemanager.instance != null)
+        {
+            currentWaveModeActive = gamemanager.instance.IsWaveModeActive;
+        }
+
+        if (currentWaveModeActive)
         {
             float distanceToPlayer = Vector3.Distance(transform.position, gamemanager.instance.player.transform.position);
             if (distanceToPlayer <= waveModeRange)
