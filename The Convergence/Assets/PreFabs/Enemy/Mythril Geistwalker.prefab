@@ -1382,7 +1382,7 @@ MonoBehaviour:
   faceTargetSpeed: 125
   roamDist: 20
   roamPauseTime: 3
-  animTransSpeed: 8
+  animTransSpeed: 8.1
   sightRange: 20
   projectile: {fileID: 0}
   shootRate: 0.1
@@ -1437,9 +1437,12 @@ MonoBehaviour:
   minDashDistance: 5
   dashAttackCooldown: 3
   playerFleeingThreshold: 3
+  waveModeRange: 200
   useAnimations: 1
   usePatrol: 0
   useRoam: 1
+  waveModeActive: 0
+  ignoreWaveMode: 0
   aud: {fileID: -3898658822286414359}
   audStep:
   - {fileID: 8300000, guid: 81d6cc9391967574c8d850e15adec10c, type: 3}
