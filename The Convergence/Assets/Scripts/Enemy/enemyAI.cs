@@ -118,6 +118,11 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
     [SerializeField] bool isBoss = false;
     [SerializeField] GameObject bossDeathEffect; // Optional visual effect
 
+    [Header("**** Death Animation Settings ****")]
+    [SerializeField] float deathAnimationDuration = 2f;
+    [SerializeField] bool useDeathAnimation = true;
+
+
     public bool IsBoss => isBoss;
 
     public EnemyType EnemyTypeValue => enemyType;
@@ -406,9 +411,15 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
             agent.updateRotation = false;
         }
 
-        // Windup audio
+        // Windup audio and jump animation
         if (aud != null && audJumpWindup != null)
             aud.PlayOneShot(audJumpWindup, audJumpWindupVol);
+
+        if (useAnimations && anim != null)
+        {
+            anim.SetBool("IsJumping", true);
+            anim.SetBool("IsAscending", true);
+        }
 
         // Face player during windup
         Vector3 lookDir = new Vector3(jumpTarget.x - transform.position.x, 0, jumpTarget.z - transform.position.z);
@@ -468,7 +479,7 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
             if (audJumpLanding != null && aud != null)
                 aud.PlayOneShot(audJumpLanding, audJumpLandingVol);
 
-            if (jumpLandingEffect != null)
+            if (jumpLandingEffect != null)  
                 Instantiate(jumpLandingEffect, transform.position, Quaternion.identity);
 
             // Apply jumpDamage after a short delay to allow for landing impact
@@ -942,7 +953,14 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
         }
 
         // Small wait to let effects play, then end jump
-        yield return new WaitForSeconds(0.2f);
+        yield return new WaitForSeconds(0.3f);
+
+        if (useAnimations && anim != null)
+        {
+            anim.SetBool("IsJumping", false);
+            anim.SetBool("IsAscending", false);
+        }
+
         EndJumpAttack();
     }
 
@@ -954,6 +972,13 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
 
         isJumpAttacking = false;
         hasLanded = false;
+
+        // reset animation states
+        if (useAnimations && anim != null)
+        {
+            anim.SetBool("IsJumping", false);
+            anim.SetBool("IsAscending", false);
+        }
 
         // Restore enemyAI movement AND update flags
         if (agent != null)
@@ -990,6 +1015,13 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
 
         isJumpAttacking = false;
         hasLanded = false;
+
+        // reset animation states
+        if (useAnimations && anim != null)
+        {
+            anim.SetBool("IsJumping", false);
+            anim.SetBool("IsAscending", false);
+        }
 
         if (agent != null)
         {
@@ -1253,6 +1285,8 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
     // Handle enemy death
     private void Die()
     {
+        if (!isAlive) return;
+
         isAlive = false;
 
         // Cancel any special attacks
@@ -1263,6 +1297,23 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
         if (audDeath.Length > 0 && aud != null)
             aud.PlayOneShot(audDeath[Random.Range(0, audDeath.Length)], audDeathVol);
 
+        if (useAnimations && useDeathAnimation && anim != null)
+        {
+            // Stop all other animations
+            SafeSetBool("IsJumping", false);
+            SafeSetBool("GoingUp", false);
+
+            // Trigger death animation
+            SafeSetBool("IsDead", true);
+        }
+        // Handle drops and game state
+        HandleDeathRewards();
+
+        // Destroy after animation plays
+        StartCoroutine(DestroyAfterDeathAnimation());
+    }
+    private void HandleDeathRewards()
+    {
         // Check if this is the boss enemy
         if (isBoss)
         {
@@ -1302,10 +1353,28 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
                 RiftShardManager.Instance.Add(currencyDropAmount);
             }
         }
+    }
+    // Waits for death animation to complete before destroying the GameObject.
+    private IEnumerator DestroyAfterDeathAnimation()
+    {
+        if (useAnimations && useDeathAnimation && anim != null)
+        {
+            yield return new WaitForSeconds(deathAnimationDuration);
+        }
+        else
+        {
+            yield return new WaitForSeconds(0.5f);
+        }
 
         // Destroy the enemy object
+
         Destroy(gameObject);
     }
+    public void OnDeathAnimationComplete()
+    {
+        Destroy(gameObject);
+    }
+
 
     IEnumerator flashRed()
     {
@@ -1574,6 +1643,19 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
         if (!HasLineOfSightToPlayer() && shootTimer > shootRate * 2f)
         {
             shootTimer = shootRate;
+        }
+    }
+    private void SafeSetBool(string paramName, bool value)
+    {
+        if (anim == null) return;
+
+        foreach (AnimatorControllerParameter param in anim.parameters)
+        {
+            if (param.name == paramName && param.type == AnimatorControllerParameterType.Bool)
+            {
+                anim.SetBool(paramName, value);
+                return;
+            }
         }
     }
 }
