@@ -278,17 +278,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f9cb63262ab343044a4dbdfabca5a845, type: 3}
---- !u!114 &434774608 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 3341751023653305386, guid: f9cb63262ab343044a4dbdfabca5a845, type: 3}
-  m_PrefabInstance: {fileID: 372863016}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
 --- !u!1 &624205892
 GameObject:
   m_ObjectHideFlags: 0
@@ -320,11 +309,17 @@ Transform:
   m_Children: []
   m_Father: {fileID: 7622110352564742597}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!224 &1021879656 stripped
-RectTransform:
-  m_CorrespondingSourceObject: {fileID: 3688399813778228634, guid: f9cb63262ab343044a4dbdfabca5a845, type: 3}
+--- !u!114 &727737266 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1169036935788642126, guid: f9cb63262ab343044a4dbdfabca5a845, type: 3}
   m_PrefabInstance: {fileID: 372863016}
   m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
 --- !u!1001 &1093319580
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -6162,13 +6157,13 @@ MonoBehaviour:
   gunModel: {fileID: 2472113193000969044}
   activeGunStats: {fileID: 0}
   gunAmmoInventory: []
-  aimTarget: {fileID: 1021879656}
+  aimTarget: {fileID: 0}
   rightHandIKTarget: {fileID: 122947376}
   leftHandIKTarget: {fileID: 624205893}
   reloadSound: {fileID: 0}
   reloadSoundVol: 1
   reloadTime: 1.5
-  ammoTextDisplay: {fileID: 434774608}
+  ammoTextDisplay: {fileID: 727737266}
   deathAnimationTime: 2
   deathSound: {fileID: 0}
   deathSoundVol: 1
@@ -6381,7 +6376,7 @@ MonoBehaviour:
   animator: {fileID: 7622110352564742604}
   rightHandIKTarget: {fileID: 122947376}
   leftHandIKTarget: {fileID: 624205893}
-  aimTarget: {fileID: 1021879656}
+  aimTarget: {fileID: 0}
   rightHandIKWeight: 1
   leftHandIKWeight: 1
   lookAtIKWeight: 1
