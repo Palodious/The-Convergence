@@ -24,8 +24,6 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable, IAmm
 
     [Header("~=~= Movement Modifiers =~=~")]
     [Range(0.1f, 50f)][SerializeField] float glideGravity;
-    [Range(0.1f, 1f)][SerializeField] float crouchSpeedMod;
-    [Range(0.1f, 5f)][SerializeField] float crouchHeight;
 
     [Header("~=~= Audio =~=~")]
     [SerializeField] AudioSource aud;
@@ -61,7 +59,6 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable, IAmm
     int intialHP;
     float shootTimer;
 
-    bool isCrouching;
     bool isGliding;
     bool isSprinting;
     bool isPlayingStep;
@@ -304,7 +301,6 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable, IAmm
         float h = Input.GetAxis("Horizontal");
         float v = Input.GetAxis("Vertical");
 
-        // Movement direction relative to camera
         Vector3 inputDirection = new Vector3(h, 0, v);
         Vector3 moveDir = Vector3.zero;
 
@@ -319,7 +315,6 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable, IAmm
 
             moveDir = (camForward * v + camRight * h).normalized;
 
-            // Convert to local space for animator
             Vector3 localMove = transform.InverseTransformDirection(moveDir);
             float animX = localMove.x;
             float animY = localMove.z;
@@ -339,7 +334,6 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable, IAmm
             }
         }
 
-        // Rotate character to face camera forward when moving
         Vector3 camForwardDir = Camera.main.transform.forward;
         camForwardDir.y = 0f;
         if (camForwardDir.sqrMagnitude > 0.001f)
@@ -372,19 +366,6 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable, IAmm
         finalMove.y = playerVel.y;
         controller.Move(finalMove * Time.deltaTime);
 
-        if (Input.GetKey(KeyCode.C)) crouch();
-        else uncrouch();
-
-        if (!controller.isGrounded)
-        {
-            if (Input.GetKeyDown(KeyCode.G)) StartGlide();
-            if (Input.GetKeyUp(KeyCode.G)) StopGlide();
-        }
-        else if (isGliding)
-        {
-            StopGlide();
-        }
-
         if (Input.GetButton("Fire1") && shootTimer >= shootRate && !isReloading)
         {
             shoot();
@@ -397,7 +378,15 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable, IAmm
 
         selectGun();
 
-        sprint();
+        if (!controller.isGrounded)
+        {
+            if (Input.GetKeyDown(KeyCode.G)) StartGlide();
+            if (Input.GetKeyUp(KeyCode.G)) StopGlide();
+        }
+        else if (isGliding)
+        {
+            StopGlide();
+        }
     }
 
     IEnumerator playStep()
@@ -415,13 +404,20 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable, IAmm
     {
         bool forwardInput = Input.GetAxis("Vertical") > 0.1f;
 
-        isSprinting =
-            Input.GetKey(KeyCode.LeftShift) &&
-            controller.isGrounded &&
-            forwardInput &&
-            !isCrouching;
+        bool shouldSprint = Input.GetKey(KeyCode.LeftShift) &&
+                           controller.isGrounded &&
+                           forwardInput;
 
-        speed = isSprinting ? originalSpeed * sprintMod : originalSpeed;
+        if (shouldSprint && !isSprinting)
+        {
+            isSprinting = true;
+            speed = originalSpeed * sprintMod;
+        }
+        else if (!shouldSprint && isSprinting)
+        {
+            isSprinting = false;
+            speed = originalSpeed;
+        }
     }
 
     void jump()
@@ -440,26 +436,6 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable, IAmm
                 aud.pitch = Random.Range(0.9f, 1.1f);
                 aud.PlayOneShot(audJump[Random.Range(0, audJump.Length)], audJumpVol);
             }
-        }
-    }
-
-    void crouch()
-    {
-        if (!isCrouching)
-        {
-            isCrouching = true;
-            controller.height = crouchHeight;
-            speed = Mathf.RoundToInt(originalSpeed * crouchSpeedMod);
-        }
-    }
-
-    void uncrouch()
-    {
-        if (isCrouching)
-        {
-            isCrouching = false;
-            controller.height = originalHeight;
-            speed = originalSpeed;
         }
     }
 
@@ -484,7 +460,6 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable, IAmm
         gunStats originalGunStats = gunList[gunListPos];
         GunAmmoData ammoData = gunAmmoInventory.Find(data => data.gunType == originalGunStats);
 
-        // Check if we have ammo if none auto reload
         if (ammoData == null || ammoData.currentAmmo <= 0)
         {
             Reload();
@@ -494,7 +469,6 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable, IAmm
         if (shootTimer < activeGunStats.shootRate) return;
         shootTimer = 0;
 
-        // Use ammo from inventory
         if (ammoData != null)
         {
             ammoData.currentAmmo--;
@@ -610,7 +584,7 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable, IAmm
 
     public void takeDamage(int amount)
     {
-        if (isDead) return; // Don't take damage if already dead
+        if (isDead) return;
 
         HP -= amount;
         updatePlayerUI();
@@ -719,7 +693,6 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable, IAmm
             return;
         }
 
-        // Handle ammo pickups (from second script)
         if (item is AmmoStats ammo)
         {
             if (ammo.compatibleGun != null)
@@ -732,7 +705,6 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable, IAmm
         Debug.LogWarning("Picked up unknown item: " + item.name);
     }
 
-    // IAmmo Interface Methods
     public void AddAmmo(int amount)
     {
         if (activeGunStats == null) return;
@@ -997,7 +969,6 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable, IAmm
     {
         public int hp;
         public int currentMaxHP;
-        public bool isCrouching;
         public bool isGliding;
         public bool canUseMedkit;
         public float medkitCooldown;
@@ -1015,7 +986,6 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable, IAmm
         {
             hp = HP,
             currentMaxHP = this.currentMaxHP,
-            isCrouching = this.isCrouching,
             isGliding = this.isGliding,
             canUseMedkit = this.canUseMedkit,
             medkitCooldown = this.medkitCooldown,
@@ -1032,7 +1002,6 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable, IAmm
 
         HP = data.hp;
         currentMaxHP = data.currentMaxHP;
-        isCrouching = data.isCrouching;
         isGliding = data.isGliding;
         canUseMedkit = data.canUseMedkit;
         medkitCooldown = data.medkitCooldown;
@@ -1051,17 +1020,6 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable, IAmm
         if (data.savedAmmoInventory != null)
         {
             gunAmmoInventory = new List<GunAmmoData>(data.savedAmmoInventory);
-        }
-
-        if (isCrouching)
-        {
-            controller.height = crouchHeight;
-            speed = Mathf.RoundToInt(originalSpeed * crouchSpeedMod);
-        }
-        else
-        {
-            controller.height = originalHeight;
-            speed = originalSpeed;
         }
 
         updatePlayerUI();
