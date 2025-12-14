@@ -1341,7 +1341,7 @@ Animator:
   m_Enabled: 1
   m_Avatar: {fileID: 9000000, guid: 79b50b34e44b5fd4db1cdc9535a3c86b, type: 3}
   m_Controller: {fileID: 9100000, guid: 2da0de66b31b4b143805b3e424c75c4c, type: 2}
-  m_CullingMode: 1
+  m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
   m_LinearVelocityBlending: 0
@@ -1387,7 +1387,7 @@ MonoBehaviour:
   meleeRange: 9
   attackRate: 0.5
   meleeDamageAmount: 1
-  canJumpAttack: 0
+  canJumpAttack: 1
   jumpForce: 3.5
   jumpAttackRange: 16.6
   minHeightDifference: 1.48
@@ -1425,13 +1425,13 @@ MonoBehaviour:
   jumpDamageDelay: 0.1
   jumpWindupTime: 0.2
   landingDistanceFromPlayer: 0.5
-  canDashAttack: 0
-  dashSpeed: 2
-  dashDuration: 0.1
+  canDashAttack: 1
+  dashSpeed: 6.4
+  dashDuration: 0.53
   dashAttackRange: 1
   minDashDistance: 4
-  dashAttackCooldown: 0.5
-  playerFleeingThreshold: 1.1
+  dashAttackCooldown: 3.2
+  playerFleeingThreshold: 2.12
   waveModeRange: 200
   useAnimations: 1
   usePatrol: 0
@@ -1441,31 +1441,51 @@ MonoBehaviour:
   aud: {fileID: -3369015551279475159}
   audStep:
   - {fileID: 8300000, guid: 9b2d989f54557a648987639019145542, type: 3}
+  - {fileID: 8300000, guid: 8d9dbfa323a4f6248897aa3230469e61, type: 3}
+  - {fileID: 8300000, guid: 79ed6fc8aeb95724cbde5d19288704dd, type: 3}
+  - {fileID: 8300000, guid: 82fcc4bd69f6d454b8e6d40f442df5df, type: 3}
   audStepVol: 0.15
   audHurt:
   - {fileID: 8300000, guid: 9a2d033f7760b4ef09400945a538ccd9, type: 3}
+  - {fileID: 8300000, guid: 093a5dc60018d476791de718279859f3, type: 3}
+  - {fileID: 8300000, guid: 1f6dd06ea62574ce28e4f628053d5a96, type: 3}
+  - {fileID: 8300000, guid: 7592d3abb53e14da8b29227d4b2011e3, type: 3}
+  - {fileID: 8300000, guid: a1cc851ba936d408785aaf2917b47e49, type: 3}
   audHurtVol: 0.15
   audShoot:
-  - {fileID: 8300000, guid: a652877b012108e41871f867ada9f176, type: 3}
+  - {fileID: 8300000, guid: 8f14c9f162be18344b908f4a8d56bc93, type: 3}
+  - {fileID: 8300000, guid: 7299018103695904d948d5e92f108c15, type: 3}
+  - {fileID: 8300000, guid: 4600ae768f0e1084da6bae5c548dc487, type: 3}
+  - {fileID: 8300000, guid: 89e0f69e3ad999a4aa99111f0765d6b7, type: 3}
   audShootVol: 0.15
   audMelee:
   - {fileID: 8300000, guid: 88b1cbe3caa3fee4b8b103b5edd7aba9, type: 3}
+  - {fileID: 8300000, guid: 9fa7b1838d23c51428c3f3ace732f709, type: 3}
+  - {fileID: 8300000, guid: 004b4ac5819ec484e9f692b1646fd4ef, type: 3}
+  - {fileID: 8300000, guid: 260b7abaff74533478f6f25c99e937cf, type: 3}
   audMeleeVol: 0.15
   audDeath:
   - {fileID: 8300000, guid: 98e09261f3a63460d93dda8792af907d, type: 3}
+  - {fileID: 8300000, guid: 21702e360173e4a6a96da1479aa82615, type: 3}
+  - {fileID: 8300000, guid: 903095339b3a04b978b77f6f14942259, type: 3}
   audDeathVol: 0.15
-  audJumpAttack: []
+  audJumpAttack:
+  - {fileID: 8300000, guid: c55fb47f6865f480c989e8407de1d19c, type: 3}
+  - {fileID: 8300000, guid: ec834e3a0a9a041e58e015c0bf39ed52, type: 3}
+  - {fileID: 8300000, guid: 8a42266be58db4c518b5d4e47cc0f780, type: 3}
   audJumpAttackVol: 0
-  audJumpWindup: {fileID: 0}
-  audJumpWindupVol: 0.5
-  audJumpLanding: {fileID: 0}
-  audJumpLandingVol: 0.7
+  audJumpWindup: {fileID: 8300000, guid: 323e15cfe809e114ab92c9f4b25e8bc2, type: 3}
+  audJumpWindupVol: 0.14
+  audJumpLanding: {fileID: 8300000, guid: 0f96b253d87071a4b98057acbe3c217f, type: 3}
+  audJumpLandingVol: 0.16
   audDash: []
-  audDashVol: 0.5
+  audDashVol: 0.08
   itemDrop: {fileID: 0}
   currencyDropAmount: 10
   isBoss: 0
-  bossDeathEffect: {fileID: 0}
+  bossDeathEffect: {fileID: 100002, guid: 347d2e064d3a3f946b17655dcc998386, type: 3}
+  deathAnimationDuration: 2
+  useDeathAnimation: 1
   patrolPoints: []
   patrolSourceId: 
 --- !u!195 &142305199844221088

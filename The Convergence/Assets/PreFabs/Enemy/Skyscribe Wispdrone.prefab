@@ -136,36 +136,48 @@ MonoBehaviour:
   minDashDistance: 4
   dashAttackCooldown: 0.5
   playerFleeingThreshold: 1.1
+  waveModeRange: 200
   useAnimations: 0
   usePatrol: 1
   useRoam: 0
+  waveModeActive: 0
+  ignoreWaveMode: 0
   aud: {fileID: -4148818685429611029}
   audStep:
   - {fileID: 8300000, guid: 9e7f13718dc1fd44eaba0d14caa0355d, type: 3}
+  - {fileID: 8300000, guid: 18a00514617699a418033ff7d5dbd27a, type: 3}
+  - {fileID: 8300000, guid: f41174fd83707124fb7f67b7856ad006, type: 3}
+  - {fileID: 8300000, guid: 29f83994d90e794418a0c2d0a79dcd20, type: 3}
   audStepVol: 0.15
   audHurt:
-  - {fileID: 8300000, guid: e3e8e067a986b10459c413dada21bf01, type: 3}
+  - {fileID: 8300000, guid: 18a00514617699a418033ff7d5dbd27a, type: 3}
+  - {fileID: 8300000, guid: f41174fd83707124fb7f67b7856ad006, type: 3}
+  - {fileID: 8300000, guid: 9568fe263d149b147a65154bb1382a2d, type: 3}
   audHurtVol: 0.15
   audShoot:
   - {fileID: 8300000, guid: 283db2de8512111488e1d3aa233ab98d, type: 3}
+  - {fileID: 8300000, guid: e93d86b482871164584ac9026712ceeb, type: 3}
+  - {fileID: 8300000, guid: 2fbbe83cecd56e245a5ad0d73572b05f, type: 3}
   audShootVol: 0.15
   audMelee: []
   audMeleeVol: 0
   audDeath:
-  - {fileID: 8300000, guid: 2fbbe83cecd56e245a5ad0d73572b05f, type: 3}
+  - {fileID: 8300000, guid: 28ef8377ab702ce40b6f59340bfd7699, type: 3}
   audDeathVol: 0.15
   audJumpAttack: []
   audJumpAttackVol: 0
   audJumpWindup: {fileID: 0}
-  audJumpWindupVol: 0.5
+  audJumpWindupVol: 0
   audJumpLanding: {fileID: 0}
-  audJumpLandingVol: 0.7
+  audJumpLandingVol: 0
   audDash: []
-  audDashVol: 0.5
+  audDashVol: 0
   itemDrop: {fileID: 0}
   currencyDropAmount: 10
   isBoss: 0
   bossDeathEffect: {fileID: 0}
+  deathAnimationDuration: 2
+  useDeathAnimation: 1
   patrolPoints:
   - {fileID: 0}
   - {fileID: 0}
