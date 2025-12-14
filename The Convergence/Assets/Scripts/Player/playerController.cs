@@ -49,13 +49,11 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable, IAmm
     private static bool isNewGameSession = true;
 
     public int ShootDamage => shootDamage;
-    float originalHeight;
     int originalSpeed;
 
     Vector3 moveDir;
     Vector3 playerVel;
 
-    int jumpCount;
     [SerializeField] int currentMaxHP;
     int intialHP;
     float shootTimer;
@@ -137,7 +135,6 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable, IAmm
 
         intialHP = HP;
         currentMaxHP = intialHP + persistentHealthUpgradeTotal;
-        originalHeight = controller.height;
         originalSpeed = speed;
 
         InitializeIKSystem();
