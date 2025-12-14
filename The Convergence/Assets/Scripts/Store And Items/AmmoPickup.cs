@@ -4,10 +4,8 @@ public class AmmoPickup : MonoBehaviour
 {
     [Header("Ammo Settings")]
     [SerializeField] private int ammoAmount = 30;
-    [SerializeField] private gunStats[] compatibleGuns; // Array of guns this works for
 
     [Header("Pickup Visuals")]
-    [SerializeField] private bool isPickup = true;
     [SerializeField] private float rotationSpeed = 50f;
     [SerializeField] private float bobSpeed = 2f;
     [SerializeField] private float bobHeight = 0.2f;
@@ -15,48 +13,27 @@ public class AmmoPickup : MonoBehaviour
     [SerializeField] private AudioClip pickupSound;
     [Range(0, 1)][SerializeField] private float pickupSoundVol = 1f;
 
-    [Header("Visual Appearance")]
-    [SerializeField] private Color pickupColor = Color.yellow;
-
     private Vector3 startPosition;
     private Light pickupLight;
 
     private void Start()
     {
-        if (!isPickup)
-        {
-            enabled = false;
-            return;
-        }
-
         startPosition = transform.position;
 
-        // Set visual appearance
-        if (TryGetComponent<Renderer>(out var renderer))
-        {
-            renderer.material.color = pickupColor;
-        }
-
-        // Get or add light
         pickupLight = GetComponent<Light>();
         if (pickupLight == null)
         {
             pickupLight = gameObject.AddComponent<Light>();
-            pickupLight.color = pickupColor;
-            pickupLight.range = 3f;
-            pickupLight.intensity = 1.5f;
         }
-        else
-        {
-            pickupLight.color = pickupColor;
-        }
+
+        pickupLight.color = Color.yellow;
+        pickupLight.range = 3f;
+        pickupLight.intensity = 1.5f;
     }
+
 
     private void Update()
     {
-        if (!isPickup) return;
-
-        // Simple animation
         transform.Rotate(Vector3.up, rotationSpeed * Time.deltaTime);
 
         float newY = startPosition.y + Mathf.Sin(Time.time * bobSpeed) * bobHeight;
@@ -65,75 +42,28 @@ public class AmmoPickup : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (!isPickup) return;
         if (!other.CompareTag("Player")) return;
 
         playerController player = other.GetComponent<playerController>();
-        if (player != null)
+        if (player == null) return;
+
+        if (!player.CanAddAmmo())
         {
-            // Detach light before pickup
-            if (pickupLight != null)
-            {
-                pickupLight.transform.SetParent(null);
-                Destroy(pickupLight.gameObject);
-            }
-
-            bool ammoAdded = false;
-
-            if (compatibleGuns != null && compatibleGuns.Length > 0)
-            {
-                // Try to add ammo to any of the compatible guns
-                foreach (var gun in compatibleGuns)
-                {
-                    if (gun != null && player.CanAddAmmo(gun))
-                    {
-                        // FIXED: Actually add the ammo!
-                        player.AddAmmo(ammoAmount);
-                        ammoAdded = true;
-                        Debug.Log($"Added {ammoAmount} ammo to {gun.name}");
-                        break; // Stop after adding to first valid gun
-                    }
-                }
-
-                if (!ammoAdded)
-                {
-                    Debug.Log("All compatible guns are full!");
-                    return; // Don't destroy if no ammo was added
-                }
-            }
-            else
-            {
-                // No specific guns assigned, add to current weapon
-                player.AddAmmo(ammoAmount);
-                ammoAdded = true;
-            }
-
-            if (ammoAdded)
-            {
-                PickupEffect();
-                Destroy(gameObject);
-            }
+            Debug.Log("Ammo pickup ignored — ammo already full.");
+            return;
         }
-    }
 
-    private void PickupEffect()
-    {
-        // Play sound
+        player.AddAmmo(ammoAmount);
+
         if (pickupSound != null)
-        {
             AudioSource.PlayClipAtPoint(pickupSound, transform.position, pickupSoundVol);
-        }
 
-        // Spawn effect
         if (pickupEffect != null)
-        {
             Instantiate(pickupEffect, transform.position, Quaternion.identity);
-        }
-    }
 
-    public void EnablePickup()
-    {
-        isPickup = true;
-        enabled = true;
+        if (pickupLight != null)
+            Destroy(pickupLight.gameObject);
+
+        Destroy(gameObject);
     }
 }

@@ -706,21 +706,23 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable, IAmm
     {
         if (activeGunStats == null) return;
 
-        gunStats originalGunStats = gunList[gunListPos];
-        GunAmmoData ammoData = gunAmmoInventory.Find(data => data.gunType == originalGunStats);
-        if (ammoData != null)
-        {
-            ammoData.reserveAmmo = Mathf.Min(ammoData.reserveAmmo + amount, GetMaxAmmo(activeGunStats));
-            UpdateAmmoDisplay();
-            Debug.Log($"Added {amount} ammo for {activeGunStats.name}. Reserve: {ammoData.reserveAmmo}");
-        }
+        GunAmmoData ammoData = gunAmmoInventory.Find(d => d.gunType == activeGunStats);
+        if (ammoData == null) return;
+
+        ammoData.reserveAmmo = Mathf.Min(
+            ammoData.reserveAmmo + amount,
+            GetMaxAmmo(activeGunStats)
+        );
+
+        UpdateAmmoDisplay();
+
+        Debug.Log($"Added {amount} ammo to {activeGunStats.name}. Reserve now: {ammoData.reserveAmmo}");
     }
 
     public int GetCurrentAmmo(gunStats gunType)
     {
-        gunStats originalGunStats = gunList[gunListPos];
         GunAmmoData data = gunAmmoInventory.Find(d => d.gunType == gunType);
-        return data?.currentAmmo ?? 0;
+        return data != null ? data.currentAmmo : 0;
     }
 
     public int GetMaxAmmo(gunStats gunType)
@@ -728,13 +730,14 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable, IAmm
         return gunType.ammoMax * 10;
     }
 
-    public bool CanAddAmmo(gunStats gunType)
+    public bool CanAddAmmo()
     {
-        gunStats originalGunStats = gunList[gunListPos];
-        GunAmmoData data = gunAmmoInventory.Find(d => d.gunType == gunType);
+        if (activeGunStats == null) return false;
+
+        GunAmmoData data = gunAmmoInventory.Find(d => d.gunType == activeGunStats);
         if (data == null) return false;
 
-        return data.reserveAmmo < GetMaxAmmo(gunType);
+        return data.reserveAmmo < GetMaxAmmo(activeGunStats);
     }
 
     void AddKeyToList(keyStats key)
