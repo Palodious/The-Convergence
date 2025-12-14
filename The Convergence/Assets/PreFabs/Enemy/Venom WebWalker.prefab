@@ -1058,36 +1058,48 @@ MonoBehaviour:
   minDashDistance: 9.8
   dashAttackCooldown: 5.52
   playerFleeingThreshold: 3.02
+  waveModeRange: 200
   useAnimations: 1
   usePatrol: 0
   useRoam: 1
+  waveModeActive: 0
+  ignoreWaveMode: 0
   aud: {fileID: 2564370326989721532}
   audStep:
-  - {fileID: 8300000, guid: 048e68cc0c76ae74887f98feef6db8d6, type: 3}
+  - {fileID: 8300000, guid: 9b2d989f54557a648987639019145542, type: 3}
+  - {fileID: 8300000, guid: 2b16c7ed38399d940aef4157531cb6fa, type: 3}
+  - {fileID: 8300000, guid: 096478cc397152944878b3c5c14ad1bb, type: 3}
   audStepVol: 0.15
   audHurt:
-  - {fileID: 8300000, guid: 8be3c39039572f04f83048db2b87599e, type: 3}
+  - {fileID: 8300000, guid: a272418358c9d334c9d5f0b806191bce, type: 3}
+  - {fileID: 8300000, guid: 7c47b20bb9874304a809dc5580d403ba, type: 3}
   audHurtVol: 0.15
   audShoot:
-  - {fileID: 8300000, guid: 283db2de8512111488e1d3aa233ab98d, type: 3}
+  - {fileID: 8300000, guid: 70e7167513d7e94498a3c57ac72e5491, type: 3}
+  - {fileID: 8300000, guid: 1126395f53618514aa839cf7eb57fe83, type: 3}
+  - {fileID: 8300000, guid: 6fb59720465b7d04996977c551945450, type: 3}
   audShootVol: 0.15
   audMelee: []
   audMeleeVol: 0
   audDeath:
-  - {fileID: 8300000, guid: 878722455253d33438989b46a36d504b, type: 3}
+  - {fileID: 8300000, guid: c9879510c038e9e4c87c5799a698fc35, type: 3}
   audDeathVol: 0.15
-  audJumpAttack: []
-  audJumpAttackVol: 0
-  audJumpWindup: {fileID: 0}
-  audJumpWindupVol: 0.5
-  audJumpLanding: {fileID: 0}
-  audJumpLandingVol: 0.7
+  audJumpAttack:
+  - {fileID: 8300000, guid: 60f9efe3d97bc8f47bea1af7f7093d41, type: 3}
+  - {fileID: 8300000, guid: 7c47b20bb9874304a809dc5580d403ba, type: 3}
+  audJumpAttackVol: 0.149
+  audJumpWindup: {fileID: 8300000, guid: 4e349dc959014a845b9aa317d1c2b7f0, type: 3}
+  audJumpWindupVol: 0.154
+  audJumpLanding: {fileID: 8300000, guid: eaae8fe8d600e1f459f34aa5757fa3b8, type: 3}
+  audJumpLandingVol: 0
   audDash: []
-  audDashVol: 0.5
+  audDashVol: 0
   itemDrop: {fileID: 0}
   currencyDropAmount: 5
   isBoss: 0
   bossDeathEffect: {fileID: 0}
+  deathAnimationDuration: 2
+  useDeathAnimation: 1
   patrolPoints: []
   patrolSourceId: 
 --- !u!114 &931205412325036861
