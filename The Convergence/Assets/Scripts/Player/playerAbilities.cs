@@ -59,30 +59,71 @@ public class PlayerAbilities : MonoBehaviour
     IEnumerator RiftPulse()
     {
         pulseTimer = 0;
+        Debug.Log($"<color=cyan> PULSE ACTIVATED! Range: {pulseRange}m</color>");
+
+        // Visualize the pulse range in Scene view
+        Debug.DrawRay(transform.position, Vector3.forward * pulseRange, Color.red, 1f);
+        Debug.DrawRay(transform.position, -Vector3.forward * pulseRange, Color.red, 1f);
 
         GameObject pulseVFX = EffectsManager.Instance.Create("PulseCast", transform.position);
         SetEffectColor(pulseVFX, new Color(0.2f, 0.7f, 1f));
 
         Collider[] hits = Physics.OverlapSphere(transform.position, pulseRange, enemyMask);
+        Debug.Log($"<color=yellow> Found {hits.Length} enemies</color>");
+
         foreach (Collider hit in hits)
         {
-            IDamage dmg = hit.GetComponent<IDamage>();
-            if (dmg != null)
-            {
-                dmg.takeDamage(Mathf.RoundToInt(pulseDamage * controller.damageBoost));
-                EffectsManager.Instance.Create("Lightning", hit.transform.position);
-            }
+            Debug.Log($"<color=green> HIT: {hit.gameObject.name}</color>");
 
-            Rigidbody rb = hit.GetComponent<Rigidbody>();
-            if (rb != null)
+            PylonController pylon = hit.GetComponent<PylonController>();
+            if (pylon != null)
             {
-                Vector3 knockDir = (hit.transform.position - transform.position).normalized + Vector3.up * 0.3f;
-                rb.AddForce(knockDir * 6f, ForceMode.Impulse);
+                Debug.Log($"<color=red> DESTROYING PYLON: {hit.gameObject.name}</color>");
+                pylon.OnPulseHit();
+                EffectsManager.Instance.Create("PylonDestroy", hit.transform.position);
             }
         }
 
         yield return null;
     }
+
+
+    /* IEnumerator RiftPulse()
+     {
+         pulseTimer = 0;
+
+         GameObject pulseVFX = EffectsManager.Instance.Create("PulseCast", transform.position);
+         SetEffectColor(pulseVFX, new Color(0.2f, 0.7f, 1f));
+
+         Collider[] hits = Physics.OverlapSphere(transform.position, pulseRange, enemyMask);
+         foreach (Collider hit in hits)
+         {
+             Debug.Log("Pulse hit: " + hit.gameObject.name);
+
+             IDamage dmg = hit.GetComponent<IDamage>();
+             if (dmg != null)
+             {
+                 dmg.takeDamage(Mathf.RoundToInt(pulseDamage * controller.damageBoost));
+                 EffectsManager.Instance.Create("Lightning", hit.transform.position);
+             }
+
+             Rigidbody rb = hit.GetComponent<Rigidbody>();
+             if (rb != null)
+             {
+                 Vector3 knockDir = (hit.transform.position - transform.position).normalized + Vector3.up * 0.3f;
+                 rb.AddForce(knockDir * 6f, ForceMode.Impulse);
+             }
+
+             PylonController pylon = hit.GetComponent<PylonController>();
+             if (pylon != null)
+             {
+                 pylon.OnPulseHit();
+                 EffectsManager.Instance.Create("PylonDestroy", hit.transform.position);
+             }
+         }
+
+         yield return null;
+     }*/
 
     IEnumerator RiftJump()
     {
