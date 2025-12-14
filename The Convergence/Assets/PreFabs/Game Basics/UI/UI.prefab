@@ -2986,7 +2986,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 78.05652, y: -77.25}
+  m_AnchoredPosition: {x: 78.0564, y: -77.25}
   m_SizeDelta: {x: 200, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &140243729954273617
@@ -4098,7 +4098,6 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 4293172127325252902}
-  - {fileID: 544560402448213241}
   - {fileID: 6524610513123963546}
   m_Father: {fileID: 577428192745285418}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -12794,142 +12793,6 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!1 &4483277144504995314
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 2082593971246533258}
-  - component: {fileID: 5464263282767545492}
-  - component: {fileID: 1350068358746136963}
-  m_Layer: 5
-  m_Name: C
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!224 &2082593971246533258
-RectTransform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4483277144504995314}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 544560402448213241}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 300, y: 50}
-  m_Pivot: {x: 0.5, y: 0.5}
---- !u!222 &5464263282767545492
-CanvasRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4483277144504995314}
-  m_CullTransparentMesh: 1
---- !u!114 &1350068358746136963
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4483277144504995314}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
-  m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
-  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-  m_Maskable: 1
-  m_OnCullStateChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  m_text: Crouch - Hold C
-  m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_fontSharedMaterials: []
-  m_fontMaterial: {fileID: 0}
-  m_fontMaterials: []
-  m_fontColor32:
-    serializedVersion: 2
-    rgba: 4278190080
-  m_fontColor: {r: 0, g: 0, b: 0, a: 1}
-  m_enableVertexGradient: 0
-  m_colorMode: 3
-  m_fontColorGradient:
-    topLeft: {r: 1, g: 1, b: 1, a: 1}
-    topRight: {r: 1, g: 1, b: 1, a: 1}
-    bottomLeft: {r: 1, g: 1, b: 1, a: 1}
-    bottomRight: {r: 1, g: 1, b: 1, a: 1}
-  m_fontColorGradientPreset: {fileID: 0}
-  m_spriteAsset: {fileID: 0}
-  m_tintAllSprites: 0
-  m_StyleSheet: {fileID: 0}
-  m_TextStyleHashCode: -1183493901
-  m_overrideHtmlColors: 0
-  m_faceColor:
-    serializedVersion: 2
-    rgba: 4294967295
-  m_fontSize: 36
-  m_fontSizeBase: 36
-  m_fontWeight: 400
-  m_enableAutoSizing: 0
-  m_fontSizeMin: 18
-  m_fontSizeMax: 72
-  m_fontStyle: 1
-  m_HorizontalAlignment: 2
-  m_VerticalAlignment: 512
-  m_textAlignment: 65535
-  m_characterSpacing: 0
-  m_wordSpacing: 0
-  m_lineSpacing: 0
-  m_lineSpacingMax: 0
-  m_paragraphSpacing: 0
-  m_charWidthMaxAdj: 0
-  m_TextWrappingMode: 1
-  m_wordWrappingRatios: 0.4
-  m_overflowMode: 0
-  m_linkedTextComponent: {fileID: 0}
-  parentLinkedComponent: {fileID: 0}
-  m_enableKerning: 0
-  m_ActiveFontFeatures: 6e72656b
-  m_enableExtraPadding: 0
-  checkPaddingRequired: 0
-  m_isRichText: 1
-  m_EmojiFallbackSupport: 1
-  m_parseCtrlCharacters: 1
-  m_isOrthographic: 1
-  m_isCullingEnabled: 0
-  m_horizontalMapping: 0
-  m_verticalMapping: 0
-  m_uvLineOffset: 0
-  m_geometrySortingOrder: 0
-  m_IsTextObjectScaleStatic: 0
-  m_VertexBufferAutoSizeReduction: 0
-  m_useMaxVisibleDescender: 1
-  m_pageToDisplay: 1
-  m_margin: {x: 0, y: 0, z: 0, w: 0}
-  m_isUsingLegacyAnimationComponent: 0
-  m_isVolumetricText: 0
-  m_hasFontAssetChanged: 0
-  m_baseMaterial: {fileID: 0}
-  m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
 --- !u!1 &4495262995383048501
 GameObject:
   m_ObjectHideFlags: 0
@@ -27152,7 +27015,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Store
   playerState:
     potionCount: 0
-    purchasedIds: 
+    upgradeLevels: []
   upgradeItems:
   - id: 101
     itemName: '"SMG Upgrade I"'
@@ -27160,7 +27023,11 @@ MonoBehaviour:
     type: 0
     gunType: 0
     upgradeStat: 0
-    upgradeAmount: 5
+    maxLevel: 1
+    baseCost: 0
+    costPerLevel: 0
+    baseAmount: 0
+    amountPerLevel: 0
     quantity: 1
   - id: 102
     itemName: '"SMG Upgrade II"'
@@ -27168,7 +27035,11 @@ MonoBehaviour:
     type: 0
     gunType: 3
     upgradeStat: 0
-    upgradeAmount: 5
+    maxLevel: 1
+    baseCost: 0
+    costPerLevel: 0
+    baseAmount: 0
+    amountPerLevel: 0
     quantity: 1
   - id: 103
     itemName: '"SMG Upgrade III"'
@@ -27176,7 +27047,11 @@ MonoBehaviour:
     type: 0
     gunType: 3
     upgradeStat: 0
-    upgradeAmount: 5
+    maxLevel: 1
+    baseCost: 0
+    costPerLevel: 0
+    baseAmount: 0
+    amountPerLevel: 0
     quantity: 1
   - id: 104
     itemName: '"SMG Upgrade IIII"'
@@ -27184,7 +27059,11 @@ MonoBehaviour:
     type: 0
     gunType: 3
     upgradeStat: 0
-    upgradeAmount: 5
+    maxLevel: 1
+    baseCost: 0
+    costPerLevel: 0
+    baseAmount: 0
+    amountPerLevel: 0
     quantity: 1
   - id: 111
     itemName: '"Rifle Upgrade I"'
@@ -27192,7 +27071,11 @@ MonoBehaviour:
     type: 0
     gunType: 1
     upgradeStat: 0
-    upgradeAmount: 5
+    maxLevel: 1
+    baseCost: 0
+    costPerLevel: 0
+    baseAmount: 0
+    amountPerLevel: 0
     quantity: 1
   - id: 112
     itemName: '"Rifle Upgrade II"'
@@ -27200,7 +27083,11 @@ MonoBehaviour:
     type: 0
     gunType: 3
     upgradeStat: 0
-    upgradeAmount: 5
+    maxLevel: 1
+    baseCost: 0
+    costPerLevel: 0
+    baseAmount: 0
+    amountPerLevel: 0
     quantity: 1
   - id: 113
     itemName: '"Rifle Upgrade III"'
@@ -27208,7 +27095,11 @@ MonoBehaviour:
     type: 0
     gunType: 3
     upgradeStat: 0
-    upgradeAmount: 5
+    maxLevel: 1
+    baseCost: 0
+    costPerLevel: 0
+    baseAmount: 0
+    amountPerLevel: 0
     quantity: 1
   - id: 114
     itemName: '"Rifle Upgrade IIII"'
@@ -27216,7 +27107,11 @@ MonoBehaviour:
     type: 0
     gunType: 3
     upgradeStat: 0
-    upgradeAmount: 5
+    maxLevel: 1
+    baseCost: 0
+    costPerLevel: 0
+    baseAmount: 0
+    amountPerLevel: 0
     quantity: 1
   - id: 121
     itemName: '"AR Upgrade I"'
@@ -27224,7 +27119,11 @@ MonoBehaviour:
     type: 0
     gunType: 3
     upgradeStat: 0
-    upgradeAmount: 5
+    maxLevel: 1
+    baseCost: 0
+    costPerLevel: 0
+    baseAmount: 0
+    amountPerLevel: 0
     quantity: 1
   - id: 122
     itemName: '"AR Upgrad II"'
@@ -27232,7 +27131,11 @@ MonoBehaviour:
     type: 0
     gunType: 3
     upgradeStat: 0
-    upgradeAmount: 5
+    maxLevel: 1
+    baseCost: 0
+    costPerLevel: 0
+    baseAmount: 0
+    amountPerLevel: 0
     quantity: 1
   - id: 123
     itemName: '"AR Upgrade III"'
@@ -27240,7 +27143,11 @@ MonoBehaviour:
     type: 0
     gunType: 3
     upgradeStat: 0
-    upgradeAmount: 5
+    maxLevel: 1
+    baseCost: 0
+    costPerLevel: 0
+    baseAmount: 0
+    amountPerLevel: 0
     quantity: 1
   - id: 124
     itemName: '"AR Upgrade IIII"'
@@ -27248,7 +27155,11 @@ MonoBehaviour:
     type: 0
     gunType: 3
     upgradeStat: 0
-    upgradeAmount: 5
+    maxLevel: 1
+    baseCost: 0
+    costPerLevel: 0
+    baseAmount: 0
+    amountPerLevel: 0
     quantity: 1
   - id: 201
     itemName: '"Health Upgrade I"'
@@ -27256,7 +27167,11 @@ MonoBehaviour:
     type: 0
     gunType: 3
     upgradeStat: 0
-    upgradeAmount: 25
+    maxLevel: 1
+    baseCost: 0
+    costPerLevel: 0
+    baseAmount: 0
+    amountPerLevel: 0
     quantity: 1
   - id: 202
     itemName: '"Health Upgrade II"'
@@ -27264,7 +27179,11 @@ MonoBehaviour:
     type: 0
     gunType: 3
     upgradeStat: 0
-    upgradeAmount: 50
+    maxLevel: 1
+    baseCost: 0
+    costPerLevel: 0
+    baseAmount: 0
+    amountPerLevel: 0
     quantity: 1
   - id: 203
     itemName: Health Upgrade III
@@ -27272,7 +27191,11 @@ MonoBehaviour:
     type: 0
     gunType: 3
     upgradeStat: 0
-    upgradeAmount: 75
+    maxLevel: 1
+    baseCost: 0
+    costPerLevel: 0
+    baseAmount: 0
+    amountPerLevel: 0
     quantity: 1
   - id: 204
     itemName: '"Health Upgrade IIII"'
@@ -27280,7 +27203,11 @@ MonoBehaviour:
     type: 0
     gunType: 3
     upgradeStat: 0
-    upgradeAmount: 100
+    maxLevel: 1
+    baseCost: 0
+    costPerLevel: 0
+    baseAmount: 0
+    amountPerLevel: 0
     quantity: 1
   consumableItems:
   - id: 301
@@ -27289,7 +27216,11 @@ MonoBehaviour:
     type: 0
     gunType: 3
     upgradeStat: 0
-    upgradeAmount: 0
+    maxLevel: 1
+    baseCost: 0
+    costPerLevel: 0
+    baseAmount: 0
+    amountPerLevel: 0
     quantity: 1
   - id: 302
     itemName: Health Potion (20c)
@@ -27297,7 +27228,11 @@ MonoBehaviour:
     type: 0
     gunType: 3
     upgradeStat: 0
-    upgradeAmount: 0
+    maxLevel: 1
+    baseCost: 0
+    costPerLevel: 0
+    baseAmount: 0
+    amountPerLevel: 0
     quantity: 1
   - id: 303
     itemName: Health Potion (30c)
@@ -27305,7 +27240,11 @@ MonoBehaviour:
     type: 0
     gunType: 3
     upgradeStat: 0
-    upgradeAmount: 0
+    maxLevel: 1
+    baseCost: 0
+    costPerLevel: 0
+    baseAmount: 0
+    amountPerLevel: 0
     quantity: 1
   - id: 304
     itemName: Health Potion (40c)
@@ -27313,7 +27252,11 @@ MonoBehaviour:
     type: 0
     gunType: 3
     upgradeStat: 0
-    upgradeAmount: 0
+    maxLevel: 1
+    baseCost: 0
+    costPerLevel: 0
+    baseAmount: 0
+    amountPerLevel: 0
     quantity: 1
   storeUIPanel: {fileID: 8793651545182648863}
 --- !u!1 &8819467401769378021
@@ -27518,82 +27461,6 @@ MonoBehaviour:
       m_Calls: []
   m_Sprite: {fileID: 10907, guid: 0000000000000000f000000000000000, type: 0}
   m_Type: 1
-  m_PreserveAspect: 0
-  m_FillCenter: 1
-  m_FillMethod: 4
-  m_FillAmount: 1
-  m_FillClockwise: 1
-  m_FillOrigin: 0
-  m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 1
---- !u!1 &8889659228943550605
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 544560402448213241}
-  - component: {fileID: 770921467717193030}
-  - component: {fileID: 8875335276780497241}
-  m_Layer: 5
-  m_Name: C Image
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!224 &544560402448213241
-RectTransform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8889659228943550605}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 2082593971246533258}
-  m_Father: {fileID: 3837536969516251067}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 1, y: 0}
-  m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: 1715.5, y: -1200}
-  m_SizeDelta: {x: 300, y: 50}
-  m_Pivot: {x: 0.5, y: 0.5}
---- !u!222 &770921467717193030
-CanvasRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8889659228943550605}
-  m_CullTransparentMesh: 1
---- !u!114 &8875335276780497241
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8889659228943550605}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
-  m_Material: {fileID: 0}
-  m_Color: {r: 0.2735849, g: 0.255518, b: 0.255518, a: 0.78431374}
-  m_RaycastTarget: 1
-  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-  m_Maskable: 1
-  m_OnCullStateChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  m_Sprite: {fileID: 0}
-  m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4

@@ -693,15 +693,6 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable, IAmm
             return;
         }
 
-        if (item is AmmoStats ammo)
-        {
-            if (ammo.compatibleGun != null)
-            {
-                AddAmmo(ammo.ammoAmount);
-            }
-            return;
-        }
-
         Debug.LogWarning("Picked up unknown item: " + item.name);
     }
 
@@ -855,6 +846,8 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable, IAmm
             gunListPos = gunList.Count - 1;
 
             gunAmmoInventory.Add(new GunAmmoData(gun));
+
+            Debug.Log($"Picked up {gun.name}");
         }
 
         changeGun();
