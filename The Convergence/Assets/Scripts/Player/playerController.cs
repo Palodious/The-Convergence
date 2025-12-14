@@ -2,6 +2,7 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.SceneManagement;
+using UnityEngine.EventSystems;
 
 public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable, IAmmo
 {
@@ -366,9 +367,14 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable, IAmm
         finalMove.y = playerVel.y;
         controller.Move(finalMove * Time.deltaTime);
 
+        bool isOverUI = EventSystem.current.IsPointerOverGameObject();
+
         if (Input.GetButton("Fire1") && shootTimer >= shootRate && !isReloading)
         {
-            shoot();
+            if (!isOverUI)
+            {
+                shoot();
+            }
         }
 
         if (Input.GetKeyDown(KeyCode.R) && !isReloading && activeGunStats != null)
