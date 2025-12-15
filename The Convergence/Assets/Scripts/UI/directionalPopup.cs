@@ -9,20 +9,25 @@ public class directionalPopup : MonoBehaviour
 
     private bool dialogueActive = false;
 
+    
+    private bool hasShown = false;
+
     void Start()
     {
-        
         dialoguePanel.SetActive(false);
-
-        
         exitButton.onClick.AddListener(CloseDialogue);
     }
 
     private void OnTriggerEnter(Collider other)
     {
+        
+        if (hasShown)
+            return;
+
         if (!dialogueActive && other.CompareTag("Player"))
         {
             OpenDialogue();
+            hasShown = true;
         }
     }
 
@@ -31,10 +36,7 @@ public class directionalPopup : MonoBehaviour
         dialogueActive = true;
         dialoguePanel.SetActive(true);
 
-        // Pause game
         Time.timeScale = 0f;
-
-        // Unlock cursor so they can click
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
     }
@@ -44,10 +46,7 @@ public class directionalPopup : MonoBehaviour
         dialogueActive = false;
         dialoguePanel.SetActive(false);
 
-        // Unpause game
         Time.timeScale = 1f;
-
-        // Lock cursor again for gameplay
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
     }
