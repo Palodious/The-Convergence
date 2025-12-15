@@ -2,7 +2,6 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.SceneManagement;
-using UnityEngine.EventSystems;
 
 public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable, IAmmo
 {
@@ -92,12 +91,6 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable, IAmm
     private bool canUseMedkit = true;
     private float medkitCooldown = 0f;
 
-    [Header("~=~= TPS / Aiming Settings =~=~")]
-    public Transform aimTarget; // assign empty AimTarget in front of player
-    public Transform rightHandIKTarget; // assign empty child at gun grip
-    public Transform leftHandIKTarget; // assign empty child for left hand support
-    private PlayerIKController ikController;
-
     [Header("~=~= Reload Settings =~=~")]
     [SerializeField] AudioClip reloadSound;
     [Range(0, 1)][SerializeField] float reloadSoundVol = 1f;
@@ -137,8 +130,6 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable, IAmm
         currentMaxHP = intialHP + persistentHealthUpgradeTotal;
         originalSpeed = speed;
 
-        InitializeIKSystem();
-
         if (ammoTextDisplay == null)
         {
             // Look for ammo UI in the scene
@@ -168,119 +159,6 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable, IAmm
         UpdateAmmoDisplay();
     }
 
-    void InitializeIKSystem()
-    {
-        ikController = GetComponent<PlayerIKController>();
-        if (ikController == null)
-            ikController = GetComponentInChildren<PlayerIKController>();
-
-        if (ikController == null)
-        {
-            Debug.LogWarning("No PlayerIKController found. Adding one...");
-            ikController = gameObject.AddComponent<PlayerIKController>();
-        }
-
-        if (rightHandIKTarget == null)
-        {
-            GameObject rightIK = new GameObject("RightHandIKTarget");
-            rightIK.transform.SetParent(transform);
-            rightIK.transform.localPosition = new Vector3(0.2f, 1.5f, 0.3f); // Default position
-            rightHandIKTarget = rightIK.transform;
-        }
-
-        if (leftHandIKTarget == null)
-        {
-            GameObject leftIK = new GameObject("LeftHandIKTarget");
-            leftIK.transform.SetParent(transform);
-            leftIK.transform.localPosition = new Vector3(-0.2f, 1.5f, 0.3f);
-            leftHandIKTarget = leftIK.transform;
-        }
-
-        if (aimTarget == null && Camera.main != null)
-        {
-            GameObject aimObj = new GameObject("AimTarget");
-            aimTarget = aimObj.transform;
-            aimTarget.SetParent(Camera.main.transform);
-            aimTarget.localPosition = Vector3.forward * 10f;
-        }
-
-        if (ikController != null)
-        {
-            if (ikController.animator == null && animator != null)
-                ikController.animator = animator;
-
-            if (ikController.rightHandIKTarget == null)
-                ikController.rightHandIKTarget = rightHandIKTarget;
-
-            if (ikController.leftHandIKTarget == null)
-                ikController.leftHandIKTarget = leftHandIKTarget;
-
-            if (ikController.aimTarget == null)
-                ikController.aimTarget = aimTarget;
-        }
-    }
-
-    void ResetStaticData()
-    {
-        persistentGunList.Clear();
-        persistentKeyList.Clear();
-        persistentGunListPos = 0;
-        persistentHP = HP;
-        persistentMaxHP = HP;
-        persistentHealthUpgradeTotal = 0;
-        Debug.Log("Static data reset for new game session");
-    }
-
-    void LoadPersistentData()
-    {
-        gunList.Clear();
-        keyList.Clear();
-
-        foreach (var gun in persistentGunList)
-        {
-            getGunStats(gun);
-        }
-
-        foreach (var key in persistentKeyList)
-        {
-            AddKeyToList(key);
-        }
-
-        if (persistentGunList.Count > 0)
-        {
-            gunListPos = Mathf.Clamp(persistentGunListPos, 0, persistentGunList.Count - 1);
-            changeGun();
-        }
-
-        HP = persistentHP;
-        currentMaxHP = intialHP + persistentHealthUpgradeTotal;
-
-        // Move to spawn point
-        if (gamemanager.instance != null && gamemanager.instance.spawnPoint != null)
-        {
-            controller.enabled = false;
-            transform.position = gamemanager.instance.spawnPoint.transform.position;
-            controller.enabled = true;
-        }
-
-        updatePlayerUI();
-    }
-
-    void SavePersistentData()
-    {
-        persistentGunList = new List<gunStats>(gunList);
-        persistentKeyList = new List<keyStats>(keyList);
-        persistentGunListPos = gunListPos;
-        persistentHP = HP;
-        persistentMaxHP = currentMaxHP;
-        persistentHealthUpgradeTotal = currentMaxHP - intialHP;
-    }
-
-    public void PrepareForSceneTransition()
-    {
-        SavePersistentData();
-    }
-
     void Update()
     {
         if (!gamemanager.instance.isPaused)
@@ -292,59 +170,19 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable, IAmm
         }
 
         sprint();
+
+        // handle medkit cooldown timer
+        HandleMedkitCooldown();
     }
 
     void movement()
     {
-        float h = Input.GetAxis("Horizontal");
-        float v = Input.GetAxis("Vertical");
-
-        Vector3 inputDirection = new Vector3(h, 0, v);
-        Vector3 moveDir = Vector3.zero;
-
-        if (inputDirection.magnitude > 0.1f)
-        {
-            Vector3 camForward = Camera.main.transform.forward;
-            Vector3 camRight = Camera.main.transform.right;
-            camForward.y = 0;
-            camRight.y = 0;
-            camForward.Normalize();
-            camRight.Normalize();
-
-            moveDir = (camForward * v + camRight * h).normalized;
-
-            Vector3 localMove = transform.InverseTransformDirection(moveDir);
-            float animX = localMove.x;
-            float animY = localMove.z;
-
-            if (animator != null)
-            {
-                animator.SetFloat("MoveX", animX, 0.1f, Time.deltaTime);
-                animator.SetFloat("MoveY", isSprinting ? animY * 1.3f : animY, 0.1f, Time.deltaTime);
-            }
-        }
-        else
-        {
-            if (animator != null)
-            {
-                animator.SetFloat("MoveX", 0, 0.1f, Time.deltaTime);
-                animator.SetFloat("MoveY", 0, 0.1f, Time.deltaTime);
-            }
-        }
-
-        Vector3 camForwardDir = Camera.main.transform.forward;
-        camForwardDir.y = 0f;
-        if (camForwardDir.sqrMagnitude > 0.001f)
-        {
-            Quaternion targetRotation = Quaternion.LookRotation(camForwardDir);
-            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * 15f);
-        }
-
         if (controller.isGrounded)
         {
             if (playerVel.y < 0) playerVel.y = -2f;
 
-            if (moveDir.magnitude > 0.3f && !isPlayingStep)
+            // play footstep audio if moving
+            if (moveDir.normalized.magnitude > 0.3f && !isPlayingStep)
             {
                 StartCoroutine(playStep());
             }
@@ -352,44 +190,40 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable, IAmm
         else
         {
             if (isGliding)
-                playerVel.y = -glideGravity;
-            else
-                playerVel.y -= gravity * Time.deltaTime;
-        }
-
-        jump();
-
-        Vector3 horizontalMove = moveDir * speed * Mathf.Clamp01(new Vector2(h, v).magnitude);
-        Vector3 finalMove = horizontalMove;
-        finalMove.y = playerVel.y;
-        controller.Move(finalMove * Time.deltaTime);
-
-        bool isOverUI = EventSystem.current.IsPointerOverGameObject();
-
-        if (Input.GetButton("Fire1") && shootTimer >= shootRate && !isReloading)
-        {
-            if (!isOverUI)
             {
-                shoot();
+                float targetFallSpeed = -glideGravity;
+                playerVel.y = Mathf.Lerp(playerVel.y, targetFallSpeed, Time.deltaTime * 2f);
+            }
+            else
+            {
+                playerVel.y -= gravity * Time.deltaTime;
             }
         }
 
-        if (Input.GetKeyDown(KeyCode.R) && !isReloading && activeGunStats != null)
-        {
-            Reload();
-        }
+        moveDir = Input.GetAxis("Horizontal") * transform.right + Input.GetAxis("Vertical") * transform.forward;
+        controller.Move(moveDir * speed * Time.deltaTime);
 
-        selectGun();
+        jump();
+        controller.Move(playerVel * Time.deltaTime);
 
         if (!controller.isGrounded)
         {
             if (Input.GetKeyDown(KeyCode.G)) StartGlide();
             if (Input.GetKeyUp(KeyCode.G)) StopGlide();
         }
-        else if (isGliding)
+        else if (isGliding) StopGlide();
+
+        if (Input.GetButton("Fire1") && shootTimer >= shootRate)
         {
-            StopGlide();
+            shoot();
         }
+
+        if (Input.GetKeyDown(KeyCode.R))
+        {
+            Reload();
+        }
+
+        selectGun();
     }
 
     IEnumerator playStep()
@@ -482,35 +316,18 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable, IAmm
 
         UpdateAmmoDisplay();
 
-        // fire from gunModel toward the AimTarget
-        if (aimTarget != null && gunModel != null)
+        // Simple raycast from camera
+        if (Physics.Raycast(Camera.main.transform.position, Camera.main.transform.forward, out RaycastHit hit, activeGunStats.shootDist, ~ignoreLayer))
         {
-            Vector3 shootDir = (aimTarget.position - gunModel.transform.position).normalized;
-            if (Physics.Raycast(gunModel.transform.position, shootDir, out RaycastHit hit, activeGunStats.shootDist, ~ignoreLayer))
+            Debug.Log(hit.collider.name);
+
+            IDamage dmg = hit.collider.GetComponent<IDamage>();
+            if (dmg != null)
             {
-                Debug.Log(hit.collider.name);
-
-                IDamage dmg = hit.collider.GetComponent<IDamage>();
-                if (dmg != null)
-                {
-                    dmg.takeDamage(Mathf.RoundToInt(activeGunStats.shootDamage * damageBoost));
-                }
-
-                Instantiate(activeGunStats.hitEffect, hit.point, Quaternion.identity);
+                dmg.takeDamage(Mathf.RoundToInt(activeGunStats.shootDamage * damageBoost));
             }
-        }
-        else
-        {
-            if (Physics.Raycast(Camera.main.transform.position, Camera.main.transform.forward, out RaycastHit hit2, activeGunStats.shootDist, ~ignoreLayer))
-            {
-                IDamage dmg = hit2.collider.GetComponent<IDamage>();
-                if (dmg != null)
-                {
-                    dmg.takeDamage(Mathf.RoundToInt(activeGunStats.shootDamage * damageBoost));
-                }
 
-                Instantiate(activeGunStats.hitEffect, hit2.point, Quaternion.identity);
-            }
+            Instantiate(activeGunStats.hitEffect, hit.point, Quaternion.identity);
         }
     }
 
@@ -662,11 +479,13 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable, IAmm
         updatePlayerUI();
     }
 
+    // Expose which gun slot I'm using so the save system can store it.
     public int GetCurrentGunIndex()
     {
         return gunListPos;
     }
 
+    // After loading, call this to rebuild the visual gun model.
     public void RestoreGunVisual(int index)
     {
         if (gunList == null || gunList.Count == 0)
@@ -840,6 +659,24 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable, IAmm
         }
     }
 
+    public void HandleMedkitCooldown()
+    {
+        if (!canUseMedkit)
+        {
+            medkitCooldown -= Time.deltaTime;
+            if (medkitCooldown <= 0f)
+            {
+                canUseMedkit = true;
+                medkitCooldown = 0f;
+            }
+        }
+    }
+
+    public bool CanUseMedkit()
+    {
+        return canUseMedkit && HP < currentMaxHP;
+    }
+
     public void getGunStats(gunStats gun)
     {
         if (gunList.Contains(gun))
@@ -881,54 +718,7 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable, IAmm
         newGunModel.transform.localPosition = Vector3.zero;
         newGunModel.transform.localRotation = Quaternion.identity;
 
-        UpdateIKTargetsFromGun(newGunModel);
-
         UpdateAmmoDisplay();
-    }
-
-    void UpdateIKTargetsFromGun(GameObject gunObject)
-    {
-        if (gunObject == null || ikController == null) return;
-
-        // Find IK targets on the gun using recursive search
-        Transform gunRightHandIK = FindDeepChild(gunObject.transform, "RightHandIK");
-        Transform gunLeftHandIK = FindDeepChild(gunObject.transform, "LeftHandIK");
-
-        ikController.UpdateGunIKTargets(gunRightHandIK, gunLeftHandIK);
-
-        if (gunRightHandIK == null)
-        {
-            // Position the right hand IK target at a reasonable default
-            rightHandIKTarget.SetParent(gunObject.transform);
-            rightHandIKTarget.localPosition = new Vector3(0.05f, -0.03f, 0.2f);
-            rightHandIKTarget.localRotation = Quaternion.identity;
-
-            ikController.UpdateGunIKTargets(rightHandIKTarget, null);
-        }
-
-        if (gunLeftHandIK == null)
-        {
-            // Position the left hand IK target at a reasonable default
-            leftHandIKTarget.SetParent(gunObject.transform);
-            leftHandIKTarget.localPosition = new Vector3(-0.05f, -0.02f, 0.4f);
-            leftHandIKTarget.localRotation = Quaternion.identity;
-
-            ikController.UpdateGunIKTargets(null, leftHandIKTarget);
-        }
-    }
-
-    Transform FindDeepChild(Transform parent, string childName)
-    {
-        foreach (Transform child in parent)
-        {
-            if (child.name == childName)
-                return child;
-
-            Transform result = FindDeepChild(child, childName);
-            if (result != null)
-                return result;
-        }
-        return null;
     }
 
     void selectGun()
@@ -1036,5 +826,66 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable, IAmm
 
         updatePlayerUI();
         Debug.Log($"CONFIRM: Max HP upgraded by {increase}. New Max HP: {currentMaxHP}");
+    }
+
+    void ResetStaticData()
+    {
+        persistentGunList.Clear();
+        persistentKeyList.Clear();
+        persistentGunListPos = 0;
+        persistentHP = HP;
+        persistentMaxHP = HP;
+        persistentHealthUpgradeTotal = 0;
+        Debug.Log("Static data reset for new game session");
+    }
+
+    void LoadPersistentData()
+    {
+        gunList.Clear();
+        keyList.Clear();
+
+        foreach (var gun in persistentGunList)
+        {
+            getGunStats(gun);
+        }
+
+        foreach (var key in persistentKeyList)
+        {
+            AddKeyToList(key);
+        }
+
+        if (persistentGunList.Count > 0)
+        {
+            gunListPos = Mathf.Clamp(persistentGunListPos, 0, persistentGunList.Count - 1);
+            changeGun();
+        }
+
+        HP = persistentHP;
+        currentMaxHP = intialHP + persistentHealthUpgradeTotal;
+
+        // Move to spawn point
+        if (gamemanager.instance != null && gamemanager.instance.spawnPoint != null)
+        {
+            controller.enabled = false;
+            transform.position = gamemanager.instance.spawnPoint.transform.position;
+            controller.enabled = true;
+        }
+
+        updatePlayerUI();
+    }
+
+    void SavePersistentData()
+    {
+        persistentGunList = new List<gunStats>(gunList);
+        persistentKeyList = new List<keyStats>(keyList);
+        persistentGunListPos = gunListPos;
+        persistentHP = HP;
+        persistentMaxHP = currentMaxHP;
+        persistentHealthUpgradeTotal = currentMaxHP - intialHP;
+    }
+
+    public void PrepareForSceneTransition()
+    {
+        SavePersistentData();
     }
 }
