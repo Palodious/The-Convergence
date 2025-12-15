@@ -4,7 +4,7 @@ using UnityEngine.SceneManagement;
 public class sceneLoadTrigger : MonoBehaviour
 {
     [Header("Scene To Load")]
-    [SerializeField] private string sceneName = "Game Play Scene 3";
+    [SerializeField] private string sceneName = "Game Play Scene L3";
 
     private void OnTriggerEnter(Collider other)
     {
