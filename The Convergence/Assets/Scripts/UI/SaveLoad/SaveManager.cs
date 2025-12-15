@@ -256,4 +256,22 @@ public class SaveManager : MonoBehaviour
             }
         }
     }
+
+    public void DeleteSave()
+    {
+        try
+        {
+            if (File.Exists(SavePath))
+                File.Delete(SavePath);
+
+            string tmpPath = SavePath + ".tmp";
+            if (File.Exists(tmpPath))
+                File.Delete(tmpPath);
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogWarning($"SaveManager.DeleteSave: Failed to delete save file: {e.Message}");
+        }
+    }
+
 }

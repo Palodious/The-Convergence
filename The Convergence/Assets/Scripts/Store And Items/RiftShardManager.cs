@@ -22,6 +22,10 @@ public class RiftShardManager : MonoBehaviour, ISaveable
 
         Instance = this;
         DontDestroyOnLoad(gameObject);
+
+        amount = Mathf.Max(0, amount);
+        OnShardAmountChanged?.Invoke(amount);
+
     }
 
     public void Add(int value)
@@ -30,6 +34,12 @@ public class RiftShardManager : MonoBehaviour, ISaveable
 
         amount += value;
         OnShardAmountChanged?.Invoke(amount);
+    }
+
+    public bool CanAfford(int cost)
+    {
+        if (cost <= 0) return true;
+        return amount >= cost;
     }
 
     public bool TrySpend(int value)
@@ -45,6 +55,19 @@ public class RiftShardManager : MonoBehaviour, ISaveable
 
         return false;
     }
+
+    public void SetAmount(int newAmount)
+    {
+        amount = Mathf.Max(0, newAmount);
+        OnShardAmountChanged?.Invoke(amount);
+    }
+
+    public void ResetAmount()
+    {
+        amount = 0;
+        OnShardAmountChanged?.Invoke(amount);
+    }
+
     [Serializable]
     private struct RiftShardSaveData
     {
