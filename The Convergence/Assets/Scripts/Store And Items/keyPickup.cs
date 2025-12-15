@@ -5,12 +5,53 @@ public class keyPickup : MonoBehaviour
     [SerializeField] keyStats key;
     [SerializeField] private bool isPickup = true;
 
+    [Header("Pickup Visuals")]
+    [SerializeField] private float rotationSpeed = 50f;
+    [SerializeField] private float bobSpeed = 2f;
+    [SerializeField] private float bobHeight = 0.2f;
+
+    private Vector3 startPosition;
+    private Light pickupLight;
+    private AudioSource audioSource;
+
     private void Start()
     {
         if (!isPickup)
         {
             this.enabled = false;
+            return;
         }
+
+        startPosition = transform.position;
+
+        audioSource = gameObject.AddComponent<AudioSource>();
+        audioSource.spatialBlend = 1f; // 3D sound
+        audioSource.playOnAwake = false;
+
+        Color lightColor = (key != null && key.lightColor != Color.clear) ? key.lightColor : Color.yellow;
+        float lightRange = (key != null && key.lightRange > 0) ? key.lightRange : 3f;
+        float lightIntensity = (key != null && key.lightIntensity > 0) ? key.lightIntensity : 1.5f;
+
+        pickupLight = GetComponent<Light>();
+        if (pickupLight == null)
+        {
+            pickupLight = gameObject.AddComponent<Light>();
+        }
+
+        pickupLight.color = lightColor;
+        pickupLight.range = lightRange;
+        pickupLight.intensity = lightIntensity;
+        pickupLight.shadows = LightShadows.Soft;
+    }
+
+    private void Update()
+    {
+        if (!isPickup) return;
+
+        transform.Rotate(Vector3.up, rotationSpeed * Time.deltaTime);
+
+        float newY = startPosition.y + Mathf.Sin(Time.time * bobSpeed) * bobHeight;
+        transform.position = new Vector3(transform.position.x, newY, transform.position.z);
     }
 
     private void OnTriggerEnter(Collider other)
@@ -21,17 +62,45 @@ public class keyPickup : MonoBehaviour
         playerController player = other.GetComponent<playerController>();
         if (player != null)
         {
-            // DETACH the light before giving the key
-            Light keyLight = GetComponent<Light>();
-            if (keyLight != null)
-            {
-                keyLight.transform.SetParent(null);
-                Destroy(keyLight.gameObject);
-            }
-
             player.GetItem(key);
-            Destroy(gameObject);
+            OnPickup();
         }
+    }
+
+    private void OnPickup()
+    {
+        if (key != null && key.pickupSound != null)
+        {
+            float volume = key.pickupSoundVol;
+            if (audioSource != null)
+            {
+                audioSource.PlayOneShot(key.pickupSound, volume);
+            }
+            else
+            {
+                AudioSource.PlayClipAtPoint(key.pickupSound, transform.position, volume);
+            }
+        }
+
+        if (key != null && key.pickupEffect != null)
+        {
+            Instantiate(key.pickupEffect, transform.position, Quaternion.identity);
+        }
+
+        isPickup = false;
+
+        MeshRenderer meshRenderer = GetComponent<MeshRenderer>();
+        if (meshRenderer != null)
+            meshRenderer.enabled = false;
+
+        Collider collider = GetComponent<Collider>();
+        if (collider != null)
+            collider.enabled = false;
+
+        if (pickupLight != null)
+            pickupLight.enabled = false;
+
+        Destroy(gameObject, 1f);
     }
 
     public void EnablePickup()
