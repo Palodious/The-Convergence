@@ -2863,7 +2863,6 @@ GameObject:
   m_Component:
   - component: {fileID: 7600442695147791281}
   - component: {fileID: 8236199846886816912}
-  - component: {fileID: 2594237782198634526}
   - component: {fileID: 747689891001616926}
   - component: {fileID: 3693304940127708936}
   - component: {fileID: 7203144924493123071}
@@ -2951,30 +2950,6 @@ MonoBehaviour:
   deathAnimationTime: 2
   deathSound: {fileID: 0}
   deathSoundVol: 1
---- !u!114 &2594237782198634526
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7722342076906786010}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 45e72b0b765a4444bb63bbf7717feb60, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::PlayerIKController
-  animator: {fileID: 3693304940127708936}
-  rightHandIKTarget: {fileID: 5449840082077763867}
-  leftHandIKTarget: {fileID: 4855615431218078564}
-  aimTarget: {fileID: 0}
-  rightHandIKWeight: 1
-  leftHandIKWeight: 1
-  lookAtIKWeight: 1
-  lookAtBodyWeight: 0.3
-  lookAtHeadWeight: 0.7
-  lookAtEyesWeight: 1
-  lookAtClampWeight: 0.5
-  weightSmoothSpeed: 8
 --- !u!114 &747689891001616926
 MonoBehaviour:
   m_ObjectHideFlags: 0

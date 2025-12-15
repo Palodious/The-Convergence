@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.SceneManagement;
 
-public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable, IAmmo
+public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
 {
     [Header("~=~= Components =~=~")]
     [SerializeField] CharacterController controller;
