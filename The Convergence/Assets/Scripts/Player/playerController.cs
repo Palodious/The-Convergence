@@ -22,6 +22,10 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
     [Range(1, 100)][SerializeField] int shootDamage;
     [Range(1, 100)][SerializeField] int shootDist;
     [Range(0.01f, 5f)][SerializeField] float shootRate;
+    [SerializeField] LineRenderer bulletTrail;
+    [Range(0.01f, 0.1f)][SerializeField] float trailDuration = 0.05f;
+    [Range(0.01f, 0.5f)][SerializeField] float trailWidth = 0.05f;
+    [SerializeField] Gradient trailGradient = new Gradient();
 
     [Header("~=~= Movement Modifiers =~=~")]
     [Range(0.1f, 50f)][SerializeField] float glideGravity;
@@ -119,7 +123,6 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
         if (animator == null)
             animator = GetComponent<Animator>();
 
-        // Check if we're starting a new game session
         int currentSceneIndex = SceneManager.GetActiveScene().buildIndex;
 
         if (currentSceneIndex == 1 && isNewGameSession)
@@ -144,6 +147,18 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
                 ammoTextDisplay = ammoUI.GetComponent<TMPro.TextMeshProUGUI>();
         }
 
+        if (bulletTrail == null)
+        {
+            GameObject trailObj = new GameObject("BulletTrail");
+            trailObj.transform.SetParent(transform);
+            bulletTrail = trailObj.AddComponent<LineRenderer>();
+            bulletTrail.startWidth = trailWidth;
+            bulletTrail.endWidth = trailWidth * 0.5f;
+            bulletTrail.material = new Material(Shader.Find("Sprites/Default"));
+            bulletTrail.colorGradient = trailGradient;
+            bulletTrail.enabled = false;
+        }
+
         if (SaveManager.IsLoadingFromSave)
         {
             Debug.Log("playerController.Start: IsLoadingFromSave = true, skipping respawn/persistent init.");
@@ -154,7 +169,6 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
 
         if (currentSceneIndex > 1 && (persistentGunList.Count > 0 || persistentKeyList.Count > 0 || persistentAmmoPickupHistory.Count > 0))
         {
-            // Load persistent data (but not on first scene)
             LoadPersistentData();
         }
         else
@@ -187,7 +201,6 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
             playerVel = Vector3.zero;
             jumpCount = 0;
 
-            // play footstep audio if moving
             if (moveDir.normalized.magnitude > 0.3f && !isPlayingStep)
             {
                 StartCoroutine(playStep());
@@ -323,6 +336,10 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
 
         UpdateAmmoDisplay();
 
+        Vector3 startPos = gunModel.transform.position;
+        Vector3 endPos;
+        bool hitSomething = false;
+
         if (Physics.Raycast(Camera.main.transform.position, Camera.main.transform.forward, out RaycastHit hit, activeGunStats.shootDist, ~ignoreLayer))
         {
             Debug.Log(hit.collider.name);
@@ -334,7 +351,37 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
             }
 
             Instantiate(activeGunStats.hitEffect, hit.point, Quaternion.identity);
+            endPos = hit.point;
+            hitSomething = true;
         }
+        else
+        {
+            endPos = Camera.main.transform.position + Camera.main.transform.forward * activeGunStats.shootDist;
+        }
+
+        StartCoroutine(ShowBulletTrail(startPos, endPos, hitSomething));
+    }
+
+    IEnumerator ShowBulletTrail(Vector3 start, Vector3 end, bool hitTarget)
+    {
+        bulletTrail.enabled = true;
+        bulletTrail.SetPosition(0, start);
+        bulletTrail.SetPosition(1, end);
+
+        if (hitTarget)
+        {
+            bulletTrail.startColor = Color.yellow;
+            bulletTrail.endColor = Color.red;
+        }
+        else
+        {
+            bulletTrail.startColor = Color.white;
+            bulletTrail.endColor = new Color(1, 1, 1, 0.5f);
+        }
+
+        yield return new WaitForSeconds(trailDuration);
+
+        bulletTrail.enabled = false;
     }
 
     public void Reload()
@@ -538,10 +585,8 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
 
         bool ammoAdded = false;
 
-        // FIXED: Check gunTypes array instead of gunType
         if (ammo.gunType != null && ammo.gunType.Length > 0)
         {
-            // Loop through each gun in the array
             foreach (gunStats gunType in ammo.gunType)
             {
                 if (gunType == null) continue;
@@ -568,7 +613,6 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
         }
         else
         {
-            // Empty array - give ammo to current active gun only
             if (activeGunStats != null)
             {
                 GunAmmoData ammoData = gunAmmoInventory.Find(data => data.gunType == activeGunStats);
@@ -643,7 +687,6 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
             keyList.Add(key);
             Debug.Log($"Player picked up {key.keyName}! Total keys: {keyList.Count}");
 
-            // Remove any non-player lights
             Light[] allLights = GetComponentsInChildren<Light>();
             foreach (Light light in allLights)
             {
@@ -694,7 +737,7 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
     {
         if (keyList.Count > 0)
         {
-            keyStats usedKey = keyList[0]; // Use the first key
+            keyStats usedKey = keyList[0];
             keyList.RemoveAt(0);
             Debug.Log($"Player used a key ({usedKey.keyName})! Keys remaining: {keyList.Count}");
             return true;
@@ -957,7 +1000,6 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
         HP = persistentHP;
         currentMaxHP = intialHP + persistentHealthUpgradeTotal;
 
-        // Move to spawn point
         if (gamemanager.instance != null && gamemanager.instance.spawnPoint != null)
         {
             controller.enabled = false;
