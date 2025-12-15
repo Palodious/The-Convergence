@@ -4,12 +4,12 @@ using UnityEngine;
 public class AmmoStats : ScriptableObject
 {
     [Header("Ammo Settings")]
-    public int ammoAmount = 30; // Amount of ammo this pickup gives
-    public gunStats gunType; // Which gun this ammo is for (null = current gun)
+    public int ammoAmount = 30;
+    public gunStats[] gunType;
 
     [Header("Pickup Effects")]
-    public GameObject pickupEffect; // Optional particle effect
-    public AudioClip pickupSound; // Optional pickup sound
+    public GameObject pickupEffect;
+    public AudioClip pickupSound;
     [Range(0, 1)] public float pickupSoundVol = 1f;
 
     [Header("Visual Properties")]

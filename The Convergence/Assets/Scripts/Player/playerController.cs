@@ -538,32 +538,52 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
 
         bool ammoAdded = false;
 
-        if (ammo.gunType != null)
+        // FIXED: Check gunTypes array instead of gunType
+        if (ammo.gunType != null && ammo.gunType.Length > 0)
         {
-            GunAmmoData ammoData = gunAmmoInventory.Find(data => data.gunType == ammo.gunType);
-            if (ammoData != null)
+            // Loop through each gun in the array
+            foreach (gunStats gunType in ammo.gunType)
             {
-                int maxAmmo = GetMaxAmmo(ammo.gunType);
-                ammoData.reserveAmmo = Mathf.Min(ammoData.reserveAmmo + ammo.ammoAmount, maxAmmo);
-                Debug.Log($"Added {ammo.ammoAmount} ammo to {ammo.gunType.name}. Reserve now: {ammoData.reserveAmmo}");
-                ammoAdded = true;
-            }
-            else
-            {
-                Debug.Log($"No inventory slot found for {ammo.gunType.name}");
+                if (gunType == null) continue;
+
+                GunAmmoData ammoData = gunAmmoInventory.Find(data => data.gunType == gunType);
+                if (ammoData != null)
+                {
+                    int maxAmmo = GetMaxAmmo(gunType);
+                    int newAmmo = Mathf.Min(ammoData.reserveAmmo + ammo.ammoAmount, maxAmmo);
+                    int added = newAmmo - ammoData.reserveAmmo;
+                    ammoData.reserveAmmo = newAmmo;
+
+                    if (added > 0)
+                    {
+                        Debug.Log($"Added {added} ammo to {gunType.name}. Reserve now: {ammoData.reserveAmmo}");
+                        ammoAdded = true;
+                    }
+                }
+                else
+                {
+                    Debug.Log($"No inventory slot found for {gunType.name}");
+                }
             }
         }
         else
         {
+            // Empty array - give ammo to current active gun only
             if (activeGunStats != null)
             {
                 GunAmmoData ammoData = gunAmmoInventory.Find(data => data.gunType == activeGunStats);
                 if (ammoData != null)
                 {
                     int maxAmmo = GetMaxAmmo(activeGunStats);
-                    ammoData.reserveAmmo = Mathf.Min(ammoData.reserveAmmo + ammo.ammoAmount, maxAmmo);
-                    Debug.Log($"Added {ammo.ammoAmount} ammo to current gun. Reserve now: {ammoData.reserveAmmo}");
-                    ammoAdded = true;
+                    int newAmmo = Mathf.Min(ammoData.reserveAmmo + ammo.ammoAmount, maxAmmo);
+                    int added = newAmmo - ammoData.reserveAmmo;
+                    ammoData.reserveAmmo = newAmmo;
+
+                    if (added > 0)
+                    {
+                        Debug.Log($"Added {added} ammo to current gun ({activeGunStats.name}). Reserve now: {ammoData.reserveAmmo}");
+                        ammoAdded = true;
+                    }
                 }
             }
             else
@@ -576,7 +596,6 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
         {
             UpdateAmmoDisplay();
         }
-
     }
 
     public void AddAmmo(int amount)

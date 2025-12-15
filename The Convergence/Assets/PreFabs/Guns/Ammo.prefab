@@ -47,13 +47,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c42e3c304ab84984cb3c4bfa58536777, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AmmoPickup
-  ammoAmount: 50
+  ammo: {fileID: 11400000, guid: ce043ee9d7e4a494e968fb5307e51f52, type: 2}
   rotationSpeed: 50
   bobSpeed: 2
   bobHeight: 0.2
-  pickupEffect: {fileID: 0}
-  pickupSound: {fileID: 0}
-  pickupSoundVol: 1
+  isPickup: 1
 --- !u!65 &6844165604225420678
 BoxCollider:
   m_ObjectHideFlags: 0
