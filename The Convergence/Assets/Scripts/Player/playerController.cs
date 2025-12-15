@@ -15,6 +15,7 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
     [Range(1, 50)] public int speed;
     [Range(1, 10)][SerializeField] int sprintMod;
     [Range(1, 50)][SerializeField] int JumpSpeed;
+    [Range(1, 10)][SerializeField] int maxJumps;
     [Range(1, 50)][SerializeField] int gravity;
 
     [Header("~=~= Shooting =~=~")]
@@ -111,6 +112,8 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
     [Range(0, 1)][SerializeField] private float deathSoundVol = 1f;
     private bool isDead = false;
 
+    int jumpCount;
+
     void Awake()
     {
         if (animator == null)
@@ -136,7 +139,6 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
 
         if (ammoTextDisplay == null)
         {
-            // Look for ammo UI in the scene
             GameObject ammoUI = GameObject.FindGameObjectWithTag("AmmoUI");
             if (ammoUI != null)
                 ammoTextDisplay = ammoUI.GetComponent<TMPro.TextMeshProUGUI>();
@@ -175,7 +177,6 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
 
         sprint();
 
-        // handle medkit cooldown timer
         HandleMedkitCooldown();
     }
 
@@ -183,7 +184,8 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
     {
         if (controller.isGrounded)
         {
-            if (playerVel.y < 0) playerVel.y = -2f;
+            playerVel = Vector3.zero;
+            jumpCount = 0;
 
             // play footstep audio if moving
             if (moveDir.normalized.magnitude > 0.3f && !isPlayingStep)
@@ -263,9 +265,10 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
 
     void jump()
     {
-        if (Input.GetButtonDown("Jump") && controller.isGrounded)
+        if (Input.GetButtonDown("Jump") && jumpCount < maxJumps)
         {
             playerVel.y = JumpSpeed;
+            jumpCount++;
 
             if (animator != null)
             {
@@ -320,7 +323,6 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
 
         UpdateAmmoDisplay();
 
-        // Simple raycast from camera
         if (Physics.Raycast(Camera.main.transform.position, Camera.main.transform.forward, out RaycastHit hit, activeGunStats.shootDist, ~ignoreLayer))
         {
             Debug.Log(hit.collider.name);
@@ -369,7 +371,6 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
 
         yield return new WaitForSeconds(reloadTime);
 
-        // Calculate how much ammo to reload from reserve
         gunStats originalGunStats = gunList[gunListPos];
         GunAmmoData ammoData = gunAmmoInventory.Find(data => data.gunType == originalGunStats);
         if (ammoData != null)
@@ -483,13 +484,11 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
         updatePlayerUI();
     }
 
-    // Expose which gun slot I'm using so the save system can store it.
     public int GetCurrentGunIndex()
     {
         return gunListPos;
     }
 
-    // After loading, call this to rebuild the visual gun model.
     public void RestoreGunVisual(int index)
     {
         if (gunList == null || gunList.Count == 0)
@@ -519,23 +518,19 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
             return;
         }
 
-        // ========== ADD THIS SECTION FOR AMMO PICKUPS ==========
         if (item is AmmoStats ammo)
         {
             GetAmmoFromPickup(ammo);
             return;
         }
-        // ========== END ADDITION ==========
 
         Debug.LogWarning("Picked up unknown item: " + item.name);
     }
 
-    // ========== ADD THIS NEW METHOD ==========
     public void GetAmmoFromPickup(AmmoStats ammo)
     {
         if (ammo == null) return;
 
-        // Add to pickup history list
         if (!ammoPickupHistory.Contains(ammo))
         {
             ammoPickupHistory.Add(ammo);
@@ -543,7 +538,6 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
 
         bool ammoAdded = false;
 
-        // If ammo has a specific gun type, add to that gun only
         if (ammo.gunType != null)
         {
             GunAmmoData ammoData = gunAmmoInventory.Find(data => data.gunType == ammo.gunType);
@@ -561,7 +555,6 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
         }
         else
         {
-            // Add to current active gun
             if (activeGunStats != null)
             {
                 GunAmmoData ammoData = gunAmmoInventory.Find(data => data.gunType == activeGunStats);
@@ -584,10 +577,7 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
             UpdateAmmoDisplay();
         }
 
-        // Note: Visual and audio effects are handled by the AmmoPickup script itself
-        // This keeps the responsibilities separated
     }
-    // ========== END NEW METHOD ==========
 
     public void AddAmmo(int amount)
     {
