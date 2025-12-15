@@ -56,6 +56,9 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
     private static int persistentHealthUpgradeTotal = 0;
     private static bool isNewGameSession = true;
 
+    [Header("~=~= IK Controller =~=~")]
+    [SerializeField] private PlayerIKController ikController;
+
     public int ShootDamage => shootDamage;
     int originalSpeed;
 
@@ -140,6 +143,12 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
         currentMaxHP = intialHP + persistentHealthUpgradeTotal;
         originalSpeed = speed;
 
+        if (ikController == null)
+            ikController = GetComponent<PlayerIKController>();
+
+        if (ikController != null)
+            ikController.SetPlayerController(this);
+
         if (ammoTextDisplay == null)
         {
             GameObject ammoUI = GameObject.FindGameObjectWithTag("AmmoUI");
@@ -192,6 +201,21 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
         sprint();
 
         HandleMedkitCooldown();
+
+        UpdateIKState();
+    }
+
+    void UpdateIKState()
+    {
+        if (ikController == null) return;
+
+        bool shouldAim = Input.GetButton("Fire1") || isReloading;
+        ikController.SetAiming(shouldAim);
+
+        if (activeGunStats != null && gunModel != null)
+        {
+            ikController.SetGunTransform(gunModel.transform);
+        }
     }
 
     void movement()
@@ -476,6 +500,9 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
         isDead = true;
 
         controller.enabled = false;
+
+        if (ikController != null)
+            ikController.SetAiming(false);
 
         if (animator != null)
         {
@@ -1024,5 +1051,20 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
     public void PrepareForSceneTransition()
     {
         SavePersistentData();
+    }
+
+    public bool IsReloading()
+    {
+        return isReloading;
+    }
+
+    public bool IsDead()
+    {
+        return isDead;
+    }
+
+    public Transform GetGunModelTransform()
+    {
+        return gunModel != null ? gunModel.transform : null;
     }
 }
