@@ -39,8 +39,12 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
     [Header("~=~= Keys =~=~")]
     [SerializeField] List<keyStats> keyList = new List<keyStats>();
 
+    [Header("~=~= Ammo Pickup History =~=~")]
+    [SerializeField] private List<AmmoStats> ammoPickupHistory = new List<AmmoStats>();
+
     private static List<gunStats> persistentGunList = new List<gunStats>();
     private static List<keyStats> persistentKeyList = new List<keyStats>();
+    private static List<AmmoStats> persistentAmmoPickupHistory = new List<AmmoStats>();
     private static int persistentGunListPos = 0;
     private static int persistentHP = 100;
     private static int persistentMaxHP = 100;
@@ -146,7 +150,7 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
 
         int currentSceneIndex = SceneManager.GetActiveScene().buildIndex;
 
-        if (currentSceneIndex > 1 && (persistentGunList.Count > 0 || persistentKeyList.Count > 0))
+        if (currentSceneIndex > 1 && (persistentGunList.Count > 0 || persistentKeyList.Count > 0 || persistentAmmoPickupHistory.Count > 0))
         {
             // Load persistent data (but not on first scene)
             LoadPersistentData();
@@ -515,8 +519,75 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
             return;
         }
 
+        // ========== ADD THIS SECTION FOR AMMO PICKUPS ==========
+        if (item is AmmoStats ammo)
+        {
+            GetAmmoFromPickup(ammo);
+            return;
+        }
+        // ========== END ADDITION ==========
+
         Debug.LogWarning("Picked up unknown item: " + item.name);
     }
+
+    // ========== ADD THIS NEW METHOD ==========
+    public void GetAmmoFromPickup(AmmoStats ammo)
+    {
+        if (ammo == null) return;
+
+        // Add to pickup history list
+        if (!ammoPickupHistory.Contains(ammo))
+        {
+            ammoPickupHistory.Add(ammo);
+        }
+
+        bool ammoAdded = false;
+
+        // If ammo has a specific gun type, add to that gun only
+        if (ammo.gunType != null)
+        {
+            GunAmmoData ammoData = gunAmmoInventory.Find(data => data.gunType == ammo.gunType);
+            if (ammoData != null)
+            {
+                int maxAmmo = GetMaxAmmo(ammo.gunType);
+                ammoData.reserveAmmo = Mathf.Min(ammoData.reserveAmmo + ammo.ammoAmount, maxAmmo);
+                Debug.Log($"Added {ammo.ammoAmount} ammo to {ammo.gunType.name}. Reserve now: {ammoData.reserveAmmo}");
+                ammoAdded = true;
+            }
+            else
+            {
+                Debug.Log($"No inventory slot found for {ammo.gunType.name}");
+            }
+        }
+        else
+        {
+            // Add to current active gun
+            if (activeGunStats != null)
+            {
+                GunAmmoData ammoData = gunAmmoInventory.Find(data => data.gunType == activeGunStats);
+                if (ammoData != null)
+                {
+                    int maxAmmo = GetMaxAmmo(activeGunStats);
+                    ammoData.reserveAmmo = Mathf.Min(ammoData.reserveAmmo + ammo.ammoAmount, maxAmmo);
+                    Debug.Log($"Added {ammo.ammoAmount} ammo to current gun. Reserve now: {ammoData.reserveAmmo}");
+                    ammoAdded = true;
+                }
+            }
+            else
+            {
+                Debug.Log("No active gun to add ammo to");
+            }
+        }
+
+        if (ammoAdded)
+        {
+            UpdateAmmoDisplay();
+        }
+
+        // Note: Visual and audio effects are handled by the AmmoPickup script itself
+        // This keeps the responsibilities separated
+    }
+    // ========== END NEW METHOD ==========
 
     public void AddAmmo(int amount)
     {
@@ -763,6 +834,7 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
         public float medkitCooldown;
         public int gunListPos;
         public List<keyStats> keyList;
+        public List<AmmoStats> ammoPickupHistory;
         public List<GunAmmoData> savedAmmoInventory;
     }
 
@@ -780,6 +852,7 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
             medkitCooldown = this.medkitCooldown,
             gunListPos = this.gunListPos,
             keyList = new List<keyStats>(keyList),
+            ammoPickupHistory = new List<AmmoStats>(ammoPickupHistory),
             savedAmmoInventory = new List<GunAmmoData>(gunAmmoInventory)
         };
     }
@@ -804,6 +877,11 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
         if (data.keyList != null)
         {
             keyList = new List<keyStats>(data.keyList);
+        }
+
+        if (data.ammoPickupHistory != null)
+        {
+            ammoPickupHistory = new List<AmmoStats>(data.ammoPickupHistory);
         }
 
         if (data.savedAmmoInventory != null)
@@ -832,6 +910,7 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
     {
         persistentGunList.Clear();
         persistentKeyList.Clear();
+        persistentAmmoPickupHistory.Clear();
         persistentGunListPos = 0;
         persistentHP = HP;
         persistentMaxHP = HP;
@@ -843,6 +922,7 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
     {
         gunList.Clear();
         keyList.Clear();
+        ammoPickupHistory.Clear();
 
         foreach (var gun in persistentGunList)
         {
@@ -852,6 +932,11 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
         foreach (var key in persistentKeyList)
         {
             AddKeyToList(key);
+        }
+
+        foreach (var ammo in persistentAmmoPickupHistory)
+        {
+            ammoPickupHistory.Add(ammo);
         }
 
         if (persistentGunList.Count > 0)
@@ -878,6 +963,7 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
     {
         persistentGunList = new List<gunStats>(gunList);
         persistentKeyList = new List<keyStats>(keyList);
+        persistentAmmoPickupHistory = new List<AmmoStats>(ammoPickupHistory);
         persistentGunListPos = gunListPos;
         persistentHP = HP;
         persistentMaxHP = currentMaxHP;
