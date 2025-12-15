@@ -40,6 +40,8 @@ public class gamemanager : MonoBehaviour
     [Header("~=~= Currency UI =~=~")]
     [SerializeField] private TextMeshProUGUI riftShardTextDisplay;
 
+    [Header("~=~= New Game+ Settings =~=~")]
+    [SerializeField] private string newGamePlusStartSceneName = "Game Play Scene L1";
 
     void Awake()
     {
@@ -183,6 +185,41 @@ public class gamemanager : MonoBehaviour
                 menuActive.SetActive(true);
                 PlayMenuMusic(menuActive);
             }
+        }
+    }
+
+    public void StartNewGamePlusRun()
+    {
+        // We should be on the win screen when this is pressed. Unpause first so the next scene isn't stuck.
+        stateUnpause();
+
+        if (NewGamePlusManager.Instance != null)
+        {
+            NewGamePlusManager.Instance.AdvanceCycle();
+        }
+        else
+        {
+            Debug.LogWarning("StartNewGamePlusRun called, but NewGamePlusManager.Instance is null. New Game+ cycle will not advance.");
+        }
+
+        if (SaveManager.Instance != null && player != null && playerScript != null)
+        {
+            SaveManager.Instance.Save(player, playerScript.GetHP(), gameGoalCount);
+        }
+
+        // Reset run-only counters.
+        gameGoalCount = 0;
+        if (gameGoalCountText != null)
+            gameGoalCountText.text = gameGoalCount.ToString("F0");
+
+        // Load the start scene for the new run.
+        if (!string.IsNullOrEmpty(newGamePlusStartSceneName))
+        {
+            SceneManager.LoadScene(newGamePlusStartSceneName);
+        }
+        else
+        {
+            Debug.LogError("New Game+ start scene name is empty. Set 'newGamePlusStartSceneName' in the Inspector.");
         }
     }
 

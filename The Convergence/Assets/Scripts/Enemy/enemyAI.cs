@@ -19,6 +19,7 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
 
     [Header("**** Layers ****")]
     [SerializeField] LayerMask ignoreLayer;
+
     [Header("**** Enemy Type ****")]
     [SerializeField] EnemyType enemyType;
 
@@ -30,7 +31,8 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
 
     [Header("**** Stats ****")]
     bool isAlive = true;
-    [Range(1, 300)][SerializeField] int HP;
+    [Range(1, 300)][SerializeField] int maxHP = 100;
+    private int currentHP;
     [Range(1, 360)][SerializeField] int FOV;
     [Range(1, 360)][SerializeField] int faceTargetSpeed;
     [Range(1, 50)][SerializeField] int roamDist;
@@ -122,6 +124,19 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
     [SerializeField] float deathAnimationDuration = 2f;
     [SerializeField] bool useDeathAnimation = true;
 
+    [Header("**** NEW GAME+ NG+ SCALING ****")]
+    [SerializeField] private bool enableNGPlusScaling = true;
+
+    private int baseMaxHP;
+    private int baseMeleeDamage;
+    private int baseJumpAttackDamage;
+
+    private float baseAgentSpeed;
+    private float baseAgentAccel;
+
+    private bool ngpBaseCached;
+    private bool ngpApplied;
+
 
     public bool IsBoss => isBoss;
 
@@ -161,6 +176,74 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
     private float dashTimeRemaining;
     private Vector3 lastPlayerPosition;
     private Vector3 playerVelocity;
+
+    private float GetNgpDamageMultiplier()
+    {
+        if (!enableNGPlusScaling) return 1f;
+        if (NewGamePlusManager.Instance == null) return 1f;
+
+        return Mathf.Max(0.01f, NewGamePlusManager.Instance.GetEnemyDamageMultiplier());
+    }
+
+    private int GetScaledDamage(int baseDamage)
+    {
+        float mult = GetNgpDamageMultiplier();
+        return Mathf.Max(1, Mathf.RoundToInt(baseDamage * mult));
+    }
+
+    private void CacheNgpBaseStatsIfNeeded()
+    {
+        if (ngpBaseCached) return;
+
+        baseMaxHP = HP;
+        baseMeleeDamage = meleeDamageAmount;
+        baseJumpAttackDamage = jumpAttackDamage;
+
+        if (agent != null)
+        {
+            baseAgentSpeed = agent.speed;
+            baseAgentAccel = agent.acceleration;
+        }
+
+        ngpBaseCached = true;
+    }
+
+    private void ApplyNgpScalingIfNeeded()
+    {
+        if (!enableNGPlusScaling) return;
+        if (ngpApplied) return;
+
+        // If we are loading from a save, DO NOT rescale here. Saved enemies should restore their saved HP/destination as-is.
+        if (SaveManager.IsLoadingFromSave)
+            return;
+
+        CacheNgpBaseStatsIfNeeded();
+
+        // If NewGamePlusManager isn't present yet, default multipliers to 1.
+        float hpMult = 1f;
+        float dmgMult = 1f;
+        float speedMult = 1f;
+
+        if (NewGamePlusManager.Instance != null)
+        {
+            hpMult = Mathf.Max(0.01f, NewGamePlusManager.Instance.GetEnemyHealthMultiplier());
+            dmgMult = Mathf.Max(0.01f, NewGamePlusManager.Instance.GetEnemyDamageMultiplier());
+            speedMult = Mathf.Max(0.01f, NewGamePlusManager.Instance.GetEnemySpeedMultiplier());
+        }
+
+        maxHP = Mathf.Max(1, Mathf.RoundToInt(baseMaxHP * hpMult));
+        currentHP = maxHP;
+        meleeDamageAmount = Mathf.Max(1, Mathf.RoundToInt(baseMeleeDamage * dmgMult));
+        jumpAttackDamage = Mathf.Max(1, Mathf.RoundToInt(baseJumpAttackDamage * dmgMult));
+
+        if (agent != null)
+        {
+            agent.speed = baseAgentSpeed * speedMult;
+            agent.acceleration = baseAgentAccel * speedMult;
+        }
+
+        ngpApplied = true;
+    }
 
     void Start()
     {
@@ -205,6 +288,11 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
 
         if (itemDrop == null)
             itemDrop = GetComponent<ItemDrop>();
+
+        if (!SaveManager.IsLoadingFromSave)
+            currentHP = Mathf.Max(1, maxHP);
+
+        ApplyNgpScalingIfNeeded();
     }
 
     void Update()
@@ -805,7 +893,7 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
                     IDamage dmg = hit.GetComponent<IDamage>();
                     if (dmg != null)
                     {
-                        dmg.takeDamage(meleeDamageAmount);
+                        dmg.takeDamage(GetScaledDamage(baseMeleeDamage));
                         EndDash();
                         return;
                     }
@@ -902,7 +990,7 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
                 IDamage dmg = gamemanager.instance.player.GetComponent<IDamage>();
                 if (dmg != null)
                 {
-                    dmg.takeDamage(jumpAttackDamage);
+                    dmg.takeDamage(GetScaledDamage(baseJumpAttackDamage));
                     playerDamaged = true;
                     Debug.Log($"Jump attack hit player via distance check: {distanceToPlayer} units away");
                 }
@@ -919,7 +1007,7 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
                         IDamage dmg = hit.GetComponent<IDamage>();
                         if (dmg != null)
                         {
-                            dmg.takeDamage(jumpAttackDamage);
+                            dmg.takeDamage(GetScaledDamage(baseJumpAttackDamage));
                             playerDamaged = true;
                             Debug.Log("Jump attack hit player via overlap sphere");
                             break;
@@ -940,7 +1028,7 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
                         IDamage dmg = hit.collider.GetComponent<IDamage>();
                         if (dmg != null)
                         {
-                            dmg.takeDamage(jumpAttackDamage);
+                            dmg.takeDamage(GetScaledDamage(baseJumpAttackDamage));
                             playerDamaged = true;
                             Debug.Log("Jump attack hit player via raycast");
                         }
@@ -1239,7 +1327,7 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
     {
         if (!isAlive) return;
 
-        HP -= amount;
+        currentHP -= amount;
 
         // Flash damage color
         if (isDashing || isJumpAttacking)
@@ -1269,7 +1357,7 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
             aud.PlayOneShot(audHurt[Random.Range(0, audHurt.Length)], audHurtVol);
 
         // Check for death
-        if (HP <= 0)
+        if (currentHP <= 0)
         {
             Die();
         }
@@ -1402,7 +1490,13 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
     // Create projectile
     public void createProjectile()
     {
-        Instantiate(projectile, shootPOS.position, shootPOS.rotation);
+        GameObject proj = Instantiate(projectile, shootPOS.position, shootPOS.rotation);
+
+        float dmgMult = GetNgpDamageMultiplier();
+
+        var dmg = proj.GetComponent<damage>();
+        if (dmg != null)
+            dmg.ApplyDamageMultiplier(dmgMult);
     }
 
     // Perform melee attack
@@ -1424,6 +1518,8 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
     {
         // Check all colliders in range
         Collider[] hitColliders = Physics.OverlapSphere(meleePos.position, meleeRange, ~ignoreLayer);
+
+        int scaledMeleeDamage = GetScaledDamage(baseMeleeDamage);
 
         foreach (var hit in hitColliders)
         {
@@ -1472,6 +1568,7 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
     private struct EnemyState
     {
         public int hp;
+        public int maxHp;
         public Vector3 pos;
         public Vector3 startingPos;
         public float roamTimer;
@@ -1489,7 +1586,8 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
     {
         var state = new EnemyState
         {
-            hp = HP,
+            hp = currentHP,
+            maxHp = maxHP,
             pos = transform.position,
             startingPos = startingPos,
             roamTimer = roamTimer,
@@ -1529,7 +1627,8 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
             transform.position = s.pos;
 
         // Restore combat state
-        HP = s.hp;
+        maxHP = Mathf.Max(1, s.maxHp);
+        currentHP = Mathf.Clamp(s.hp, 0, maxHP);
 
         // Restore roam / patrol internals
         startingPos = s.startingPos;
@@ -1658,4 +1757,6 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
             }
         }
     }
+
+    
 }
