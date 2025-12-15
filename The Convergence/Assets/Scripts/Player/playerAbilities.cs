@@ -14,7 +14,7 @@ public class PlayerAbilities : MonoBehaviour
 
     // Rift Jump
     [Range(10f, 25f)][SerializeField] float jumpDistance;
-    [Range(2f, 15f)][SerializeField] float jumpCooldown;
+    [Range(0.01f, 15f)][SerializeField] float jumpCooldown;
 
     // Layer masks
     [SerializeField] LayerMask enemyMask;
