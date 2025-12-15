@@ -16,7 +16,8 @@ public enum UpgradeStat
     Rate,
     Distance,
     Ammo,
-    MaxHP
+    MaxHP,
+    Heal,
 }
 
 public enum ItemType
@@ -32,6 +33,8 @@ public class StoreItem
     public string itemName;
     public int cost;
     public ItemType type; // Upgrade, Consumable
+
+    [Header("Upgrade Target (Upgrades Only)")]
     public GunType gunType = GunType.None;
     public UpgradeStat upgradeStat;
 
@@ -43,6 +46,7 @@ public class StoreItem
     public float baseAmount = 0f;
     public float amountPerLevel = 0f;
 
+    [Header("Consumable (Consumables Only)")]
     public int quantity = 1;
 }
 
@@ -59,7 +63,8 @@ public class PlayerState
     // CONSUMABLES
     public int potionCount = 0;
 
-
+    // Which weapon types the player has unlocked/picked up.
+    public List<int> ownedGuns = new List<int>();
     public List<UpgradeLevelEntry> upgradeLevels = new List<UpgradeLevelEntry>();
 }
 
@@ -79,11 +84,17 @@ public class Store : MonoBehaviour, ISaveable
     [Header("~=~= UI References =~=~")]
     [SerializeField] private GameObject storeUIPanel;
 
+    [Header("Starting Owned Guns")]
+    [Tooltip("Weapon types that are considered owned at the start of a new game (used to unlock their upgrades).")]
+    [SerializeField] private GunType[] startingOwnedGuns = new GunType[0];
+
+
     [Serializable]
     private struct StoreSaveData
     {
         public int potionCount;
         public List<UpgradeLevelEntry> upgradeLevels;
+        public List<int> ownedGuns;
     }
 
     private void Awake()
@@ -107,6 +118,12 @@ public class Store : MonoBehaviour, ISaveable
     {
         if (!registeredButtons.Contains(button))
             registeredButtons.Add(button);
+    }
+
+    public void UnregisterButton(StoreButtonUI buttonUI)
+    {
+        if (buttonUI == null) return;
+        registeredButtons.Remove(buttonUI);
     }
 
     private void RefreshAllButtonDisplays()
@@ -162,6 +179,62 @@ public class Store : MonoBehaviour, ISaveable
         playerState.upgradeLevels.Add(new UpgradeLevelEntry { id = upgradeId, level = newLevel });
     }
 
+    public bool IsGunOwned(GunType type)
+    {
+        if (type == GunType.None)
+            return true;
+
+        if (playerState == null || playerState.ownedGuns == null)
+            return false;
+
+        return playerState.ownedGuns.Contains((int)type);
+    }
+
+    public void UnlockGun(GunType type)
+    {
+        if (type == GunType.None)
+            return;
+
+        if (playerState == null)
+            playerState = new PlayerState();
+
+        if (playerState.ownedGuns == null)
+            playerState.ownedGuns = new List<int>();
+
+        int v = (int)type;
+        if (!playerState.ownedGuns.Contains(v))
+        {
+            playerState.ownedGuns.Add(v);
+            RefreshAllButtonDisplays();
+        }
+    }
+
+    private void EnsureStartingOwnedGuns()
+    {
+        if (startingOwnedGuns == null || startingOwnedGuns.Length == 0)
+            return;
+
+        if (playerState == null)
+            playerState = new PlayerState();
+
+        if (playerState.ownedGuns == null)
+            playerState.ownedGuns = new List<int>();
+
+        // Only apply if we have none yet.
+        if (playerState.ownedGuns.Count > 0)
+            return;
+
+        for (int i = 0; i < startingOwnedGuns.Length; i++)
+        {
+            GunType t = startingOwnedGuns[i];
+            if (t == GunType.None) continue;
+
+            int v = (int)t;
+            if (!playerState.ownedGuns.Contains(v))
+                playerState.ownedGuns.Add(v);
+        }
+    }
+
     public bool IsUpgradeMaxed(StoreItem item)
     {
         if (item == null) return true;
@@ -206,6 +279,13 @@ public class Store : MonoBehaviour, ISaveable
         if (RiftShardManager.Instance == null)
         {
             reason = "Currency System Missing";
+            return false;
+        }
+
+        // Don't allow weapon-specific upgrades unless the player has unlocked that weapon.
+        if (item.type == ItemType.Upgrade && item.gunType != GunType.None && !IsGunOwned(item.gunType))
+        {
+            reason = "Weapon Not Owned";
             return false;
         }
 
@@ -285,14 +365,32 @@ public class Store : MonoBehaviour, ISaveable
         }
 
         gunStats gun = GunUpgradeManager.Instance.GetGunStats(item.gunType);
+
         if (gun == null)
         {
             Debug.LogError($"Store.ApplyUpgrade: No gunStats found for {item.gunType}");
             return;
         }
 
-        // Apply upgrade directly to the gun stats asset
-        gun.ApplyUpgrade(item.upgradeStat, amount);
+        // Apply upgrade directly to gun stats
+        switch (item.upgradeStat)
+        {
+            case UpgradeStat.Damage:
+                gun.shootDamage += Mathf.RoundToInt(amount);
+                break;
+
+            case UpgradeStat.Rate:
+                gun.shootRate = Mathf.Max(0.05f, gun.shootRate - amount);
+                break;
+
+            case UpgradeStat.Distance:
+                gun.shootDist += Mathf.RoundToInt(amount);
+                break;
+
+            case UpgradeStat.Ammo:
+                gun.ammoMax += Mathf.RoundToInt(amount);
+                break;
+        }
     }
 
     public void SetStoreOpen()

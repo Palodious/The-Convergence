@@ -5,6 +5,7 @@ public class gunPickup : MonoBehaviour
 {
     [SerializeField] gunStats gun;
     [Range(0,50)][SerializeField] int bonusAmmo;
+    [SerializeField] private GunType gunType = GunType.None;
 
     private void OnTriggerEnter(Collider other)
     {
@@ -16,7 +17,8 @@ public class gunPickup : MonoBehaviour
             gun.ammoCur = gun.ammoMax;
             pik.GetItem(gun);
 
-         
+            if (Store.Instance != null)
+                Store.Instance.UnlockGun(gunType);
 
             StartCoroutine(DelayedDestroy());
         }

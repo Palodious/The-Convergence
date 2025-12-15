@@ -22,6 +22,7 @@ public class StoreButtonUI : MonoBehaviour
     [SerializeField] private string levelFormat = "LEVEL {0}/{1}";
     [SerializeField] private string maxedLabel = "MAXED";
     [SerializeField] private string cannotAffordLabel = "NEED SHARDS";
+    [SerializeField] private string lockedWeaponLabel = "LOCKED";
 
     private string originalLabel;
 
@@ -111,6 +112,8 @@ public class StoreButtonUI : MonoBehaviour
 
             if (!canBuy && reason == "Not Enough Rift Shards")
                 SetLabelSafe(cannotAffordLabel);
+            else if (!canBuy && reason == "Weapon Not Owned")
+                SetLabelSafe(lockedWeaponLabel);
         }
         else
         {
@@ -118,6 +121,8 @@ public class StoreButtonUI : MonoBehaviour
 
             if (!canBuy && reason == "Not Enough Rift Shards")
                 SetLabelSafe(cannotAffordLabel);
+            else if (!canBuy && reason == "Weapon Not Owned")
+                SetLabelSafe(lockedWeaponLabel);
         }
     }
 
