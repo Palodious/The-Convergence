@@ -15,6 +15,10 @@ public class NewGamePlusManager : MonoBehaviour, ISaveable
 
     public int Cycle => cycle;
 
+    public float GetEnemyHealthMultiplier() => EnemyHpMultiplier();
+    public float GetEnemyDamageMultiplier() => EnemyDamageMultiplier();
+    public float GetEnemySpeedMultiplier() => EnemySpeedMultiplier();
+
     private void Awake()
     {
         if (Instance != null && Instance != this)

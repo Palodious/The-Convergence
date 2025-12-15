@@ -195,7 +195,7 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
     {
         if (ngpBaseCached) return;
 
-        baseMaxHP = HP;
+        baseMaxHP = maxHP;
         baseMeleeDamage = meleeDamageAmount;
         baseJumpAttackDamage = jumpAttackDamage;
 
