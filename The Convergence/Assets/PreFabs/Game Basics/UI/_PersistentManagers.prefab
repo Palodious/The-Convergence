@@ -175,10 +175,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Store
   playerState:
     potionCount: 10
+    ownedGuns: 
     upgradeLevels: []
   upgradeItems: []
   consumableItems: []
   storeUIPanel: {fileID: 0}
+  startingOwnedGuns: 
 --- !u!1 &2326327691633345418
 GameObject:
   m_ObjectHideFlags: 0
@@ -557,11 +559,11 @@ MonoBehaviour:
   battleSource: {fileID: 3138772130370305704}
   baseClip: {fileID: 0}
   battleClip: {fileID: 0}
-  baseVolume: 0.2
+  baseVolume: 0.258
   battleMaxVolume: 0.3
-  fadeInTime: 1
-  fadeOutTime: 1.5
-  combatHoldTime: 3
+  fadeInTime: 0
+  fadeOutTime: 2
+  combatHoldTime: 5
 --- !u!82 &6614843653552064124
 AudioSource:
   m_ObjectHideFlags: 0
@@ -574,10 +576,10 @@ AudioSource:
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 0}
   m_Resource: {fileID: 0}
-  m_PlayOnAwake: 1
-  m_Volume: 1
+  m_PlayOnAwake: 0
+  m_Volume: 0.5
   m_Pitch: 1
-  Loop: 0
+  Loop: 1
   Mute: 0
   Spatialize: 0
   SpatializePostEffects: 0
