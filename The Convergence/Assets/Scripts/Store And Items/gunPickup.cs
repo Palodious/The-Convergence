@@ -9,17 +9,14 @@ public class gunPickup : MonoBehaviour
     private void OnTriggerEnter(Collider other)
     {
         IPickup pik = other.GetComponent<IPickup>();
-        IAmmo ammo = other.GetComponent<IAmmo>();
+       
 
         if (pik != null)
         {
             gun.ammoCur = gun.ammoMax;
             pik.GetItem(gun);
 
-            if (ammo != null)
-            {
-                ammo.AddAmmo(bonusAmmo);
-            }
+         
 
             StartCoroutine(DelayedDestroy());
         }
