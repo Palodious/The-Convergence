@@ -80,7 +80,7 @@ public class spawner : MonoBehaviour, ISaveable
 
         int cycle = 0;
         if (NewGamePlusManager.Instance != null)
-            cycle = Mathf.Max(0, NewGamePlusManager.Instance.CurrentCycle);
+            cycle = Mathf.Max(0, NewGamePlusManager.Instance.Cycle);
 
         // Tunable difficulty curve
         float amountMult = 1f + (0.25f * cycle); // +25% enemies per NG+
