@@ -23,7 +23,6 @@ public class CreditsManager : MonoBehaviour
         if (creditsButton != null) creditsButton.onClick.AddListener(ShowCredits);
         if (closeButton != null) closeButton.onClick.AddListener(HideCredits);
 
-        // Make sure credits panel starts hidden
         if (creditsPanel != null) creditsPanel.SetActive(false);
     }
 
@@ -57,18 +56,19 @@ public class CreditsManager : MonoBehaviour
 
         if (creditsPanel != null) creditsPanel.SetActive(false);
         if (creditsMusic != null) creditsMusic.Stop();
+        Debug.Log("Stopped Playing Credits Music");
     }
 
     private IEnumerator AutoScroll()
     {
         isScrolling = true;
 
-        // Wait a frame for layout to update
+        // Wait a frame before autoscrolling
         yield return null;
 
         Vector2 startPos = new Vector2(0, 1f); // Top
-        Vector2 endPos = new Vector2(0, 0f);   // Bottom
-        float duration = 60f;
+        Vector2 endPos = new Vector2(0, -1f);   // Bottom
+        float duration = 90f;
 
         float elapsed = 0f;
         while (elapsed < duration)
@@ -82,7 +82,6 @@ public class CreditsManager : MonoBehaviour
             yield return null;
         }
 
-        // Ensure we end exactly at the bottom
         if (scrollRect != null)
         {
             scrollRect.normalizedPosition = endPos;
