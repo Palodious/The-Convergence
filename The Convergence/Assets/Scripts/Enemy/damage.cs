@@ -134,7 +134,7 @@ public class damage : MonoBehaviour
             {
                 Destroy(gameObject);
             }
-        }
+        }   
     }
 
     private void OnTriggerStay(Collider other)
