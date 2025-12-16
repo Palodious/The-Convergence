@@ -13,6 +13,21 @@ public class NewGamePlusManager : MonoBehaviour, ISaveable
     [SerializeField] private float enemyDamagePerCycle = 0.15f;   // +15% damage per cycle
     [SerializeField] private float enemySpeedPerCycle = 0.05f;    // +5% speed per cycle
 
+    [Header("**** Player Scaling Per + Cycle ****")]
+    [SerializeField] private float playerMaxHpPerCycle = 0.05f; // +5% per cycle
+
+    public float GetPlayerMaxHealthMultiplier()
+    {
+        return 1f + (playerMaxHpPerCycle * Mathf.Max(0, cycle));
+    }
+
+    [SerializeField] private float playerHpPerCycle = 0.05f; // +5% max HP per cycle
+
+    public float GetPlayerHealthMultiplier()
+    {
+        return 1f + (playerHpPerCycle * cycle);
+    }
+
     public int Cycle => cycle;
 
     public float GetEnemyHealthMultiplier() => EnemyHpMultiplier();
