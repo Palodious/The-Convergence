@@ -88,7 +88,7 @@ public class RiftShardManager : MonoBehaviour, ISaveable
     {
         if (state is not RiftShardSaveData s)
         {
-            Debug.LogError($"RiftShardManager.RestoreState: expected RiftShardSaveData, got {state?.GetType()} on {name}");
+           // Debug.LogError($"RiftShardManager.RestoreState: expected RiftShardSaveData, got {state?.GetType()} on {name}");
             return;
         }
 

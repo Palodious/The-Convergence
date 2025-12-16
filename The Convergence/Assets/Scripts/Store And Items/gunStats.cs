@@ -48,7 +48,7 @@ public class gunStats : ScriptableObject
                 break;
 
             default:
-                Debug.LogWarning($"gunStats.ApplyUpgrade: Unsupported upgrade type {upgradeType}");
+              //  Debug.LogWarning($"gunStats.ApplyUpgrade: Unsupported upgrade type {upgradeType}");
                 break;
     }
 }
@@ -61,7 +61,7 @@ public class gunStats : ScriptableObject
         }
         else
         {
-            Debug.LogWarning($"gunStats.ApplyUpgrade: Unknown upgrade string '{upgradeType}'");
+          //  Debug.LogWarning($"gunStats.ApplyUpgrade: Unknown upgrade string '{upgradeType}'");
         }
     }
 }

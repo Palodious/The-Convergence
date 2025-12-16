@@ -22,7 +22,7 @@ public class GunAimAtCrosshair : MonoBehaviour
 
         if (playerController == null)
         {
-            Debug.LogWarning("GunAimAtCrosshair: Could not find playerController in parent hierarchy");
+          //  Debug.LogWarning("GunAimAtCrosshair: Could not find playerController in parent hierarchy");
         }
     }
 

@@ -58,11 +58,11 @@ public class ItemDrop : MonoBehaviour
         }
         else
         {
-            Debug.LogWarning("Key prefab doesn't have a keyPickup component!");
+          //  Debug.LogWarning("Key prefab doesn't have a keyPickup component!");
         }
 
         keyHasDropped = true;
-        Debug.Log($"Key dropped! Global flag set. Key dropped by: {gameObject.name}");
+       // Debug.Log($"Key dropped! Global flag set. Key dropped by: {gameObject.name}");
     }
 
     public static void ResetKeyDrop()

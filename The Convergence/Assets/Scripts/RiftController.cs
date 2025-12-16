@@ -8,7 +8,7 @@ public class RiftController : MonoBehaviour
     public void PylonDestroyed()
     {
         pylonsDestroyed++;
-        Debug.Log("Pylon destroyed! " + pylonsDestroyed + " / " + totalPylons);
+      //  Debug.Log("Pylon destroyed! " + pylonsDestroyed + " / " + totalPylons);
 
         if (pylonsDestroyed >= totalPylons)
         {
@@ -29,6 +29,6 @@ public class RiftController : MonoBehaviour
         }
 
         Destroy(gameObject);
-        Debug.Log("Rift sealed! Game Complete!");
+       // Debug.Log("Rift sealed! Game Complete!");
     }
 }
