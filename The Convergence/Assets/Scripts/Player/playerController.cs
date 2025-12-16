@@ -10,6 +10,9 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
     [SerializeField] LayerMask ignoreLayer;
     public Animator animator;
 
+    [Header("~=~= IK Controller =~=~")]
+    [SerializeField] private PlayerIKController ikController;
+
     [Header("~=~= Player Stats =~=~")]
     [Range(1, 300)][SerializeField] int HP;
     [Range(1, 50)] public int speed;
@@ -17,6 +20,9 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
     [Range(1, 50)][SerializeField] int JumpSpeed;
     [Range(1, 10)][SerializeField] int maxJumps;
     [Range(1, 50)][SerializeField] int gravity;
+
+    [Header("~=~= Movement Modifiers =~=~")]
+    [Range(0.1f, 50f)][SerializeField] float glideGravity;
 
     [Header("~=~= Shooting =~=~")]
     [Range(1, 100)][SerializeField] int shootDamage;
@@ -27,14 +33,28 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
     [Range(0.01f, 0.5f)][SerializeField] float trailWidth = 0.05f;
     [SerializeField] Gradient trailGradient = new Gradient();
 
-    // ADDED: Bullet trail offset controls
     [Header("~=~= Bullet Trail Offset =~=~")]
     [SerializeField] Vector3 trailStartOffset = new Vector3(0.1f, 0.05f, 0f);
-    [Tooltip("If true, offset will be applied relative to player's forward direction")]
     [SerializeField] bool useLocalOffset = true;
 
-    [Header("~=~= Movement Modifiers =~=~")]
-    [Range(0.1f, 50f)][SerializeField] float glideGravity;
+    [Header("~=~= Guns =~=~")]
+    [SerializeField] List<gunStats> gunList = new List<gunStats>();
+    [SerializeField] GameObject gunModel;
+    int gunListPos;
+    [HideInInspector] public gunStats activeGunStats;
+
+    [Header("~=~= Reload Settings =~=~")]
+    [SerializeField] AudioClip reloadSound;
+    [Range(0, 1)][SerializeField] float reloadSoundVol = 1f;
+    [SerializeField] float reloadTime = 1.5f;
+
+    [Header("~=~= Medkit Settings =~=~")]
+    [SerializeField] private bool enableNGPlusPlayerHpScaling = true;
+
+    [Header("~=~= Death Settings =~=~")]
+    [SerializeField] private float deathAnimationTime = 2f;
+    [SerializeField] private AudioClip deathSound;
+    [Range(0, 1)][SerializeField] private float deathSoundVol = 1f;
 
     [Header("~=~= Audio =~=~")]
     [SerializeField] AudioSource aud;
@@ -53,83 +73,8 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
     [Header("~=~= Ammo Pickup History =~=~")]
     [SerializeField] private List<AmmoStats> ammoPickupHistory = new List<AmmoStats>();
 
-    private static List<gunStats> persistentGunList = new List<gunStats>();
-    private static List<keyStats> persistentKeyList = new List<keyStats>();
-    private static List<AmmoStats> persistentAmmoPickupHistory = new List<AmmoStats>();
-    private static int persistentGunListPos = 0;
-    private static int persistentHP = 100;
-    private static int persistentMaxHP = 100;
-    private static int persistentHealthUpgradeTotal = 0;
-    private static bool isNewGameSession = true;
-
-    [Header("~=~= IK Controller =~=~")]
-    [SerializeField] private PlayerIKController ikController;
-
-    public int ShootDamage => shootDamage;
-    int originalSpeed;
-
-    Vector3 moveDir;
-    Vector3 playerVel;
-
-    [SerializeField] int currentMaxHP;
-    int intialHP;
-
-    [SerializeField] private bool enableNGPlusPlayerHpScaling = true;
-
-    private int ngpBaseMaxHP;
-    private bool ngpBaseCached;
-    private bool ngpApplied;
-
-    private void CachePlayerHpBaseIfNeeded()
-    {
-        if (ngpBaseCached) return;
-
-        // Base max HP after permanent health upgrades, before NG+ scaling.
-        ngpBaseMaxHP = currentMaxHP;
-        ngpBaseCached = true;
-    }
-
-    private void ApplyNgpPlayerHpScalingIfNeeded(bool healToFull)
-    {
-        if (!enableNGPlusPlayerHpScaling) return;
-        if (ngpApplied) return;
-
-        // Don’t rescale when restoring from a save.
-        if (SaveManager.IsLoadingFromSave)
-            return;
-
-        CachePlayerHpBaseIfNeeded();
-
-        float mult = 1f;
-        if (NewGamePlusManager.Instance != null)
-            mult = Mathf.Max(0.01f, NewGamePlusManager.Instance.GetPlayerHealthMultiplier());
-
-        int scaledMax = Mathf.Max(1, Mathf.RoundToInt(ngpBaseMaxHP * mult));
-
-        currentMaxHP = scaledMax;
-
-        if (healToFull)
-            HP = currentMaxHP;
-        else if (HP > currentMaxHP)
-            HP = currentMaxHP;
-
-        ngpApplied = true;
-    }
-
-    float shootTimer;
-
-    bool isGliding;
-    bool isSprinting;
-    bool isPlayingStep;
-
-    [HideInInspector] public float damageBoost = 1f;
-
-    [Header("~=~= Guns =~=~")]
-    [SerializeField] List<gunStats> gunList = new List<gunStats>();
-    [SerializeField] GameObject gunModel;
-    int gunListPos;
-
-    [HideInInspector] public gunStats activeGunStats;
+    [Header("~=~= UI References =~=~")]
+    [SerializeField] private TMPro.TextMeshProUGUI ammoTextDisplay;
 
     [System.Serializable]
     public class GunAmmoData
@@ -148,26 +93,48 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
 
     [SerializeField] private List<GunAmmoData> gunAmmoInventory = new List<GunAmmoData>();
 
-    [Header("~=~= Medkit Settings =~=~")]
+    [System.Serializable]
+    public class PlayerControllerSaveData
+    {
+        public int hp;
+        public int currentMaxHP;
+        public bool isGliding;
+        public bool canUseMedkit;
+        public float medkitCooldown;
+        public int gunListPos;
+        public List<keyStats> keyList;
+        public List<AmmoStats> ammoPickupHistory;
+        public List<GunAmmoData> savedAmmoInventory;
+    }
+
+    private static List<gunStats> persistentGunList = new List<gunStats>();
+    private static List<keyStats> persistentKeyList = new List<keyStats>();
+    private static List<AmmoStats> persistentAmmoPickupHistory = new List<AmmoStats>();
+    private static int persistentGunListPos = 0;
+    private static int persistentHP = 100;
+    private static int persistentMaxHP = 100;
+    private static int persistentHealthUpgradeTotal = 0;
+    private static bool isNewGameSession = true;
+
+    public int ShootDamage => shootDamage;
+    int originalSpeed;
+    Vector3 moveDir;
+    Vector3 playerVel;
+    [SerializeField] int currentMaxHP;
+    int intialHP;
+    private int ngpBaseMaxHP;
+    private bool ngpBaseCached;
+    private bool ngpApplied;
+    float shootTimer;
+    bool isGliding;
+    bool isSprinting;
+    bool isPlayingStep;
+    [HideInInspector] public float damageBoost = 1f;
     private bool canUseMedkit = true;
     private float medkitCooldown = 0f;
-
-    [Header("~=~= Reload Settings =~=~")]
-    [SerializeField] AudioClip reloadSound;
-    [Range(0, 1)][SerializeField] float reloadSoundVol = 1f;
-    [SerializeField] float reloadTime = 1.5f;
     private bool isReloading = false;
     private Coroutine reloadCoroutine;
-
-    [Header("~=~= UI References =~=~")]
-    [SerializeField] private TMPro.TextMeshProUGUI ammoTextDisplay;
-
-    [Header("~=~= Death Settings =~=~")]
-    [SerializeField] private float deathAnimationTime = 2f;
-    [SerializeField] private AudioClip deathSound;
-    [Range(0, 1)][SerializeField] private float deathSoundVol = 1f;
     private bool isDead = false;
-
     int jumpCount;
 
     void Awake()
@@ -224,7 +191,6 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
             return;
         }
 
-        // reuse the existing currentSceneIndex from earlier in Start()
         if (currentSceneIndex > 1 && (persistentGunList.Count > 0 || persistentKeyList.Count > 0 || persistentAmmoPickupHistory.Count > 0))
         {
             LoadPersistentData();
@@ -413,18 +379,10 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
         Vector3 endPos;
         bool hitSomething = false;
 
-
         Vector3 shootDirection = gunModel.transform.forward;
-
-      //  Debug.DrawRay(Camera.main.transform.position, Camera.main.transform.forward * activeGunStats.shootDist, Color.blue, 1f, false);
-
-      //  Debug.DrawRay(startPos, shootDirection * activeGunStats.shootDist, Color.red, 1f, false);
 
         if (Physics.Raycast(startPos, shootDirection, out RaycastHit hit, activeGunStats.shootDist, ~ignoreLayer))
         {
-          //  Debug.Log($"Hit: {hit.collider.name} from GUN position at distance: {hit.distance}");
-         //   Debug.Log($"Gun position: {startPos}, Direction: {shootDirection}");
-
             IDamage dmg = hit.collider.GetComponent<IDamage>();
             if (dmg != null)
             {
@@ -438,7 +396,6 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
         else
         {
             endPos = startPos + shootDirection * activeGunStats.shootDist;
-          //  Debug.Log($"No hit from gun. End pos: {endPos}");
         }
 
         StartCoroutine(ShowBulletTrail(startPos, endPos, hitSomething));
@@ -549,7 +506,6 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
         }
         else
         {
-          //  Debug.LogError("Ammo Text Display (TMPro component) is NULL in playerController!");
         }
     }
 
@@ -672,8 +628,6 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
             GetAmmoFromPickup(ammo);
             return;
         }
-
-      //  Debug.LogWarning("Picked up unknown item: " + item.name);
     }
 
     public void GetAmmoFromPickup(AmmoStats ammo)
@@ -703,13 +657,11 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
 
                     if (added > 0)
                     {
-                       // Debug.Log($"Added {added} ammo to {gunType.name}. Reserve now: {ammoData.reserveAmmo}");
                         ammoAdded = true;
                     }
                 }
                 else
                 {
-                  //  Debug.Log($"No inventory slot found for {gunType.name}");
                 }
             }
         }
@@ -727,14 +679,12 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
 
                     if (added > 0)
                     {
-                        Debug.Log($"Added {added} ammo to current gun ({activeGunStats.name}). Reserve now: {ammoData.reserveAmmo}");
                         ammoAdded = true;
                     }
                 }
             }
             else
             {
-              //  Debug.Log("No active gun to add ammo to");
             }
         }
 
@@ -757,8 +707,6 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
         );
 
         UpdateAmmoDisplay();
-
-      //  Debug.Log($"Added {amount} ammo to {activeGunStats.name}. Reserve now: {ammoData.reserveAmmo}");
     }
 
     public int GetCurrentAmmo(gunStats gunType)
@@ -784,29 +732,16 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
 
     void AddKeyToList(keyStats key)
     {
-        if (!keyList.Contains(key))
+        if (keyList.Contains(key))
         {
-            keyList.Add(key);
-          //  Debug.Log($"Player picked up {key.keyName}! Total keys: {keyList.Count}");
-
-            Light[] allLights = GetComponentsInChildren<Light>();
-            foreach (Light light in allLights)
-            {
-                if (light != null && !light.gameObject.CompareTag("PlayerLight"))
-                {
-                    light.enabled = false;
-                    Destroy(light);
-                }
-            }
-
-            if (key.pickupEffect != null)
-            {
-                Instantiate(key.pickupEffect, transform.position, Quaternion.identity);
-            }
+            return;
         }
-        else
+
+        keyList.Add(key);
+
+        if (key.pickupEffect != null)
         {
-          //  Debug.Log($"Player already has {key.keyName}");
+            Instantiate(key.pickupEffect, transform.position, Quaternion.identity);
         }
     }
 
@@ -825,12 +760,10 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
         if (keyList.Contains(key))
         {
             keyList.Remove(key);
-          //  Debug.Log($"Player used {key.keyName}! Keys remaining: {keyList.Count}");
             return true;
         }
         else
         {
-           // Debug.Log($"Player doesn't have {key.keyName}!");
             return false;
         }
     }
@@ -841,12 +774,10 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
         {
             keyStats usedKey = keyList[0];
             keyList.RemoveAt(0);
-          //  Debug.Log($"Player used a key ({usedKey.keyName})! Keys remaining: {keyList.Count}");
             return true;
         }
         else
         {
-          //  Debug.Log("No keys to use!");
             return false;
         }
     }
@@ -914,8 +845,6 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
             gunListPos = gunList.Count - 1;
 
             gunAmmoInventory.Add(new GunAmmoData(gun));
-
-          //  Debug.Log($"Picked up {gun.name}");
         }
 
         changeGun();
@@ -969,27 +898,9 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
 
     public void respawn()
     {
-      //  Debug.Log("controller = " + controller);
-      //  Debug.Log("gamemanager.instance = " + gamemanager.instance);
-      //  Debug.Log("spawnPoint = " + gamemanager.instance?.spawnPoint);
-
         controller.transform.position = gamemanager.instance.spawnPoint.transform.position;
         HP = currentMaxHP;
         updatePlayerUI();
-    }
-
-    [System.Serializable]
-    public class PlayerControllerSaveData
-    {
-        public int hp;
-        public int currentMaxHP;
-        public bool isGliding;
-        public bool canUseMedkit;
-        public float medkitCooldown;
-        public int gunListPos;
-        public List<keyStats> keyList;
-        public List<AmmoStats> ammoPickupHistory;
-        public List<GunAmmoData> savedAmmoInventory;
     }
 
     object ISaveable.CaptureState() => CaptureState();
@@ -1057,7 +968,6 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
         if (HP > currentMaxHP) HP = currentMaxHP;
 
         updatePlayerUI();
-      //  Debug.Log($"CONFIRM: Max HP upgraded by {increase}. New Max HP: {currentMaxHP}");
     }
 
     void ResetStaticData()
@@ -1069,7 +979,6 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
         persistentHP = HP;
         persistentMaxHP = HP;
         persistentHealthUpgradeTotal = 0;
-      //  Debug.Log("Static data reset for new game session");
     }
 
     void LoadPersistentData()
@@ -1141,5 +1050,39 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
     public Transform GetGunModelTransform()
     {
         return gunModel != null ? gunModel.transform : null;
+    }
+
+    private void CachePlayerHpBaseIfNeeded()
+    {
+        if (ngpBaseCached) return;
+
+        ngpBaseMaxHP = currentMaxHP;
+        ngpBaseCached = true;
+    }
+
+    private void ApplyNgpPlayerHpScalingIfNeeded(bool healToFull)
+    {
+        if (!enableNGPlusPlayerHpScaling) return;
+        if (ngpApplied) return;
+
+        if (SaveManager.IsLoadingFromSave)
+            return;
+
+        CachePlayerHpBaseIfNeeded();
+
+        float mult = 1f;
+        if (NewGamePlusManager.Instance != null)
+            mult = Mathf.Max(0.01f, NewGamePlusManager.Instance.GetPlayerHealthMultiplier());
+
+        int scaledMax = Mathf.Max(1, Mathf.RoundToInt(ngpBaseMaxHP * mult));
+
+        currentMaxHP = scaledMax;
+
+        if (healToFull)
+            HP = currentMaxHP;
+        else if (HP > currentMaxHP)
+            HP = currentMaxHP;
+
+        ngpApplied = true;
     }
 }
