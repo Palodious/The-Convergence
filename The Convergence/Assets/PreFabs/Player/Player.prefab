@@ -3002,12 +3002,14 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 264
   animator: {fileID: 3693304940127708936}
+  ikController: {fileID: 0}
   HP: 150
   speed: 10
   sprintMod: 2
   JumpSpeed: 10
   maxJumps: 1
   gravity: 32
+  glideGravity: 5
   shootDamage: 1
   shootDist: 1
   shootRate: 0.01
@@ -3046,7 +3048,16 @@ MonoBehaviour:
     m_NumAlphaKeys: 2
   trailStartOffset: {x: 0, y: 0.05, z: 0.5}
   useLocalOffset: 1
-  glideGravity: 5
+  gunList: []
+  gunModel: {fileID: 8127335233800530135}
+  activeGunStats: {fileID: 0}
+  reloadSound: {fileID: 0}
+  reloadSoundVol: 1
+  reloadTime: 1.5
+  enableNGPlusPlayerHpScaling: 1
+  deathAnimationTime: 2
+  deathSound: {fileID: 0}
+  deathSoundVol: 1
   aud: {fileID: 4160700154801584295}
   audStep:
   - {fileID: 8300000, guid: 552ce8157933395458d559fdee898974, type: 3}
@@ -3061,20 +3072,10 @@ MonoBehaviour:
   audMedkitVol: 1
   keyList: []
   ammoPickupHistory: []
-  ikController: {fileID: 0}
+  ammoTextDisplay: {fileID: 0}
+  gunAmmoInventory: []
   currentMaxHP: 0
   damageBoost: 1
-  gunList: []
-  gunModel: {fileID: 8127335233800530135}
-  activeGunStats: {fileID: 0}
-  gunAmmoInventory: []
-  reloadSound: {fileID: 0}
-  reloadSoundVol: 1
-  reloadTime: 1.5
-  ammoTextDisplay: {fileID: 0}
-  deathAnimationTime: 2
-  deathSound: {fileID: 0}
-  deathSoundVol: 1
 --- !u!114 &747689891001616926
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3917,7 +3918,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 486da962ed509de45b429b24dd2f4e44, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CameraController
-  sens: 300
+  sens: 100
   lockVertMin: -90
   lockVertMax: 90
   invertY: 0
