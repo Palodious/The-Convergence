@@ -174,11 +174,227 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Store
   playerState:
-    potionCount: 10
+    potionCount: 1
     ownedGuns: 
     upgradeLevels: []
-  upgradeItems: []
-  consumableItems: []
+  upgradeItems:
+  - id: 101
+    itemName: SMG Ammo Upgrade
+    cost: 1
+    type: 0
+    gunType: 0
+    upgradeStat: 3
+    maxLevel: 0
+    baseCost: 0
+    costPerLevel: 0
+    baseAmount: 0
+    amountPerLevel: 0
+    quantity: 0
+  - id: 102
+    itemName: 
+    cost: 0
+    type: 0
+    gunType: 0
+    upgradeStat: 0
+    maxLevel: 0
+    baseCost: 0
+    costPerLevel: 0
+    baseAmount: 0
+    amountPerLevel: 0
+    quantity: 0
+  - id: 103
+    itemName: 
+    cost: 0
+    type: 0
+    gunType: 0
+    upgradeStat: 1
+    maxLevel: 0
+    baseCost: 0
+    costPerLevel: 0
+    baseAmount: 0
+    amountPerLevel: 0
+    quantity: 0
+  - id: 104
+    itemName: 
+    cost: 0
+    type: 0
+    gunType: 0
+    upgradeStat: 2
+    maxLevel: 0
+    baseCost: 0
+    costPerLevel: 0
+    baseAmount: 0
+    amountPerLevel: 0
+    quantity: 0
+  - id: 111
+    itemName: 
+    cost: 0
+    type: 0
+    gunType: 1
+    upgradeStat: 3
+    maxLevel: 0
+    baseCost: 0
+    costPerLevel: 0
+    baseAmount: 0
+    amountPerLevel: 0
+    quantity: 0
+  - id: 112
+    itemName: 
+    cost: 0
+    type: 0
+    gunType: 1
+    upgradeStat: 0
+    maxLevel: 0
+    baseCost: 0
+    costPerLevel: 0
+    baseAmount: 0
+    amountPerLevel: 0
+    quantity: 0
+  - id: 113
+    itemName: 
+    cost: 0
+    type: 0
+    gunType: 1
+    upgradeStat: 1
+    maxLevel: 0
+    baseCost: 0
+    costPerLevel: 0
+    baseAmount: 0
+    amountPerLevel: 0
+    quantity: 0
+  - id: 114
+    itemName: 
+    cost: 0
+    type: 0
+    gunType: 1
+    upgradeStat: 2
+    maxLevel: 0
+    baseCost: 0
+    costPerLevel: 0
+    baseAmount: 0
+    amountPerLevel: 0
+    quantity: 0
+  - id: 121
+    itemName: 
+    cost: 0
+    type: 0
+    gunType: 2
+    upgradeStat: 3
+    maxLevel: 0
+    baseCost: 0
+    costPerLevel: 0
+    baseAmount: 0
+    amountPerLevel: 0
+    quantity: 0
+  - id: 122
+    itemName: 
+    cost: 0
+    type: 0
+    gunType: 2
+    upgradeStat: 0
+    maxLevel: 0
+    baseCost: 0
+    costPerLevel: 0
+    baseAmount: 0
+    amountPerLevel: 0
+    quantity: 0
+  - id: 123
+    itemName: 
+    cost: 0
+    type: 0
+    gunType: 2
+    upgradeStat: 1
+    maxLevel: 0
+    baseCost: 0
+    costPerLevel: 0
+    baseAmount: 0
+    amountPerLevel: 0
+    quantity: 0
+  - id: 201
+    itemName: 
+    cost: 0
+    type: 0
+    gunType: 3
+    upgradeStat: 4
+    maxLevel: 0
+    baseCost: 0
+    costPerLevel: 0
+    baseAmount: 0
+    amountPerLevel: 0
+    quantity: 0
+  - id: 201
+    itemName: 
+    cost: 0
+    type: 0
+    gunType: 0
+    upgradeStat: 0
+    maxLevel: 0
+    baseCost: 0
+    costPerLevel: 0
+    baseAmount: 0
+    amountPerLevel: 0
+    quantity: 0
+  consumableItems:
+  - id: 301
+    itemName: 
+    cost: 0
+    type: 1
+    gunType: 3
+    upgradeStat: 4
+    maxLevel: 0
+    baseCost: 0
+    costPerLevel: 0
+    baseAmount: 0
+    amountPerLevel: 0
+    quantity: 0
+  - id: 302
+    itemName: 
+    cost: 0
+    type: 1
+    gunType: 3
+    upgradeStat: 4
+    maxLevel: 0
+    baseCost: 0
+    costPerLevel: 0
+    baseAmount: 0
+    amountPerLevel: 0
+    quantity: 0
+  - id: 303
+    itemName: 
+    cost: 0
+    type: 1
+    gunType: 3
+    upgradeStat: 4
+    maxLevel: 0
+    baseCost: 0
+    costPerLevel: 0
+    baseAmount: 0
+    amountPerLevel: 0
+    quantity: 0
+  - id: 303
+    itemName: 
+    cost: 0
+    type: 1
+    gunType: 3
+    upgradeStat: 4
+    maxLevel: 0
+    baseCost: 0
+    costPerLevel: 0
+    baseAmount: 0
+    amountPerLevel: 0
+    quantity: 0
+  - id: 304
+    itemName: 
+    cost: 0
+    type: 1
+    gunType: 3
+    upgradeStat: 4
+    maxLevel: 0
+    baseCost: 0
+    costPerLevel: 0
+    baseAmount: 0
+    amountPerLevel: 0
+    quantity: 0
   storeUIPanel: {fileID: 0}
   startingOwnedGuns: 
 --- !u!1 &2326327691633345418
@@ -367,6 +583,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6695148313504361521}
   - component: {fileID: 6786074954810237572}
+  - component: {fileID: 6944695076261209124}
   m_Layer: 0
   m_Name: _PersistentManagers
   m_TagString: Untagged
@@ -409,6 +626,22 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::SaveEntity
   id: 
   prefabKey: 
+--- !u!114 &6944695076261209124
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4123855188252575737}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: edeb387061e932b49ba320bbd6050473, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::NewGamePlusManager
+  cycle: 0
+  enemyHpPerCycle: 0.25
+  enemyDamagePerCycle: 0.15
+  enemySpeedPerCycle: 0.05
 --- !u!1 &4285983349401405875
 GameObject:
   m_ObjectHideFlags: 0
@@ -806,7 +1039,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bc17a8abd102426469966b950f844635, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::RiftShardManager
-  amount: 50
+  amount: 60
 --- !u!1 &6588040155630360054
 GameObject:
   m_ObjectHideFlags: 0

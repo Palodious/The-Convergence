@@ -79,6 +79,26 @@ public class damage : MonoBehaviour
         }
     }
 
+    private int baseDamageAmount;
+    private bool baseDamageCached;
+
+    private void CacheBaseDamageIfNeeded()
+    {
+        if (baseDamageCached) return;
+        baseDamageAmount = damageAmount;
+        baseDamageCached = true;
+    }
+
+    public void ApplyDamageMultiplier(float multiplier)
+    {
+        CacheBaseDamageIfNeeded();
+
+        multiplier = Mathf.Max(0.01f, multiplier);
+
+        // Always scale FROM BASE so repeated calls don't inflate forever.
+        damageAmount = Mathf.Max(1, Mathf.RoundToInt(baseDamageAmount * multiplier));
+    }
+
     private void OnTriggerEnter(Collider other)
     {
         if (other.isTrigger)

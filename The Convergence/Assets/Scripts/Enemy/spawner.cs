@@ -15,6 +15,16 @@ public class spawner : MonoBehaviour, ISaveable
     [Header("Optional Patrol Points")]
     [SerializeField] Transform[] patrolPoints; // Enemies can use patrol points
 
+    [Header("**** NEW GAME+ NG+ SCALING ****")]
+    [SerializeField] private bool enableNGPlusScaling = true;
+
+
+    private int baseSpawnAmount;
+    private float baseSpawnRate;
+
+    private bool ngpBaseCached;
+    private bool ngpApplied;
+
     int spawnCount;
     float spawnTimer;
 
@@ -47,10 +57,48 @@ public class spawner : MonoBehaviour, ISaveable
         }
     }
 
+    private void CacheNgpBaseStatsIfNeeded()
+    {
+        if (ngpBaseCached) return;
+
+        baseSpawnAmount = spawnAmount;
+        baseSpawnRate = spawnRate;
+
+        ngpBaseCached = true;
+    }
+
+    private void ApplyNgpScalingIfNeeded()
+    {
+        if (!enableNGPlusScaling) return;
+        if (ngpApplied) return;
+
+        // Never scale spawners while restoring a save
+        if (SaveManager.IsLoadingFromSave)
+            return;
+
+        CacheNgpBaseStatsIfNeeded();
+
+        int cycle = 0;
+        if (NewGamePlusManager.Instance != null)
+            cycle = Mathf.Max(0, NewGamePlusManager.Instance.Cycle);
+
+        // Tunable difficulty curve
+        float amountMult = 1f + (0.25f * cycle); // +25% enemies per NG+
+        float rateMult = 1f + (0.15f * cycle); // +15% faster spawns per NG+
+
+        spawnAmount = Mathf.Max(0, Mathf.RoundToInt(baseSpawnAmount * amountMult));
+
+        // spawnRate = seconds between spawns - smaller = faster
+        spawnRate = Mathf.Max(0.01f, baseSpawnRate / rateMult);
+
+        ngpApplied = true;
+    }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
+        ApplyNgpScalingIfNeeded();
+
         if (spawnAmount > 0)
         {
             gamemanager.instance.updateGameGoal(spawnAmount);

@@ -651,6 +651,21 @@ public class Store : MonoBehaviour, ISaveable
         });
     }
 
+    public void ResetStoreProgress()
+    {
+        if (playerState == null)
+            playerState = new PlayerState();
+
+        playerState.potionCount = 0;
+
+        if (playerState.upgradeLevels != null)
+            playerState.upgradeLevels.Clear();
+        else
+            playerState.upgradeLevels = new List<UpgradeLevelEntry>();
+
+        RefreshAllButtonDisplays();
+    }
+
     object ISaveable.CaptureState() => CaptureState();
     void ISaveable.RestoreState(object state) => RestoreState(state);
 
