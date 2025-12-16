@@ -8,7 +8,7 @@ public class sceneLoadTrigger : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        Debug.Log("Triggered by: " + other.name);
+        
         // Only trigger for the player
         if (other.CompareTag("Player"))
             return;

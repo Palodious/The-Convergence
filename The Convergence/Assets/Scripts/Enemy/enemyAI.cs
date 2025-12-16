@@ -263,7 +263,6 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
             if (rb == null)
             {
                 rb = gameObject.AddComponent<Rigidbody>();
-                Debug.LogWarning($"enemyAI on {name}: Rigidbody was missing and has been added for jump attacks.");
             }
 
             // Keep kinematic by default for transform-driven arc; if you switch to physics-based jumps,
@@ -397,7 +396,7 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
                 }
                 catch (System.Exception e)
                 {
-                    Debug.LogWarning($"Could not set destination: {e.Message}");
+                   
                 }
             }
 

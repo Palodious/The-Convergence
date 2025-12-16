@@ -31,12 +31,12 @@ public class PlayerIKController : MonoBehaviour
         animator = GetComponent<Animator>();
         if (animator == null)
         {
-            Debug.LogError("Animator component not found on PlayerIKController!");
+            //Debug.LogError("Animator component not found on PlayerIKController!");
         }
 
         if (leftHandIKTarget == null || rightHandIKTarget == null || gunAimTarget == null)
         {
-            Debug.LogWarning("IK targets not assigned in PlayerIKController!");
+            //Debug.LogWarning("IK targets not assigned in PlayerIKController!");
         }
     }
 

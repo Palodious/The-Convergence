@@ -19,7 +19,7 @@ public class elevatorDoorController : MonoBehaviour
     {
         if (door == null)
         {
-            Debug.LogError("Door not assigned to elevatorDoorController!");
+            
             enabled = false;
             return;
         }

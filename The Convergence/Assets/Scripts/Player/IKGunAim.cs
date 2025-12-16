@@ -24,12 +24,12 @@ public class IKGunAim : MonoBehaviour
         animator = GetComponent<Animator>();
         if (animator == null)
         {
-            Debug.LogError("Animator component not found on IKGunAim!");
+         
         }
 
         if (leftHandIKTarget == null || rightHandIKTarget == null || gunAimTarget == null)
         {
-            Debug.LogWarning("IK targets not assigned in IKGunAim!");
+         
         }
     }
 
