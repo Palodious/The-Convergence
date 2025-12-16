@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 3510255467534488306}
   - component: {fileID: -6428111837077187111}
   - component: {fileID: 1767553958635133344}
+  - component: {fileID: -2012896813431333214}
   - component: {fileID: 6259301409843038931}
   - component: {fileID: 2944604361103831847}
   - component: {fileID: -1624067166986588822}
@@ -77,7 +78,7 @@ MonoBehaviour:
   anim: {fileID: 2944604361103831847}
   model: {fileID: 6421731956221677993}
   headPos: {fileID: 780162373615375869}
-  HP: 100
+  maxHP: 100
   FOV: 80
   faceTargetSpeed: 100
   roamDist: 20
@@ -137,9 +138,12 @@ MonoBehaviour:
   minDashDistance: 9.2
   dashAttackCooldown: 7.04
   playerFleeingThreshold: 2.72
+  waveModeRange: 200
   useAnimations: 1
   usePatrol: 0
   useRoam: 1
+  waveModeActive: 0
+  ignoreWaveMode: 0
   aud: {fileID: 84809219704961556}
   audStep:
   - {fileID: 8300000, guid: 82fcc4bd69f6d454b8e6d40f442df5df, type: 3}
@@ -171,8 +175,33 @@ MonoBehaviour:
   currencyDropAmount: 10
   isBoss: 0
   bossDeathEffect: {fileID: 0}
+  deathAnimationDuration: 2
+  useDeathAnimation: 1
+  enableNGPlusScaling: 1
   patrolPoints: []
   patrolSourceId: 
+--- !u!114 &-2012896813431333214
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 57039665892410063}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7051124d272ddf342b49521a3a3a5503, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ItemDrop
+  enableDrops: 1
+  dropChance: 1
+  pickupPrefab: {fileID: 0}
+  dropItems: []
+  dropSpread: 0.5
+  dropsKey: 1
+  keyPrefab: {fileID: 299730534886111880, guid: 00222f0a4e15b1c48915dfcb77310ff1, type: 3}
+  keyDropChance: 1
+  allowMultipleItems: 1
+  maxItemCount: 5
 --- !u!195 &6259301409843038931
 NavMeshAgent:
   m_ObjectHideFlags: 0

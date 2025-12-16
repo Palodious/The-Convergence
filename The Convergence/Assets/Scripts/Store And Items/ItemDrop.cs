@@ -16,48 +16,84 @@ public class ItemDrop : MonoBehaviour
 
     public static bool keyHasDropped = false;
 
+    [Header("Multiple Item Drops")]
+    [SerializeField] private bool allowMultipleItems = true;
+    [SerializeField] private int maxItemCount = 5;
+
+    void Start()
+    {
+
+    }
+
     public void TryDrop()
     {
-        // Drop items
-        if (enableDrops && dropItems != null && dropItems.Length > 0 && pickupPrefab != null)
-        {
-            if (Random.value <= dropChance)
-            {
-                foreach (var item in dropItems)
-                {
-                    Vector3 spawnPos = transform.position + Vector3.up * 0.5f + Random.insideUnitSphere * dropSpread;
-                    GameObject drop = Instantiate(pickupPrefab, spawnPos, Quaternion.identity);
+        DropRegularItems();
 
-                    var comps = drop.GetComponents<MonoBehaviour>();
-                    foreach (var comp in comps)
+        DropKey();
+    }
+
+    private void DropRegularItems()
+    {
+        if (!enableDrops || dropItems == null || dropItems.Length == 0 || pickupPrefab == null)
+            return;
+
+        if (Random.value > dropChance)
+            return;
+
+        int itemsToDrop = allowMultipleItems ? Random.Range(1, Mathf.Min(maxItemCount, dropItems.Length) + 1) : 1;
+
+        for (int i = 0; i < itemsToDrop; i++)
+        {
+            int itemIndex = Random.Range(0, dropItems.Length);
+            ScriptableObject item = dropItems[itemIndex];
+
+            if (item != null)
+            {
+                Vector3 spawnPos = transform.position + Vector3.up * 0.5f + Random.insideUnitSphere * dropSpread;
+                GameObject drop = Instantiate(pickupPrefab, spawnPos, Quaternion.identity);
+
+                var comps = drop.GetComponents<MonoBehaviour>();
+                foreach (var comp in comps)
+                {
+                    if (comp == null) continue;
+                    var method = comp.GetType().GetMethod("AssignItem", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
+                    if (method != null)
                     {
-                        if (comp == null) continue;
-                        var method = comp.GetType().GetMethod("AssignItem", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
-                        if (method != null)
+                        try
                         {
-                            try
-                            {
-                                method.Invoke(comp, new object[] { item });
-                                break;
-                            }
-                            catch { }
+                            method.Invoke(comp, new object[] { item });
+                            break;
                         }
+                        catch { }
                     }
                 }
             }
         }
+    }
 
-        // Drop key once globally
-        if (!keyHasDropped && dropsKey && keyPrefab != null && Random.value <= keyDropChance)
+    private void DropKey()
+    {
+        if (!dropsKey || keyPrefab == null)
+            return;
+
+        if (keyHasDropped)
+            return;
+
+        if (Random.value > keyDropChance)
+            return;
+
+        Vector3 spawnPos = transform.position + Vector3.up * 0.5f;
+        keyPickup keyDrop = Instantiate(keyPrefab, spawnPos, Quaternion.identity);
+        if (keyDrop != null)
         {
-            Vector3 spawnPos = transform.position + Vector3.up * 0.5f;
-            keyPickup keyDrop = Instantiate(keyPrefab, spawnPos, Quaternion.identity);
-            if (keyDrop != null)
-            {
-                keyDrop.EnablePickup();
-                keyHasDropped = true;
-            }
+            keyDrop.EnablePickup();
+            keyHasDropped = true;
+            Debug.Log($"Key dropped by {gameObject.name}. Global key drop flag set to true.");
         }
     }
 
+    public static void ResetKeyDrop()
+    {
+        keyHasDropped = false;
+    }
 }
