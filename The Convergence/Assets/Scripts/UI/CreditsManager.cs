@@ -67,8 +67,8 @@ public class CreditsManager : MonoBehaviour
         yield return null;
 
         Vector2 startPos = new Vector2(0, 1f); // Top
-        Vector2 endPos = new Vector2(0, 0f);   // Bottom
-        float duration = 60f;
+        Vector2 endPos = new Vector2(0, -1f);   // Bottom
+        float duration = 90f;
 
         float elapsed = 0f;
         while (elapsed < duration)
