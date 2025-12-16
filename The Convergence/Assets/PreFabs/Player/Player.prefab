@@ -558,13 +558,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1500963775859466261}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.0174996, y: 0.26097548, z: 0.44019333}
+  m_LocalRotation: {x: -0.20384473, y: -0.000000059604616, z: -0, w: 0.97900325}
+  m_LocalPosition: {x: -0.017500095, y: 0.26097554, z: 0.4401934}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 8950307305527117189}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: -23.524, y: 0, z: 0}
 --- !u!33 &3107879111978463087
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -1509,7 +1509,8 @@ Transform:
   m_LocalPosition: {x: -1.8656485, y: -0.25667325, z: 0.23533106}
   m_LocalScale: {x: 0.91390973, y: 0.9705561, z: 0.7791803}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 2922251041334585226}
   m_Father: {fileID: 7600442695147791281}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &3296307303439377901
@@ -2039,6 +2040,92 @@ Transform:
   - {fileID: 6374008287184681515}
   m_Father: {fileID: 2300375123964323883}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &5183429798864481379
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2922251041334585226}
+  - component: {fileID: 7061012202310543239}
+  m_Layer: 0
+  m_Name: Aim
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2922251041334585226
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5183429798864481379}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 9121216124095835784}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &7061012202310543239
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5183429798864481379}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e3c430f382484144e925c097c2d33cfe, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.Animation.Rigging::UnityEngine.Animations.Rigging.MultiAimConstraint
+  m_Weight: 1
+  m_Data:
+    m_ConstrainedObject: {fileID: 0}
+    m_SourceObjects:
+      m_Length: 0
+      m_Item0:
+        transform: {fileID: 0}
+        weight: 0
+      m_Item1:
+        transform: {fileID: 0}
+        weight: 0
+      m_Item2:
+        transform: {fileID: 0}
+        weight: 0
+      m_Item3:
+        transform: {fileID: 0}
+        weight: 0
+      m_Item4:
+        transform: {fileID: 0}
+        weight: 0
+      m_Item5:
+        transform: {fileID: 0}
+        weight: 0
+      m_Item6:
+        transform: {fileID: 0}
+        weight: 0
+      m_Item7:
+        transform: {fileID: 0}
+        weight: 0
+    m_Offset: {x: 0, y: 0, z: 0}
+    m_MinLimit: -180
+    m_MaxLimit: 180
+    m_AimAxis: 4
+    m_UpAxis: 2
+    m_WorldUpType: 0
+    m_WorldUpObject: {fileID: 0}
+    m_WorldUpAxis: 2
+    m_MaintainOffset: 0
+    m_ConstrainedAxes:
+      x: 1
+      y: 1
+      z: 1
 --- !u!1 &5237481796593255527
 GameObject:
   m_ObjectHideFlags: 0
@@ -2919,10 +3006,46 @@ MonoBehaviour:
   speed: 10
   sprintMod: 2
   JumpSpeed: 10
+  maxJumps: 1
   gravity: 32
   shootDamage: 1
   shootDist: 1
   shootRate: 0.01
+  bulletTrail: {fileID: 0}
+  trailDuration: 0.05
+  trailWidth: 0.01
+  trailGradient:
+    serializedVersion: 2
+    key0: {r: 1, g: 1, b: 1, a: 1}
+    key1: {r: 1, g: 1, b: 1, a: 1}
+    key2: {r: 0, g: 0, b: 0, a: 0}
+    key3: {r: 0, g: 0, b: 0, a: 0}
+    key4: {r: 0, g: 0, b: 0, a: 0}
+    key5: {r: 0, g: 0, b: 0, a: 0}
+    key6: {r: 0, g: 0, b: 0, a: 0}
+    key7: {r: 0, g: 0, b: 0, a: 0}
+    ctime0: 0
+    ctime1: 65535
+    ctime2: 0
+    ctime3: 0
+    ctime4: 0
+    ctime5: 0
+    ctime6: 0
+    ctime7: 0
+    atime0: 0
+    atime1: 65535
+    atime2: 0
+    atime3: 0
+    atime4: 0
+    atime5: 0
+    atime6: 0
+    atime7: 0
+    m_Mode: 0
+    m_ColorSpace: -1
+    m_NumColorKeys: 2
+    m_NumAlphaKeys: 2
+  trailStartOffset: {x: 0, y: 0.05, z: 0.5}
+  useLocalOffset: 1
   glideGravity: 5
   aud: {fileID: 4160700154801584295}
   audStep:
@@ -2938,6 +3061,7 @@ MonoBehaviour:
   audMedkitVol: 1
   keyList: []
   ammoPickupHistory: []
+  ikController: {fileID: 0}
   currentMaxHP: 0
   damageBoost: 1
   gunList: []
@@ -3007,7 +3131,7 @@ SkinnedMeshRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7722342076906786010}
-  m_Enabled: 1
+  m_Enabled: 0
   m_CastShadows: 1
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
@@ -3596,6 +3720,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8950307305527117189}
+  - component: {fileID: 691519069383186685}
   m_Layer: 3
   m_Name: Gun Model
   m_TagString: Untagged
@@ -3611,8 +3736,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8127335233800530135}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.38703832, y: 0.5519736, z: 0.44338676, w: 0.59070694}
-  m_LocalPosition: {x: -0.0509, y: 0.16599, z: 0.0259}
+  m_LocalRotation: {x: -0.40215448, y: 0.5448176, z: 0.53344774, w: 0.5068325}
+  m_LocalPosition: {x: -0.044, y: 0.176, z: 0.022}
   m_LocalScale: {x: 0.59119004, y: 0.59231716, z: 0.9754398}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -3634,7 +3759,22 @@ Transform:
   - {fileID: 1602351376439326721}
   - {fileID: 7884116017696995875}
   m_Father: {fileID: 3355840136220153013}
-  m_LocalEulerAnglesHint: {x: -71.214, y: 73.576, z: 17.447}
+  m_LocalEulerAnglesHint: {x: -81.46, y: -303.932, z: 403.669}
+--- !u!114 &691519069383186685
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8127335233800530135}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8f0026acafb4e7c4fbae55447eceabdf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GunAimAtCrosshair
+  rotationSpeed: 10
+  aimOffset: {x: 0, y: 0, z: 0}
+  useSmoothRotation: 1
 --- !u!1 &8130492377053071245
 GameObject:
   m_ObjectHideFlags: 0
@@ -3759,7 +3899,7 @@ Transform:
   m_GameObject: {fileID: 8271212737754040470}
   serializedVersion: 2
   m_LocalRotation: {x: -0.009145296, y: 0.042225406, z: 0.00038652512, w: 0.99906623}
-  m_LocalPosition: {x: 0.093, y: 1.512, z: 0.122}
+  m_LocalPosition: {x: 0.004, y: 1.75, z: 0.153}
   m_LocalScale: {x: 0.91390973, y: 0.9705565, z: 0.77918005}
   m_ConstrainProportionsScale: 0
   m_Children: []

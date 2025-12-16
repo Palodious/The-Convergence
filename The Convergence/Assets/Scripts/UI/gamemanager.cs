@@ -65,7 +65,7 @@ public class gamemanager : MonoBehaviour
         }
         else
         {
-            Debug.LogWarning("RiftShardManager not found in scene. Coin display will not update.");
+          //  Debug.LogWarning("RiftShardManager not found in scene. Coin display will not update.");
         }
 
         // If we came here via Main Menu's Continue, auto-load the save.
