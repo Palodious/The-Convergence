@@ -1499,14 +1499,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ItemDrop
   enableDrops: 1
   dropChance: 0.5
-  pickupPrefab: {fileID: 0}
-  dropItems: []
+  dropItemPrefabs:
+  - {fileID: 3862896481821026480, guid: 00222f0a4e15b1c48915dfcb77310ff1, type: 3}
   dropSpread: 0.5
   dropsKey: 1
-  keyPrefab: {fileID: 299730534886111880, guid: 00222f0a4e15b1c48915dfcb77310ff1, type: 3}
+  keyPrefab: {fileID: 3862896481821026480, guid: 00222f0a4e15b1c48915dfcb77310ff1, type: 3}
   keyDropChance: 1
-  allowMultipleItems: 1
-  maxItemCount: 5
 --- !u!95 &3692946239600984159
 Animator:
   serializedVersion: 7
