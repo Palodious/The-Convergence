@@ -207,16 +207,13 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
     {
         if (!gamemanager.instance.isPaused)
         {
-            Debug.DrawRay(Camera.main.transform.position, Camera.main.transform.forward * shootDist, Color.red);
-
             shootTimer += Time.deltaTime;
+
             movement();
+            sprint();
         }
 
-        sprint();
-
         HandleMedkitCooldown();
-
         UpdateIKState();
     }
 
@@ -297,18 +294,12 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
 
     void sprint()
     {
-        bool forwardInput = Input.GetAxis("Vertical") > 0.1f;
-
-        bool shouldSprint = Input.GetKey(KeyCode.LeftShift) &&
-                           controller.isGrounded &&
-                           forwardInput;
-
-        if (shouldSprint && !isSprinting)
+        if (Input.GetButtonDown("Sprint"))
         {
             isSprinting = true;
             speed = originalSpeed * sprintMod;
         }
-        else if (!shouldSprint && isSprinting)
+        else if (Input.GetButtonUp("Sprint"))
         {
             isSprinting = false;
             speed = originalSpeed;
