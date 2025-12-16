@@ -37,10 +37,10 @@ public class gamemanager : MonoBehaviour
     public bool isPaused;
 
     float timeScaleOrig;
-    [Header("~=~= Currency UI =~=~")]
+    [Header("**** Currency UI ****")]
     [SerializeField] private TextMeshProUGUI riftShardTextDisplay;
 
-    [Header("~=~= New Game+ Settings =~=~")]
+    [Header("**** New Game+ Settings ****")]
     [SerializeField] private string newGamePlusStartSceneName = "Game Play Scene L1";
 
     void Awake()
@@ -112,11 +112,10 @@ public class gamemanager : MonoBehaviour
             playerScript.enabled = false;
 
         // PAUSE CURRENT LEVEL GAMEPLAY MUSIC (via tag on prefab)
-        var gameplayMusic = GameObject.FindWithTag("GameplayMusic")?.GetComponent<AudioSource>();
+        var gameplayMusic = GameObject.FindWithTag("BackgroundMusic")?.GetComponent<AudioSource>();
         if (gameplayMusic != null)
         {
             gameplayMusic.Pause();
-            //Debug.Log("Paused gameplay music");
         }
 
         if (SFXManager.Instance != null)
@@ -131,7 +130,7 @@ public class gamemanager : MonoBehaviour
         Cursor.lockState = CursorLockMode.Locked;
 
         // resume level music
-        var gameplayMusic = GameObject.FindWithTag("GameplayMusic")?.GetComponent<AudioSource>();
+        var gameplayMusic = GameObject.FindWithTag("BackgroundMusic")?.GetComponent<AudioSource>();
 
         if (menuActive != null)
         {
@@ -141,7 +140,6 @@ public class gamemanager : MonoBehaviour
         if (gameplayMusic != null)
         {
             gameplayMusic.UnPause();
-            //Debug.Log("Resumed gameplay music");
         }
 
         if (menuActive != null)
@@ -167,7 +165,7 @@ public class gamemanager : MonoBehaviour
 
 
         // NO WIN CONDITION TRIGGERED HERE
-        // Win is ONLY triggered by boss defeat on Level 4 via OnLevel4BossDefeated()
+       
     }
 
     public void OnLevel4BossDefeated()
@@ -179,6 +177,13 @@ public class gamemanager : MonoBehaviour
         {
             //Debug.Log("BOSS DEFEATED ON LEVEL 4 - TRIGGERING WIN CONDITION!");
             statePause();
+
+            var gameplayMusic = GameObject.FindWithTag("BackgroundMusic")?.GetComponent<AudioSource>();
+            if (gameplayMusic != null)
+            {
+                gameplayMusic.Pause();
+            }
+
             menuActive = menuWin;
             if (menuActive != null)
             {
@@ -227,11 +232,19 @@ public class gamemanager : MonoBehaviour
     {
         statePause();
         menuActive = menuLose;
+
+        var gameplayMusic = GameObject.FindWithTag("BackgroundMusic")?.GetComponent<AudioSource>();
+        if (gameplayMusic != null)
+        {
+            gameplayMusic.Pause();
+        }
+
         if (menuActive != null)
         {
             menuActive.SetActive(true);
             PlayMenuMusic(menuActive);
         }
+
     }
 
     // Save & Load system
