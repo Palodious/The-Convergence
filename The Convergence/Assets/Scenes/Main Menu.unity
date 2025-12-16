@@ -329,7 +329,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 1329018957}
   m_Direction: 0
   m_Value: 0
-  m_Size: 0.9989723
+  m_Size: 0.99999917
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -793,6 +793,11 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 382910586}
   m_CullTransparentMesh: 1
+--- !u!1 &408240546 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1085063158227305539, guid: 180fb47de8c698242a68e1042150a92a, type: 3}
+  m_PrefabInstance: {fileID: 7581514022425606337}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &514264859
 GameObject:
   m_ObjectHideFlags: 0
@@ -803,9 +808,8 @@ GameObject:
   m_Component:
   - component: {fileID: 514264860}
   - component: {fileID: 514264864}
-  - component: {fileID: 514264863}
   - component: {fileID: 514264862}
-  - component: {fileID: 514264861}
+  - component: {fileID: 514264863}
   m_Layer: 5
   m_Name: Viewport
   m_TagString: Untagged
@@ -833,32 +837,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: -17, y: -17}
   m_Pivot: {x: 0, y: 1}
---- !u!114 &514264861
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 514264859}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 59f8146938fff824cb5fd77236b75775, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.VerticalLayoutGroup
-  m_Padding:
-    m_Left: 0
-    m_Right: 0
-    m_Top: 0
-    m_Bottom: 0
-  m_ChildAlignment: 1
-  m_Spacing: 20
-  m_ChildForceExpandWidth: 1
-  m_ChildForceExpandHeight: 1
-  m_ChildControlWidth: 0
-  m_ChildControlHeight: 0
-  m_ChildScaleWidth: 0
-  m_ChildScaleHeight: 0
-  m_ReverseArrangement: 0
 --- !u!114 &514264862
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -871,7 +849,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 31a19414c41e5ae4aae2af33fee712f6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Mask
-  m_ShowMaskGraphic: 0
+  m_ShowMaskGraphic: 1
 --- !u!114 &514264863
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -885,15 +863,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0, g: 0, b: 0, a: 0.9019608}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 10917, guid: 0000000000000000f000000000000000, type: 0}
-  m_Type: 1
+  m_Sprite: {fileID: 21300000, guid: 47a937f993f96574db98cadbbac68b76, type: 3}
+  m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
@@ -921,8 +899,9 @@ GameObject:
   - component: {fileID: 616234879}
   - component: {fileID: 616234881}
   - component: {fileID: 616234880}
+  - component: {fileID: 616234882}
   m_Layer: 5
-  m_Name: CreditsTexr
+  m_Name: CreditsText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -942,10 +921,10 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 1387874046}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 1500, y: 3800}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 720, y: -1578.915}
+  m_SizeDelta: {x: 1380, y: 3190.03}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &616234880
 MonoBehaviour:
@@ -967,19 +946,19 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "CONVERGENCE\r\nA SAVAGE LEGENDS GAME\r\n\\n\\n\r\n\r\nTHANK YOU FOR PLAYING!\\n\\n\r\n\r\nSTUDENT
+  m_text: "CONVERGENCE\r\nA SAVAGE LEGENDS GAME\\n\n\r\nTHANK YOU FOR PLAYING!\\n\\n\n\r\nSTUDENT
     TEAM DEVELOPERS:\\n\r\nHead of Code, Chaos, & Crisis Management - Jeremy Desfosses\\n\nInterface
     Alchemist & Menu Magician - Zachery Burlakoff\\n\r\nDungeon Daddy - Dylan Williams\\n\r\nSound
-    Sorcerer & Monster Wrangler\\n\r\nMaster of Bullets, Bandages, & Bad Surprises
-    - Michael Witkowski\\n\nChief Shopkeeper & Part-Time Pixel Pusher - Kylar Eden-Potach\\n\\n\r\n\r\nA
-    Special Thanks to our Teachers:\\n\r\nGrandmaster of C# Spells & Unity Basics
-    - Prof. Rod Moye\\n\r\nSprint Master and Trelloist - Prof. John O'Leske\\n\nThe
-    Rapid Response Reviewer - Prof. Shawn Paris\\n\\n\r\n\nEarly Development Contributers:
-    \\n\nCode Consultant from a Parallel Timeline: Sam Haan\\n\nPrototype Support
-    Developer: Austin Carey\\n\r\n\nA Heartfelt (& Slightly Chaotic) Thank\u2011You:\\n\nTo
-    our families, friends, roommates, & emotional\u2011support snacks \\n\nThank
-    you for cheering us on, testing our game, & pretending to understand what we
-    were talking about.\\n\\n\n\r\nA Funny Blip for our Third Party Contributors:\\n\n\nFor
+    Sorcerer & Monster Wrangler - Teresa Shaver\\n\r\nMaster of Bullets, Bandages,
+    & Bad Surprises - Michael Witkowski\\n\nChief Shopkeeper & Part-Time Pixel Pusher
+    - Kylar Eden-Potach\\n\\n\r\n\r\nA Special Thanks to our Teachers:\\n\r\nGrandmaster
+    of C# Spells & Unity Basics - Prof. Rod Moye\\n\r\nSprint Master and Trelloist
+    - Prof. John O'Leske\\n\nThe Rapid Response Reviewer - Prof. Shawn Paris\\n\\n\r\n\nEarly
+    Development Contributers: \\n\nCode Consultant from a Parallel Timeline: Sam
+    Haan\\n\nPrototype Support Developer: Austin Carey\\n\r\n\nA Heartfelt (& Slightly
+    Chaotic) Thank\u2011You:\\n\nTo our families, friends, roommates, & emotional\u2011support
+    snacks \\n\nThank you for cheering us on, testing our game, & pretending to understand
+    what we were talking about.\\n\\n\n\r\nA Funny Blip for our Third Party Contributors:\\n\n\nFor
     Music & SFX: Thank you for the bangers, the booms, & all the weird noises\\n\nTwilight
     Game Menu(Short, Pixabay) by Siarhei Korbut from Pixabay.com/music\\n\nGame Over
     (retrowaver, synthwave, vaporwave, retro, 80's) by Artur Aravidi Music from pixabay.com/music\\n\r\nTense
@@ -990,10 +969,10 @@ MonoBehaviour:
     Characters & Animation:\\n\nThank you, your models survived our code. That alone
     deserves an applause.\\n\n\n\nFor Level Design Resources:\\n\nThank you. you
     gave us props & enviroments that helped us transform empty space into a game.
-    \\n\n \n\nFor Assets of All Kinds:\\n\r\nTo every generous soul who uploaded
+    \\n\n\n \n\nFor Assets of All Kinds:\\n\r\nTo every generous soul who uploaded
     a model, texture, particle effect, or mysterious prefab \u2014\r\nwe couldn\u2019t
     have done it without your digital treasure hoard.\\n\r\n\n\r\n\r\nMade with \u2764\uFE0F
-    in Unity\\n\r\n\xA9 2024 Your Team Name"
+    in Unity\\n\r\n\xA9 2025 Savage Legends"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -1020,8 +999,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 36
-  m_fontSizeBase: 36
+  m_fontSize: 28
+  m_fontSizeBase: 28
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -1032,7 +1011,7 @@ MonoBehaviour:
   m_textAlignment: 65535
   m_characterSpacing: 0
   m_wordSpacing: 0
-  m_lineSpacing: 0.1
+  m_lineSpacing: 0
   m_lineSpacingMax: 0
   m_paragraphSpacing: 0
   m_charWidthMaxAdj: 0
@@ -1050,15 +1029,15 @@ MonoBehaviour:
   m_parseCtrlCharacters: 1
   m_isOrthographic: 1
   m_isCullingEnabled: 0
-  m_horizontalMapping: 0
-  m_verticalMapping: 0
+  m_horizontalMapping: 1
+  m_verticalMapping: 1
   m_uvLineOffset: 0
   m_geometrySortingOrder: 0
   m_IsTextObjectScaleStatic: 0
   m_VertexBufferAutoSizeReduction: 0
   m_useMaxVisibleDescender: 1
   m_pageToDisplay: 1
-  m_margin: {x: 0, y: 0, z: 0, w: 0}
+  m_margin: {x: 50, y: 50, z: 50, w: 50}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   m_hasFontAssetChanged: 0
@@ -1072,6 +1051,20 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 616234878}
   m_CullTransparentMesh: 1
+--- !u!114 &616234882
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 616234878}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3245ec927659c4140ac4f8d17403cc18, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.ContentSizeFitter
+  m_HorizontalFit: 0
+  m_VerticalFit: 2
 --- !u!1 &675150823
 GameObject:
   m_ObjectHideFlags: 0
@@ -1567,7 +1560,7 @@ RectTransform:
   m_Father: {fileID: 887034273}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0.9989723, y: 1}
+  m_AnchorMax: {x: 0.99999875, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 20, y: 20}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -1618,6 +1611,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1387874046}
+  - component: {fileID: 1387874047}
+  - component: {fileID: 1387874048}
   m_Layer: 5
   m_Name: Content
   m_TagString: Untagged
@@ -1642,9 +1637,49 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 0.00006869879, y: 0}
-  m_SizeDelta: {x: 0, y: 300}
+  m_AnchoredPosition: {x: 0.0009710359, y: 0}
+  m_SizeDelta: {x: 1520, y: 5000}
   m_Pivot: {x: 0, y: 1}
+--- !u!114 &1387874047
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1387874045}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3245ec927659c4140ac4f8d17403cc18, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.ContentSizeFitter
+  m_HorizontalFit: 0
+  m_VerticalFit: 2
+--- !u!114 &1387874048
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1387874045}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 59f8146938fff824cb5fd77236b75775, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.VerticalLayoutGroup
+  m_Padding:
+    m_Left: 0
+    m_Right: 0
+    m_Top: 0
+    m_Bottom: 0
+  m_ChildAlignment: 1
+  m_Spacing: 20
+  m_ChildForceExpandWidth: 1
+  m_ChildForceExpandHeight: 1
+  m_ChildControlWidth: 0
+  m_ChildControlHeight: 0
+  m_ChildScaleWidth: 0
+  m_ChildScaleHeight: 0
+  m_ReverseArrangement: 0
 --- !u!1 &1568133774
 GameObject:
   m_ObjectHideFlags: 0
@@ -1920,13 +1955,13 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 7581514022425606338}
-        m_TargetAssemblyTypeName: MainMenu, Assembly-CSharp
-        m_MethodName: OpenOptions
-        m_Mode: 1
+      - m_Target: {fileID: 675150824}
+        m_TargetAssemblyTypeName: UnityEngine.RectTransform, UnityEngine
+        m_MethodName: LookAt
+        m_Mode: 2
         m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_ObjectArgument: {fileID: 675150824}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Transform, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
@@ -2489,7 +2524,10 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 3874198810082911474, guid: 180fb47de8c698242a68e1042150a92a, type: 3}
       insertIndex: 4
       addedObject: {fileID: 1728482837}
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 1085063158227305539, guid: 180fb47de8c698242a68e1042150a92a, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 7581514022425606344}
   m_SourcePrefab: {fileID: 100100000, guid: 180fb47de8c698242a68e1042150a92a, type: 3}
 --- !u!114 &7581514022425606338 stripped
 MonoBehaviour:
@@ -2512,6 +2550,22 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 6340628388818833890, guid: 180fb47de8c698242a68e1042150a92a, type: 3}
   m_PrefabInstance: {fileID: 7581514022425606337}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &7581514022425606344
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 408240546}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eeb1643829a273c42a5eac474d9490ef, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CreditsManager
+  creditsPanel: {fileID: 675150823}
+  scrollRect: {fileID: 1709216441}
+  creditsButton: {fileID: 1728482838}
+  closeButton: {fileID: 247788277}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

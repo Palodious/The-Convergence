@@ -26,6 +26,6 @@ public class PylonController : MonoBehaviour
         orbit.enabled = false;
 
         // Tell the rift a pylon was destroyed
-        FindObjectOfType<RiftController>()?.PylonDestroyed();
+        Object.FindFirstObjectByType<RiftController>()?.PylonDestroyed();
     }
 }
