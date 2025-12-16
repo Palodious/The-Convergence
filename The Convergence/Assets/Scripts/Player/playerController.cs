@@ -27,6 +27,12 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
     [Range(0.01f, 0.5f)][SerializeField] float trailWidth = 0.05f;
     [SerializeField] Gradient trailGradient = new Gradient();
 
+    // ADDED: Bullet trail offset controls
+    [Header("~=~= Bullet Trail Offset =~=~")]
+    [SerializeField] Vector3 trailStartOffset = new Vector3(0.1f, 0.05f, 0f);
+    [Tooltip("If true, offset will be applied relative to player's forward direction")]
+    [SerializeField] bool useLocalOffset = true;
+
     [Header("~=~= Movement Modifiers =~=~")]
     [Range(0.1f, 50f)][SerializeField] float glideGravity;
 
@@ -170,7 +176,7 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
 
         if (SaveManager.IsLoadingFromSave)
         {
-            Debug.Log("playerController.Start: IsLoadingFromSave = true, skipping respawn/persistent init.");
+          //  Debug.Log("playerController.Start: IsLoadingFromSave = true, skipping respawn/persistent init.");
             return;
         }
 
@@ -360,13 +366,21 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
 
         UpdateAmmoDisplay();
 
-        Vector3 startPos = gunModel.transform.position;
+        Vector3 startPos = CalculateTrailStartPosition();
         Vector3 endPos;
         bool hitSomething = false;
 
-        if (Physics.Raycast(Camera.main.transform.position, Camera.main.transform.forward, out RaycastHit hit, activeGunStats.shootDist, ~ignoreLayer))
+
+        Vector3 shootDirection = gunModel.transform.forward;
+
+      //  Debug.DrawRay(Camera.main.transform.position, Camera.main.transform.forward * activeGunStats.shootDist, Color.blue, 1f, false);
+
+      //  Debug.DrawRay(startPos, shootDirection * activeGunStats.shootDist, Color.red, 1f, false);
+
+        if (Physics.Raycast(startPos, shootDirection, out RaycastHit hit, activeGunStats.shootDist, ~ignoreLayer))
         {
-            Debug.Log(hit.collider.name);
+          //  Debug.Log($"Hit: {hit.collider.name} from GUN position at distance: {hit.distance}");
+         //   Debug.Log($"Gun position: {startPos}, Direction: {shootDirection}");
 
             IDamage dmg = hit.collider.GetComponent<IDamage>();
             if (dmg != null)
@@ -380,10 +394,28 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
         }
         else
         {
-            endPos = Camera.main.transform.position + Camera.main.transform.forward * activeGunStats.shootDist;
+            endPos = startPos + shootDirection * activeGunStats.shootDist;
+          //  Debug.Log($"No hit from gun. End pos: {endPos}");
         }
 
         StartCoroutine(ShowBulletTrail(startPos, endPos, hitSomething));
+    }
+
+    private Vector3 CalculateTrailStartPosition()
+    {
+        Vector3 basePosition = gunModel.transform.position;
+
+        if (useLocalOffset)
+        {
+            Vector3 offset = transform.right * trailStartOffset.x +
+                            transform.up * trailStartOffset.y +
+                            transform.forward * trailStartOffset.z;
+            return basePosition + offset;
+        }
+        else
+        {
+            return basePosition + trailStartOffset;
+        }
     }
 
     IEnumerator ShowBulletTrail(Vector3 start, Vector3 end, bool hitTarget)
@@ -474,7 +506,7 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
         }
         else
         {
-            Debug.LogError("Ammo Text Display (TMPro component) is NULL in playerController!");
+          //  Debug.LogError("Ammo Text Display (TMPro component) is NULL in playerController!");
         }
     }
 
@@ -598,7 +630,7 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
             return;
         }
 
-        Debug.LogWarning("Picked up unknown item: " + item.name);
+      //  Debug.LogWarning("Picked up unknown item: " + item.name);
     }
 
     public void GetAmmoFromPickup(AmmoStats ammo)
@@ -628,13 +660,13 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
 
                     if (added > 0)
                     {
-                        Debug.Log($"Added {added} ammo to {gunType.name}. Reserve now: {ammoData.reserveAmmo}");
+                       // Debug.Log($"Added {added} ammo to {gunType.name}. Reserve now: {ammoData.reserveAmmo}");
                         ammoAdded = true;
                     }
                 }
                 else
                 {
-                    Debug.Log($"No inventory slot found for {gunType.name}");
+                  //  Debug.Log($"No inventory slot found for {gunType.name}");
                 }
             }
         }
@@ -659,7 +691,7 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
             }
             else
             {
-                Debug.Log("No active gun to add ammo to");
+              //  Debug.Log("No active gun to add ammo to");
             }
         }
 
@@ -683,7 +715,7 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
 
         UpdateAmmoDisplay();
 
-        Debug.Log($"Added {amount} ammo to {activeGunStats.name}. Reserve now: {ammoData.reserveAmmo}");
+      //  Debug.Log($"Added {amount} ammo to {activeGunStats.name}. Reserve now: {ammoData.reserveAmmo}");
     }
 
     public int GetCurrentAmmo(gunStats gunType)
@@ -712,7 +744,7 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
         if (!keyList.Contains(key))
         {
             keyList.Add(key);
-            Debug.Log($"Player picked up {key.keyName}! Total keys: {keyList.Count}");
+          //  Debug.Log($"Player picked up {key.keyName}! Total keys: {keyList.Count}");
 
             Light[] allLights = GetComponentsInChildren<Light>();
             foreach (Light light in allLights)
@@ -731,7 +763,7 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
         }
         else
         {
-            Debug.Log($"Player already has {key.keyName}");
+          //  Debug.Log($"Player already has {key.keyName}");
         }
     }
 
@@ -750,12 +782,12 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
         if (keyList.Contains(key))
         {
             keyList.Remove(key);
-            Debug.Log($"Player used {key.keyName}! Keys remaining: {keyList.Count}");
+          //  Debug.Log($"Player used {key.keyName}! Keys remaining: {keyList.Count}");
             return true;
         }
         else
         {
-            Debug.Log($"Player doesn't have {key.keyName}!");
+           // Debug.Log($"Player doesn't have {key.keyName}!");
             return false;
         }
     }
@@ -766,12 +798,12 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
         {
             keyStats usedKey = keyList[0];
             keyList.RemoveAt(0);
-            Debug.Log($"Player used a key ({usedKey.keyName})! Keys remaining: {keyList.Count}");
+          //  Debug.Log($"Player used a key ({usedKey.keyName})! Keys remaining: {keyList.Count}");
             return true;
         }
         else
         {
-            Debug.Log("No keys to use!");
+          //  Debug.Log("No keys to use!");
             return false;
         }
     }
@@ -840,7 +872,7 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
 
             gunAmmoInventory.Add(new GunAmmoData(gun));
 
-            Debug.Log($"Picked up {gun.name}");
+          //  Debug.Log($"Picked up {gun.name}");
         }
 
         changeGun();
@@ -894,9 +926,9 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
 
     public void respawn()
     {
-        Debug.Log("controller = " + controller);
-        Debug.Log("gamemanager.instance = " + gamemanager.instance);
-        Debug.Log("spawnPoint = " + gamemanager.instance?.spawnPoint);
+      //  Debug.Log("controller = " + controller);
+      //  Debug.Log("gamemanager.instance = " + gamemanager.instance);
+      //  Debug.Log("spawnPoint = " + gamemanager.instance?.spawnPoint);
 
         controller.transform.position = gamemanager.instance.spawnPoint.transform.position;
         HP = currentMaxHP;
@@ -982,7 +1014,7 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
         if (HP > currentMaxHP) HP = currentMaxHP;
 
         updatePlayerUI();
-        Debug.Log($"CONFIRM: Max HP upgraded by {increase}. New Max HP: {currentMaxHP}");
+      //  Debug.Log($"CONFIRM: Max HP upgraded by {increase}. New Max HP: {currentMaxHP}");
     }
 
     void ResetStaticData()
@@ -994,7 +1026,7 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
         persistentHP = HP;
         persistentMaxHP = HP;
         persistentHealthUpgradeTotal = 0;
-        Debug.Log("Static data reset for new game session");
+      //  Debug.Log("Static data reset for new game session");
     }
 
     void LoadPersistentData()
