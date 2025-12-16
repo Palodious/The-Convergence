@@ -15,7 +15,7 @@ public static class SceneLoader
     {
         if (string.IsNullOrEmpty(sceneToLoad))
         {
-            Debug.LogError("SceneLoader: sceneToLoad is null or empty.");
+          //  Debug.LogError("SceneLoader: sceneToLoad is null or empty.");
             return;
         }
 

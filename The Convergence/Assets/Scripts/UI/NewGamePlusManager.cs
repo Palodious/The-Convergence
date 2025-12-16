@@ -49,7 +49,7 @@ public class NewGamePlusManager : MonoBehaviour, ISaveable
     public void AdvanceCycle()
     {
         cycle++;
-        Debug.Log($"NewGamePlusManager: Cycle advanced. Now at {GetCycleLabel()}");
+      //  Debug.Log($"NewGamePlusManager: Cycle advanced. Now at {GetCycleLabel()}");
     }
 
     public void SetCycle(int value)

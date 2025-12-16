@@ -49,12 +49,12 @@ public class SFXManager : MonoBehaviour
                 }
                 else
                 {
-                    Debug.LogWarning($"[SFXManager] Duplicate sound name: {s.soundName}");
+                  //  Debug.LogWarning($"[SFXManager] Duplicate sound name: {s.soundName}");
                 }
             }
         }
 
-        Debug.Log($"[SFXManager] Loaded {soundDict.Count} sounds");
+      //  Debug.Log($"[SFXManager] Loaded {soundDict.Count} sounds");
     }
 
     public void PlaySound(string soundName)
@@ -65,7 +65,7 @@ public class SFXManager : MonoBehaviour
         }
         else
         {
-            Debug.LogWarning($"[SFXManager] Sound not found: {soundName}");
+          //  Debug.LogWarning($"[SFXManager] Sound not found: {soundName}");
         }
     }
 
@@ -79,7 +79,7 @@ public class SFXManager : MonoBehaviour
         }
         else
         {
-            Debug.LogWarning($"[SFXManager] Loop sound not found: {soundName}");
+          //  Debug.LogWarning($"[SFXManager] Loop sound not found: {soundName}");
         }
     }
 

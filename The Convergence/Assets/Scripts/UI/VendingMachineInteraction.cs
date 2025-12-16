@@ -76,7 +76,7 @@ public class VendingMachineInteraction : MonoBehaviour
             // Refresh button displays / state
             if (Store.Instance == null)
             {
-                Debug.LogError("StoreSystem is missing or inactive. Store UI will not open.");
+              //  Debug.LogError("StoreSystem is missing or inactive. Store UI will not open.");
             return;
             }
 

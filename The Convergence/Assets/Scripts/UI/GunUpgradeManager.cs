@@ -62,20 +62,20 @@ public class GunUpgradeManager : MonoBehaviour, ISaveable
         gunMap = new Dictionary<GunType, gunStats>();
 
         if (smgStats != null) gunMap[GunType.SMG] = smgStats;
-        else Debug.LogWarning("GunUpgradeManager: smgStats is not assigned.");
+        else// Debug.LogWarning("GunUpgradeManager: smgStats is not assigned.");
 
         if (rifleStats != null) gunMap[GunType.Rifle] = rifleStats;
-        else Debug.LogWarning("GunUpgradeManager: rifleStats is not assigned.");
+        else// Debug.LogWarning("GunUpgradeManager: rifleStats is not assigned.");
 
         if (arStats != null) gunMap[GunType.AR] = arStats;
-        else Debug.LogWarning("GunUpgradeManager: arStats is not assigned.");
+        ;
     }
 
     public gunStats GetGunStats(GunType type)
     {
         if (type == GunType.None)
         {
-            Debug.LogWarning("GunUpgradeManager.GetGunStats called with GunType.None");
+           // Debug.LogWarning("GunUpgradeManager.GetGunStats called with GunType.None");
             return null;
         }
 
@@ -89,7 +89,7 @@ public class GunUpgradeManager : MonoBehaviour, ISaveable
             return stats;
         }
 
-        Debug.LogError($"GunUpgradeManager: gunStats not found or missing reference for GunType: {type}");
+       // Debug.LogError($"GunUpgradeManager: gunStats not found or missing reference for GunType: {type}");
         return null;
     }
 
@@ -159,7 +159,7 @@ public class GunUpgradeManager : MonoBehaviour, ISaveable
     {
         if (state is not GunUpgradeSaveData s)
         {
-            Debug.LogError($"GunUpgradeManager.RestoreState: expected GunUpgradeSaveData, got {state?.GetType()} on {name}");
+          //  Debug.LogError($"GunUpgradeManager.RestoreState: expected GunUpgradeSaveData, got {state?.GetType()} on {name}");
             return;
         }
 
@@ -172,13 +172,13 @@ public class GunUpgradeManager : MonoBehaviour, ISaveable
     {
         if (stats == null)
         {
-            Debug.LogWarning($"GunUpgradeManager.RestoreOne: {type} stats is null (skipping restore).");
+           // Debug.LogWarning($"GunUpgradeManager.RestoreOne: {type} stats is null (skipping restore).");
             return;
         }
 
         if (!save.hasData)
         {
-            Debug.LogWarning($"GunUpgradeManager.RestoreOne: No saved data for {type} (leaving current values).");
+          //  Debug.LogWarning($"GunUpgradeManager.RestoreOne: No saved data for {type} (leaving current values).");
             return;
         }
 

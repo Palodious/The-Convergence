@@ -29,7 +29,7 @@ public class PrefabRegistry : MonoBehaviour
     {
         if (lookup == null || !lookup.TryGetValue(key, out var prefab) || prefab == null)
         {
-            Debug.LogWarning($"PrefabRegistry: No prefab found for key '{key}'");
+          //  Debug.LogWarning($"PrefabRegistry: No prefab found for key '{key}'");
             return null;
         }
 
