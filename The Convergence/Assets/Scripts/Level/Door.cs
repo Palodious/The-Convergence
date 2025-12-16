@@ -122,7 +122,7 @@ public class Door : MonoBehaviour
         }
         else
         {
-            Debug.Log("Press E to open door");
+         
         }
     }
 
@@ -190,7 +190,7 @@ public class Door : MonoBehaviour
 
                 if (!keysUsed)
                 {
-                    Debug.Log("Failed to use keys!");
+                  
                     return;
                 }
             }
@@ -199,7 +199,7 @@ public class Door : MonoBehaviour
         }
         else
         {
-            Debug.Log("Cannot open door. Requirements not met.");
+           
             // Show a different message when requirements aren't met
             if (doorText != null)
             {
@@ -274,7 +274,7 @@ public class Door : MonoBehaviour
 
         StartCoroutine(SlideUp());
 
-        Debug.Log("Door opened!");
+        
     }
 
     private IEnumerator SlideUp()
@@ -313,7 +313,7 @@ public class Door : MonoBehaviour
             {
                 // Call the method to save persistent data
                 player.PrepareForSceneTransition();
-                Debug.Log("Player data saved for scene transition");
+                
             }
         }
 
@@ -336,7 +336,7 @@ public class Door : MonoBehaviour
             }
             else
             {
-                Debug.LogWarning("No next scene available in build settings!");
+                
             }
         }
     }

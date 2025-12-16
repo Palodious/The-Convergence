@@ -116,7 +116,7 @@ public class gamemanager : MonoBehaviour
         if (gameplayMusic != null)
         {
             gameplayMusic.Pause();
-            Debug.Log("Paused gameplay music");
+            //Debug.Log("Paused gameplay music");
         }
 
         if (SFXManager.Instance != null)
@@ -141,7 +141,7 @@ public class gamemanager : MonoBehaviour
         if (gameplayMusic != null)
         {
             gameplayMusic.UnPause();
-            Debug.Log("Resumed gameplay music");
+            //Debug.Log("Resumed gameplay music");
         }
 
         if (menuActive != null)
@@ -177,7 +177,7 @@ public class gamemanager : MonoBehaviour
         // Verify this is actually Level 4
         if (currentSceneName == "Game Play Scene L4")
         {
-            Debug.Log("BOSS DEFEATED ON LEVEL 4 - TRIGGERING WIN CONDITION!");
+            //Debug.Log("BOSS DEFEATED ON LEVEL 4 - TRIGGERING WIN CONDITION!");
             statePause();
             menuActive = menuWin;
             if (menuActive != null)
@@ -199,7 +199,7 @@ public class gamemanager : MonoBehaviour
         }
         else
         {
-            Debug.LogWarning("StartNewGamePlusRun called, but NewGamePlusManager.Instance is null. New Game+ cycle will not advance.");
+            //Debug.LogWarning("StartNewGamePlusRun called, but NewGamePlusManager.Instance is null. New Game+ cycle will not advance.");
         }
 
         if (SaveManager.Instance != null && player != null && playerScript != null)
@@ -219,7 +219,7 @@ public class gamemanager : MonoBehaviour
         }
         else
         {
-            Debug.LogError("New Game+ start scene name is empty. Set 'newGamePlusStartSceneName' in the Inspector.");
+            //Debug.LogError("New Game+ start scene name is empty. Set 'newGamePlusStartSceneName' in the Inspector.");
         }
     }
 
@@ -239,7 +239,7 @@ public class gamemanager : MonoBehaviour
     {
         if (SaveManager.Instance == null)
         {
-            Debug.LogWarning("SaveGame called but SaveManager.Instance is null. Make sure SaveManager is in the scene.");
+            //Debug.LogWarning("SaveGame called but SaveManager.Instance is null. Make sure SaveManager is in the scene.");
 
             if (SFXManager.Instance != null)
                 SFXManager.Instance.PlaySound("UI_Error");
@@ -249,7 +249,7 @@ public class gamemanager : MonoBehaviour
 
         if (player == null || playerScript == null)
         {
-            Debug.LogWarning("SaveGame called but player/playerScript is null.");
+            //Debug.LogWarning("SaveGame called but player/playerScript is null.");
 
             if (SFXManager.Instance != null)
                 SFXManager.Instance.PlaySound("UI_Error");
@@ -267,7 +267,7 @@ public class gamemanager : MonoBehaviour
     {
         if (SaveManager.Instance == null)
         {
-            Debug.LogWarning("LoadGame called but SaveManager.Instance is null. Make sure SaveManager is in the scene.");
+            //Debug.LogWarning("LoadGame called but SaveManager.Instance is null. Make sure SaveManager is in the scene.");
 
             if (SFXManager.Instance != null)
                 SFXManager.Instance.PlaySound("UI_Error");
@@ -282,7 +282,7 @@ public class gamemanager : MonoBehaviour
     {
         if (!SaveManager.Instance.TryLoad(out SaveData data))
         {
-            Debug.LogWarning("No save file found.");
+            //Debug.LogWarning("No save file found.");
             yield break;
         }
 
@@ -307,7 +307,7 @@ public class gamemanager : MonoBehaviour
 
                 if (!savedIds.Contains(se.Id))
                 {
-                    Debug.Log($"[Load Cleanup] Destroying enemy '{enemy.name}' with id {se.Id} that was not in the save file.");
+                    //Debug.Log($"[Load Cleanup] Destroying enemy '{enemy.name}' with id {se.Id} that was not in the save file.");
                     Destroy(enemy.gameObject);
                 }
             }
@@ -326,7 +326,7 @@ public class gamemanager : MonoBehaviour
         }
         else
         {
-            Debug.LogWarning("LoadGameRoutine: playerScript is null after load.");
+            //Debug.LogWarning("LoadGameRoutine: playerScript is null after load.");
         }
 
         gameGoalCount = data.gameGoalCount;
@@ -343,7 +343,7 @@ public class gamemanager : MonoBehaviour
     {
         if (menuOptions == null)
         {
-            Debug.LogWarning("menuOptions not assigned on gamemanager.");
+            //Debug.LogWarning("menuOptions not assigned on gamemanager.");
             return;
         }
 
@@ -392,11 +392,11 @@ public class gamemanager : MonoBehaviour
         if (musicSource != null)
         {
             musicSource.Play();
-            Debug.Log($"Playing menu music from {menuGO.name}");
+            //Debug.Log($"Playing menu music from {menuGO.name}");
         }
         else
         {
-            Debug.LogWarning($"No AudioSource found in children of {menuGO.name}");
+            //Debug.LogWarning($"No AudioSource found in children of {menuGO.name}");
         }
     }
     //stops menu music from the given menu GameObject
@@ -406,7 +406,7 @@ public class gamemanager : MonoBehaviour
         if (musicSource != null)
         {
             musicSource.Stop();
-            Debug.Log($"Stopped menu music from {menuGO.name}");
+            //Debug.Log($"Stopped menu music from {menuGO.name}");
         }
     }
     

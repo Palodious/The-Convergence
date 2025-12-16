@@ -54,7 +54,7 @@ public class SaveManager : MonoBehaviour
     {
         if (Instance != null && Instance != this)
         {
-            Debug.LogWarning("SaveManager: Duplicate instance detected. Destroying the new one.");
+            //Debug.LogWarning("SaveManager: Duplicate instance detected. Destroying the new one.");
             Destroy(gameObject);
             return;
         }
@@ -129,7 +129,7 @@ public class SaveManager : MonoBehaviour
         if (File.Exists(SavePath)) File.Delete(SavePath);
         File.Move(tmpPath, SavePath);
 
-        Debug.Log($"Saved game to {SavePath}");
+        //Debug.Log($"Saved game to {SavePath}");
     }
 
     // This checks for a save file and loads it into memory.
@@ -172,16 +172,16 @@ public class SaveManager : MonoBehaviour
 
             if (string.IsNullOrEmpty(id))
             {
-                Debug.LogWarning($"SaveManager: Found SaveEntity on {se.gameObject.name} with EMPTY id. Skipping it.");
+                //Debug.LogWarning($"SaveManager: Found SaveEntity on {se.gameObject.name} with EMPTY id. Skipping it.");
                 continue;
             }
 
             if (existing.ContainsKey(id))
             {
-                Debug.LogWarning(
-                    $"SaveManager: Duplicate SaveEntity id '{id}' found on {se.gameObject.name} " +
-                    $"and {existing[id].name}. Keeping the first, ignoring this one."
-                );
+                //Debug.LogWarning(
+                    //$"SaveManager: Duplicate SaveEntity id '{id}' found on {se.gameObject.name} " +
+                    //$"and {existing[id].name}. Keeping the first, ignoring this one."
+                //);
                 continue;
             }
 
@@ -226,7 +226,7 @@ public class SaveManager : MonoBehaviour
                 var sample = comp.CaptureState();
                 if (sample == null)
                 {
-                    Debug.LogWarning($"SaveManager: CaptureState() on {t.Name} returned null during load. Skipping.");
+                    //Debug.LogWarning($"SaveManager: CaptureState() on {t.Name} returned null during load. Skipping.");
                     continue;
                 }
 
@@ -270,7 +270,7 @@ public class SaveManager : MonoBehaviour
         }
         catch (System.Exception e)
         {
-            Debug.LogWarning($"SaveManager.DeleteSave: Failed to delete save file: {e.Message}");
+        //Debug.LogWarning($"SaveManager.DeleteSave: Failed to delete save file: {e.Message}");
         }
     }
 

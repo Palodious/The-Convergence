@@ -131,7 +131,7 @@ public class PlayerAbilities : MonoBehaviour
         EffectsManager.Instance.Create("JumpImpact", targetPos);
 
         isJumping = false;
-        Debug.Log($"Rift Jump COMPLETE - Jumped {distance:F2}m");
+        //Debug.Log($"Rift Jump COMPLETE - Jumped {distance:F2}m");
         yield return null;
     }
 

@@ -197,7 +197,6 @@ public class spawner : MonoBehaviour, ISaveable
     {
         if (state is not SpawnerState s)
         {
-            Debug.LogError($"spawner.RestoreState: expected SpawnerState, got {state?.GetType()} on {name}");
             return;
         }
 
