@@ -46,7 +46,7 @@ public class MainMenu : MonoBehaviour
         // 1) If we forgot to wire the button, fail safely.
         if (continueButton == null)
         {
-            Debug.LogWarning("MainMenu: continueButton is not assigned in the Inspector.");
+          //  Debug.LogWarning("MainMenu: continueButton is not assigned in the Inspector.");
             return;
         }
 
@@ -92,7 +92,7 @@ public class MainMenu : MonoBehaviour
         if (SaveManager.Instance == null)
 
         {
-            Debug.LogWarning("Continue pressed but no SaveManager in the Main Menu scene.");
+         //   Debug.LogWarning("Continue pressed but no SaveManager in the Main Menu scene.");
 
             if (SFXManager.Instance != null)
                 SFXManager.Instance.PlaySound("UI_Error");
@@ -103,7 +103,7 @@ public class MainMenu : MonoBehaviour
         SaveData data;
         if (!SaveManager.Instance.TryLoad(out data))
         {
-            Debug.LogWarning("Continue pressed but no save file found.");
+         //   Debug.LogWarning("Continue pressed but no save file found.");
 
             if (SFXManager.Instance != null)
                 SFXManager.Instance.PlaySound("UI_Error");

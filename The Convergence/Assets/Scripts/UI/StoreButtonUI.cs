@@ -32,7 +32,7 @@ public class StoreButtonUI : MonoBehaviour
         button = GetComponent<Button>();
         if (button == null)
         {
-            Debug.LogError($"StoreButtonUI on {gameObject.name} is missing a Button component! Button interactivity will fail.");
+          //  Debug.LogError($"StoreButtonUI on {gameObject.name} is missing a Button component! Button interactivity will fail.");
             return;
         }
 
@@ -131,7 +131,7 @@ public class StoreButtonUI : MonoBehaviour
 
         if (Store.Instance == null)
         {
-            Debug.LogWarning($"StoreButtonUI on {gameObject.name}: Click ignored (Store.Instance is null).");
+          //  Debug.LogWarning($"StoreButtonUI on {gameObject.name}: Click ignored (Store.Instance is null).");
             return;
         }
 

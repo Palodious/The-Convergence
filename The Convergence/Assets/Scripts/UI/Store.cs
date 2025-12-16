@@ -353,14 +353,14 @@ public class Store : MonoBehaviour, ISaveable
             }
             else
             {
-                Debug.LogError("Store.ApplyUpgrade(MaxHP): gamemanager/playerScript missing.");
+              //  Debug.LogError("Store.ApplyUpgrade(MaxHP): gamemanager/playerScript missing.");
             }
             return;
         }
 
         if (GunUpgradeManager.Instance == null)
         {
-            Debug.LogError("Store.ApplyUpgrade: GunUpgradeManager.Instance is null.");
+           // Debug.LogError("Store.ApplyUpgrade: GunUpgradeManager.Instance is null.");
             return;
         }
 
@@ -368,7 +368,7 @@ public class Store : MonoBehaviour, ISaveable
 
         if (gun == null)
         {
-            Debug.LogError($"Store.ApplyUpgrade: No gunStats found for {item.gunType}");
+          //  Debug.LogError($"Store.ApplyUpgrade: No gunStats found for {item.gunType}");
             return;
         }
 
@@ -684,7 +684,7 @@ public class Store : MonoBehaviour, ISaveable
     {
         if (state is not StoreSaveData s)
         {
-            Debug.LogError($"Store.RestoreState: expected StoreSaveData, got {state?.GetType()} on {name}");
+          //  Debug.LogError($"Store.RestoreState: expected StoreSaveData, got {state?.GetType()} on {name}");
             return;
         }
 

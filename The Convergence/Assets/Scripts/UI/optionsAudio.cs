@@ -21,12 +21,12 @@ public class OptionsAudio : MonoBehaviour
     {
         if (masterSlider == null)
         {
-            Debug.LogWarning("OptionsAudio: masterSlider is not assigned.");
+          //  Debug.LogWarning("OptionsAudio: masterSlider is not assigned.");
         }
 
         if (masterMixer == null)
         {
-            Debug.LogWarning("OptionsAudio: masterMixer is not assigned.");
+          //  Debug.LogWarning("OptionsAudio: masterMixer is not assigned.");
         }
 
         // Load saved volume, default to full.

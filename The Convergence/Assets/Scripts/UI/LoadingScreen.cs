@@ -36,7 +36,7 @@ public class LoadingScreen : MonoBehaviour
 
         if (string.IsNullOrEmpty(SceneLoader.targetSceneName))
         {
-            Debug.LogWarning("LoadingScreen: No targetSceneName set. Falling back to main gameplay scene.");
+          //  Debug.LogWarning("LoadingScreen: No targetSceneName set. Falling back to main gameplay scene.");
 
             // TODO: put your default gameplay scene name here
             SceneManager.LoadScene("Game Play Scene L1");

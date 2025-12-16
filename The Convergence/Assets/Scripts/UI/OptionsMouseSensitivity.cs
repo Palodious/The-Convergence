@@ -20,7 +20,7 @@ public class OptionsMouseSensitivity : MonoBehaviour
     {
         if (sensitivitySlider == null)
         {
-            Debug.LogWarning("OptionsMouseSensitivity: sensitivitySlider is not assigned.");
+          //  Debug.LogWarning("OptionsMouseSensitivity: sensitivitySlider is not assigned.");
             return;
         }
 
