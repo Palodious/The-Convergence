@@ -73,6 +73,49 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
 
     [SerializeField] int currentMaxHP;
     int intialHP;
+
+    [SerializeField] private bool enableNGPlusPlayerHpScaling = true;
+
+    private int ngpBaseMaxHP;
+    private bool ngpBaseCached;
+    private bool ngpApplied;
+
+    private void CachePlayerHpBaseIfNeeded()
+    {
+        if (ngpBaseCached) return;
+
+        // Base max HP after permanent health upgrades, before NG+ scaling.
+        ngpBaseMaxHP = currentMaxHP;
+        ngpBaseCached = true;
+    }
+
+    private void ApplyNgpPlayerHpScalingIfNeeded(bool healToFull)
+    {
+        if (!enableNGPlusPlayerHpScaling) return;
+        if (ngpApplied) return;
+
+        // Don’t rescale when restoring from a save.
+        if (SaveManager.IsLoadingFromSave)
+            return;
+
+        CachePlayerHpBaseIfNeeded();
+
+        float mult = 1f;
+        if (NewGamePlusManager.Instance != null)
+            mult = Mathf.Max(0.01f, NewGamePlusManager.Instance.GetPlayerHealthMultiplier());
+
+        int scaledMax = Mathf.Max(1, Mathf.RoundToInt(ngpBaseMaxHP * mult));
+
+        currentMaxHP = scaledMax;
+
+        if (healToFull)
+            HP = currentMaxHP;
+        else if (HP > currentMaxHP)
+            HP = currentMaxHP;
+
+        ngpApplied = true;
+    }
+
     float shootTimer;
 
     bool isGliding;
@@ -147,6 +190,8 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
 
         intialHP = HP;
         currentMaxHP = intialHP + persistentHealthUpgradeTotal;
+        int currentSceneIndex = SceneManager.GetActiveScene().buildIndex;
+        ApplyNgpPlayerHpScalingIfNeeded(healToFull: currentSceneIndex == 1);
         originalSpeed = speed;
 
         if (ikController == null)
@@ -176,12 +221,10 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
 
         if (SaveManager.IsLoadingFromSave)
         {
-          //  Debug.Log("playerController.Start: IsLoadingFromSave = true, skipping respawn/persistent init.");
             return;
         }
 
-        int currentSceneIndex = SceneManager.GetActiveScene().buildIndex;
-
+        // reuse the existing currentSceneIndex from earlier in Start()
         if (currentSceneIndex > 1 && (persistentGunList.Count > 0 || persistentKeyList.Count > 0 || persistentAmmoPickupHistory.Count > 0))
         {
             LoadPersistentData();
@@ -1057,7 +1100,7 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
         }
 
         HP = persistentHP;
-        currentMaxHP = intialHP + persistentHealthUpgradeTotal;
+        HP = Mathf.Min(HP, currentMaxHP);
 
         if (gamemanager.instance != null && gamemanager.instance.spawnPoint != null)
         {
