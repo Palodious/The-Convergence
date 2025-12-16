@@ -114,7 +114,7 @@ public class AmmoPickup : MonoBehaviour
             pickupLight.enabled = false;
 
         // Destroy the gameobject after a short delay (to allow sound to play)
-        Destroy(gameObject, 1f);
+        Destroy(gameObject, .5f);
     }
 
     public void EnablePickup()
