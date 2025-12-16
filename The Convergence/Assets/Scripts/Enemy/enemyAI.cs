@@ -394,7 +394,7 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
                     agent.SetDestination(gamemanager.instance.player.transform.position);
                     agent.stoppingDistance = stoppingDistOrig;
                 }
-                catch (System.Exception e)
+                catch (System.Exception)
                 {
                    
                 }

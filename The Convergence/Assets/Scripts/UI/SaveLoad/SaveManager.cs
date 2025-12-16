@@ -268,7 +268,7 @@ public class SaveManager : MonoBehaviour
             if (File.Exists(tmpPath))
                 File.Delete(tmpPath);
         }
-        catch (System.Exception e)
+        catch (System.Exception)
         {
         //Debug.LogWarning($"SaveManager.DeleteSave: Failed to delete save file: {e.Message}");
         }
