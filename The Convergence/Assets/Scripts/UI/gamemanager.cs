@@ -112,11 +112,11 @@ public class gamemanager : MonoBehaviour
             playerScript.enabled = false;
 
         // PAUSE CURRENT LEVEL GAMEPLAY MUSIC (via tag on prefab)
-        var gameplayMusic = GameObject.FindWithTag("BackgroundMusic")?.GetComponent<AudioSource>();
-        if (gameplayMusic != null)
-        {
-            gameplayMusic.Pause();
-        }
+      //  var gameplayMusic = GameObject.FindWithTag("BackgroundMusic")?.GetComponent<AudioSource>();
+      //  if (gameplayMusic != null)
+     //   {
+      //      gameplayMusic.Pause();
+     //   }
 
         if (SFXManager.Instance != null)
             SFXManager.Instance.PlaySound("UI_Open");
@@ -130,17 +130,17 @@ public class gamemanager : MonoBehaviour
         Cursor.lockState = CursorLockMode.Locked;
 
         // resume level music
-        var gameplayMusic = GameObject.FindWithTag("BackgroundMusic")?.GetComponent<AudioSource>();
+      //  var gameplayMusic = GameObject.FindWithTag("BackgroundMusic")?.GetComponent<AudioSource>();
 
         if (menuActive != null)
         {
             StopMenuMusic(menuActive);
         }
 
-        if (gameplayMusic != null)
-        {
-            gameplayMusic.UnPause();
-        }
+      //  if (gameplayMusic != null)
+    //    {
+    //        gameplayMusic.UnPause();
+     //   }
 
         if (menuActive != null)
         {
