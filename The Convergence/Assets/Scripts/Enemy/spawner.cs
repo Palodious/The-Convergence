@@ -1,6 +1,5 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using System.Collections.Generic;
 
 public class spawner : MonoBehaviour, ISaveable
 {
@@ -137,26 +136,23 @@ public class spawner : MonoBehaviour, ISaveable
             Quaternion.identity
         );
 
+        // Assign patrol points if enemyAI is present
         enemyAI ai = newObj.GetComponent<enemyAI>();
         if (ai != null && patrolPoints != null && patrolPoints.Length > 0)
         {
-            StartCoroutine(SetPatrolPointsDelayed(ai));
+            if (!string.IsNullOrEmpty(saveId))
+            {
+                ai.SetPatrolPoints(patrolPoints, saveId);
+            }
+            else
+            {
+                // Fallback if someone forgot the SaveEntity.
+                ai.SetPatrolPoints(patrolPoints);
+            }
         }
 
         spawnCount++;
         spawnTimer = 0;
-    }
-
-    private IEnumerator SetPatrolPointsDelayed(enemyAI ai)
-    {
-
-        yield return new WaitForEndOfFrame();
-
-        if (ai != null && ai.gameObject != null)
-        {
-            string sourceId = !string.IsNullOrEmpty(saveId) ? saveId : null;
-            ai.SetPatrolPoints(patrolPoints, sourceId);
-        }
     }
 
     public Transform[] GetPatrolPoints()
