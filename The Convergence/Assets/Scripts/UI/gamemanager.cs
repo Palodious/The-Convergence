@@ -45,7 +45,14 @@ public class gamemanager : MonoBehaviour
 
     void Awake()
     {
+        // Singleton pattern with safety
+        if (instance != null && instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
         instance = this;
+
         timeScaleOrig = Time.timeScale;
 
         player = GameObject.FindWithTag("Player");
@@ -65,7 +72,7 @@ public class gamemanager : MonoBehaviour
         }
         else
         {
-          //  Debug.LogWarning("RiftShardManager not found in scene. Coin display will not update.");
+            //  Debug.LogWarning("RiftShardManager not found in scene. Coin display will not update.");
         }
 
         // If we came here via Main Menu's Continue, auto-load the save.
@@ -108,15 +115,6 @@ public class gamemanager : MonoBehaviour
         Time.timeScale = 0;
         Cursor.visible = true;
         Cursor.lockState = CursorLockMode.None;
-        if (playerScript != null)
-            playerScript.enabled = false;
-
-        // PAUSE CURRENT LEVEL GAMEPLAY MUSIC (via tag on prefab)
-      //  var gameplayMusic = GameObject.FindWithTag("BackgroundMusic")?.GetComponent<AudioSource>();
-      //  if (gameplayMusic != null)
-     //   {
-      //      gameplayMusic.Pause();
-     //   }
 
         if (SFXManager.Instance != null)
             SFXManager.Instance.PlaySound("UI_Open");
@@ -129,27 +127,12 @@ public class gamemanager : MonoBehaviour
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
 
-        // resume level music
-      //  var gameplayMusic = GameObject.FindWithTag("BackgroundMusic")?.GetComponent<AudioSource>();
-
         if (menuActive != null)
         {
             StopMenuMusic(menuActive);
-        }
-
-      //  if (gameplayMusic != null)
-    //    {
-    //        gameplayMusic.UnPause();
-     //   }
-
-        if (menuActive != null)
-        {
             menuActive.SetActive(false);
             menuActive = null;
         }
-
-        if (playerScript != null)
-            playerScript.enabled = true;
 
         if (SFXManager.Instance != null)
             SFXManager.Instance.PlaySound("UI_Close");
@@ -165,7 +148,7 @@ public class gamemanager : MonoBehaviour
 
 
         // NO WIN CONDITION TRIGGERED HERE
-       
+
     }
 
     public void OnLevel4BossDefeated()
@@ -177,12 +160,6 @@ public class gamemanager : MonoBehaviour
         {
             //Debug.Log("BOSS DEFEATED ON LEVEL 4 - TRIGGERING WIN CONDITION!");
             statePause();
-
-            var gameplayMusic = GameObject.FindWithTag("BackgroundMusic")?.GetComponent<AudioSource>();
-            if (gameplayMusic != null)
-            {
-                gameplayMusic.Pause();
-            }
 
             menuActive = menuWin;
             if (menuActive != null)
@@ -231,20 +208,14 @@ public class gamemanager : MonoBehaviour
     public void youLose()
     {
         statePause();
-        menuActive = menuLose;
 
-        var gameplayMusic = GameObject.FindWithTag("BackgroundMusic")?.GetComponent<AudioSource>();
-        if (gameplayMusic != null)
-        {
-            gameplayMusic.Pause();
-        }
+        menuActive = menuLose;
 
         if (menuActive != null)
         {
             menuActive.SetActive(true);
             PlayMenuMusic(menuActive);
         }
-
     }
 
     // Save & Load system
@@ -296,6 +267,8 @@ public class gamemanager : MonoBehaviour
         if (!SaveManager.Instance.TryLoad(out SaveData data))
         {
             //Debug.LogWarning("No save file found.");
+            // Ensure we're not stuck paused if load fails
+            stateUnpause();
             yield break;
         }
 
@@ -422,26 +395,24 @@ public class gamemanager : MonoBehaviour
             //Debug.Log($"Stopped menu music from {menuGO.name}");
         }
     }
-    
-
-        [Header("Wave Mode Settings")]
-        public bool IsWaveModeActive = true;
-        public float globalWaveModeRange = 100f;
-
-        private List<enemyAI> allEnemies = new List<enemyAI>();
 
 
-        public void RegisterEnemy(enemyAI enemy)
-        {
-            if (!allEnemies.Contains(enemy))
-                allEnemies.Add(enemy);
-        }
+    [Header("Wave Mode Settings")]
+    public bool IsWaveModeActive = true;
+    public float globalWaveModeRange = 100f;
 
-        public void UnregisterEnemy(enemyAI enemy)
-        {
-            if (allEnemies.Contains(enemy))
-                allEnemies.Remove(enemy);
-        }
+    private List<enemyAI> allEnemies = new List<enemyAI>();
 
-     
+
+    public void RegisterEnemy(enemyAI enemy)
+    {
+        if (!allEnemies.Contains(enemy))
+            allEnemies.Add(enemy);
+    }
+
+    public void UnregisterEnemy(enemyAI enemy)
+    {
+        if (allEnemies.Contains(enemy))
+            allEnemies.Remove(enemy);
+    }
 }

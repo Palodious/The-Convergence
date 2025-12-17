@@ -27,7 +27,6 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
     [Header("~=~= Shooting =~=~")]
     [Range(1, 100)][SerializeField] int shootDamage;
     [Range(1, 100)][SerializeField] int shootDist;
-    [Range(0.01f, 5f)][SerializeField] float shootRate;
     [SerializeField] LineRenderer bulletTrail;
     [Range(0.01f, 0.1f)][SerializeField] float trailDuration = 0.05f;
     [Range(0.01f, 0.5f)][SerializeField] float trailWidth = 0.05f;
@@ -79,13 +78,13 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
     [System.Serializable]
     public class GunAmmoData
     {
-        public gunStats gunType;
+        public gunStats gunTemplate;
         public int currentAmmo;
         public int reserveAmmo;
 
         public GunAmmoData(gunStats gun)
         {
-            gunType = gun;
+            gunTemplate = gun;
             currentAmmo = gun.ammoMax;
             reserveAmmo = gun.ammoMax * 3;
         }
@@ -125,7 +124,7 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
     private int ngpBaseMaxHP;
     private bool ngpBaseCached;
     private bool ngpApplied;
-    float shootTimer;
+    float fireCooldown;
     bool isGliding;
     bool isSprinting;
     bool isPlayingStep;
@@ -205,9 +204,15 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
 
     void Update()
     {
+        if (isDead) return;
+
         if (!gamemanager.instance.isPaused)
         {
-            shootTimer += Time.deltaTime;
+            fireCooldown += Time.deltaTime;
+            if (activeGunStats != null)
+            {
+                fireCooldown = Mathf.Min(fireCooldown, activeGunStats.shootRate);
+            }
 
             movement();
             sprint();
@@ -232,6 +237,9 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
 
     void movement()
     {
+        if (isDead) return;
+        if (controller == null || !controller.enabled) return;
+
         if (controller.isGrounded)
         {
             playerVel = Vector3.zero;
@@ -268,7 +276,7 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
         }
         else if (isGliding) StopGlide();
 
-        if (Input.GetButton("Fire1") && shootTimer >= shootRate)
+        if (Input.GetButton("Fire1"))
         {
             shoot();
         }
@@ -284,10 +292,13 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
     IEnumerator playStep()
     {
         isPlayingStep = true;
-        aud.PlayOneShot(audStep[Random.Range(0, audStep.Length)], audStepVol);
+        if (aud != null && audStep != null && audStep.Length > 0)
+        {
+            aud.PlayOneShot(audStep[Random.Range(0, audStep.Length)], audStepVol);
+        }
 
-        if (isSprinting) yield return new WaitForSeconds(0.3f);
-        else yield return new WaitForSeconds(0.5f);
+        if (isSprinting) yield return new WaitForSecondsRealtime(0.3f);
+        else yield return new WaitForSecondsRealtime(0.5f);
 
         isPlayingStep = false;
     }
@@ -308,6 +319,7 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
 
     void jump()
     {
+        if (controller == null || !controller.enabled) return;
         if (Input.GetButtonDown("Jump") && jumpCount < maxJumps)
         {
             playerVel.y = JumpSpeed;
@@ -318,7 +330,7 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
                 animator.SetTrigger("IsJumping");
             }
 
-            if (aud != null && audJump.Length > 0)
+            if (aud != null && audJump != null && audJump.Length > 0)
             {
                 aud.pitch = Random.Range(0.9f, 1.1f);
                 aud.PlayOneShot(audJump[Random.Range(0, audJump.Length)], audJumpVol);
@@ -328,6 +340,7 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
 
     void StartGlide()
     {
+        if (controller == null || !controller.enabled) return;
         if (!controller.isGrounded && !isGliding)
         {
             isGliding = true;
@@ -343,9 +356,13 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
     void shoot()
     {
         if (activeGunStats == null || isReloading || isDead) return;
+        if (gunModel == null) return;
 
-        gunStats originalGunStats = gunList[gunListPos];
-        GunAmmoData ammoData = gunAmmoInventory.Find(data => data.gunType == originalGunStats);
+        if (fireCooldown < activeGunStats.shootRate) return;
+        fireCooldown = 0;
+
+        gunStats originalGunTemplate = gunList[gunListPos];
+        GunAmmoData ammoData = gunAmmoInventory.Find(data => data.gunTemplate == originalGunTemplate);
 
         if (ammoData == null || ammoData.currentAmmo <= 0)
         {
@@ -353,16 +370,13 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
             return;
         }
 
-        if (shootTimer < activeGunStats.shootRate) return;
-        shootTimer = 0;
+        ammoData.currentAmmo--;
 
-        if (ammoData != null)
+        if (aud != null && activeGunStats.shootSound != null && activeGunStats.shootSound.Length > 0)
         {
-            ammoData.currentAmmo--;
+            aud.pitch = Random.Range(0.9f, 1.1f);
+            aud.PlayOneShot(activeGunStats.shootSound[Random.Range(0, activeGunStats.shootSound.Length)], activeGunStats.shootSoundVol);
         }
-
-        aud.pitch = Random.Range(0.9f, 1.1f);
-        aud.PlayOneShot(activeGunStats.shootSound[Random.Range(0, activeGunStats.shootSound.Length)], activeGunStats.shootSoundVol);
 
         UpdateAmmoDisplay();
 
@@ -380,7 +394,10 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
                 dmg.takeDamage(Mathf.RoundToInt(activeGunStats.shootDamage * damageBoost));
             }
 
-            Instantiate(activeGunStats.hitEffect, hit.point, Quaternion.identity);
+            if (activeGunStats.hitEffect != null)
+            {
+                Instantiate(activeGunStats.hitEffect, hit.point, Quaternion.identity);
+            }
             endPos = hit.point;
             hitSomething = true;
         }
@@ -394,6 +411,8 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
 
     private Vector3 CalculateTrailStartPosition()
     {
+        if (gunModel == null) return transform.position;
+
         Vector3 basePosition = gunModel.transform.position;
 
         if (useLocalOffset)
@@ -411,6 +430,8 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
 
     IEnumerator ShowBulletTrail(Vector3 start, Vector3 end, bool hitTarget)
     {
+        if (bulletTrail == null) yield break;
+
         bulletTrail.enabled = true;
         bulletTrail.SetPosition(0, start);
         bulletTrail.SetPosition(1, end);
@@ -426,7 +447,7 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
             bulletTrail.endColor = new Color(1, 1, 1, 0.5f);
         }
 
-        yield return new WaitForSeconds(trailDuration);
+        yield return new WaitForSecondsRealtime(trailDuration);
 
         bulletTrail.enabled = false;
     }
@@ -435,8 +456,8 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
     {
         if (activeGunStats == null || isReloading || isDead) return;
 
-        gunStats originalGunStats = gunList[gunListPos];
-        GunAmmoData ammoData = gunAmmoInventory.Find(data => data.gunType == originalGunStats);
+        gunStats originalGunTemplate = gunList[gunListPos];
+        GunAmmoData ammoData = gunAmmoInventory.Find(data => data.gunTemplate == originalGunTemplate);
 
         if (ammoData == null || ammoData.currentAmmo >= activeGunStats.ammoMax || ammoData.reserveAmmo <= 0)
             return;
@@ -452,7 +473,7 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
     {
         isReloading = true;
 
-        if (reloadSound != null)
+        if (aud != null && reloadSound != null)
         {
             aud.pitch = Random.Range(0.95f, 1.05f);
             aud.PlayOneShot(reloadSound, reloadSoundVol);
@@ -463,10 +484,10 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
             animator.SetTrigger("Reload");
         }
 
-        yield return new WaitForSeconds(reloadTime);
+        yield return new WaitForSecondsRealtime(reloadTime);
 
-        gunStats originalGunStats = gunList[gunListPos];
-        GunAmmoData ammoData = gunAmmoInventory.Find(data => data.gunType == originalGunStats);
+        gunStats originalGunTemplate = gunList[gunListPos];
+        GunAmmoData ammoData = gunAmmoInventory.Find(data => data.gunTemplate == originalGunTemplate);
         if (ammoData != null)
         {
             int ammoNeeded = activeGunStats.ammoMax - ammoData.currentAmmo;
@@ -488,8 +509,8 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
 
         if (ammoTextDisplay != null)
         {
-            gunStats originalGunStats = gunList[gunListPos];
-            GunAmmoData ammoData = gunAmmoInventory.Find(data => data.gunType == originalGunStats);
+            gunStats originalGunTemplate = gunList[gunListPos];
+            GunAmmoData ammoData = gunAmmoInventory.Find(data => data.gunTemplate == originalGunTemplate);
             if (ammoData != null)
             {
                 ammoTextDisplay.text = $"{ammoData.currentAmmo}/{ammoData.reserveAmmo}";
@@ -508,8 +529,11 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
         updatePlayerUI();
         StartCoroutine(screenFlashDamage());
 
-        aud.pitch = Random.Range(0.9f, 1.1f);
-        aud.PlayOneShot(audHurt[Random.Range(0, audHurt.Length)], audHurtVol);
+        if (aud != null && audHurt != null && audHurt.Length > 0)
+        {
+            aud.pitch = Random.Range(0.9f, 1.1f);
+            aud.PlayOneShot(audHurt[Random.Range(0, audHurt.Length)], audHurtVol);
+        }
 
         if (HP <= 0 && !isDead)
         {
@@ -519,9 +543,14 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
 
     private IEnumerator Die()
     {
+        if (isDead) yield break;
         isDead = true;
 
-        controller.enabled = false;
+        if (controller != null)
+        {
+            controller.enabled = false;
+            controller.detectCollisions = false;
+        }
 
         if (ikController != null)
             ikController.SetAiming(false);
@@ -531,22 +560,27 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
             animator.SetTrigger("Death");
         }
 
-        if (deathSound != null)
+        if (aud != null && deathSound != null)
         {
             aud.pitch = 1f;
             aud.PlayOneShot(deathSound, deathSoundVol);
         }
 
-        enabled = false;
+        if (reloadCoroutine != null)
+        {
+            StopCoroutine(reloadCoroutine);
+            isReloading = false;
+        }
 
-        yield return new WaitForSeconds(deathAnimationTime);
+        yield return new WaitForSecondsRealtime(deathAnimationTime);
 
-        gamemanager.instance.youLose();
+        if (gamemanager.instance != null)
+            gamemanager.instance.youLose();
     }
 
     public void updatePlayerUI()
     {
-        if (gamemanager.instance.playerHPBar != null)
+        if (gamemanager.instance != null && gamemanager.instance.playerHPBar != null)
             gamemanager.instance.playerHPBar.fillAmount = (float)HP / currentMaxHP;
     }
 
@@ -561,7 +595,7 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
         if (panel != null)
             panel.SetActive(true);
 
-        yield return new WaitForSeconds(0.1f);
+        yield return new WaitForSecondsRealtime(0.1f);
 
         if (panel != null)
             panel.SetActive(false);
@@ -638,7 +672,7 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
             {
                 if (gunType == null) continue;
 
-                GunAmmoData ammoData = gunAmmoInventory.Find(data => data.gunType == gunType);
+                GunAmmoData ammoData = gunAmmoInventory.Find(data => data.gunTemplate == gunType);
                 if (ammoData != null)
                 {
                     int maxAmmo = GetMaxAmmo(gunType);
@@ -660,7 +694,8 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
         {
             if (activeGunStats != null)
             {
-                GunAmmoData ammoData = gunAmmoInventory.Find(data => data.gunType == activeGunStats);
+                gunStats originalGunTemplate = gunList[gunListPos];
+                GunAmmoData ammoData = gunAmmoInventory.Find(data => data.gunTemplate == originalGunTemplate);
                 if (ammoData != null)
                 {
                     int maxAmmo = GetMaxAmmo(activeGunStats);
@@ -689,7 +724,8 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
     {
         if (activeGunStats == null) return;
 
-        GunAmmoData ammoData = gunAmmoInventory.Find(d => d.gunType == activeGunStats);
+        gunStats originalGunTemplate = gunList[gunListPos];
+        GunAmmoData ammoData = gunAmmoInventory.Find(d => d.gunTemplate == originalGunTemplate);
         if (ammoData == null) return;
 
         ammoData.reserveAmmo = Mathf.Min(
@@ -702,7 +738,7 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
 
     public int GetCurrentAmmo(gunStats gunType)
     {
-        GunAmmoData data = gunAmmoInventory.Find(d => d.gunType == gunType);
+        GunAmmoData data = gunAmmoInventory.Find(d => d.gunTemplate == gunType);
         return data != null ? data.currentAmmo : 0;
     }
 
@@ -715,7 +751,8 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
     {
         if (activeGunStats == null) return false;
 
-        GunAmmoData data = gunAmmoInventory.Find(d => d.gunType == activeGunStats);
+        gunStats originalGunTemplate = gunList[gunListPos];
+        GunAmmoData data = gunAmmoInventory.Find(d => d.gunTemplate == originalGunTemplate);
         if (data == null) return false;
 
         return data.reserveAmmo < GetMaxAmmo(activeGunStats);
@@ -799,7 +836,7 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
         if (medkit.useEffect != null)
             Instantiate(medkit.useEffect, transform.position, Quaternion.identity);
 
-        if (audMedkit != null)
+        if (aud != null && audMedkit != null)
         {
             aud.pitch = Random.Range(0.95f, 1.05f);
             aud.PlayOneShot(audMedkit, audMedkitVol);
@@ -808,6 +845,8 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
 
     public void HandleMedkitCooldown()
     {
+        if (isDead) return;
+
         if (!canUseMedkit)
         {
             medkitCooldown -= Time.deltaTime;
@@ -844,6 +883,7 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
     public void changeGun()
     {
         if (gunList.Count == 0) return;
+        if (gunModel == null) return;
 
         gunStats originalStats = gunList[gunListPos];
         activeGunStats = Instantiate(originalStats);
@@ -889,8 +929,27 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
 
     public void respawn()
     {
-        controller.transform.position = gamemanager.instance.spawnPoint.transform.position;
+        StartCoroutine(RespawnRoutine());
+    }
+
+    private IEnumerator RespawnRoutine()
+    {
+        isDead = false;
+
+        if (controller != null)
+        {
+            controller.enabled = false;
+            yield return null;
+            controller.transform.position = gamemanager.instance.spawnPoint.transform.position;
+            controller.enabled = true;
+            controller.detectCollisions = true;
+        }
+
+        if (ikController != null)
+            ikController.SetAiming(false);
+
         HP = currentMaxHP;
+        playerVel = Vector3.zero;
         updatePlayerUI();
     }
 
