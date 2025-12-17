@@ -256,7 +256,8 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
             waveModeActive = true;
         }
 
-        // Rigidbody setup for jump attack (transform-arc or physics mode)
+        StartCoroutine(InitializeAgent());
+
         if (canJumpAttack)
         {
             rb = GetComponent<Rigidbody>();
@@ -265,25 +266,16 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
                 rb = gameObject.AddComponent<Rigidbody>();
             }
 
-            // Keep kinematic by default for transform-driven arc; if you switch to physics-based jumps,
-            // set rb.isKinematic = false and rb.useGravity = true in the physics jump code path.
             rb.isKinematic = true;
             rb.useGravity = false;
-
-            // Prevent unexpected rotation if physics ever gets enabled
             rb.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ;
             wasKinematic = rb.isKinematic;
         }
 
-        // Initialize player position tracking for dash safely
         if (gamemanager.instance != null && gamemanager.instance.player != null)
         {
             lastPlayerPosition = gamemanager.instance.player.transform.position;
         }
-
-        // Initialize patrol by setting the first patrol point as the destination
-        if (usePatrol && patrolPoints != null && patrolPoints.Length > 0 && agent != null && agent.isActiveAndEnabled)
-            agent.SetDestination(patrolPoints[patrolIndex].position);
 
         if (itemDrop == null)
             itemDrop = GetComponent<ItemDrop>();
@@ -294,33 +286,62 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
         ApplyNgpScalingIfNeeded();
     }
 
+    private IEnumerator InitializeAgent()
+    {
+        yield return null;
+
+        if (agent != null)
+        {
+            if (!agent.enabled)
+                agent.enabled = true;
+
+            if (!agent.isOnNavMesh)
+            {
+                NavMeshHit hit;
+                if (NavMesh.SamplePosition(transform.position, out hit, 5.0f, NavMesh.AllAreas))
+                {
+                    try
+                    {
+                        agent.Warp(hit.position);
+                    }
+                    catch (System.Exception e)
+                    {
+                        Debug.LogWarning($"Failed to warp agent during initialization: {e.Message}");
+                    }
+                }
+            }
+        }
+
+        if (usePatrol && patrolPoints != null && patrolPoints.Length > 0 &&
+            agent != null && agent.isActiveAndEnabled && agent.isOnNavMesh)
+        {
+            if (!agent.hasPath)
+            {
+                StartCoroutine(SetPatrolDestinationWithSafety());
+            }
+        }
+    }
+
     void Update()
     {
-        // Don't do anything if dead
         if (!isAlive) return;
 
-        // Update timers
         shootTimer += Time.deltaTime;
         attackTimer += Time.deltaTime;
         jumpAttackTimer += Time.deltaTime;
         dashAttackTimer += Time.deltaTime;
 
-        // Handle shoot cooldown logic
         HandleShootCooldown();
-        // Track player velocity for dash attack
         TrackPlayerVelocity();
 
-        // Handle dash attack logic - during dash, only update dash movement
         if (isDashing)
         {
             HandleDashMovement();
-            return; // Skip other updates during dash
+            return;
         }
 
-        // Handle jump attack - during jump, only maintain facing direction
         if (isJumpAttacking)
         {
-            // Update facing direction during jump to face player
             if (gamemanager.instance.player != null)
             {
                 Vector3 lookDir = (gamemanager.instance.player.transform.position - transform.position);
@@ -328,32 +349,32 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
                 if (lookDir != Vector3.zero)
                     transform.rotation = Quaternion.LookRotation(lookDir);
             }
-            return; // Skip other updates during jump
+            return;
         }
 
-        // Play footsteps if moving and not performing special attacks
         if (!isJumpAttacking && !isDashing &&
-            agent != null && agent.isActiveAndEnabled && agent.velocity.magnitude > 0.1f && !isPlayingStep)
+            agent != null && agent.isActiveAndEnabled && agent.isOnNavMesh &&
+            agent.velocity.magnitude > 0.1f && !isPlayingStep)
         {
             StartCoroutine(playStep());
         }
 
-        // Update movement animation speed if enabled and not performing special attacks
         if (useAnimations && anim != null && !isJumpAttacking && !isDashing &&
-            agent != null && agent.isActiveAndEnabled)
+            agent != null && agent.isActiveAndEnabled && agent.isOnNavMesh)
         {
             float agentSpeedCur = agent.velocity.magnitude;
             float agentSpeedAnim = anim.GetFloat("Speed");
             anim.SetFloat("Speed", Mathf.Lerp(agentSpeedAnim, agentSpeedCur, Time.deltaTime * animTransSpeed));
         }
 
-        // Track roam timer only when not moving and not performing special attacks
         if (!isJumpAttacking && !isDashing &&
-            agent != null && agent.isActiveAndEnabled && agent.remainingDistance < 0.01f)
+            agent != null && agent.isActiveAndEnabled && agent.isOnNavMesh &&
+            agent.hasPath && agent.remainingDistance < 0.01f)
+        {
             roamTimer += Time.deltaTime;
+        }
 
-        // Handle mobile behavior if not in special attack
-        if (!isJumpAttacking && !isDashing) // Only handle mobile behavior if not in special attack
+        if (!isJumpAttacking && !isDashing)
         {
             HandleMobileBehavior();
         }
@@ -1146,28 +1167,46 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
         isPlayingStep = false;
     }
 
-    // Check if should roam or patrol
+    private bool IsAgentReady()
+    {
+        if (agent == null) return false;
+        if (!agent.isActiveAndEnabled) return false;
+        if (!agent.isOnNavMesh) return false;
+        return true;
+    }
+
     void checkRoamOrPatrol()
     {
-        if (agent == null || !agent.isActiveAndEnabled || isJumpAttacking || isDashing) return;
+        if (!IsAgentReady() || isJumpAttacking || isDashing) return;
 
-        if (agent.remainingDistance < 0.01f && roamTimer >= roamPauseTime)
+        if (agent == null || !agent.isActiveAndEnabled || !agent.isOnNavMesh || isJumpAttacking || isDashing) return;
+
+        try
         {
-            if (useRoam)
-                roam();
-            else if (usePatrol)
-                checkPatrol();
+            if (agent.hasPath && agent.pathStatus == NavMeshPathStatus.PathComplete)
+            {
+                if (agent.remainingDistance < 0.01f && roamTimer >= roamPauseTime)
+                {
+                    if (useRoam)
+                        roam();
+                    else if (usePatrol)
+                        checkPatrol();
+                }
+                else if (usePatrol && patrolPoints != null && patrolPoints.Length > 0 && !agent.hasPath)
+                {
+                    checkPatrol();
+                }
+            }
         }
-        else if (usePatrol && patrolPoints != null && patrolPoints.Length > 0 && !agent.hasPath)
+        catch (System.Exception e)
         {
-            checkPatrol();
+            Debug.LogWarning($"Error in checkRoamOrPatrol: {e.Message}");
         }
     }
 
-    // Roam to random position
     void roam()
     {
-        if (agent == null || !agent.isActiveAndEnabled || isJumpAttacking || isDashing) return;
+        if (agent == null || !agent.isActiveAndEnabled || !agent.isOnNavMesh || isJumpAttacking || isDashing) return;
 
         roamTimer = 0;
         agent.stoppingDistance = 0;
@@ -1176,34 +1215,60 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
         ranPos += startingPos;
 
         NavMeshHit hit;
-        NavMesh.SamplePosition(ranPos, out hit, roamDist, 1);
-        agent.SetDestination(hit.position);
+        if (NavMesh.SamplePosition(ranPos, out hit, roamDist, 1))
+        {
+            try
+            {
+                agent.SetDestination(hit.position);
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogWarning($"Could not set roam destination: {e.Message}");
+            }
+        }
     }
 
-    // Patrol between points
     void checkPatrol()
     {
-        if (agent == null || !agent.isActiveAndEnabled || isJumpAttacking || isDashing) return;
+        if (agent == null || !agent.isActiveAndEnabled || !agent.isOnNavMesh || isJumpAttacking || isDashing) return;
+
         if (patrolPoints == null || patrolPoints.Length == 0) return;
 
-        if (agent.remainingDistance < 0.01f)
+        try
         {
-            int safety = patrolPoints.Length;
-            do
+            if (agent.hasPath && agent.pathStatus == NavMeshPathStatus.PathComplete)
             {
-                patrolIndex = (patrolIndex + 1) % patrolPoints.Length;
-                safety--;
-            }
-            while (safety > 0 && patrolPoints[patrolIndex] == null);
+                if (agent.remainingDistance < 0.01f)
+                {
+                    int safety = patrolPoints.Length;
+                    do
+                    {
+                        patrolIndex = (patrolIndex + 1) % patrolPoints.Length;
+                        safety--;
+                    }
+                    while (safety > 0 && patrolPoints[patrolIndex] == null);
 
-            if (patrolPoints[patrolIndex] != null)
-            {
-                agent.SetDestination(patrolPoints[patrolIndex].position);
+                    if (patrolPoints[patrolIndex] != null)
+                    {
+                        agent.SetDestination(patrolPoints[patrolIndex].position);
+                    }
+                    else
+                    {
+                        Debug.LogWarning($"enemyAI on {name} has only null patrolPoints.");
+                    }
+                }
             }
-            else
+            else if (!agent.hasPath)
             {
-                Debug.LogWarning($"enemyAI on {name} has only null patrolPoints.");
+                if (patrolPoints[patrolIndex] != null)
+                {
+                    agent.SetDestination(patrolPoints[patrolIndex].position);
+                }
             }
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogWarning($"Error in checkPatrol: {e.Message}");
         }
     }
 
@@ -1544,8 +1609,89 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
         if (!string.IsNullOrEmpty(sourceId))
             patrolSourceId = sourceId;
 
-        if (usePatrol && patrolPoints != null && patrolPoints.Length > 0 && agent != null && agent.isActiveAndEnabled)
-            agent.SetDestination(patrolPoints[0].position);
+        // Only try to set destination if we have valid points and agent is ready
+        if (usePatrol && patrolPoints != null && patrolPoints.Length > 0)
+        {
+            StartCoroutine(SetPatrolDestinationWithSafety());
+        }
+    }
+
+    // Coroutine to safely set patrol destination with proper checks
+    private IEnumerator SetPatrolDestinationWithSafety()
+    {
+        // Give it a couple of frames to ensure everything is initialized
+        yield return null;
+        yield return null;
+
+        // Check if agent exists and is ready
+        if (agent == null || !agent.isActiveAndEnabled)
+        {
+            Debug.LogWarning($"Agent not ready on {name}, cannot set patrol destination");
+            yield break;
+        }
+
+        // Wait for agent to be placed on NavMesh (with timeout)
+        float timeout = 1f;
+        float elapsed = 0f;
+
+        while (!agent.isOnNavMesh && elapsed < timeout)
+        {
+            elapsed += Time.deltaTime;
+            yield return null;
+        }
+
+        if (!agent.isOnNavMesh)
+        {
+            Debug.LogWarning($"Agent on {name} never placed on NavMesh, attempting warp");
+
+            // Try to warp to current position
+            NavMeshHit hit;
+            if (NavMesh.SamplePosition(transform.position, out hit, 5.0f, NavMesh.AllAreas))
+            {
+                try
+                {
+                    agent.Warp(hit.position);
+                }
+                catch (System.Exception e)
+                {
+                    Debug.LogWarning($"Failed to warp agent: {e.Message}");
+                    yield break;
+                }
+            }
+            else
+            {
+                Debug.LogWarning($"No NavMesh found near {name} at position {transform.position}");
+                yield break;
+            }
+        }
+
+        // Now safely set the destination
+        if (patrolPoints != null && patrolPoints.Length > 0 && patrolIndex < patrolPoints.Length)
+        {
+            if (patrolPoints[patrolIndex] != null)
+            {
+                try
+                {
+                    // Calculate path first to check if it's reachable
+                    NavMeshPath path = new NavMeshPath();
+                    if (NavMesh.CalculatePath(transform.position, patrolPoints[patrolIndex].position, NavMesh.AllAreas, path))
+                    {
+                        if (path.status == NavMeshPathStatus.PathComplete)
+                        {
+                            agent.SetDestination(patrolPoints[patrolIndex].position);
+                        }
+                        else
+                        {
+                            Debug.LogWarning($"Patrol point {patrolPoints[patrolIndex].name} not reachable from {name}");
+                        }
+                    }
+                }
+                catch (System.Exception e)
+                {
+                    Debug.LogWarning($"Failed to set patrol destination on {name}: {e.Message}");
+                }
+            }
+        }
     }
 
     // Draw gizmos for visualization
