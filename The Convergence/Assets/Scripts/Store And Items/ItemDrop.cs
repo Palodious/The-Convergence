@@ -34,7 +34,7 @@ public class ItemDrop : MonoBehaviour
         {
             if (itemPrefab != null)
             {
-                Vector3 spawnPos = transform.position + Vector3.up * 0.5f + Random.insideUnitSphere * dropSpread;
+                Vector3 spawnPos = transform.position + Vector3.up * 1f + Random.insideUnitSphere * dropSpread;
                 Instantiate(itemPrefab, spawnPos, Quaternion.identity);
             }
         }
