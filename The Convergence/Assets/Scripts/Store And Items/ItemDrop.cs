@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.SceneManagement; // Add this namespace
 
 public class ItemDrop : MonoBehaviour
 {
@@ -13,13 +14,35 @@ public class ItemDrop : MonoBehaviour
     public GameObject keyPrefab;
     [Range(0f, 1f)] public float keyDropChance = 1f;
 
+    [Header("Scene Restrictions")]
+    [SerializeField] private string[] noKeyDropScenes = { "Tutorial", "Game Play Scene Tutorial" }; 
+    [SerializeField] private bool checkSceneName = true;
+
     public static bool keyHasDropped = false;
 
     public void TryDrop()
     {
         DropAllItems();
 
-        DropKey();
+        if (!IsInRestrictedScene())
+        {
+            DropKey();
+        }
+    }
+
+    private bool IsInRestrictedScene()
+    {
+        if (!checkSceneName) return false;
+
+        string currentScene = SceneManager.GetActiveScene().name;
+        foreach (string sceneName in noKeyDropScenes)
+        {
+            if (currentScene.Equals(sceneName, System.StringComparison.OrdinalIgnoreCase))
+            {
+                return true;
+            }
+        }
+        return false;
     }
 
     private void DropAllItems()
@@ -34,7 +57,7 @@ public class ItemDrop : MonoBehaviour
         {
             if (itemPrefab != null)
             {
-                Vector3 spawnPos = transform.position + Vector3.up * 1f + Random.insideUnitSphere * dropSpread;
+                Vector3 spawnPos = transform.position + Vector3.up * 0.5f + Random.insideUnitSphere * dropSpread;
                 Instantiate(itemPrefab, spawnPos, Quaternion.identity);
             }
         }
@@ -56,13 +79,8 @@ public class ItemDrop : MonoBehaviour
         {
             keyScript.EnablePickup();
         }
-        else
-        {
-          //  Debug.LogWarning("Key prefab doesn't have a keyPickup component!");
-        }
 
         keyHasDropped = true;
-       // Debug.Log($"Key dropped! Global flag set. Key dropped by: {gameObject.name}");
     }
 
     public static void ResetKeyDrop()
