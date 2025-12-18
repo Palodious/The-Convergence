@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 3602420343227451859}
   m_Layer: 11
   m_Name: Melee
-  m_TagString: Enemy
+  m_TagString: Melee
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -48,6 +48,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::damage
   type: 1
+  dotPrefab: {fileID: 0}
   rb: {fileID: 3742390820324965150}
   ignoreLayer:
     serializedVersion: 2
@@ -56,6 +57,9 @@ MonoBehaviour:
   damageRate: 1
   speed: 2
   destroyTime: 2
+  projectileMode: 0
+  launchAngle: 35
+  arcSpeed: 10
 --- !u!65 &4885936041389375818
 BoxCollider:
   m_ObjectHideFlags: 0

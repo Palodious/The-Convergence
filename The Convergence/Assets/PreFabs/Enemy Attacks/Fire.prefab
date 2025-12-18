@@ -15,9 +15,9 @@ GameObject:
   - component: {fileID: 4252870047961289092}
   - component: {fileID: -797465032388219894}
   - component: {fileID: -4654363356372157035}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Fire
-  m_TagString: Untagged
+  m_TagString: Fire
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -50,11 +50,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::damage
   type: 3
+  dotPrefab: {fileID: 0}
   rb: {fileID: 1394799381658555603}
+  ignoreLayer:
+    serializedVersion: 2
+    m_Bits: 0
   damageAmount: 5
   damageRate: 1.5
   speed: 32
   destroyTime: 1
+  projectileMode: 0
+  launchAngle: 35
+  arcSpeed: 10
 --- !u!135 &1993101440778996551
 SphereCollider:
   m_ObjectHideFlags: 0
