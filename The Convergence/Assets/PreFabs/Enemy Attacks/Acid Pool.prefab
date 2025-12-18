@@ -59,6 +59,9 @@ MonoBehaviour:
   damageRate: 1.5
   speed: 32
   destroyTime: 5
+  projectileMode: 0
+  launchAngle: 35
+  arcSpeed: 10
 --- !u!135 &1993101440778996551
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -78,8 +81,8 @@ SphereCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Radius: 0.5
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Radius: 0.061904907
+  m_Center: {x: 0, y: 0, z: -0.0011672974}
 --- !u!54 &1394799381658555603
 Rigidbody:
   m_ObjectHideFlags: 0
