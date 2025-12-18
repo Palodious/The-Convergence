@@ -95,6 +95,9 @@ public class gamemanager : MonoBehaviour
     {
         if (Input.GetButtonDown("Cancel"))
         {
+            if (directionalPopup.PopupIsOpen)
+                return;
+
             if (menuActive == null)
             {
                 statePause();
