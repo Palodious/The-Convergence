@@ -43,6 +43,12 @@ public class PlayerAbilities : MonoBehaviour
 
     void Update()
     {
+        //prevention of using abilities in popup menu
+        if (gamemanager.instance != null &&
+       (gamemanager.instance.isPaused || directionalPopup.PopupIsOpen))
+            return;
+
+
         // Update timers
         pulseTimer += Time.deltaTime;
         surgeTimer += Time.deltaTime;
@@ -59,6 +65,10 @@ public class PlayerAbilities : MonoBehaviour
 
     IEnumerator RiftPulse()
     {
+        if (gamemanager.instance != null &&
+        (gamemanager.instance.isPaused || directionalPopup.PopupIsOpen))
+            yield break;
+
         pulseTimer = 0;
 
         // Visual effect
@@ -100,6 +110,10 @@ public class PlayerAbilities : MonoBehaviour
 
     IEnumerator RiftJump()
     {
+        if (gamemanager.instance != null &&
+        (gamemanager.instance.isPaused || directionalPopup.PopupIsOpen))
+            yield break;
+
         jumpTimer = 0;
         isJumping = true;
 
