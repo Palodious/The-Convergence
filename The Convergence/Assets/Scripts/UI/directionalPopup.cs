@@ -8,9 +8,9 @@ public class directionalPopup : MonoBehaviour
     [SerializeField] private Button exitButton;
 
     private bool dialogueActive = false;
-
-    
     private bool hasShown = false;
+
+    public static bool PopupIsOpen { get; private set; }
 
     void Start()
     {
@@ -36,6 +36,8 @@ public class directionalPopup : MonoBehaviour
         dialogueActive = true;
         dialoguePanel.SetActive(true);
 
+        PopupIsOpen = true;
+
         Time.timeScale = 0f;
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
@@ -45,6 +47,8 @@ public class directionalPopup : MonoBehaviour
     {
         dialogueActive = false;
         dialoguePanel.SetActive(false);
+
+        PopupIsOpen = false;
 
         Time.timeScale = 1f;
         Cursor.lockState = CursorLockMode.Locked;

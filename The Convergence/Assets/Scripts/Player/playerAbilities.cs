@@ -43,6 +43,12 @@ public class PlayerAbilities : MonoBehaviour
 
     void Update()
     {
+        //prevention of using abilities in popup menu
+        if (gamemanager.instance != null &&
+       (gamemanager.instance.isPaused || directionalPopup.PopupIsOpen))
+            return;
+
+
         // Update timers
         pulseTimer += Time.deltaTime;
         surgeTimer += Time.deltaTime;
@@ -59,6 +65,10 @@ public class PlayerAbilities : MonoBehaviour
 
     IEnumerator RiftPulse()
     {
+        if (gamemanager.instance != null &&
+        (gamemanager.instance.isPaused || directionalPopup.PopupIsOpen))
+            yield break;
+
         pulseTimer = 0;
 
         // Visual effect
@@ -100,6 +110,12 @@ public class PlayerAbilities : MonoBehaviour
 
     IEnumerator RiftJump()
     {
+        if (gamemanager.instance != null &&
+            (gamemanager.instance.isPaused || directionalPopup.PopupIsOpen))
+            yield break;
+
+        if (isJumping) yield break;
+
         jumpTimer = 0;
         isJumping = true;
 
@@ -107,31 +123,39 @@ public class PlayerAbilities : MonoBehaviour
         Vector3 direction = transform.forward;
         float distance = jumpDistance;
 
-        // Raycast to detect obstacles
-        if (Physics.Raycast(startPos, direction, out RaycastHit hit, distance, environmentMask))
+        float radius = charController != null ? charController.radius : 0.5f;
+        float height = charController != null ? charController.height : 2f;
+
+        Vector3 point1 = startPos + Vector3.up * (height / 2 - radius);
+        Vector3 point2 = startPos + Vector3.up * radius;
+
+        // Use CapsuleCast instead of Raycast to prevent clipping
+        if (Physics.CapsuleCast(point1, point2, radius, direction, out RaycastHit hit, distance, environmentMask))
         {
-            // Stop just before the obstacle, reduce distance
-            distance = hit.distance - 0.2f; // small offset so we don’t get stuck in the wall
+            distance = Mathf.Max(0f, hit.distance - 0.1f); // stop just before wall
         }
 
         Vector3 targetPos = startPos + direction * distance;
 
-        // Visual
         EffectsManager.Instance.Create("JumpPrep", startPos);
 
         if (charController != null)
         {
-            charController.enabled = false;
+            if (charController.enabled)
+                charController.enabled = false;
+
             transform.position = targetPos;
+
             charController.enabled = true;
         }
         else
+        {
             transform.position = targetPos;
+        }
 
         EffectsManager.Instance.Create("JumpImpact", targetPos);
 
         isJumping = false;
-        //Debug.Log($"Rift Jump COMPLETE - Jumped {distance:F2}m");
         yield return null;
     }
 
