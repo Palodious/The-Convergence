@@ -143,12 +143,9 @@ public class PlayerAbilities : MonoBehaviour
         // Use CapsuleCast instead of Raycast to prevent clipping
         if (Physics.CapsuleCast(point1, point2, radius, direction, out RaycastHit hit, distance, environmentMask))
         {
-<<<<<<< Updated upstream
             distance = Mathf.Max(0f, hit.distance - 0.1f); // stop just before wall
-=======
             // Stop just before the obstacle, reduce distance
             distance = hit.distance - 0.2f; // small offset so we don�t get stuck in the wall
->>>>>>> Stashed changes
         }
 
         Vector3 targetPos = startPos + direction * distance;
