@@ -1371,7 +1371,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::enemyAI
   ignoreLayer:
     serializedVersion: 2
-    m_Bits: 2112
+    m_Bits: 2752
   enemyType: 0
   agent: {fileID: 4121909897967337052}
   anim: {fileID: 3692946239600984159}
@@ -1499,12 +1499,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ItemDrop
   enableDrops: 1
   dropChance: 0.5
-  pickupPrefab: {fileID: 0}
-  dropItems: []
+  dropItemPrefabs: []
   dropSpread: 0.5
   dropsKey: 0
   keyPrefab: {fileID: 0}
   keyDropChance: 1
+  noKeyDropScenes:
+  - Tutorial
+  - Game Play Scene Tutorial
+  checkSceneName: 1
 --- !u!95 &3692946239600984159
 Animator:
   serializedVersion: 7

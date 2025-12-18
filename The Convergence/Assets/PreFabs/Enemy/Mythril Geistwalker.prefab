@@ -1371,7 +1371,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::enemyAI
   ignoreLayer:
     serializedVersion: 2
-    m_Bits: 2112
+    m_Bits: 2240
   enemyType: 0
   agent: {fileID: 4121909897967337052}
   anim: {fileID: 3692946239600984159}
@@ -1504,6 +1504,10 @@ MonoBehaviour:
   dropsKey: 1
   keyPrefab: {fileID: 3862896481821026480, guid: 00222f0a4e15b1c48915dfcb77310ff1, type: 3}
   keyDropChance: 1
+  noKeyDropScenes:
+  - Tutorial
+  - Game Play Scene Tutorial
+  checkSceneName: 1
 --- !u!95 &3692946239600984159
 Animator:
   serializedVersion: 7
