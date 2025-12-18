@@ -2,6 +2,7 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.SceneManagement;
+using System.Linq;
 
 public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
 {
@@ -27,14 +28,10 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
     [Header("~=~= Shooting =~=~")]
     [Range(1, 100)][SerializeField] int shootDamage;
     [Range(1, 100)][SerializeField] int shootDist;
-    [SerializeField] LineRenderer bulletTrail;
     [Range(0.01f, 0.1f)][SerializeField] float trailDuration = 0.05f;
     [Range(0.01f, 0.5f)][SerializeField] float trailWidth = 0.05f;
     [SerializeField] Gradient trailGradient = new Gradient();
-
-    [Header("~=~= Bullet Trail Offset =~=~")]
-    [SerializeField] Vector3 trailStartOffset = new Vector3(0.1f, 0.05f, 0f);
-    [SerializeField] bool useLocalOffset = true;
+    private LineRenderer bulletTrail;
 
     [Header("~=~= Guns =~=~")]
     [SerializeField] List<gunStats> gunList = new List<gunStats>();
@@ -179,6 +176,7 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
             GameObject trailObj = new GameObject("BulletTrail");
             trailObj.transform.SetParent(transform);
             bulletTrail = trailObj.AddComponent<LineRenderer>();
+            bulletTrail.useWorldSpace = true;
             bulletTrail.startWidth = trailWidth;
             bulletTrail.endWidth = trailWidth * 0.5f;
             bulletTrail.material = new Material(Shader.Find("Sprites/Default"));
@@ -197,14 +195,12 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
         }
         else if (currentSceneIndex >= 2 && currentSceneIndex <= 5)
         {
-
             if (persistentGunList.Count > 0 || persistentKeyList.Count > 0 || persistentAmmoPickupHistory.Count > 0)
             {
                 LoadPersistentData();
             }
             else
             {
-                Debug.Log("No persistent data found, starting fresh");
                 respawn();
             }
         }
@@ -224,10 +220,6 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
         if (!gamemanager.instance.isPaused)
         {
             fireCooldown += Time.deltaTime;
-            if (activeGunStats != null)
-            {
-                fireCooldown = Mathf.Min(fireCooldown, activeGunStats.shootRate);
-            }
 
             movement();
             sprint();
@@ -395,11 +387,11 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
 
         UpdateAmmoDisplay();
 
-        Vector3 startPos = CalculateTrailStartPosition();
+        Vector3 startPos = GetGunMuzzlePosition();
         Vector3 endPos;
         bool hitSomething = false;
 
-        Vector3 shootDirection = gunModel.transform.forward;
+        Vector3 shootDirection = GetGunMuzzleDirection();
 
         if (Physics.Raycast(startPos, shootDirection, out RaycastHit hit, activeGunStats.shootDist, ~ignoreLayer))
         {
@@ -424,23 +416,34 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
         StartCoroutine(ShowBulletTrail(startPos, endPos, hitSomething));
     }
 
-    private Vector3 CalculateTrailStartPosition()
+    private Vector3 GetGunMuzzlePosition()
     {
         if (gunModel == null) return transform.position;
 
-        Vector3 basePosition = gunModel.transform.position;
+        Transform[] allChildren = gunModel.GetComponentsInChildren<Transform>();
+        Transform muzzleTransform = allChildren.FirstOrDefault(t => t.name == "MuzzlePoint");
 
-        if (useLocalOffset)
+        if (muzzleTransform != null)
         {
-            Vector3 offset = transform.right * trailStartOffset.x +
-                            transform.up * trailStartOffset.y +
-                            transform.forward * trailStartOffset.z;
-            return basePosition + offset;
+            return muzzleTransform.position;
         }
-        else
+
+        return gunModel.transform.position;
+    }
+
+    private Vector3 GetGunMuzzleDirection()
+    {
+        if (gunModel == null) return transform.forward;
+
+        Transform[] allChildren = gunModel.GetComponentsInChildren<Transform>();
+        Transform muzzleTransform = allChildren.FirstOrDefault(t => t.name == "MuzzlePoint");
+
+        if (muzzleTransform != null)
         {
-            return basePosition + trailStartOffset;
+            return muzzleTransform.forward;
         }
+
+        return gunModel.transform.forward;
     }
 
     IEnumerator ShowBulletTrail(Vector3 start, Vector3 end, bool hitTarget)
@@ -453,8 +456,7 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
 
         if (hitTarget)
         {
-            bulletTrail.startColor = Color.yellow;
-            bulletTrail.endColor = Color.red;
+            bulletTrail.colorGradient = trailGradient;
         }
         else
         {
@@ -530,9 +532,6 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
             {
                 ammoTextDisplay.text = $"{ammoData.currentAmmo}/{ammoData.reserveAmmo}";
             }
-        }
-        else
-        {
         }
     }
 
@@ -700,9 +699,6 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
                         ammoAdded = true;
                     }
                 }
-                else
-                {
-                }
             }
         }
         else
@@ -723,9 +719,6 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
                         ammoAdded = true;
                     }
                 }
-            }
-            else
-            {
             }
         }
 
