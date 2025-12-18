@@ -71,6 +71,7 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
 
     [Header("~=~= Ammo Pickup History =~=~")]
     [SerializeField] private List<AmmoStats> ammoPickupHistory = new List<AmmoStats>();
+    private static Dictionary<string, Vector2Int> persistentAmmoCounts = new Dictionary<string, Vector2Int>();
 
     [Header("~=~= UI References =~=~")]
     [SerializeField] private TMPro.TextMeshProUGUI ammoTextDisplay;
@@ -190,14 +191,28 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
             return;
         }
 
-        if (currentSceneIndex > 1 && (persistentGunList.Count > 0 || persistentKeyList.Count > 0 || persistentAmmoPickupHistory.Count > 0))
+        if (currentSceneIndex == 1)
         {
-            LoadPersistentData();
+            respawn();
+        }
+        else if (currentSceneIndex >= 2 && currentSceneIndex <= 5)
+        {
+
+            if (persistentGunList.Count > 0 || persistentKeyList.Count > 0 || persistentAmmoPickupHistory.Count > 0)
+            {
+                LoadPersistentData();
+            }
+            else
+            {
+                Debug.Log("No persistent data found, starting fresh");
+                respawn();
+            }
         }
         else
         {
             respawn();
         }
+
         updatePlayerUI();
         UpdateAmmoDisplay();
     }
@@ -865,19 +880,27 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
 
     public void getGunStats(gunStats gun)
     {
-        if (gunList.Contains(gun))
+        if (gun == null) return;
+
+        gunStats existingGun = gunList.Find(g => g.name == gun.name.Replace("(Clone)", ""));
+
+        if (existingGun != null)
         {
-            gunListPos = gunList.IndexOf(gun);
+            gunListPos = gunList.IndexOf(existingGun);
         }
         else
         {
-            gunList.Add(gun);
+            gunStats gunToAdd = gun;
+
+            gunList.Add(gunToAdd);
             gunListPos = gunList.Count - 1;
 
-            gunAmmoInventory.Add(new GunAmmoData(gun));
+            GunAmmoData ammoData = new GunAmmoData(gunToAdd);
+            gunAmmoInventory.Add(ammoData);
         }
 
         changeGun();
+        SavePersistentData();
     }
 
     public void changeGun()
@@ -886,7 +909,9 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
         if (gunModel == null) return;
 
         gunStats originalStats = gunList[gunListPos];
+
         activeGunStats = Instantiate(originalStats);
+
 
         Transform[] children = new Transform[gunModel.transform.childCount];
         for (int i = 0; i < gunModel.transform.childCount; i++)
@@ -899,7 +924,7 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
             Destroy(child.gameObject);
         }
 
-        GameObject newGunModel = Instantiate(gunList[gunListPos].gunModel, gunModel.transform);
+        GameObject newGunModel = Instantiate(originalStats.gunModel, gunModel.transform);
         newGunModel.transform.localPosition = Vector3.zero;
         newGunModel.transform.localRotation = Quaternion.identity;
 
@@ -1036,20 +1061,28 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
         gunList.Clear();
         keyList.Clear();
         ammoPickupHistory.Clear();
+        gunAmmoInventory.Clear();
 
         foreach (var gun in persistentGunList)
         {
-            getGunStats(gun);
+            gunList.Add(gun);
+
+            GunAmmoData ammoData = new GunAmmoData(gun);
+
+            string gunName = gun.name;
+            if (persistentAmmoCounts.ContainsKey(gunName))
+            {
+                Vector2Int savedAmmo = persistentAmmoCounts[gunName];
+                ammoData.currentAmmo = savedAmmo.x;
+                ammoData.reserveAmmo = savedAmmo.y;
+            }
+
+            gunAmmoInventory.Add(ammoData);
         }
 
         foreach (var key in persistentKeyList)
         {
-            AddKeyToList(key);
-        }
-
-        foreach (var ammo in persistentAmmoPickupHistory)
-        {
-            ammoPickupHistory.Add(ammo);
+            keyList.Add(key);
         }
 
         if (persistentGunList.Count > 0)
@@ -1058,28 +1091,26 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
             changeGun();
         }
 
-        HP = persistentHP;
-        HP = Mathf.Min(HP, currentMaxHP);
-
-        if (gamemanager.instance != null && gamemanager.instance.spawnPoint != null)
-        {
-            controller.enabled = false;
-            transform.position = gamemanager.instance.spawnPoint.transform.position;
-            controller.enabled = true;
-        }
+        HP = Mathf.Min(persistentHP, currentMaxHP);
 
         updatePlayerUI();
+        UpdateAmmoDisplay();
     }
 
     void SavePersistentData()
     {
         persistentGunList = new List<gunStats>(gunList);
         persistentKeyList = new List<keyStats>(keyList);
-        persistentAmmoPickupHistory = new List<AmmoStats>(ammoPickupHistory);
         persistentGunListPos = gunListPos;
         persistentHP = HP;
         persistentMaxHP = currentMaxHP;
-        persistentHealthUpgradeTotal = currentMaxHP - intialHP;
+
+        persistentAmmoCounts.Clear();
+        foreach (var ammoData in gunAmmoInventory)
+        {
+            string gunName = ammoData.gunTemplate.name;
+            persistentAmmoCounts[gunName] = new Vector2Int(ammoData.currentAmmo, ammoData.reserveAmmo);
+        }
     }
 
     public void PrepareForSceneTransition()
