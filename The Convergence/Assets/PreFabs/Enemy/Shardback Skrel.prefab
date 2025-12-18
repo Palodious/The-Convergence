@@ -94,15 +94,15 @@ MonoBehaviour:
   attackRate: 0.5
   meleeDamageAmount: 1
   canJumpAttack: 1
-  jumpForce: 3.5
+  jumpForce: 5
   jumpAttackRange: 8
-  minHeightDifference: 1.45
+  minHeightDifference: 1.25
   jumpAttackCooldown: 10
-  jumpAttackDamage: 4
+  jumpAttackDamage: 15
   jumpAttackRadius: 2.8
   jumpTimer: 2
-  jumpHeight: 5
-  jumpDuration: 1.1
+  jumpHeight: 8.1
+  jumpDuration: 1.4
   jumpCurve:
     serializedVersion: 2
     m_Curve:
@@ -127,10 +127,10 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  jumpLandingEffect: {fileID: 0}
-  jumpDamageDelay: 0.1
+  jumpLandingEffect: {fileID: 8915312667134092580, guid: 8a43d9f68490c374a93a9e8085555c02, type: 3}
+  jumpDamageDelay: 0.177
   jumpWindupTime: 0.2
-  landingDistanceFromPlayer: 0.5
+  landingDistanceFromPlayer: 1
   canDashAttack: 1
   dashSpeed: 12.5
   dashDuration: 1.04
@@ -154,23 +154,32 @@ MonoBehaviour:
   audStepVol: 0.19
   audHurt:
   - {fileID: 8300000, guid: eb2d69f25d744ba4a9ef6c9563078c85, type: 3}
-  audHurtVol: 0.15
+  - {fileID: 8300000, guid: a1cc851ba936d408785aaf2917b47e49, type: 3}
+  - {fileID: 8300000, guid: 88ba551e6eb3847279ac2fea8b38e665, type: 3}
+  audHurtVol: 0.18
   audShoot: []
   audShootVol: 0
   audMelee:
-  - {fileID: 8300000, guid: 65f8912a6f857334392200929d5c69a9, type: 3}
-  audMeleeVol: 0.15
+  - {fileID: 8300000, guid: 88ba551e6eb3847279ac2fea8b38e665, type: 3}
+  - {fileID: 8300000, guid: 228a434ca9f954909a9176e45f877eaa, type: 3}
+  audMeleeVol: 0.18
   audDeath:
-  - {fileID: 8300000, guid: caab710de492e3644bfc8211c20052ea, type: 3}
+  - {fileID: 8300000, guid: 98e09261f3a63460d93dda8792af907d, type: 3}
+  - {fileID: 8300000, guid: d5799252a63954428bb39f05951b9ee0, type: 3}
+  - {fileID: 8300000, guid: 8a42266be58db4c518b5d4e47cc0f780, type: 3}
   audDeathVol: 0.15
-  audJumpAttack: []
+  audJumpAttack:
+  - {fileID: 8300000, guid: ac7e816a3db514fe1ab3b114c251e20c, type: 3}
+  - {fileID: 8300000, guid: 7592d3abb53e14da8b29227d4b2011e3, type: 3}
   audJumpAttackVol: 0
-  audJumpWindup: {fileID: 0}
-  audJumpWindupVol: 0.5
-  audJumpLanding: {fileID: 0}
-  audJumpLandingVol: 0.7
-  audDash: []
-  audDashVol: 0.5
+  audJumpWindup: {fileID: 8300000, guid: 7c47b20bb9874304a809dc5580d403ba, type: 3}
+  audJumpWindupVol: 0
+  audJumpLanding: {fileID: 8300000, guid: 63fea4bdbc41839469c2dfe0137c8e95, type: 3}
+  audJumpLandingVol: 0
+  audDash:
+  - {fileID: 8300000, guid: b5c9b4cb95f3a8945ba42d81c76e4257, type: 3}
+  - {fileID: 8300000, guid: afed07758d902864798bfe26b70a0792, type: 3}
+  audDashVol: 0
   itemDrop: {fileID: 0}
   currencyDropAmount: 10
   isBoss: 0

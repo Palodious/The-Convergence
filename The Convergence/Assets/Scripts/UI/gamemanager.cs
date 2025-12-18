@@ -1,11 +1,10 @@
-using System;
 using System.Collections;
-using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using UnityEngine.UI;
 using System.Collections.Generic;
 using System.Linq;
+using TMPro;
+using UnityEngine.UI;
 
 public class gamemanager : MonoBehaviour
 {
@@ -24,7 +23,7 @@ public class gamemanager : MonoBehaviour
     [SerializeField] private PrefabRegistry prefabRegistry;
 
     public TMP_Text gameGoalCountText;
-    [SerializeField] public Image playerHPBar;
+    public Image playerHPBar;
     [SerializeField] public GameObject playerDamagePanel;
     public GameObject checkpointPopup;
     public GameObject bossDoorPopup;

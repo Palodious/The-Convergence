@@ -126,6 +126,7 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
     bool isGliding;
     bool isSprinting;
     bool isPlayingStep;
+
     [HideInInspector] public float damageBoost = 1f;
     private bool canUseMedkit = true;
     private float medkitCooldown = 0f;

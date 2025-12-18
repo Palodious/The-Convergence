@@ -12,7 +12,7 @@ public class PylonController : MonoBehaviour
         orbit = GetComponent<PylonOrbit>();
     }
 
-    public void OnPulseHit()
+    public void OnHit()
     {
         if (isDestroyed) return;
 

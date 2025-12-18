@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections;
 using UnityEngine.UI;
+using System.Linq;
 
 public class PlayerAbilities : MonoBehaviour
 {
@@ -11,6 +12,8 @@ public class PlayerAbilities : MonoBehaviour
     [Range(10, 50)][SerializeField] int pulseDamage;
     [Range(5f, 15f)][SerializeField] float pulseRange;
     [Range(2f, 15f)][SerializeField] float pulseCooldown;
+    [Range(5f, 25f)][SerializeField] float pulseForce;
+
 
     // Rift Jump
     [Range(10f, 25f)][SerializeField] float jumpDistance;
@@ -22,13 +25,12 @@ public class PlayerAbilities : MonoBehaviour
 
     // Timers
     float pulseTimer;
-    float surgeTimer;
     float jumpTimer;
 
     // Ability states
-    public bool isSurging;
+    public bool isPulsing;
     public bool isJumping;
-    GameObject surgeEffect;
+    GameObject pulseEffect;
 
     void Start()
     {
@@ -51,7 +53,6 @@ public class PlayerAbilities : MonoBehaviour
 
         // Update timers
         pulseTimer += Time.deltaTime;
-        surgeTimer += Time.deltaTime;
         jumpTimer += Time.deltaTime;
 
         // Input handling
@@ -65,44 +66,54 @@ public class PlayerAbilities : MonoBehaviour
 
     IEnumerator RiftPulse()
     {
-        if (gamemanager.instance != null &&
-        (gamemanager.instance.isPaused || directionalPopup.PopupIsOpen))
-            yield break;
-
-        pulseTimer = 0;
-
-        // Visual effect
-        GameObject pulseVFX = EffectsManager.Instance.Create("PulseCast", transform.position);
-        SetEffectColor(pulseVFX, new Color(0.2f, 0.7f, 1f));
-
-        // Detect and destroy pylons
         Collider[] hits = Physics.OverlapSphere(transform.position, pulseRange, enemyMask);
+        Debug.Log($"Pulse fired. Hits: {hits.Length}");
 
         foreach (Collider hit in hits)
         {
-            // Damage enemies
-            IDamage dmg = hit.GetComponent<IDamage>();
+            GameObject hitGO = hit.gameObject;
+            Debug.Log($"Pulse hit: {hitGO.name} (layer: {LayerMask.LayerToName(hitGO.layer)})");
+
+            // Robust IDamage lookup
+            IDamage dmg = hitGO.GetComponent<IDamage>() ?? hitGO.GetComponentInParent<IDamage>();
+            if (dmg == null)
+            {
+                foreach (var mb in hitGO.GetComponents<MonoBehaviour>())
+                {
+                    if (mb is IDamage) { dmg = (IDamage)mb; break; }
+                }
+            }
+
+            int amount = Mathf.RoundToInt(pulseDamage * (controller != null ? controller.damageBoost : 1f));
+            Debug.Log($"Computed damage: {amount}");
+
             if (dmg != null)
             {
-                dmg.takeDamage(Mathf.RoundToInt(pulseDamage * controller.damageBoost));
+                Debug.Log($"Applying {amount} damage to {hitGO.name}");
+                dmg.takeDamage(amount);
                 EffectsManager.Instance.Create("Lightning", hit.transform.position);
             }
+            else
+            {
+                Debug.Log($"No IDamage on {hitGO.name}. Components: {string.Join(", ", hitGO.GetComponents<Component>().Select(c => c.GetType().Name))}");
+            }
 
-            // Knockback rigidbodies
-            Rigidbody rb = hit.GetComponent<Rigidbody>();
+            // Knockback (use rb.velocity not linearVelocity)
+            Rigidbody rb = hit.attachedRigidbody;
             if (rb != null)
             {
-                Vector3 knockDir = (hit.transform.position - transform.position).normalized + Vector3.up * 0.3f;
-                rb.AddForce(knockDir * 6f, ForceMode.Impulse);
+                Vector3 dir = (hit.transform.position - transform.position).normalized;
+                float desiredSpeed = pulseForce; // use your pulseForce or a tuned value
+                Vector3 vDesired = dir * desiredSpeed;
+                Vector3 deltaV = vDesired - rb.linearVelocity;
+                Vector3 impulse = rb.mass * deltaV;
+                rb.AddForce(impulse, ForceMode.Impulse);
+                Debug.Log($"Applied knockback to {hitGO.name} impulse={impulse}");
             }
 
-            // Destroy pylons
+            // Pylon
             PylonController pylon = hit.GetComponent<PylonController>();
-            if (pylon != null)
-            {
-                pylon.OnPulseHit();
-                EffectsManager.Instance.Create("PylonDestroy", hit.transform.position);
-            }
+            if (pylon != null) { pylon.OnHit(); EffectsManager.Instance.Create("PylonDestroy", hit.transform.position); }
         }
 
         yield break; 
@@ -132,7 +143,12 @@ public class PlayerAbilities : MonoBehaviour
         // Use CapsuleCast instead of Raycast to prevent clipping
         if (Physics.CapsuleCast(point1, point2, radius, direction, out RaycastHit hit, distance, environmentMask))
         {
+<<<<<<< Updated upstream
             distance = Mathf.Max(0f, hit.distance - 0.1f); // stop just before wall
+=======
+            // Stop just before the obstacle, reduce distance
+            distance = hit.distance - 0.2f; // small offset so we don�t get stuck in the wall
+>>>>>>> Stashed changes
         }
 
         Vector3 targetPos = startPos + direction * distance;
