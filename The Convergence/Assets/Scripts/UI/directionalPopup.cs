@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -53,5 +54,13 @@ public class directionalPopup : MonoBehaviour
         Time.timeScale = 1f;
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
+        StartCoroutine(ResetPopupFlag());
+
+    }
+
+    private IEnumerator ResetPopupFlag()
+    {
+        yield return new WaitForEndOfFrame();
+        PopupIsOpen = false;
     }
 }
