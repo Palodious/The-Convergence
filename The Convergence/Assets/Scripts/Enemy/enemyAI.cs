@@ -292,6 +292,22 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
             currentHP = Mathf.Max(1, maxHP);
 
         ApplyNgpScalingIfNeeded();
+
+        // Prevent collisions between enemies
+        GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");
+        foreach (GameObject enemy in enemies)
+        {
+            if (enemy != gameObject)
+            {
+                Collider myCollider = GetComponent<Collider>();
+                Collider enemyCollider = enemy.GetComponent<Collider>();
+
+                if (myCollider != null && enemyCollider != null)
+                {
+                    Physics.IgnoreCollision(myCollider, enemyCollider, true);
+                }
+            }
+        }
     }
 
     void Update()
@@ -396,7 +412,7 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
                 }
                 catch (System.Exception)
                 {
-                   
+
                 }
             }
 
@@ -566,7 +582,7 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
             if (audJumpLanding != null && aud != null)
                 aud.PlayOneShot(audJumpLanding, audJumpLandingVol);
 
-            if (jumpLandingEffect != null)  
+            if (jumpLandingEffect != null)
                 Instantiate(jumpLandingEffect, transform.position, Quaternion.identity);
 
             // Apply jumpDamage after a short delay to allow for landing impact
@@ -591,9 +607,8 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
                 agent.Warp(transform.position);
                 agent.isStopped = false;
             }
-            catch (System.Exception e)
+            catch (System.Exception)
             {
-                Debug.LogWarning($"Could not re-enable agent after physics jump: {e.Message}");
             }
         }
 
@@ -728,9 +743,8 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
                 if (gamemanager.instance != null && gamemanager.instance.player != null && isAlive)
                     agent.SetDestination(gamemanager.instance.player.transform.position);
             }
-            catch (System.Exception e)
+            catch (System.Exception)
             {
-                Debug.LogWarning($"enemyAI: NavMesh warp/resume failed after jump: {e.Message}");
             }
         }
 
@@ -741,7 +755,6 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
     //Find ground position with detection
     Vector3 FindGroundPosition(Vector3 position)
     {
-        // Validate inputs
         if (float.IsNaN(position.x) || float.IsNaN(position.y) || float.IsNaN(position.z))
             return Vector3.zero;
 
@@ -887,6 +900,9 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
             Collider[] hits = Physics.OverlapSphere(meleePos.position, meleeRange, ~ignoreLayer);
             foreach (var hit in hits)
             {
+                if (hit.CompareTag("Enemy") && hit.gameObject != gameObject)
+                    continue;
+
                 if (hit.CompareTag("Player"))
                 {
                     IDamage dmg = hit.GetComponent<IDamage>();
@@ -943,9 +959,8 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
                 {
                     agent.SetDestination(gamemanager.instance.player.transform.position);
                 }
-                catch (System.Exception e)
+                catch (System.Exception)
                 {
-                    Debug.LogWarning($"Could not set destination after dash: {e.Message}");
                 }
             }
         }
@@ -975,7 +990,6 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
 
         if (gamemanager.instance == null || gamemanager.instance.player == null)
         {
-            Debug.LogWarning("enemyAI: ApplyJumpDamage aborted because player is missing");
         }
         else
         {
@@ -991,7 +1005,6 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
                 {
                     dmg.takeDamage(GetScaledDamage(baseJumpAttackDamage));
                     playerDamaged = true;
-                    Debug.Log($"Jump attack hit player via distance check: {distanceToPlayer} units away");
                 }
             }
 
@@ -1001,6 +1014,9 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
                 Collider[] hits = Physics.OverlapSphere(transform.position, jumpAttackRadius, ~ignoreLayer);
                 foreach (var hit in hits)
                 {
+                    if (hit.CompareTag("Enemy") && hit.gameObject != gameObject)
+                        continue;
+
                     if (hit != null && hit.CompareTag("Player"))
                     {
                         IDamage dmg = hit.GetComponent<IDamage>();
@@ -1008,7 +1024,6 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
                         {
                             dmg.takeDamage(GetScaledDamage(baseJumpAttackDamage));
                             playerDamaged = true;
-                            Debug.Log("Jump attack hit player via overlap sphere");
                             break;
                         }
                     }
@@ -1029,14 +1044,14 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
                         {
                             dmg.takeDamage(GetScaledDamage(baseJumpAttackDamage));
                             playerDamaged = true;
-                            Debug.Log("Jump attack hit player via raycast");
                         }
                     }
                 }
             }
 
             if (!playerDamaged)
-                Debug.LogWarning($"Jump attack missed player. Distance: {Vector3.Distance(transform.position, gamemanager.instance.player.transform.position)}, Radius: {jumpAttackRadius}");
+            {
+            }
         }
 
         // Small wait to let effects play, then end jump
@@ -1081,9 +1096,8 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
                 if (gamemanager.instance != null && gamemanager.instance.player != null && isAlive)
                     agent.SetDestination(gamemanager.instance.player.transform.position);
             }
-            catch (System.Exception e)
+            catch (System.Exception)
             {
-                Debug.LogWarning($"enemyAI: Could not restore agent after jump: {e.Message}");
             }
         }
 
@@ -1120,9 +1134,8 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
                 agent.updatePosition = true;
                 agent.updateRotation = true;
             }
-            catch (System.Exception e)
+            catch (System.Exception)
             {
-                Debug.LogWarning($"enemyAI: Could not re-enable agent after jump cancellation: {e.Message}");
             }
         }
 
@@ -1202,7 +1215,6 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
             }
             else
             {
-                Debug.LogWarning($"enemyAI on {name} has only null patrolPoints.");
             }
         }
     }
@@ -1278,9 +1290,8 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
                         agent.SetDestination(playerPos);
                         agent.stoppingDistance = stoppingDistOrig;
                     }
-                    catch (System.Exception e)
+                    catch (System.Exception)
                     {
-                        Debug.LogWarning($"Could not set destination: {e.Message}");
                     }
                 }
 
@@ -1345,9 +1356,8 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
             {
                 agent.SetDestination(gamemanager.instance.player.transform.position);
             }
-            catch (System.Exception e)
+            catch (System.Exception)
             {
-                Debug.LogWarning($"Could not set destination after taking damage: {e.Message}");
             }
         }
 
@@ -1404,8 +1414,6 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
         // Check if this is the boss enemy
         if (isBoss)
         {
-            Debug.Log("=== BOSS DEFEATED ===");
-
             // Show boss death effect if assigned
             if (bossDeathEffect != null)
                 Instantiate(bossDeathEffect, transform.position, Quaternion.identity);
@@ -1522,6 +1530,14 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
 
         foreach (var hit in hitColliders)
         {
+            // Skip other enemies
+            if (hit.CompareTag("Enemy") && hit.gameObject != gameObject)
+                continue;
+
+            // Skip triggers
+            if (hit.isTrigger)
+                continue;
+
             // Look for objects implementing IDamage
             IDamage dmgTarget = hit.GetComponent<IDamage>();
             if (dmgTarget != null)
@@ -1612,7 +1628,6 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
     {
         if (state is not EnemyState s)
         {
-            Debug.LogError($"enemyAI.RestoreState: expected EnemyState, got {state?.GetType()} on {name}");
             return;
         }
 
@@ -1756,6 +1771,4 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
             }
         }
     }
-
-    
 }

@@ -22,11 +22,11 @@ public class damage : MonoBehaviour
     [Range(1, 20)][SerializeField] private int destroyTime;
 
     [Header("~=~= Projectile Arc =~=~")]
-    [SerializeField] private ProjectileMode projectileMode = ProjectileMode.Straight; // Projectile mode selection (straight or arc)
+    [SerializeField] private ProjectileMode projectileMode = ProjectileMode.Straight;
 
     [Header("Arc Settings")]
-    [Range(0, 60)][SerializeField] private float launchAngle = 35f; // Upward tilt angle for arcing projectiles
-    [Range(1, 50)][SerializeField] private float arcSpeed = 10f; // Speed of arcing projectile
+    [Range(0, 60)][SerializeField] private float launchAngle = 35f;
+    [Range(1, 50)][SerializeField] private float arcSpeed = 10f;
 
     public enum ProjectileMode { Straight, Arc }
 
@@ -40,7 +40,7 @@ public class damage : MonoBehaviour
 
             if (type == damageType.moving)
             {
-                LaunchProjectile(); // Set initial velocity based on projectile mode
+                LaunchProjectile();
             }
         }
     }
@@ -49,8 +49,8 @@ public class damage : MonoBehaviour
     {
         if (type == damageType.homing)
         {
-            // Continuously move towards player for homing projectiles
-            rb.linearVelocity = (gamemanager.instance.player.transform.position - transform.position).normalized * speed;
+            rb.linearVelocity =
+                (gamemanager.instance.player.transform.position - transform.position).normalized * speed;
         }
     }
 
@@ -58,20 +58,16 @@ public class damage : MonoBehaviour
     {
         if (rb == null) return;
 
-        // Enable gravity only for arcing projectiles
         rb.useGravity = (projectileMode == ProjectileMode.Arc);
 
         if (projectileMode == ProjectileMode.Straight)
         {
-            // Straight-line shot moves directly forward at set speed
             rb.linearVelocity = transform.forward * speed;
         }
         else
         {
-            // Arcing shot tilts the forward direction upward to create a ballistic arc
             Vector3 direction = transform.forward;
 
-            // Apply the launch angle to the forward vector to calculate initial velocity
             Vector3 launchVelocity =
                 Quaternion.AngleAxis(-launchAngle, transform.right) * direction * arcSpeed;
 
@@ -92,10 +88,7 @@ public class damage : MonoBehaviour
     public void ApplyDamageMultiplier(float multiplier)
     {
         CacheBaseDamageIfNeeded();
-
         multiplier = Mathf.Max(0.01f, multiplier);
-
-        // Always scale FROM BASE so repeated calls don't inflate forever.
         damageAmount = Mathf.Max(1, Mathf.RoundToInt(baseDamageAmount * multiplier));
     }
 
@@ -104,7 +97,9 @@ public class damage : MonoBehaviour
         if (other.isTrigger)
             return;
 
-        // Skip if layer should not be damaged
+        if (other.CompareTag("Enemy"))
+            return;
+
         if (((1 << other.gameObject.layer) & ignoreLayer) != 0)
             return;
 
@@ -120,21 +115,16 @@ public class damage : MonoBehaviour
             {
                 Destroy(gameObject);
             }
-            // If it hit something NOT damaging (like the environment/ground) AND we have a DOT prefab...
             else if (dotPrefab != null)
             {
-                // 1. Spawn the DOT object (the Acid Pool) at this location.
                 Instantiate(dotPrefab, transform.position, Quaternion.identity);
-
-                // 2. Destroy the original projectile.
                 Destroy(gameObject);
             }
-            // If we hit something non-damaging but have no DOT prefab, just destroy the projectile.
             else
             {
                 Destroy(gameObject);
             }
-        }   
+        }
     }
 
     private void OnTriggerStay(Collider other)
@@ -142,7 +132,9 @@ public class damage : MonoBehaviour
         if (other.isTrigger)
             return;
 
-        // Skip if layer should not be damaged
+        if (other.CompareTag("Enemy"))
+            return;
+
         if (((1 << other.gameObject.layer) & ignoreLayer) != 0)
             return;
 
