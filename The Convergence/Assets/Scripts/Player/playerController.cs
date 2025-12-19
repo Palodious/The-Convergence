@@ -113,6 +113,17 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
     private static int persistentHealthUpgradeTotal = 0;
     private static bool isNewGameSession = true;
 
+    [Header("~=~= Enemy Collision Prevention =~=~")]
+    [SerializeField] private float enemyPushForce = 15f;
+    [SerializeField] private LayerMask enemyLayer;
+    [SerializeField] private float enemyCheckRadius = 0.8f;
+    [SerializeField] private float enemyCheckHeight = 0.5f;
+    [SerializeField] private float enemyCheckDownwardDistance = 1.5f;
+    [SerializeField] private float maxEnemyStandHeight = 0.2f;
+
+    private Collider[] enemyOverlapResults = new Collider[10];
+    private List<GameObject> nearbyEnemies = new List<GameObject>();
+
     public int ShootDamage => shootDamage;
     int originalSpeed;
     Vector3 moveDir;
@@ -231,6 +242,8 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
 
         HandleMedkitCooldown();
         UpdateIKState();
+
+        CheckAndPreventEnemyStanding();
     }
 
     void UpdateIKState()
@@ -243,6 +256,56 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
         if (activeGunStats != null && gunModel != null)
         {
             ikController.SetGunTransform(gunModel.transform);
+        }
+    }
+
+    void CheckAndPreventEnemyStanding()
+    {
+        if (isDead || controller == null || !controller.enabled) return;
+
+        nearbyEnemies.Clear();
+
+        Vector3 checkCenter = transform.position + Vector3.up * enemyCheckHeight;
+        int numEnemies = Physics.OverlapSphereNonAlloc(checkCenter, enemyCheckRadius, enemyOverlapResults, enemyLayer);
+
+        for (int i = 0; i < numEnemies; i++)
+        {
+            Collider enemyCollider = enemyOverlapResults[i];
+            if (enemyCollider != null && enemyCollider.gameObject != gameObject)
+            {
+                nearbyEnemies.Add(enemyCollider.gameObject);
+
+                Vector3 enemyTop = enemyCollider.bounds.max;
+                Vector3 playerBottom = controller.bounds.min;
+
+                if (playerBottom.y - enemyTop.y < maxEnemyStandHeight &&
+                    playerBottom.y > enemyTop.y - 0.5f)
+                {
+                    Vector3 pushDirection = (transform.position - enemyCollider.transform.position).normalized;
+
+                    pushDirection.y = 0.3f;
+                    pushDirection.Normalize();
+
+                    controller.Move(pushDirection * enemyPushForce * Time.deltaTime);
+
+                    if (playerVel.y > -2f)
+                    {
+                        playerVel.y = -2f;
+                    }
+                }
+            }
+        }
+
+        if (Physics.Raycast(transform.position + Vector3.up * 0.1f, Vector3.down, out RaycastHit hit,
+            enemyCheckDownwardDistance, enemyLayer))
+        {
+            Vector3 pushDirection = (transform.position - hit.transform.position).normalized;
+            pushDirection.y = 0.3f;
+            pushDirection.Normalize();
+
+            controller.Move(pushDirection * enemyPushForce * Time.deltaTime * 2f);
+
+            playerVel.y = Mathf.Min(playerVel.y, -5f);
         }
     }
 
@@ -331,9 +394,51 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
     void jump()
     {
         if (controller == null || !controller.enabled) return;
+
+        bool isNearEnemy = false;
+        if (nearbyEnemies.Count > 0)
+        {
+            foreach (GameObject enemy in nearbyEnemies)
+            {
+                if (enemy != null)
+                {
+                    float verticalDistance = transform.position.y - enemy.transform.position.y;
+                    float horizontalDistance = Vector3.Distance(
+                        new Vector3(transform.position.x, 0, transform.position.z),
+                        new Vector3(enemy.transform.position.x, 0, enemy.transform.position.z)
+                    );
+
+                    if (verticalDistance < 2f && horizontalDistance < 1.5f)
+                    {
+                        isNearEnemy = true;
+                        break;
+                    }
+                }
+            }
+        }
+
         if (Input.GetButtonDown("Jump") && jumpCount < maxJumps)
         {
-            playerVel.y = JumpSpeed;
+            if (isNearEnemy)
+            {
+                playerVel.y = JumpSpeed * 1.3f;
+
+                if (nearbyEnemies.Count > 0)
+                {
+                    GameObject nearestEnemy = nearbyEnemies[0];
+                    Vector3 pushDirection = (transform.position - nearestEnemy.transform.position).normalized;
+                    pushDirection.y = 0;
+                    if (pushDirection.magnitude > 0.1f)
+                    {
+                        controller.Move(pushDirection * enemyPushForce * 0.5f * Time.deltaTime);
+                    }
+                }
+            }
+            else
+            {
+                playerVel.y = JumpSpeed;
+            }
+
             jumpCount++;
 
             if (animator != null)
@@ -1197,5 +1302,4 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
 
         updatePlayerUI();
     }
-
 }
