@@ -2,15 +2,15 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum GunType
+/*public enum GunType
 {
     SMG,
     Rifle,
     AR,
     None,
-}
+}*/
 
-public enum UpgradeStat
+/*public enum UpgradeStat
 {
     Damage,
     Rate,
@@ -18,13 +18,13 @@ public enum UpgradeStat
     Ammo,
     MaxHP,
     Heal,
-}
+}*/
 
-public enum ItemType
+/*public enum ItemType
 {
     Upgrade,
     Consumable,
-}
+}*/
 
 [System.Serializable]
 public class StoreItem

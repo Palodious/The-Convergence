@@ -1,6 +1,6 @@
 using UnityEngine;
 
-[CreateAssetMenu]
+[CreateAssetMenu(fileName = "New Gun Stats", menuName = "Guns/Gun Stats")]
 public class gunStats : ScriptableObject
 {
     [Header("~=~= Gun Model =~=~")]
@@ -29,12 +29,12 @@ public class gunStats : ScriptableObject
         {
             case UpgradeStat.Damage:
                 shootDamage += Mathf.RoundToInt(amount);
-                shootDamage = Mathf.Clamp(shootDamage, 10, 50);
+                shootDamage = Mathf.Clamp(shootDamage, 10, 60);
                 break;
 
             case UpgradeStat.Distance:
                 shootDist += Mathf.RoundToInt(amount);
-                shootDist = Mathf.Clamp(shootDist, 15, 60);
+                shootDist = Mathf.Clamp(shootDist, 15, 80);
                 break;
 
             case UpgradeStat.Rate:
@@ -44,24 +44,24 @@ public class gunStats : ScriptableObject
 
             case UpgradeStat.Ammo:
                 ammoMax += Mathf.RoundToInt(amount);
-                ammoMax = Mathf.Clamp(ammoMax, 5, 50);
+                ammoMax = Mathf.Clamp(ammoMax, 5, 60);
                 break;
 
             default:
-              //  Debug.LogWarning($"gunStats.ApplyUpgrade: Unsupported upgrade type {upgradeType}");
+              Debug.LogWarning($"gunStats.ApplyUpgrade: Unsupported upgrade type {upgradeType}");
                 break;
     }
 }
 
-    public void ApplyUpgrade(string upgradeType, float amount)
+    public void ApplyUpgrade(string upgradeType, float amount) //overloaded method takes string for backwards compatibility/external systems
     {
         if (System.Enum.TryParse(upgradeType, true, out UpgradeStat parsed))
         {
-            ApplyUpgrade(parsed, amount);
+            ApplyUpgrade(parsed, amount); // Call the enum version
         }
         else
         {
-          //  Debug.LogWarning($"gunStats.ApplyUpgrade: Unknown upgrade string '{upgradeType}'");
+            Debug.LogWarning($"gunStats.ApplyUpgrade: Unknown upgrade string '{upgradeType}'");
         }
     }
 }
