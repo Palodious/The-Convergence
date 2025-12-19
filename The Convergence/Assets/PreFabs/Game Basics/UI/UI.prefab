@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 803703315791770373}
   - component: {fileID: 1101116578162560394}
   - component: {fileID: 1199631253149491470}
-  m_Layer: 5
+  m_Layer: 13
   m_Name: Assult Rifle Upgrades
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -404,7 +404,7 @@ GameObject:
   - component: {fileID: 6351938760079303234}
   - component: {fileID: 3075815108211898980}
   - component: {fileID: 828824509428002112}
-  m_Layer: 5
+  m_Layer: 13
   m_Name: Text (TMP)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -678,7 +678,7 @@ GameObject:
   - component: {fileID: 6096988595572656473}
   - component: {fileID: 3419611718165505099}
   - component: {fileID: 5871744738754156109}
-  m_Layer: 5
+  m_Layer: 13
   m_Name: Rifle Dist Upgrade
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -727,18 +727,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: da38d85da98dba14ea7ff5a3bffa8429, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::StoreButtonUI
-  itemID: 114
+  assignedItem: {fileID: 11400000, guid: 79118abf33d83a4478a9830c6f0bf542, type: 2}
+  itemIcon: {fileID: 0}
+  itemNameText: {fileID: 0}
+  itemDescriptionText: {fileID: 0}
+  costText: {fileID: 3442193284719132976}
+  levelText: {fileID: 4033961040313053022}
   buttonGraphic: {fileID: 3419611718165505099}
   extraGraphicsToFade: []
-  labelText: {fileID: 4033961040313053022}
-  costText: {fileID: 3442193284719132976}
   disabledAlpha: 0.35
   enabledAlpha: 1
-  showLevelOnUpgrades: 1
   levelFormat: '{0}/{1}'
   maxedLabel: MAXED
   cannotAffordLabel: No Shards
   lockedWeaponLabel: LOCKED
+  unavailableLabel: N/A
 --- !u!114 &3419611718165505099
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1322,7 +1325,7 @@ GameObject:
   - component: {fileID: 5462971238498506242}
   - component: {fileID: 125158659966191559}
   - component: {fileID: 1349690855561774589}
-  m_Layer: 5
+  m_Layer: 13
   m_Name: Price
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2001,7 +2004,7 @@ GameObject:
   - component: {fileID: 7954182618998970751}
   - component: {fileID: 1349262518152114072}
   - component: {fileID: 8527801130629129383}
-  m_Layer: 5
+  m_Layer: 13
   m_Name: Text (TMP)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2858,7 +2861,7 @@ GameObject:
   - component: {fileID: 1003552628771041537}
   - component: {fileID: 7469157417434947262}
   - component: {fileID: 7641317684638321419}
-  m_Layer: 5
+  m_Layer: 13
   m_Name: Price Per
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2994,7 +2997,7 @@ GameObject:
   - component: {fileID: 4322416880515771342}
   - component: {fileID: 5918577005442558721}
   - component: {fileID: 7524727900374644720}
-  m_Layer: 5
+  m_Layer: 13
   m_Name: SMG Upgrades (2)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3134,7 +3137,7 @@ GameObject:
   - component: {fileID: 5487847592486515080}
   - component: {fileID: 2441777479285231755}
   - component: {fileID: 2592040765144861393}
-  m_Layer: 5
+  m_Layer: 13
   m_Name: Text (TMP)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3673,7 +3676,7 @@ GameObject:
   - component: {fileID: 6205905806615324047}
   - component: {fileID: 8422501825390005551}
   - component: {fileID: 447952877694866640}
-  m_Layer: 5
+  m_Layer: 13
   m_Name: Price
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3809,7 +3812,7 @@ GameObject:
   - component: {fileID: 7017742694012482910}
   - component: {fileID: 8279968324180862661}
   - component: {fileID: 1968724118997714966}
-  m_Layer: 5
+  m_Layer: 13
   m_Name: Store Panel 3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4035,7 +4038,7 @@ GameObject:
   - component: {fileID: 3813529636381628139}
   - component: {fileID: 8971623358256314092}
   - component: {fileID: 5209123689509295433}
-  m_Layer: 5
+  m_Layer: 13
   m_Name: Text (TMP)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4171,7 +4174,7 @@ GameObject:
   - component: {fileID: 2512996614080736432}
   - component: {fileID: 1301057556125500799}
   - component: {fileID: 7248711205337614176}
-  m_Layer: 5
+  m_Layer: 13
   m_Name: Text (TMP)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4382,7 +4385,7 @@ GameObject:
   - component: {fileID: 7629472442577768215}
   - component: {fileID: 6600165239105461393}
   - component: {fileID: 3812030895007231514}
-  m_Layer: 5
+  m_Layer: 13
   m_Name: Text (TMP)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4518,7 +4521,7 @@ GameObject:
   - component: {fileID: 140712289455208441}
   - component: {fileID: 9195421238918104136}
   - component: {fileID: 2877273688425408407}
-  m_Layer: 5
+  m_Layer: 13
   m_Name: Price
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4654,7 +4657,7 @@ GameObject:
   - component: {fileID: 3027674898669195859}
   - component: {fileID: 1482561909648343596}
   - component: {fileID: 2820009719384471707}
-  m_Layer: 5
+  m_Layer: 13
   m_Name: Rift Shards
   m_TagString: UI
   m_Icon: {fileID: 0}
@@ -5035,7 +5038,7 @@ GameObject:
   - component: {fileID: 7861493541633669611}
   - component: {fileID: 3543849510976787168}
   - component: {fileID: 547997513198556332}
-  m_Layer: 5
+  m_Layer: 13
   m_Name: Text (TMP)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5682,7 +5685,7 @@ GameObject:
   - component: {fileID: 8857698044319121796}
   - component: {fileID: 3191302094759794409}
   - component: {fileID: 5549937669098205858}
-  m_Layer: 5
+  m_Layer: 13
   m_Name: Text (TMP) (2)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -6215,7 +6218,7 @@ GameObject:
   - component: {fileID: 455821096570449795}
   - component: {fileID: 1612623649426818320}
   - component: {fileID: 6449777944400925594}
-  m_Layer: 5
+  m_Layer: 13
   m_Name: Text (TMP)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -6489,7 +6492,7 @@ GameObject:
   - component: {fileID: 4939189525084421517}
   - component: {fileID: 2618850739637673148}
   - component: {fileID: 5762864614203986546}
-  m_Layer: 5
+  m_Layer: 13
   m_Name: SMG Ammo Upgrade
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -6538,18 +6541,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: da38d85da98dba14ea7ff5a3bffa8429, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::StoreButtonUI
-  itemID: 101
+  assignedItem: {fileID: 11400000, guid: d4a65f036c6d434448fe58f698aa865a, type: 2}
+  itemIcon: {fileID: 0}
+  itemNameText: {fileID: 0}
+  itemDescriptionText: {fileID: 0}
+  costText: {fileID: 2807770037688137948}
+  levelText: {fileID: 8527801130629129383}
   buttonGraphic: {fileID: 2618850739637673148}
   extraGraphicsToFade: []
-  labelText: {fileID: 8527801130629129383}
-  costText: {fileID: 2807770037688137948}
   disabledAlpha: 0.35
   enabledAlpha: 1
-  showLevelOnUpgrades: 1
   levelFormat: '{0}/{1}'
   maxedLabel: MAXED
   cannotAffordLabel: No Shards
   lockedWeaponLabel: LOCKED
+  unavailableLabel: N/A
 --- !u!114 &2618850739637673148
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6966,7 +6972,7 @@ GameObject:
   - component: {fileID: 4821725408782671632}
   - component: {fileID: 59781408826931359}
   - component: {fileID: 8510085881097234441}
-  m_Layer: 5
+  m_Layer: 13
   m_Name: SMG Damage Upgrade
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -7015,18 +7021,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: da38d85da98dba14ea7ff5a3bffa8429, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::StoreButtonUI
-  itemID: 102
+  assignedItem: {fileID: 11400000, guid: c39717c189bc2b64c954502c23a64fb2, type: 2}
+  itemIcon: {fileID: 0}
+  itemNameText: {fileID: 0}
+  itemDescriptionText: {fileID: 0}
+  costText: {fileID: 1503745245020120022}
+  levelText: {fileID: 6426019901699250801}
   buttonGraphic: {fileID: 59781408826931359}
   extraGraphicsToFade: []
-  labelText: {fileID: 6426019901699250801}
-  costText: {fileID: 1503745245020120022}
   disabledAlpha: 0.35
   enabledAlpha: 1
-  showLevelOnUpgrades: 1
   levelFormat: '{0}/{1}'
   maxedLabel: MAXED
   cannotAffordLabel: No Shards
   lockedWeaponLabel: LOCKED
+  unavailableLabel: N/A
 --- !u!114 &59781408826931359
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7124,7 +7133,7 @@ GameObject:
   - component: {fileID: 236250176177027414}
   - component: {fileID: 107201390956960655}
   - component: {fileID: 7112927354849315255}
-  m_Layer: 5
+  m_Layer: 13
   m_Name: Health Upgrades (3)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -8054,7 +8063,7 @@ GameObject:
   - component: {fileID: 1924966532810421729}
   - component: {fileID: 7880089745706773845}
   - component: {fileID: 2828443987112136422}
-  m_Layer: 5
+  m_Layer: 13
   m_Name: AR Dist Upgrade
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -8103,18 +8112,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: da38d85da98dba14ea7ff5a3bffa8429, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::StoreButtonUI
-  itemID: 124
+  assignedItem: {fileID: 11400000, guid: c7a2229c638656a46b031c7415c53adf, type: 2}
+  itemIcon: {fileID: 0}
+  itemNameText: {fileID: 0}
+  itemDescriptionText: {fileID: 0}
+  costText: {fileID: 447952877694866640}
+  levelText: {fileID: 2499266451262002883}
   buttonGraphic: {fileID: 7880089745706773845}
   extraGraphicsToFade: []
-  labelText: {fileID: 2499266451262002883}
-  costText: {fileID: 447952877694866640}
   disabledAlpha: 0.35
   enabledAlpha: 1
-  showLevelOnUpgrades: 1
   levelFormat: '{0}/{1}'
   maxedLabel: MAXED
   cannotAffordLabel: No Shards
   lockedWeaponLabel: LOCKED
+  unavailableLabel: N/A
 --- !u!114 &7880089745706773845
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8314,7 +8326,7 @@ GameObject:
   - component: {fileID: 2894346177241359343}
   - component: {fileID: 80611076194953041}
   - component: {fileID: 4548425838143830372}
-  m_Layer: 5
+  m_Layer: 13
   m_Name: Text (TMP)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -8698,7 +8710,7 @@ GameObject:
   - component: {fileID: 358549717411554128}
   - component: {fileID: 6765768367223066283}
   - component: {fileID: 742228612018877831}
-  m_Layer: 5
+  m_Layer: 13
   m_Name: Price
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -8835,7 +8847,7 @@ GameObject:
   - component: {fileID: 1361750887009555613}
   - component: {fileID: 6777606582204592809}
   - component: {fileID: 5347621292133127964}
-  m_Layer: 5
+  m_Layer: 13
   m_Name: Rift Shard Count
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -9545,7 +9557,7 @@ GameObject:
   - component: {fileID: 3670804070474937258}
   - component: {fileID: 7833763664150651403}
   - component: {fileID: 1170953842651896785}
-  m_Layer: 5
+  m_Layer: 13
   m_Name: SMG Fire Rate Upgrade
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -9594,18 +9606,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: da38d85da98dba14ea7ff5a3bffa8429, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::StoreButtonUI
-  itemID: 103
+  assignedItem: {fileID: 11400000, guid: 205d15f69a38f594e98614645f9b9f94, type: 2}
+  itemIcon: {fileID: 0}
+  itemNameText: {fileID: 0}
+  itemDescriptionText: {fileID: 0}
+  costText: {fileID: 2877273688425408407}
+  levelText: {fileID: 3173647710839177495}
   buttonGraphic: {fileID: 7833763664150651403}
   extraGraphicsToFade: []
-  labelText: {fileID: 3173647710839177495}
-  costText: {fileID: 2877273688425408407}
   disabledAlpha: 0.35
   enabledAlpha: 1
-  showLevelOnUpgrades: 1
   levelFormat: '{0}/{1}'
   maxedLabel: MAXED
   cannotAffordLabel: No Shards
   lockedWeaponLabel: LOCKED
+  unavailableLabel: N/A
 --- !u!114 &7833763664150651403
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -9967,7 +9982,7 @@ GameObject:
   - component: {fileID: 7015600163706108999}
   - component: {fileID: 5494924702623567883}
   - component: {fileID: 6188681227505729526}
-  m_Layer: 5
+  m_Layer: 13
   m_Name: Large Health Kit
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -10016,18 +10031,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: da38d85da98dba14ea7ff5a3bffa8429, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::StoreButtonUI
-  itemID: 303
+  assignedItem: {fileID: 11400000, guid: c193fb58eaf8bf040b154a8e057d4f93, type: 2}
+  itemIcon: {fileID: 0}
+  itemNameText: {fileID: 0}
+  itemDescriptionText: {fileID: 0}
+  costText: {fileID: 384698399008300342}
+  levelText: {fileID: 3284551272338646974}
   buttonGraphic: {fileID: 5494924702623567883}
   extraGraphicsToFade: []
-  labelText: {fileID: 3284551272338646974}
-  costText: {fileID: 384698399008300342}
   disabledAlpha: 0.35
   enabledAlpha: 1
-  showLevelOnUpgrades: 1
   levelFormat: '{0}/{1}'
   maxedLabel: MAXED
   cannotAffordLabel: No Shards
   lockedWeaponLabel: LOCKED
+  unavailableLabel: N/A
 --- !u!114 &5494924702623567883
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10350,7 +10368,7 @@ GameObject:
   - component: {fileID: 3338488060240618489}
   - component: {fileID: 2716863204990165815}
   - component: {fileID: 3968305369433596933}
-  m_Layer: 5
+  m_Layer: 13
   m_Name: Text (TMP)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -10488,7 +10506,7 @@ GameObject:
   - component: {fileID: 3732154994507838026}
   - component: {fileID: 5436082775129651469}
   - component: {fileID: 1451227069630824248}
-  m_Layer: 5
+  m_Layer: 13
   m_Name: Rifle Ammo Upgrade
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -10537,18 +10555,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: da38d85da98dba14ea7ff5a3bffa8429, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::StoreButtonUI
-  itemID: 111
+  assignedItem: {fileID: 11400000, guid: e01fac520210e2c43b55a154a51f0483, type: 2}
+  itemIcon: {fileID: 0}
+  itemNameText: {fileID: 0}
+  itemDescriptionText: {fileID: 0}
+  costText: {fileID: 706661571456255288}
+  levelText: {fileID: 2153816460418147072}
   buttonGraphic: {fileID: 5436082775129651469}
   extraGraphicsToFade: []
-  labelText: {fileID: 2153816460418147072}
-  costText: {fileID: 706661571456255288}
   disabledAlpha: 0.35
   enabledAlpha: 1
-  showLevelOnUpgrades: 1
   levelFormat: '{0}/{1}'
   maxedLabel: MAXED
   cannotAffordLabel: No Shards
   lockedWeaponLabel: LOCKED
+  unavailableLabel: N/A
 --- !u!114 &5436082775129651469
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10646,7 +10667,7 @@ GameObject:
   - component: {fileID: 9038134291711069492}
   - component: {fileID: 4488810023517433487}
   - component: {fileID: 1242323171823779817}
-  m_Layer: 5
+  m_Layer: 13
   m_Name: Text (TMP)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -11452,7 +11473,7 @@ GameObject:
   - component: {fileID: 5027328049329098196}
   - component: {fileID: 3705043571018075747}
   - component: {fileID: 541953434028501519}
-  m_Layer: 5
+  m_Layer: 13
   m_Name: Text (TMP)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -11590,7 +11611,7 @@ GameObject:
   - component: {fileID: 2118854022810485097}
   - component: {fileID: 4361217120703298773}
   - component: {fileID: 8317167237172009220}
-  m_Layer: 5
+  m_Layer: 13
   m_Name: Small Health Kit
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -11639,18 +11660,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: da38d85da98dba14ea7ff5a3bffa8429, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::StoreButtonUI
-  itemID: 301
+  assignedItem: {fileID: 11400000, guid: 8996bef5091c63d458a0dcd39460bff6, type: 2}
+  itemIcon: {fileID: 0}
+  itemNameText: {fileID: 0}
+  itemDescriptionText: {fileID: 0}
+  costText: {fileID: 6551373075317917031}
+  levelText: {fileID: 5209123689509295433}
   buttonGraphic: {fileID: 4361217120703298773}
   extraGraphicsToFade: []
-  labelText: {fileID: 5209123689509295433}
-  costText: {fileID: 6551373075317917031}
   disabledAlpha: 0.35
   enabledAlpha: 1
-  showLevelOnUpgrades: 1
   levelFormat: '{0}/{1}'
   maxedLabel: MAXED
   cannotAffordLabel: No Shards
   lockedWeaponLabel: LOCKED
+  unavailableLabel: N/A
 --- !u!114 &4361217120703298773
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -11897,7 +11921,7 @@ GameObject:
   - component: {fileID: 8143211321277067150}
   - component: {fileID: 872287354962309007}
   - component: {fileID: 3173647710839177495}
-  m_Layer: 5
+  m_Layer: 13
   m_Name: Text (TMP)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -12035,7 +12059,7 @@ GameObject:
   - component: {fileID: 5352771532373147091}
   - component: {fileID: 8634711015437343282}
   - component: {fileID: 8170975408468269837}
-  m_Layer: 5
+  m_Layer: 13
   m_Name: Health Boost Upgrade
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -12084,18 +12108,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: da38d85da98dba14ea7ff5a3bffa8429, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::StoreButtonUI
-  itemID: 201
+  assignedItem: {fileID: 11400000, guid: 89bf896a7d791144fb8658d91ca03273, type: 2}
+  itemIcon: {fileID: 0}
+  itemNameText: {fileID: 0}
+  itemDescriptionText: {fileID: 0}
+  costText: {fileID: 5385917898509941973}
+  levelText: {fileID: 1365497897104639188}
   buttonGraphic: {fileID: 8634711015437343282}
   extraGraphicsToFade: []
-  labelText: {fileID: 1365497897104639188}
-  costText: {fileID: 5385917898509941973}
   disabledAlpha: 0.35
   enabledAlpha: 1
-  showLevelOnUpgrades: 1
   levelFormat: '{0}/{1}'
   maxedLabel: MAXED
   cannotAffordLabel: No Shards
   lockedWeaponLabel: LOCKED
+  unavailableLabel: N/A
 --- !u!114 &8634711015437343282
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -13020,7 +13047,7 @@ GameObject:
   - component: {fileID: 2841165685002325541}
   - component: {fileID: 3419839459531684364}
   - component: {fileID: 5175355229949957648}
-  m_Layer: 5
+  m_Layer: 13
   m_Name: AR Fire Rate Upgrade
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -13069,18 +13096,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: da38d85da98dba14ea7ff5a3bffa8429, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::StoreButtonUI
-  itemID: 123
+  assignedItem: {fileID: 11400000, guid: b872e217182e28c4a88c18713bdd7c2e, type: 2}
+  itemIcon: {fileID: 0}
+  itemNameText: {fileID: 0}
+  itemDescriptionText: {fileID: 0}
+  costText: {fileID: 2573329880349318939}
+  levelText: {fileID: 1242323171823779817}
   buttonGraphic: {fileID: 3419839459531684364}
   extraGraphicsToFade: []
-  labelText: {fileID: 1242323171823779817}
-  costText: {fileID: 2573329880349318939}
   disabledAlpha: 0.35
   enabledAlpha: 1
-  showLevelOnUpgrades: 1
   levelFormat: '{0}/{1}'
   maxedLabel: MAXED
   cannotAffordLabel: No Shards
   lockedWeaponLabel: LOCKED
+  unavailableLabel: N/A
 --- !u!114 &3419839459531684364
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -13701,7 +13731,7 @@ GameObject:
   - component: {fileID: 4560725952401251450}
   - component: {fileID: 8158089184296166209}
   - component: {fileID: 3129822966985174972}
-  m_Layer: 5
+  m_Layer: 13
   m_Name: Rifle Upgrades (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -13974,7 +14004,7 @@ GameObject:
   - component: {fileID: 6639974217736543289}
   - component: {fileID: 6104140860307138216}
   - component: {fileID: 446342737845235505}
-  m_Layer: 5
+  m_Layer: 13
   m_Name: Text (TMP)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -14112,7 +14142,7 @@ GameObject:
   - component: {fileID: 3104248849959855310}
   - component: {fileID: 2471628160130219957}
   - component: {fileID: 7709425270985313077}
-  m_Layer: 5
+  m_Layer: 13
   m_Name: Button
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -14321,7 +14351,7 @@ GameObject:
   - component: {fileID: 425286575224569314}
   - component: {fileID: 2555814401814190956}
   - component: {fileID: 683726916286109026}
-  m_Layer: 5
+  m_Layer: 13
   m_Name: Text (TMP)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -14593,7 +14623,7 @@ GameObject:
   - component: {fileID: 9068984092944253720}
   - component: {fileID: 1157637317186306810}
   - component: {fileID: 927130114429212141}
-  m_Layer: 5
+  m_Layer: 13
   m_Name: lvl
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -14729,7 +14759,7 @@ GameObject:
   - component: {fileID: 2916544439219264570}
   - component: {fileID: 4722228296625176900}
   - component: {fileID: 3284551272338646974}
-  m_Layer: 5
+  m_Layer: 13
   m_Name: Text (TMP)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -15251,7 +15281,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cd064701d094ba24498ce4d1f3bdfffc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::OptionsAudio
-  masterSlider: {fileID: 7129834041660988857}
+  musicSlider: {fileID: 0}
+  sfxSlider: {fileID: 0}
   masterMixer: {fileID: 24100000, guid: 00cb03a6ea84338449da26b4afb0b02a, type: 2}
   moveSoundCooldown: 0.08
 --- !u!114 &6792810321837849502
@@ -15358,7 +15389,7 @@ GameObject:
   - component: {fileID: 4271495220989649252}
   - component: {fileID: 8799620297339707631}
   - component: {fileID: 4410444934807948367}
-  m_Layer: 5
+  m_Layer: 13
   m_Name: Medium Health Kit
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -15407,18 +15438,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: da38d85da98dba14ea7ff5a3bffa8429, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::StoreButtonUI
-  itemID: 302
+  assignedItem: {fileID: 11400000, guid: f298ce1815fd44c47ab05c399d844a91, type: 2}
+  itemIcon: {fileID: 0}
+  itemNameText: {fileID: 0}
+  itemDescriptionText: {fileID: 0}
+  costText: {fileID: 494736943338047301}
+  levelText: {fileID: 8257012260476388534}
   buttonGraphic: {fileID: 8799620297339707631}
   extraGraphicsToFade: []
-  labelText: {fileID: 8257012260476388534}
-  costText: {fileID: 494736943338047301}
   disabledAlpha: 0.35
   enabledAlpha: 1
-  showLevelOnUpgrades: 1
   levelFormat: '{0}/{1}'
   maxedLabel: MAXED
   cannotAffordLabel: No Shards
   lockedWeaponLabel: LOCKED
+  unavailableLabel: N/A
 --- !u!114 &8799620297339707631
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -15580,7 +15614,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cd064701d094ba24498ce4d1f3bdfffc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::OptionsAudio
-  masterSlider: {fileID: 404325271474428035}
+  musicSlider: {fileID: 0}
+  sfxSlider: {fileID: 0}
   masterMixer: {fileID: 24100000, guid: 3bfb569edf4b118458a286e5f70156cd, type: 2}
   moveSoundCooldown: 0.08
 --- !u!114 &5032858018356580788
@@ -16467,7 +16502,7 @@ GameObject:
   - component: {fileID: 8125478661388648586}
   - component: {fileID: 7840975987436636861}
   - component: {fileID: 7805117111617669048}
-  m_Layer: 5
+  m_Layer: 13
   m_Name: Text (TMP)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -16603,7 +16638,7 @@ GameObject:
   - component: {fileID: 2526482721440798912}
   - component: {fileID: 1544675080899734734}
   - component: {fileID: 1101748908876257786}
-  m_Layer: 5
+  m_Layer: 13
   m_Name: Text (TMP)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -17160,7 +17195,7 @@ GameObject:
   - component: {fileID: 2213758202465991036}
   - component: {fileID: 3070497758850158782}
   - component: {fileID: 6867975244632751572}
-  m_Layer: 5
+  m_Layer: 13
   m_Name: Image
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -17381,7 +17416,7 @@ GameObject:
   - component: {fileID: 4479462529909526067}
   - component: {fileID: 6469356282515545718}
   - component: {fileID: 2844508742288520427}
-  m_Layer: 5
+  m_Layer: 13
   m_Name: SMG Dist Upgrade
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -17430,18 +17465,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: da38d85da98dba14ea7ff5a3bffa8429, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::StoreButtonUI
-  itemID: 104
+  assignedItem: {fileID: 11400000, guid: 467bab609919be443b474688b33f3a2b, type: 2}
+  itemIcon: {fileID: 0}
+  itemNameText: {fileID: 0}
+  itemDescriptionText: {fileID: 0}
+  costText: {fileID: 7141651691097387885}
+  levelText: {fileID: 7202793292281884438}
   buttonGraphic: {fileID: 6469356282515545718}
   extraGraphicsToFade: []
-  labelText: {fileID: 7202793292281884438}
-  costText: {fileID: 7141651691097387885}
   disabledAlpha: 0.35
   enabledAlpha: 1
-  showLevelOnUpgrades: 1
   levelFormat: '{0}/{1}'
   maxedLabel: MAXED
   cannotAffordLabel: No Shards
   lockedWeaponLabel: LOCKED
+  unavailableLabel: N/A
 --- !u!114 &6469356282515545718
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -17628,7 +17666,7 @@ GameObject:
   - component: {fileID: 1801033500181711147}
   - component: {fileID: 9206379556302324138}
   - component: {fileID: 4337230581323650823}
-  m_Layer: 5
+  m_Layer: 13
   m_Name: AR Damage Upgrade
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -17677,18 +17715,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: da38d85da98dba14ea7ff5a3bffa8429, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::StoreButtonUI
-  itemID: 122
+  assignedItem: {fileID: 11400000, guid: ceb79f0878e414b43bfb35f667135046, type: 2}
+  itemIcon: {fileID: 0}
+  itemNameText: {fileID: 0}
+  itemDescriptionText: {fileID: 0}
+  costText: {fileID: 6314347884353150167}
+  levelText: {fileID: 6449777944400925594}
   buttonGraphic: {fileID: 9206379556302324138}
   extraGraphicsToFade: []
-  labelText: {fileID: 6449777944400925594}
-  costText: {fileID: 6314347884353150167}
   disabledAlpha: 0.35
   enabledAlpha: 1
-  showLevelOnUpgrades: 1
   levelFormat: '{0}/{1}'
   maxedLabel: MAXED
   cannotAffordLabel: No Shards
   lockedWeaponLabel: LOCKED
+  unavailableLabel: N/A
 --- !u!114 &9206379556302324138
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -18060,7 +18101,7 @@ GameObject:
   - component: {fileID: 3799931611717155193}
   - component: {fileID: 8383901175083512839}
   - component: {fileID: 4084863226083596648}
-  m_Layer: 5
+  m_Layer: 13
   m_Name: Rifle Damage Upgrade
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -18109,18 +18150,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: da38d85da98dba14ea7ff5a3bffa8429, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::StoreButtonUI
-  itemID: 112
+  assignedItem: {fileID: 11400000, guid: be547218c36091c4383314786ad39295, type: 2}
+  itemIcon: {fileID: 0}
+  itemNameText: {fileID: 0}
+  itemDescriptionText: {fileID: 0}
+  costText: {fileID: 4437523123432348049}
+  levelText: {fileID: 828824509428002112}
   buttonGraphic: {fileID: 8383901175083512839}
   extraGraphicsToFade: []
-  labelText: {fileID: 828824509428002112}
-  costText: {fileID: 4437523123432348049}
   disabledAlpha: 0.35
   enabledAlpha: 1
-  showLevelOnUpgrades: 1
   levelFormat: '{0}/{1}'
   maxedLabel: MAXED
   cannotAffordLabel: No Shards
   lockedWeaponLabel: LOCKED
+  unavailableLabel: N/A
 --- !u!114 &8383901175083512839
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -19216,7 +19260,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cd064701d094ba24498ce4d1f3bdfffc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::OptionsAudio
-  masterSlider: {fileID: 472512545205129832}
+  musicSlider: {fileID: 0}
+  sfxSlider: {fileID: 0}
   masterMixer: {fileID: 24100000, guid: 00cb03a6ea84338449da26b4afb0b02a, type: 2}
   moveSoundCooldown: 0.08
 --- !u!114 &1638661343600553491
@@ -19323,7 +19368,7 @@ GameObject:
   - component: {fileID: 3490058636497861873}
   - component: {fileID: 7736022199633040761}
   - component: {fileID: 5107443472335089246}
-  m_Layer: 5
+  m_Layer: 13
   m_Name: Huge Health Kit
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -19372,18 +19417,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: da38d85da98dba14ea7ff5a3bffa8429, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::StoreButtonUI
-  itemID: 304
+  assignedItem: {fileID: 11400000, guid: 5da9ce210d35ddb4b905073e4ed5b2dc, type: 2}
+  itemIcon: {fileID: 0}
+  itemNameText: {fileID: 0}
+  itemDescriptionText: {fileID: 0}
+  costText: {fileID: 4616009963325720811}
+  levelText: {fileID: 5651829114052522096}
   buttonGraphic: {fileID: 7736022199633040761}
   extraGraphicsToFade: []
-  labelText: {fileID: 5651829114052522096}
-  costText: {fileID: 4616009963325720811}
   disabledAlpha: 0.35
   enabledAlpha: 1
-  showLevelOnUpgrades: 1
   levelFormat: '{0}/{1}'
   maxedLabel: MAXED
   cannotAffordLabel: No Shards
   lockedWeaponLabel: LOCKED
+  unavailableLabel: N/A
 --- !u!114 &7736022199633040761
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -19562,6 +19610,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::OptionsResolution
   resolutionDropdown: {fileID: 780833748258070646}
   fullscreenToggle: {fileID: 8464176761567268691}
+  webglNoteText: {fileID: 0}
 --- !u!114 &2666445355910417755
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -19574,7 +19623,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cd064701d094ba24498ce4d1f3bdfffc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::OptionsAudio
-  masterSlider: {fileID: 404325271474428035}
+  musicSlider: {fileID: 0}
+  sfxSlider: {fileID: 0}
   masterMixer: {fileID: 24100000, guid: 00cb03a6ea84338449da26b4afb0b02a, type: 2}
   moveSoundCooldown: 0.6
 --- !u!222 &5048445908680621374
@@ -19627,7 +19677,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cd064701d094ba24498ce4d1f3bdfffc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::OptionsAudio
-  masterSlider: {fileID: 472512545205129832}
+  musicSlider: {fileID: 0}
+  sfxSlider: {fileID: 0}
   masterMixer: {fileID: 24100000, guid: 3bfb569edf4b118458a286e5f70156cd, type: 2}
   moveSoundCooldown: 0.08
 --- !u!1 &5537754477502199546
@@ -19641,7 +19692,7 @@ GameObject:
   - component: {fileID: 5291816384236522788}
   - component: {fileID: 5455804500100692451}
   - component: {fileID: 2573329880349318939}
-  m_Layer: 5
+  m_Layer: 13
   m_Name: Price
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -19926,7 +19977,7 @@ GameObject:
   - component: {fileID: 7303420831462961008}
   - component: {fileID: 5183903376533491813}
   - component: {fileID: 9144130172155968370}
-  m_Layer: 5
+  m_Layer: 13
   m_Name: Text (TMP)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -20334,7 +20385,7 @@ GameObject:
   - component: {fileID: 5143851224556218670}
   - component: {fileID: 398171356711975768}
   - component: {fileID: 1600681671599480910}
-  m_Layer: 5
+  m_Layer: 13
   m_Name: Text (TMP) (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -20927,7 +20978,7 @@ GameObject:
   - component: {fileID: 8329157602324776129}
   - component: {fileID: 4406495562827940721}
   - component: {fileID: 7892560160673691354}
-  m_Layer: 5
+  m_Layer: 13
   m_Name: Text (TMP)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -21165,7 +21216,7 @@ GameObject:
   - component: {fileID: 7558488588607521654}
   - component: {fileID: 499514689443803889}
   - component: {fileID: 7632850486093392747}
-  m_Layer: 5
+  m_Layer: 13
   m_Name: Text (TMP)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -21605,7 +21656,7 @@ GameObject:
   - component: {fileID: 6691731674474282309}
   - component: {fileID: 9183041211712202179}
   - component: {fileID: 4033961040313053022}
-  m_Layer: 5
+  m_Layer: 13
   m_Name: Text (TMP) (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -22273,7 +22324,7 @@ GameObject:
   - component: {fileID: 1176164904412736696}
   - component: {fileID: 529595983007863625}
   - component: {fileID: 2153816460418147072}
-  m_Layer: 5
+  m_Layer: 13
   m_Name: Text (TMP)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -22484,7 +22535,7 @@ GameObject:
   - component: {fileID: 4292712720151262483}
   - component: {fileID: 3305491068922432445}
   - component: {fileID: 494736943338047301}
-  m_Layer: 5
+  m_Layer: 13
   m_Name: Price
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -23318,7 +23369,7 @@ GameObject:
   - component: {fileID: 7079416661771927019}
   - component: {fileID: 5198191723097139691}
   - component: {fileID: 2499266451262002883}
-  m_Layer: 5
+  m_Layer: 13
   m_Name: Text (TMP)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -23510,8 +23561,6 @@ MonoBehaviour:
     prefab: {fileID: 5805082395274130021, guid: d7d047e4d2c50e64a929e6077bcbd75b, type: 3}
   - key: SMG
     prefab: {fileID: 1070632586094627505, guid: 4ce157fba902fd249a1c991759addada, type: 3}
-  - key: Turret1
-    prefab: {fileID: 2179620418440674079, guid: 1786821f8827c1e4f869daf7a3d23846, type: 3}
 --- !u!1 &6813217516438531535
 GameObject:
   m_ObjectHideFlags: 0
@@ -23523,7 +23572,7 @@ GameObject:
   - component: {fileID: 3591163774143795582}
   - component: {fileID: 3884043477301366864}
   - component: {fileID: 5651829114052522096}
-  m_Layer: 5
+  m_Layer: 13
   m_Name: Text (TMP)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -23831,7 +23880,7 @@ GameObject:
   - component: {fileID: 7915937455238591612}
   - component: {fileID: 3128436177920402803}
   - component: {fileID: 6555822540023639466}
-  m_Layer: 5
+  m_Layer: 13
   m_Name: Text (TMP)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -24046,7 +24095,7 @@ GameObject:
   - component: {fileID: 45542301343078583}
   - component: {fileID: 6184276554685832131}
   - component: {fileID: 5485267758968465314}
-  m_Layer: 5
+  m_Layer: 13
   m_Name: AR Ammo Upgrade
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -24095,18 +24144,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: da38d85da98dba14ea7ff5a3bffa8429, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::StoreButtonUI
-  itemID: 121
+  assignedItem: {fileID: 11400000, guid: 95378a903d9842842a75e70fc1ca0cf9, type: 2}
+  itemIcon: {fileID: 0}
+  itemNameText: {fileID: 0}
+  itemDescriptionText: {fileID: 0}
+  costText: {fileID: 1349690855561774589}
+  levelText: {fileID: 446342737845235505}
   buttonGraphic: {fileID: 6184276554685832131}
   extraGraphicsToFade: []
-  labelText: {fileID: 446342737845235505}
-  costText: {fileID: 1349690855561774589}
   disabledAlpha: 0.35
   enabledAlpha: 1
-  showLevelOnUpgrades: 1
   levelFormat: '{0}/{1}'
   maxedLabel: MAXED
   cannotAffordLabel: No Shards
   lockedWeaponLabel: LOCKED
+  unavailableLabel: N/A
 --- !u!114 &6184276554685832131
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -24551,7 +24603,7 @@ GameObject:
   - component: {fileID: 834626004415634360}
   - component: {fileID: 6769741120565118375}
   - component: {fileID: 6551373075317917031}
-  m_Layer: 5
+  m_Layer: 13
   m_Name: Price
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -24762,7 +24814,7 @@ GameObject:
   - component: {fileID: 6220203194195142795}
   - component: {fileID: 3617674862556376158}
   - component: {fileID: 384698399008300342}
-  m_Layer: 5
+  m_Layer: 13
   m_Name: Price
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -24898,7 +24950,7 @@ GameObject:
   - component: {fileID: 283522468424609896}
   - component: {fileID: 6747378826221013678}
   - component: {fileID: 7837002268259402954}
-  m_Layer: 5
+  m_Layer: 13
   m_Name: Health Boost Upgrades (4)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -25035,7 +25087,7 @@ GameObject:
   - component: {fileID: 6448784660658488605}
   - component: {fileID: 8253193607878947602}
   - component: {fileID: 4616009963325720811}
-  m_Layer: 5
+  m_Layer: 13
   m_Name: Price
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -25171,7 +25223,7 @@ GameObject:
   - component: {fileID: 6949887189763331379}
   - component: {fileID: 2092297658652481315}
   - component: {fileID: 7202793292281884438}
-  m_Layer: 5
+  m_Layer: 13
   m_Name: Text (TMP)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -25307,7 +25359,7 @@ GameObject:
   - component: {fileID: 4428320934512512294}
   - component: {fileID: 9122530107152278524}
   - component: {fileID: 36258889821707791}
-  m_Layer: 5
+  m_Layer: 13
   m_Name: Text (TMP) (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -25976,7 +26028,7 @@ GameObject:
   - component: {fileID: 4608042092853425078}
   - component: {fileID: 6558307830289770882}
   - component: {fileID: 5742024257002274851}
-  m_Layer: 5
+  m_Layer: 13
   m_Name: Rifle Fire Rate Upgrade
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -26025,18 +26077,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: da38d85da98dba14ea7ff5a3bffa8429, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::StoreButtonUI
-  itemID: 113
+  assignedItem: {fileID: 11400000, guid: 94bc5888cf731704faa3d9d8fef7c3b7, type: 2}
+  itemIcon: {fileID: 0}
+  itemNameText: {fileID: 0}
+  itemDescriptionText: {fileID: 0}
+  costText: {fileID: 742228612018877831}
+  levelText: {fileID: 1600681671599480910}
   buttonGraphic: {fileID: 6558307830289770882}
   extraGraphicsToFade: []
-  labelText: {fileID: 1600681671599480910}
-  costText: {fileID: 742228612018877831}
   disabledAlpha: 0.35
   enabledAlpha: 1
-  showLevelOnUpgrades: 1
   levelFormat: '{0}/{1}'
   maxedLabel: MAXED
   cannotAffordLabel: No Shards
   lockedWeaponLabel: LOCKED
+  unavailableLabel: N/A
 --- !u!114 &6558307830289770882
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -26134,7 +26189,7 @@ GameObject:
   - component: {fileID: 1404255186040634866}
   - component: {fileID: 7833750220024036598}
   - component: {fileID: 537707362436669646}
-  m_Layer: 5
+  m_Layer: 13
   m_Name: Text (TMP)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -26270,7 +26325,7 @@ GameObject:
   - component: {fileID: 3807631203267941728}
   - component: {fileID: 8720939167027388425}
   - component: {fileID: 706661571456255288}
-  m_Layer: 5
+  m_Layer: 13
   m_Name: Price
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -27523,7 +27578,7 @@ GameObject:
   - component: {fileID: 8523335621477555492}
   - component: {fileID: 6067569662387820225}
   - component: {fileID: 6426019901699250801}
-  m_Layer: 5
+  m_Layer: 13
   m_Name: Text (TMP)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -27659,7 +27714,7 @@ GameObject:
   - component: {fileID: 2292718041539896544}
   - component: {fileID: 6720071574445439700}
   - component: {fileID: 123295571375244825}
-  m_Layer: 5
+  m_Layer: 13
   m_Name: Text (TMP)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -28132,7 +28187,7 @@ GameObject:
   - component: {fileID: 656793397754062912}
   - component: {fileID: 1386208745536943926}
   - component: {fileID: 1444347529711714628}
-  m_Layer: 5
+  m_Layer: 13
   m_Name: Text (TMP)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -28268,7 +28323,7 @@ GameObject:
   - component: {fileID: 5530576729736965091}
   - component: {fileID: 5963417828358542630}
   - component: {fileID: 1365497897104639188}
-  m_Layer: 5
+  m_Layer: 13
   m_Name: Text (TMP)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -28404,7 +28459,7 @@ GameObject:
   - component: {fileID: 9005097146757614124}
   - component: {fileID: 824696455670539258}
   - component: {fileID: 3442193284719132976}
-  m_Layer: 5
+  m_Layer: 13
   m_Name: Price
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -28540,7 +28595,7 @@ GameObject:
   - component: {fileID: 4928096636883215455}
   - component: {fileID: 4658764851847913930}
   - component: {fileID: 8257012260476388534}
-  m_Layer: 5
+  m_Layer: 13
   m_Name: Text (TMP)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -28751,7 +28806,7 @@ GameObject:
   - component: {fileID: 3616093227180659008}
   - component: {fileID: 9123389205723433458}
   - component: {fileID: 6314347884353150167}
-  m_Layer: 5
+  m_Layer: 13
   m_Name: Price
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -29059,7 +29114,7 @@ GameObject:
   - component: {fileID: 1713106070259123823}
   - component: {fileID: 2894048844668705556}
   - component: {fileID: 7141651691097387885}
-  m_Layer: 5
+  m_Layer: 13
   m_Name: Price
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -29195,7 +29250,7 @@ GameObject:
   - component: {fileID: 606803640271735426}
   - component: {fileID: 5720906929837320955}
   - component: {fileID: 1503745245020120022}
-  m_Layer: 5
+  m_Layer: 13
   m_Name: Price
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -29452,7 +29507,7 @@ GameObject:
   - component: {fileID: 3976206816890141557}
   - component: {fileID: 805140058148865490}
   - component: {fileID: 4437523123432348049}
-  m_Layer: 5
+  m_Layer: 13
   m_Name: Price
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -29588,7 +29643,7 @@ GameObject:
   - component: {fileID: 7688161425023655462}
   - component: {fileID: 3722025634518263146}
   - component: {fileID: 5385917898509941973}
-  m_Layer: 5
+  m_Layer: 13
   m_Name: Price
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -30022,7 +30077,7 @@ GameObject:
   - component: {fileID: 6867917527935288648}
   - component: {fileID: 6168682650242888755}
   - component: {fileID: 5858760616569227673}
-  m_Layer: 5
+  m_Layer: 13
   m_Name: Text (TMP)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -30499,7 +30554,7 @@ GameObject:
   - component: {fileID: 5188566860554975062}
   - component: {fileID: 8100149956782401777}
   - component: {fileID: 7123334769561478321}
-  m_Layer: 5
+  m_Layer: 13
   m_Name: Text (TMP)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -30635,7 +30690,7 @@ GameObject:
   - component: {fileID: 8570068024169633548}
   - component: {fileID: 6591867350740593964}
   - component: {fileID: 2807770037688137948}
-  m_Layer: 5
+  m_Layer: 13
   m_Name: Price
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -31244,7 +31299,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7326266795078782606}
-  m_Layer: 5
+  m_Layer: 13
   m_Name: Store
   m_TagString: Untagged
   m_Icon: {fileID: 0}

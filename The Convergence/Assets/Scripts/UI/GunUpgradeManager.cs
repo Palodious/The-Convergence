@@ -182,10 +182,10 @@ public class GunUpgradeManager : MonoBehaviour, ISaveable
             return;
         }
 
-        stats.shootDamage = Mathf.Clamp(save.shootDamage, 10, 50);
-        stats.shootDist = Mathf.Clamp(save.shootDist, 15, 60);
+        stats.shootDamage = Mathf.Clamp(save.shootDamage, 10, 60);
+        stats.shootDist = Mathf.Clamp(save.shootDist, 15, 80);
         stats.shootRate = Mathf.Clamp(save.shootRate, 0.1f, 2f);
-        stats.ammoMax = Mathf.Clamp(save.ammoMax, 5, 50);
+        stats.ammoMax = Mathf.Clamp(save.ammoMax, 5, 60);
         stats.ammoCur = Mathf.Clamp(stats.ammoCur, 0, stats.ammoMax);
     }
     private void ApplySnapshot(GunType type, gunStats stats, GunBaseSnapshot snap)
