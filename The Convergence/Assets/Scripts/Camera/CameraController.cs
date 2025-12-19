@@ -6,6 +6,9 @@ public class CameraController : MonoBehaviour
     [SerializeField] int lockVertMin, lockVertMax;
     [SerializeField] bool invertY;
 
+    private const string PREF_SENS = "mouse_sensitivity";
+    private const float DEFAULT_SENS = 1.0f;
+
     float camRotX;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -18,6 +21,9 @@ public class CameraController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+
+        float userSens = OptionsMouseSensitivity.CurrentSensitivity;
+
         // get input
         float mouseX = Input.GetAxisRaw("Mouse X") * sens * Time.deltaTime;
         float mouseY = Input.GetAxisRaw("Mouse Y") * sens * Time.deltaTime;

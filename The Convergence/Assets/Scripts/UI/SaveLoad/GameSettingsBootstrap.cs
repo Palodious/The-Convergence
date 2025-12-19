@@ -3,15 +3,51 @@ using UnityEngine.Audio;
 
 public class GameSettingsBootstrap : MonoBehaviour
 {
-    [Header("Optional (only needed if you want audio applied even when Options menu never opened)")]
+    [Header("Audio")]
     [SerializeField] private AudioMixer masterMixer;
+
+    private const string PREF_MUSIC = "audio_music_vol";
+    private const string PREF_SFX = "audio_sfx_vol";
+    private const float DEFAULT_VOL = 0.7f;
+
+    private const string MUSIC_PARAM = "MusicVolume";
+    private const string SFX_PARAM = "SfxVolume";
+
+    private const string PREF_MOUSE_SENS = "mouse_sensitivity";
+    private const float DEFAULT_MOUSE_SENS = 1.0f;
+
+    private static bool bootstrapped;
 
     private void Awake()
     {
+        if (bootstrapped)
+        {
+            Destroy(gameObject);
+            return;
+        }
+
+        bootstrapped = true;
         DontDestroyOnLoad(gameObject);
 
-        // Apply stored settings immediately on boot.
-        GameSettings.ApplyVideo();
-        GameSettings.ApplyAudio(masterMixer);
+        ApplyAudioFromPrefs();
+        ApplyMouseSensitivityFromPrefs();
+    }
+
+    private void ApplyAudioFromPrefs()
+    {
+        if (masterMixer == null)
+            return;
+
+        float music = Mathf.Clamp(PlayerPrefs.GetFloat(PREF_MUSIC, DEFAULT_VOL), 0.0001f, 1f);
+        float sfx = Mathf.Clamp(PlayerPrefs.GetFloat(PREF_SFX, DEFAULT_VOL), 0.0001f, 1f);
+
+        masterMixer.SetFloat(MUSIC_PARAM, Mathf.Log10(music) * 20f);
+        masterMixer.SetFloat(SFX_PARAM, Mathf.Log10(sfx) * 20f);
+    }
+
+    private void ApplyMouseSensitivityFromPrefs()
+    {
+        float sens = PlayerPrefs.GetFloat(PREF_MOUSE_SENS, DEFAULT_MOUSE_SENS);
+        OptionsMouseSensitivity.LoadSavedSensitivity();
     }
 }
