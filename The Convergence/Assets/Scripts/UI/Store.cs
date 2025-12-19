@@ -309,22 +309,35 @@ public class Store : MonoBehaviour, ISaveable
             return;
         }
 
-        if (GunUpgradeManager.Instance == null)
-        {
-           // Debug.LogError("Store.ApplyUpgrade: GunUpgradeManager.Instance is null.");
-            return;
-        }
+        gunStats gun = null;
 
-        gunStats gun = GunUpgradeManager.Instance.GetGunStats(item.gunType);
+
+        if (gamemanager.instance != null && gamemanager.instance.playerScript != null)
+        {
+            var p = gamemanager.instance.playerScript;
+
+            if (p.activeGunStats != null && p.activeGunStats.gunType == item.gunType)
+                gun = p.activeGunStats;
+        }
 
         if (gun == null)
         {
-          //  Debug.LogError($"Store.ApplyUpgrade: No gunStats found for {item.gunType}");
-            return;
+            if (GunUpgradeManager.Instance == null)
+                return;
+
+            gun = GunUpgradeManager.Instance.GetGunStats(item.gunType);
         }
 
+        if (gun == null)
+            return;
+
+
         // Apply upgrade directly to gun stats
+        Debug.Log($"[UPGRADE] item={item.itemName} gun={gun.name} id={gun.GetInstanceID()} stat={item.upgradeStat} amount={amount} BEFORE dmg={gun.shootDamage} rate={gun.shootRate} dist={gun.shootDist} ammo={gun.ammoMax}");
+
         gun.ApplyUpgrade(item.upgradeStat, amount);
+
+        Debug.Log($"[UPGRADE] AFTER dmg={gun.shootDamage} rate={gun.shootRate} dist={gun.shootDist} ammo={gun.ammoMax}");
 
         // If the upgraded gun is currently equipped, rebuild the clone so gameplay updates immediately
         if (gamemanager.instance != null && gamemanager.instance.playerScript != null)

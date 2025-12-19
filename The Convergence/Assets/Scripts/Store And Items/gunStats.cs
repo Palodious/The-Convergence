@@ -5,6 +5,7 @@ public class gunStats : ScriptableObject
 {
     [Header("~=~= Gun Model =~=~")]
     public GameObject gunModel;
+    [SerializeField] public GunType gunType;
 
     [Header("~=~= Combat Stats =~=~")]
     [Range(10, 50)] public int shootDamage;

@@ -471,8 +471,11 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
 
     void shoot()
     {
+
         if (activeGunStats == null || isReloading || isDead) return;
         if (gunModel == null) return;
+
+        Debug.Log($"[SHOT] gun={activeGunStats.name} id={activeGunStats.GetInstanceID()} dmg={activeGunStats.shootDamage} rate={activeGunStats.shootRate} dist={activeGunStats.shootDist} ammoMax={activeGunStats.ammoMax}");
 
         if (fireCooldown < activeGunStats.shootRate) return;
         fireCooldown = 0;
@@ -984,7 +987,8 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
     {
         if (gun == null) return;
 
-        gunStats existingGun = gunList.Find(g => g.name == gun.name.Replace("(Clone)", ""));
+        gunStats existingGun = gunList.Find(g => g != null && g.gunType == gun.gunType);
+
 
         if (existingGun != null)
         {
@@ -1012,8 +1016,7 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
 
         gunStats originalStats = gunList[gunListPos];
 
-        activeGunStats = Instantiate(originalStats);
-
+        activeGunStats = originalStats;
 
         Transform[] children = new Transform[gunModel.transform.childCount];
         for (int i = 0; i < gunModel.transform.childCount; i++)
@@ -1277,17 +1280,29 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
 
         // Is the currently selected gun using this template?
         gunStats currentTemplate = gunList[gunListPos];
-        if (currentTemplate != upgradedTemplate) return;
+        bool isSameTemplate =
+    currentTemplate != null &&
+    upgradedTemplate != null &&
+    currentTemplate.gunType == upgradedTemplate.gunType;
+
+        if (!isSameTemplate) return;
 
         // Preserve current mag ammo before rebuilding the clone
-        int magAmmo = (activeGunStats != null) ? activeGunStats.ammoCur : 0;
+        gunStats originalGunTemplate = gunList[gunListPos];
+        GunAmmoData ammoData = gunAmmoInventory.Find(d => d.gunTemplate == originalGunTemplate);
+
+        int curAmmo = ammoData != null ? ammoData.currentAmmo : 0;
+        int resAmmo = ammoData != null ? ammoData.reserveAmmo : 0;
 
         // Rebuild clone + visuals using your existing path
         changeGun();
 
-        // Restore mag ammo
-        if (activeGunStats != null)
-            activeGunStats.ammoCur = magAmmo;
+        // Restore inventory ammo
+        if (ammoData != null)
+        {
+            ammoData.currentAmmo = curAmmo;
+            ammoData.reserveAmmo = resAmmo;
+        }
 
         UpdateAmmoDisplay();
     }

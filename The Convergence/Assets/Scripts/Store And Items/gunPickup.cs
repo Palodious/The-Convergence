@@ -15,8 +15,13 @@ public class gunPickup : MonoBehaviour
         {
             pik.GetItem(gun);
 
-            if (Store.Instance != null)
-                Store.Instance.UnlockGun(gunType);
+            if (Store.Instance != null && gunType != GunType.None && gunType != gun.gunType)
+            {
+                Debug.LogWarning($"gunPickup '{name}': Inspector gunType ({gunType}) doesn't match gunStats.gunType ({gun.gunType}). Using gunStats.gunType.");
+            }
+
+            Store.Instance.UnlockGun(gun != null ? gun.gunType : gunType);
+
 
             StartCoroutine(DelayedDestroy());
         }
