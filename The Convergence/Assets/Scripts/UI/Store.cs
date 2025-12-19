@@ -333,11 +333,11 @@ public class Store : MonoBehaviour, ISaveable
 
 
         // Apply upgrade directly to gun stats
-        Debug.Log($"[UPGRADE] item={item.itemName} gun={gun.name} id={gun.GetInstanceID()} stat={item.upgradeStat} amount={amount} BEFORE dmg={gun.shootDamage} rate={gun.shootRate} dist={gun.shootDist} ammo={gun.ammoMax}");
+        //Debug.Log($"[UPGRADE] item={item.itemName} gun={gun.name} id={gun.GetInstanceID()} stat={item.upgradeStat} amount={amount} BEFORE dmg={gun.shootDamage} rate={gun.shootRate} dist={gun.shootDist} ammo={gun.ammoMax}");
 
         gun.ApplyUpgrade(item.upgradeStat, amount);
 
-        Debug.Log($"[UPGRADE] AFTER dmg={gun.shootDamage} rate={gun.shootRate} dist={gun.shootDist} ammo={gun.ammoMax}");
+        //Debug.Log($"[UPGRADE] AFTER dmg={gun.shootDamage} rate={gun.shootRate} dist={gun.shootDist} ammo={gun.ammoMax}");
 
         // If the upgraded gun is currently equipped, rebuild the clone so gameplay updates immediately
         if (gamemanager.instance != null && gamemanager.instance.playerScript != null)

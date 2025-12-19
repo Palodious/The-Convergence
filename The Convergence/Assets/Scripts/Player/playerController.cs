@@ -475,7 +475,7 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
         if (activeGunStats == null || isReloading || isDead) return;
         if (gunModel == null) return;
 
-        Debug.Log($"[SHOT] gun={activeGunStats.name} id={activeGunStats.GetInstanceID()} dmg={activeGunStats.shootDamage} rate={activeGunStats.shootRate} dist={activeGunStats.shootDist} ammoMax={activeGunStats.ammoMax}");
+        //Debug.Log($"[SHOT] gun={activeGunStats.name} id={activeGunStats.GetInstanceID()} dmg={activeGunStats.shootDamage} rate={activeGunStats.shootRate} dist={activeGunStats.shootDist} ammoMax={activeGunStats.ammoMax}");
 
         if (fireCooldown < activeGunStats.shootRate) return;
         fireCooldown = 0;
