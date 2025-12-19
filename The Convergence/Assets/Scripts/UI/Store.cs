@@ -2,58 +2,10 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-/*public enum GunType
-{
-    SMG,
-    Rifle,
-    AR,
-    None,
-}*/
-
-/*public enum UpgradeStat
-{
-    Damage,
-    Rate,
-    Distance,
-    Ammo,
-    MaxHP,
-    Heal,
-}*/
-
-/*public enum ItemType
-{
-    Upgrade,
-    Consumable,
-}*/
-
 [System.Serializable]
-public class StoreItem
+public class UpgradeLevelEntry // This class stores player's progress for multi-level upgrades
 {
-    public int id;
-    public string itemName;
-    public int cost;
-    public ItemType type; // Upgrade, Consumable
-
-    [Header("Upgrade Target (Upgrades Only)")]
-    public GunType gunType = GunType.None;
-    public UpgradeStat upgradeStat;
-
-    [Header("Upgrade Leveling (Upgrades Only)")]
-    public int maxLevel = 1;
-    public int baseCost = 0;
-    public int costPerLevel = 0;
-
-    public float baseAmount = 0f;
-    public float amountPerLevel = 0f;
-
-    [Header("Consumable (Consumables Only)")]
-    public int quantity = 1;
-}
-
-[System.Serializable]
-public class UpgradeLevelEntry 
-{
-    public int id;
+    public int id; // Unique ID of StoreItem of upgrade
     public int level;
 }
 
@@ -63,21 +15,21 @@ public class PlayerState
     // CONSUMABLES
     public int potionCount = 0;
 
-    // Which weapon types the player has unlocked/picked up.
+    // Which weapon types the player has unlocked/picked up. Stores the enum int values
     public List<int> ownedGuns = new List<int>();
     public List<UpgradeLevelEntry> upgradeLevels = new List<UpgradeLevelEntry>();
 }
 
 public class Store : MonoBehaviour, ISaveable
 {
-    public static Store Instance;
+    public static Store Instance { get; private set; }
 
     [Header("Player State (Runtime)")]
     public PlayerState playerState = new PlayerState();
 
     [Header("Store Data")]
-    public List<StoreItem> upgradeItems = new List<StoreItem>();
-    public List<StoreItem> consumableItems = new List<StoreItem>();
+    [Tooltip("Drag all your StoreItem assets here that should be available in the store.")]
+    public List<StoreItem> allStoreItems = new List<StoreItem>();
 
     private readonly List<StoreButtonUI> registeredButtons = new();
 
@@ -99,24 +51,27 @@ public class Store : MonoBehaviour, ISaveable
 
     private void Awake()
     {
-        if (Instance == null)
+        if (Instance != null && Instance != this)
         {
-            Instance = this;
-
-            if (playerState == null)
-                playerState = new PlayerState();
-
-            InitializeStoreData();
+            Destroy(gameObject); // Ensure only one instance of Store exists
+            return;
         }
-        else
-        {
-            Destroy(gameObject);
-        }
+        Instance = this;
+
+        DontDestroyOnLoad(gameObject); // Keep the Store manager alive across scenes
+       
+        if (playerState == null)
+            playerState = new PlayerState();
+
+        // Initialize starting guns only if playerState.ownedGuns is empty (new game)
+        EnsureStartingOwnedGuns();
+
+        // No more InitializeStoreData() call here, items are loaded from 'allStoreItems' list.
     }
 
     public void RegisterButton(StoreButtonUI button)
     {
-        if (!registeredButtons.Contains(button))
+        if (button != null && !registeredButtons.Contains(button))
             registeredButtons.Add(button);
     }
 
@@ -134,13 +89,9 @@ public class Store : MonoBehaviour, ISaveable
 
     public StoreItem FindItemById(int id)
     {
-        for (int i = 0; i < upgradeItems.Count; i++)
-            if (upgradeItems[i].id == id)
-                return upgradeItems[i];
-
-        for (int i = 0; i < consumableItems.Count; i++)
-            if (consumableItems[i].id == id)
-                return consumableItems[i];
+        for (int i = 0; i < allStoreItems.Count; i++) // Iterate through the list of StoreItemSO assets
+            if (allStoreItems[i].id == id)
+                return allStoreItems[i];
 
         return null;
     }
@@ -249,7 +200,7 @@ public class Store : MonoBehaviour, ISaveable
         if (item == null) return int.MaxValue;
 
         if (item.type == ItemType.Consumable)
-            return Mathf.Max(0, item.cost);
+            return Mathf.Max(0, item.baseCost);
 
         int lvl = GetUpgradeLevel(item.id);
         int cost = item.baseCost + (item.costPerLevel * lvl);
@@ -258,14 +209,11 @@ public class Store : MonoBehaviour, ISaveable
 
     public float GetEffectiveAmount(StoreItem item)
     {
-        if (item == null) return 0f;
+        if (item == null || item.type != ItemType.Upgrade) return 0f;
 
-        if (item.type != ItemType.Upgrade)
-            return 0f;
-
-        int lvl = GetUpgradeLevel(item.id);
-        float amt = item.baseAmount + (item.amountPerLevel * lvl);
-        return amt;
+        int currentLevel = GetUpgradeLevel(item.id);
+        float amount = item.baseAmount + (item.amountPerLevel * currentLevel);
+        return amount;
     }
 
     public bool CanBuyItem(StoreItem item, out string reason)
@@ -316,7 +264,8 @@ public class Store : MonoBehaviour, ISaveable
         StoreItem item = FindItemById(itemId);
         if (item == null) return false;
 
-        if (!CanBuyItem(item, out _)) return false;
+        if (!CanBuyItem(item, out string reason))
+        { /* Debug.Log($"Store.BuyItem: Cannot buy {item.itemName}. Reason: {reason}");*/ return false; }
 
         int cost = GetEffectiveCost(item);
 
@@ -334,7 +283,7 @@ public class Store : MonoBehaviour, ISaveable
         }
         else
         {
-            playerState.potionCount++;
+            playerState.potionCount += item.quantity;
         }
 
         RefreshAllButtonDisplays();
@@ -373,24 +322,7 @@ public class Store : MonoBehaviour, ISaveable
         }
 
         // Apply upgrade directly to gun stats
-        switch (item.upgradeStat)
-        {
-            case UpgradeStat.Damage:
-                gun.shootDamage += Mathf.RoundToInt(amount);
-                break;
-
-            case UpgradeStat.Rate:
-                gun.shootRate = Mathf.Max(0.05f, gun.shootRate - amount);
-                break;
-
-            case UpgradeStat.Distance:
-                gun.shootDist += Mathf.RoundToInt(amount);
-                break;
-
-            case UpgradeStat.Ammo:
-                gun.ammoMax += Mathf.RoundToInt(amount);
-                break;
-        }
+        gun.ApplyUpgrade(item.upgradeStat, amount); 
     }
 
     public void SetStoreOpen()
@@ -408,250 +340,13 @@ public class Store : MonoBehaviour, ISaveable
 
         if (gamemanager.instance != null)
             gamemanager.instance.stateUnpause();
-            Cursor.visible = false;
-            Cursor.lockState = CursorLockMode.Locked;
+   
     }
 
 
     // Store Data Init
-    private void InitializeStoreData()
-    {
-
-        upgradeItems.Clear();
-        consumableItems.Clear();
-
-        // ---- SMG Upgrades ----
-        upgradeItems.Add(new StoreItem
-        {
-            id = 101,
-            itemName = "SMG Ammo Upgrade",
-            type = ItemType.Upgrade,
-            gunType = GunType.SMG,
-            upgradeStat = UpgradeStat.Ammo,
-
-            maxLevel = 4,
-            baseCost = 5,
-            costPerLevel = 5,
-            baseAmount = 5,
-            amountPerLevel = 0
-        });
-
-        upgradeItems.Add(new StoreItem
-        {
-            id = 102,
-            itemName = "SMG Damage Upgrade",
-            type = ItemType.Upgrade,
-            gunType = GunType.SMG,
-            upgradeStat = UpgradeStat.Damage,
-
-            maxLevel = 4,
-            baseCost = 10,
-            costPerLevel = 5,
-            baseAmount = 5,
-            amountPerLevel = 0
-        });
-
-        upgradeItems.Add(new StoreItem
-        {
-            id = 103,
-            itemName = "SMG Fire Rate Upgrade",
-            type = ItemType.Upgrade,
-            gunType = GunType.SMG,
-            upgradeStat = UpgradeStat.Rate,
-
-            maxLevel = 4,
-            baseCost = 15,
-            costPerLevel = 5,
-            baseAmount = 0.1f,
-            amountPerLevel = 0f
-        });
-
-        upgradeItems.Add(new StoreItem
-        {
-            id = 104,
-            itemName = "SMG Distance Upgrade",
-            type = ItemType.Upgrade,
-            gunType = GunType.SMG,
-            upgradeStat = UpgradeStat.Distance,
-
-            maxLevel = 4,
-            baseCost = 20,
-            costPerLevel = 5,
-            baseAmount = 5,
-            amountPerLevel = 0f
-        });
-
-        // ---- Rifle Upgrades ----
-        upgradeItems.Add(new StoreItem
-        {
-            id = 111,
-            itemName = "Rifle Ammo Upgrade",
-            type = ItemType.Upgrade,
-            gunType = GunType.Rifle,
-            upgradeStat = UpgradeStat.Ammo,
-
-            maxLevel = 4,
-            baseCost = 5,
-            costPerLevel = 5,
-            baseAmount = 5,
-            amountPerLevel = 0f
-        });
-
-        upgradeItems.Add(new StoreItem
-        {
-            id = 112,
-            itemName = "Rifle Damage Upgrade",
-            type = ItemType.Upgrade,
-            gunType = GunType.Rifle,
-            upgradeStat = UpgradeStat.Damage,
-
-            maxLevel = 4,
-            baseCost = 10,
-            costPerLevel = 5,
-            baseAmount = 5,
-            amountPerLevel = 0f
-        });
-
-        upgradeItems.Add(new StoreItem
-        {
-            id = 113,
-            itemName = "Rifle Fire Rate Upgrade",
-            type = ItemType.Upgrade,
-            gunType = GunType.Rifle,
-            upgradeStat = UpgradeStat.Rate,
-
-            maxLevel = 4,
-            baseCost = 15,
-            costPerLevel = 5,
-            baseAmount = 0.1f,
-            amountPerLevel = 0f
-        });
-
-        upgradeItems.Add(new StoreItem
-        {
-            id = 114,
-            itemName = "Rifle Distance Upgrade",
-            type = ItemType.Upgrade,
-            gunType = GunType.Rifle,
-            upgradeStat = UpgradeStat.Distance,
-
-            maxLevel = 4,
-            baseCost = 20,
-            costPerLevel = 5,
-            baseAmount = 5,
-            amountPerLevel = 0f
-        });
-
-        // ---- AR Upgrades ----
-        upgradeItems.Add(new StoreItem
-        {
-            id = 121,
-            itemName = "AR Ammo Upgrade",
-            type = ItemType.Upgrade,
-            gunType = GunType.AR,
-            upgradeStat = UpgradeStat.Ammo,
-
-            maxLevel = 4,
-            baseCost = 5,
-            costPerLevel = 5,
-            baseAmount = 5,
-            amountPerLevel = 0f
-        });
-
-        upgradeItems.Add(new StoreItem
-        {
-            id = 122,
-            itemName = "AR Damage Upgrade",
-            type = ItemType.Upgrade,
-            gunType = GunType.AR,
-            upgradeStat = UpgradeStat.Damage,
-
-            maxLevel = 4,
-            baseCost = 10,
-            costPerLevel = 5,
-            baseAmount = 5,
-            amountPerLevel = 0f
-        });
-
-        upgradeItems.Add(new StoreItem
-        {
-            id = 123,
-            itemName = "AR Fire Rate Upgrade",
-            type = ItemType.Upgrade,
-            gunType = GunType.AR,
-            upgradeStat = UpgradeStat.Rate,
-
-            maxLevel = 4,
-            baseCost = 15,
-            costPerLevel = 5,
-            baseAmount = 0.1f,
-            amountPerLevel = 0f
-        });
-
-        upgradeItems.Add(new StoreItem
-        {
-            id = 124,
-            itemName = "AR Distance Upgrade",
-            type = ItemType.Upgrade,
-            gunType = GunType.AR,
-            upgradeStat = UpgradeStat.Distance,
-
-            maxLevel = 4,
-            baseCost = 20,
-            costPerLevel = 5,
-            baseAmount = 5,
-            amountPerLevel = 0f
-        });
-
-        // ---- Max HP Upgrade, single button, multi-level ----
-        upgradeItems.Add(new StoreItem
-        {
-            id = 201,
-            itemName = "Max HP Upgrade",
-            type = ItemType.Upgrade,
-            gunType = GunType.None,
-            upgradeStat = UpgradeStat.MaxHP,
-
-            maxLevel = 4,
-            baseCost = 10,
-            costPerLevel = 10,
-            baseAmount = 25,
-            amountPerLevel = 25
-        });
-
-        // ---- Consumables ----
-        consumableItems.Add(new StoreItem
-        {
-            id = 301,
-            itemName = "Health Potion",
-            type = ItemType.Consumable,
-            cost = 10
-        });
-
-        consumableItems.Add(new StoreItem
-        {
-            id = 302,
-            itemName = "Health Potion+",
-            type = ItemType.Consumable,
-            cost = 20
-        });
-
-        consumableItems.Add(new StoreItem
-        {
-            id = 303,
-            itemName = "Health Potion++",
-            type = ItemType.Consumable,
-            cost = 30
-        });
-
-        consumableItems.Add(new StoreItem
-        {
-            id = 304,
-            itemName = "Health Potion MAX",
-            type = ItemType.Consumable,
-            cost = 40
-        });
-    }
+  
+     
 
     public void ResetStoreProgress()
     {
@@ -660,10 +355,10 @@ public class Store : MonoBehaviour, ISaveable
 
         playerState.potionCount = 0;
 
-        if (playerState.upgradeLevels != null)
-            playerState.upgradeLevels.Clear();
-        else
-            playerState.upgradeLevels = new List<UpgradeLevelEntry>();
+        playerState.upgradeLevels.Clear();
+        playerState.ownedGuns.Clear();
+ 
+        EnsureStartingOwnedGuns();
 
         RefreshAllButtonDisplays();
     }
@@ -678,7 +373,10 @@ public class Store : MonoBehaviour, ISaveable
             potionCount = playerState != null ? playerState.potionCount : 0,
             upgradeLevels = (playerState != null && playerState.upgradeLevels != null)
                 ? new List<UpgradeLevelEntry>(playerState.upgradeLevels)
-                : new List<UpgradeLevelEntry>()
+                : new List<UpgradeLevelEntry>(),
+            ownedGuns = (playerState != null && playerState.ownedGuns != null) // Also save owned guns
+                ? new List<int>(playerState.ownedGuns)
+                : new List<int>()
         };
     }
 
@@ -695,6 +393,7 @@ public class Store : MonoBehaviour, ISaveable
 
         playerState.potionCount = s.potionCount;
         playerState.upgradeLevels = (s.upgradeLevels != null) ? new List<UpgradeLevelEntry>(s.upgradeLevels) : new List<UpgradeLevelEntry>();
+        playerState.ownedGuns = (s.ownedGuns != null) ? new List<int>(s.ownedGuns) : new List<int>(); // Restore owned guns
 
         RefreshAllButtonDisplays();
     }

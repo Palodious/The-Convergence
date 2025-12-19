@@ -1,7 +1,7 @@
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "New Store Item", menuName = "Store/Store Item")]
-public class StoreItemSO : ScriptableObject
+public class StoreItem : ScriptableObject
 {
     [Header("***Identity***")]
     public int id;     //Must be unique; used for save/lookup
