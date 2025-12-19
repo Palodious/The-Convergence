@@ -46,7 +46,7 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
     [Header("**** Melee Settings ****")]
     [SerializeField] Transform meleePos;
     [SerializeField] GameObject meleeDamage;
-    [Range(0.1f, 10f)][SerializeField] float meleeRange;
+    [Range(0.1f, 30f)][SerializeField] float meleeRange;
     [Range(0.1f, 10f)][SerializeField] float attackRate;
     [Range(1, 50)][SerializeField] int meleeDamageAmount;
 

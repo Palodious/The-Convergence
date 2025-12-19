@@ -48,7 +48,6 @@ public class gunStats : ScriptableObject
                 break;
 
             default:
-              Debug.LogWarning($"gunStats.ApplyUpgrade: Unsupported upgrade type {upgradeType}");
                 break;
     }
 }
@@ -58,10 +57,6 @@ public class gunStats : ScriptableObject
         if (System.Enum.TryParse(upgradeType, true, out UpgradeStat parsed))
         {
             ApplyUpgrade(parsed, amount); // Call the enum version
-        }
-        else
-        {
-            Debug.LogWarning($"gunStats.ApplyUpgrade: Unknown upgrade string '{upgradeType}'");
         }
     }
 }
