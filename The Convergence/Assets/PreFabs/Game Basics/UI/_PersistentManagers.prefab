@@ -397,6 +397,51 @@ MonoBehaviour:
     quantity: 0
   storeUIPanel: {fileID: 0}
   startingOwnedGuns: 
+--- !u!1 &194028061411433511
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5629632785861158128}
+  - component: {fileID: 1803461893155638250}
+  m_Layer: 0
+  m_Name: GameSettingsBootstrap
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5629632785861158128
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 194028061411433511}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 6695148313504361521}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1803461893155638250
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 194028061411433511}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3189469d7e4604d4db44f7bf54eabb26, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GameSettingsBootstrap
+  masterMixer: {fileID: 24100000, guid: 00cb03a6ea84338449da26b4afb0b02a, type: 2}
 --- !u!1 &2326327691633345418
 GameObject:
   m_ObjectHideFlags: 0
@@ -610,6 +655,7 @@ Transform:
   - {fileID: 5753896565666762832}
   - {fileID: 9148633409496718986}
   - {fileID: 2739135232043665945}
+  - {fileID: 5629632785861158128}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &6786074954810237572
@@ -796,9 +842,9 @@ MonoBehaviour:
   battleClip: {fileID: 0}
   baseVolume: 0.5
   battleMaxVolume: 0.5
-  fadeInTime: 0.5
-  fadeOutTime: 2
-  combatHoldTime: 2
+  fadeInTime: 1
+  fadeOutTime: 3
+  combatHoldTime: 5
 --- !u!82 &6614843653552064124
 AudioSource:
   m_ObjectHideFlags: 0

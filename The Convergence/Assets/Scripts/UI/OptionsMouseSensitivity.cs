@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -13,8 +14,12 @@ public class OptionsMouseSensitivity : MonoBehaviour
     private const string PREF_KEY = "mouse_sensitivity";
     private const float DEFAULT_SENSITIVITY = 1.0f;
 
+    [Header("UI SFX")]
     [SerializeField] private float moveSoundCooldown = 0.08f;
     private float lastMoveSoundTime = -999f;
+
+    public static float CurrentSensitivity { get; private set; } = DEFAULT_SENSITIVITY;
+    public static event Action<float> OnSensitivityUpdated;
 
     void OnEnable()
     {
@@ -33,27 +38,38 @@ public class OptionsMouseSensitivity : MonoBehaviour
         saved = Mathf.Clamp(saved, minSensitivity, maxSensitivity);
 
         // Apply to slider without firing the event
-        sensitivitySlider.onValueChanged.RemoveListener(OnSensitivityChanged);
+        sensitivitySlider.onValueChanged.RemoveListener(HandleSliderChanged);
         sensitivitySlider.value = saved;
-        sensitivitySlider.onValueChanged.AddListener(OnSensitivityChanged);
+        sensitivitySlider.onValueChanged.AddListener(HandleSliderChanged);
+
+        ApplySensitivity(saved, save: false, playMoveSound: false);
     }
 
     void OnDisable()
     {
         if (sensitivitySlider != null)
-        {
-            sensitivitySlider.onValueChanged.RemoveListener(OnSensitivityChanged);
-        }
+            sensitivitySlider.onValueChanged.RemoveListener(HandleSliderChanged);
     }
 
-    public void OnSensitivityChanged(float value)
+    private void HandleSliderChanged(float value)
     {
-        // Save it
-        PlayerPrefs.SetFloat(PREF_KEY, value);
-        PlayerPrefs.Save();
+        ApplySensitivity(value, save: true, playMoveSound: true);
+    }
 
-        // UI tick sound
-        if (Time.unscaledTime - lastMoveSoundTime >= moveSoundCooldown)
+    private void ApplySensitivity(float value, bool save, bool playMoveSound)
+    {
+        value = Mathf.Clamp(value, minSensitivity, maxSensitivity);
+
+        CurrentSensitivity = value;
+        OnSensitivityUpdated?.Invoke(value);
+
+        if (save)
+        {
+            PlayerPrefs.SetFloat(PREF_KEY, value);
+            PlayerPrefs.Save();
+        }
+
+        if (playMoveSound && Time.unscaledTime - lastMoveSoundTime >= moveSoundCooldown)
         {
             lastMoveSoundTime = Time.unscaledTime;
 
@@ -62,17 +78,11 @@ public class OptionsMouseSensitivity : MonoBehaviour
         }
     }
 
-    // Apply to set
-    public void ApplySettingsNow()
+    public static float LoadSavedSensitivity()
     {
-        if (sensitivitySlider == null)
-            return;
-
-        float value = sensitivitySlider.value;
-        PlayerPrefs.SetFloat(PREF_KEY, value);
-        PlayerPrefs.Save();
-
-        if (SFXManager.Instance != null)
-            SFXManager.Instance.PlaySound("UI_Apply");
+        float saved = PlayerPrefs.GetFloat(PREF_KEY, DEFAULT_SENSITIVITY);
+        saved = Mathf.Clamp(saved, 0.01f, 100f);
+        CurrentSensitivity = saved;
+        return saved;
     }
 }
