@@ -1,187 +1,164 @@
 using UnityEngine;
 using System.Collections;
-using UnityEngine.UI;
-using System.Linq;
 
 public class PlayerAbilities : MonoBehaviour
 {
-    [SerializeField] playerController controller;
-    [SerializeField] CharacterController charController;
+    [Header("References")]
+    [SerializeField] private playerController controller;
+    [SerializeField] private CharacterController charController;
 
-    // Rift Pulse
-    [Range(10, 50)][SerializeField] int pulseDamage;
-    [Range(5f, 15f)][SerializeField] float pulseRange;
-    [Range(2f, 15f)][SerializeField] float pulseCooldown;
-    [Range(5f, 25f)][SerializeField] float pulseForce;
+    [Header("Rift Pulse Settings")]
+    [Range(10, 50)][SerializeField] private int pulseDamage = 20;
+    [Range(5f, 15f)][SerializeField] private float pulseRange = 10f;
+    [Range(2f, 15f)][SerializeField] private float pulseCooldown = 5f;
+    [Range(5f, 25f)][SerializeField] private float pulseForce = 10f;
 
+    [Header("Rift Jump Settings")]
+    [Range(10f, 25f)][SerializeField] private float jumpDistance = 15f;
+    [SerializeField] private float forcedJumpLock = 5f; // hard lock for 5 seconds
 
-    // Rift Jump
-    [Range(10f, 25f)][SerializeField] float jumpDistance;
-    [Range(0.01f, 15f)][SerializeField] float jumpCooldown;
+    [Header("Enemy Settings")]
+    [SerializeField] private LayerMask enemyMask;
 
-    // Layer masks
-    [SerializeField] LayerMask enemyMask;
-    [SerializeField] LayerMask environmentMask;
+    // Cooldowns
+    private float pulseTimer;
 
-    // Timers
-    float pulseTimer;
-    float jumpTimer;
+    // Jump lock
+    private bool jumpLocked = false;
 
     // Ability states
-    public bool isPulsing;
-    public bool isJumping;
-    GameObject pulseEffect;
+    public bool isPulsing { get; private set; }
+    public bool isJumping { get; private set; }
 
     void Start()
     {
         if (controller == null)
             controller = GetComponent<playerController>();
+
         if (charController == null)
             charController = GetComponent<CharacterController>();
 
         pulseTimer = pulseCooldown;
-        jumpTimer = jumpCooldown;
     }
 
     void Update()
     {
-        //prevention of using abilities in popup menu
-        if (gamemanager.instance != null &&
-       (gamemanager.instance.isPaused || directionalPopup.PopupIsOpen))
+        // Block abilities if game is paused or popup is open
+        if (gamemanager.instance != null && (gamemanager.instance.isPaused || directionalPopup.PopupIsOpen))
             return;
 
+        // Update pulse timer
+        if (pulseTimer < pulseCooldown)
+            pulseTimer += Time.deltaTime;
 
-        // Update timers
-        pulseTimer += Time.deltaTime;
-        jumpTimer += Time.deltaTime;
-
-        // Input handling
+        // Rift Pulse input
         if (Input.GetKeyDown(KeyCode.Q) && pulseTimer >= pulseCooldown)
             StartCoroutine(RiftPulse());
 
-        if (Input.GetKeyDown(KeyCode.F) && jumpTimer >= jumpCooldown)
+        // Rift Jump input (only if not locked)
+        if (Input.GetKeyDown(KeyCode.F) && !jumpLocked)
+        {
             StartCoroutine(RiftJump());
+        }
     }
-
 
     IEnumerator RiftPulse()
     {
+        pulseTimer = 0f;
+        isPulsing = true;
+
         Collider[] hits = Physics.OverlapSphere(transform.position, pulseRange, enemyMask);
-        Debug.Log($"Pulse fired. Hits: {hits.Length}");
 
         foreach (Collider hit in hits)
         {
             GameObject hitGO = hit.gameObject;
-            Debug.Log($"Pulse hit: {hitGO.name} (layer: {LayerMask.LayerToName(hitGO.layer)})");
 
-            // Robust IDamage lookup
+            // Deal damage
             IDamage dmg = hitGO.GetComponent<IDamage>() ?? hitGO.GetComponentInParent<IDamage>();
-            if (dmg == null)
-            {
-                foreach (var mb in hitGO.GetComponents<MonoBehaviour>())
-                {
-                    if (mb is IDamage) { dmg = (IDamage)mb; break; }
-                }
-            }
-
             int amount = Mathf.RoundToInt(pulseDamage * (controller != null ? controller.damageBoost : 1f));
-            Debug.Log($"Computed damage: {amount}");
-
             if (dmg != null)
             {
-                Debug.Log($"Applying {amount} damage to {hitGO.name}");
                 dmg.takeDamage(amount);
                 EffectsManager.Instance.Create("Lightning", hit.transform.position);
             }
-            else
-            {
-                Debug.Log($"No IDamage on {hitGO.name}. Components: {string.Join(", ", hitGO.GetComponents<Component>().Select(c => c.GetType().Name))}");
-            }
 
-            // Knockback (use rb.velocity not linearVelocity)
+            // Knockback
             Rigidbody rb = hit.attachedRigidbody;
             if (rb != null)
             {
                 Vector3 dir = (hit.transform.position - transform.position).normalized;
-                float desiredSpeed = pulseForce; // use your pulseForce or a tuned value
-                Vector3 vDesired = dir * desiredSpeed;
-                Vector3 deltaV = vDesired - rb.linearVelocity;
-                Vector3 impulse = rb.mass * deltaV;
-                rb.AddForce(impulse, ForceMode.Impulse);
-                Debug.Log($"Applied knockback to {hitGO.name} impulse={impulse}");
+                rb.AddForce(dir * pulseForce, ForceMode.Impulse);
             }
 
-            // Pylon
+            // Pylon hit
             PylonController pylon = hit.GetComponent<PylonController>();
-            if (pylon != null) { pylon.OnHit(); EffectsManager.Instance.Create("PylonDestroy", hit.transform.position); }
+            if (pylon != null)
+            {
+                pylon.OnHit();
+                EffectsManager.Instance.Create("PylonDestroy", hit.transform.position);
+            }
         }
 
-        yield break; 
+        isPulsing = false;
+        yield break;
     }
 
     IEnumerator RiftJump()
     {
-        if (gamemanager.instance != null &&
-            (gamemanager.instance.isPaused || directionalPopup.PopupIsOpen))
+        if (isJumping)
             yield break;
 
-        if (isJumping) yield break;
-
-        jumpTimer = 0;
         isJumping = true;
+        jumpLocked = true; // lock the jump immediately
 
         Vector3 startPos = transform.position;
-        Vector3 direction = transform.forward;
+        Vector3 direction = transform.forward.normalized;
         float distance = jumpDistance;
 
-        float radius = charController != null ? charController.radius : 0.5f;
-        float height = charController != null ? charController.height : 2f;
+        float radius = charController.radius;
+        float height = charController.height;
+        Vector3 center = charController.center;
 
-        Vector3 point1 = startPos + Vector3.up * (height / 2 - radius);
-        Vector3 point2 = startPos + Vector3.up * radius;
+        Vector3 bottom = startPos + center + Vector3.up * radius;
+        Vector3 top = startPos + center + Vector3.up * (height - radius);
 
-        // Use CapsuleCast instead of Raycast to prevent clipping
-        if (Physics.CapsuleCast(point1, point2, radius, direction, out RaycastHit hit, distance, environmentMask))
+        // CapsuleCast to stop at obstacles
+        if (Physics.CapsuleCast(bottom, top, radius, direction, out RaycastHit hit, distance,
+            Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore))
         {
-            distance = Mathf.Max(0f, hit.distance - 0.1f); // stop just before wall
-            // Stop just before the obstacle, reduce distance
-            distance = hit.distance - 0.2f; // small offset so we don�t get stuck in the wall
+            distance = Mathf.Max(0f, hit.distance - 0.15f); // safe buffer
+        }
+
+        if (distance <= 0.05f)
+        {
+            isJumping = false;
+            StartCoroutine(JumpUnlockTimer());
+            yield break;
         }
 
         Vector3 targetPos = startPos + direction * distance;
 
+        // Pre-teleport effect
         EffectsManager.Instance.Create("JumpPrep", startPos);
 
-        if (charController != null)
-        {
-            if (charController.enabled)
-                charController.enabled = false;
+        // Teleport safely
+        charController.enabled = false;
+        transform.position = targetPos;
+        charController.enabled = true;
 
-            transform.position = targetPos;
-
-            charController.enabled = true;
-        }
-        else
-        {
-            transform.position = targetPos;
-        }
-
+        // Post-teleport effect
         EffectsManager.Instance.Create("JumpImpact", targetPos);
 
         isJumping = false;
+
+        // Start unlock timer
+        StartCoroutine(JumpUnlockTimer());
         yield return null;
     }
 
-    void SetEffectColor(GameObject effect, Color color)
+    IEnumerator JumpUnlockTimer()
     {
-        if (effect == null) return;
-
-        ParticleSystem ps = effect.GetComponent<ParticleSystem>();
-        if (ps != null)
-        {
-            var main = ps.main;
-            main.startColor = color;
-        }
+        yield return new WaitForSeconds(forcedJumpLock);
+        jumpLocked = false;
     }
-    
 }
