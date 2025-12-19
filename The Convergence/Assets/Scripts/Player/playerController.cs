@@ -234,7 +234,7 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
     {
         if (ikController == null) return;
 
-        bool shouldAim = Input.GetButton("Fire1") || isReloading;
+        bool shouldAim = (Input.GetButton("Fire1") && !directionalPopup.PopupIsOpen) || isReloading;
         ikController.SetAiming(shouldAim);
 
         if (activeGunStats != null && gunModel != null)
@@ -284,7 +284,7 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
         }
         else if (isGliding) StopGlide();
 
-        if (Input.GetButton("Fire1"))
+        if (Input.GetButton("Fire1") && !directionalPopup.PopupIsOpen)
         {
             shoot();
         }
