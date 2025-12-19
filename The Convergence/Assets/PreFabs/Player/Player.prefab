@@ -3010,12 +3010,10 @@ MonoBehaviour:
   maxJumps: 1
   gravity: 32
   glideGravity: 5
-  shootDamage: 1
+  shootDamage: 10
   shootDist: 1
-  shootRate: 0.01
-  bulletTrail: {fileID: 0}
   trailDuration: 0.05
-  trailWidth: 0.01
+  trailWidth: 0.028
   trailGradient:
     serializedVersion: 2
     key0: {r: 1, g: 1, b: 1, a: 1}
@@ -3046,12 +3044,10 @@ MonoBehaviour:
     m_ColorSpace: -1
     m_NumColorKeys: 2
     m_NumAlphaKeys: 2
-  trailStartOffset: {x: 0, y: 0.05, z: 0.5}
-  useLocalOffset: 1
   gunList: []
   gunModel: {fileID: 8127335233800530135}
   activeGunStats: {fileID: 0}
-  reloadSound: {fileID: 0}
+  reloadSound: {fileID: 8300000, guid: ffecc83d10fbed043a82d9f0c65f3f8f, type: 3}
   reloadSoundVol: 1
   reloadTime: 1.5
   enableNGPlusPlayerHpScaling: 1
@@ -3074,6 +3070,14 @@ MonoBehaviour:
   ammoPickupHistory: []
   ammoTextDisplay: {fileID: 0}
   gunAmmoInventory: []
+  enemyPushForce: 25
+  enemyLayer:
+    serializedVersion: 2
+    m_Bits: 64
+  enemyCheckRadius: 0.8
+  enemyCheckHeight: 0.5
+  enemyCheckDownwardDistance: 1.5
+  maxEnemyStandHeight: 0.2
   currentMaxHP: 0
   damageBoost: 1
 --- !u!114 &747689891001616926
@@ -3088,21 +3092,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bf169a0e27b04814199389ad80307e1d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerAbilities
-  controller: {fileID: 0}
-  charController: {fileID: 0}
-  pulseDamage: 10
-  pulseRange: 5
-  pulseCooldown: 2
+  controller: {fileID: 8236199846886816912}
+  charController: {fileID: 2549095157605412425}
+  pulseDamage: 25
+  pulseRange: 10
+  pulseCooldown: 3.5
+  pulseForce: 20
   jumpDistance: 10
-  jumpCooldown: 2
+  forcedJumpLock: 5
   enemyMask:
     serializedVersion: 2
-    m_Bits: 0
-  environmentMask:
-    serializedVersion: 2
-    m_Bits: 0
-  isSurging: 0
-  isJumping: 0
+    m_Bits: 64
 --- !u!95 &3693304940127708936
 Animator:
   serializedVersion: 7
@@ -3932,7 +3932,7 @@ Camera:
   m_Enabled: 1
   serializedVersion: 2
   m_ClearFlags: 2
-  m_BackGroundColor: {r: 0.19188322, g: 0.25850934, b: 0.36320752, a: 0}
+  m_BackGroundColor: {r: 0.13806069, g: 0.2396291, b: 0.4009434, a: 0}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
   m_FOVAxisMode: 0
