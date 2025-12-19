@@ -2162,7 +2162,7 @@ RectTransform:
   m_Father: {fileID: 2835148362071291847}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0.6, y: 1}
+  m_AnchorMax: {x: 0.4, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 10, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -7294,8 +7294,8 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 3735727200933089006}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.6, y: 0}
-  m_AnchorMax: {x: 0.6, y: 1}
+  m_AnchorMin: {x: 0.4, y: 0}
+  m_AnchorMax: {x: 0.4, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 20, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -8299,19 +8299,19 @@ MonoBehaviour:
   m_MinValue: 0
   m_MaxValue: 1
   m_WholeNumbers: 0
-  m_Value: 0.6
+  m_Value: 0.4
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 4841722025297298036}
+      - m_Target: {fileID: 2666445355910417755}
         m_TargetAssemblyTypeName: OptionsAudio, Assembly-CSharp
-        m_MethodName: OnMasterSliderChanged
+        m_MethodName: OnMusicChanged
         m_Mode: 4
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
-          m_FloatArgument: 0.6
+          m_FloatArgument: 0.4
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
@@ -13619,30 +13619,6 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-      - m_Target: {fileID: 2666445355910417755}
-        m_TargetAssemblyTypeName: OptionsAudio, Assembly-CSharp
-        m_MethodName: ApplySettingsNow
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-      - m_Target: {fileID: 7589596661983705868}
-        m_TargetAssemblyTypeName: OptionsMouseSensitivity, Assembly-CSharp
-        m_MethodName: ApplySettingsNow
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
 --- !u!1 &3920858876021984719
 GameObject:
   m_ObjectHideFlags: 0
@@ -15217,7 +15193,6 @@ GameObject:
   - component: {fileID: 1953205567131353832}
   - component: {fileID: 432005005309062956}
   - component: {fileID: 3461733898015334664}
-  - component: {fileID: 5872284746428388497}
   - component: {fileID: 6792810321837849502}
   m_Layer: 5
   m_Name: Mouse Sensitivity
@@ -15269,22 +15244,6 @@ MonoBehaviour:
   hoverSound: UI_Hover
   clickSound: UI_Click
   backSound: UI_Back
---- !u!114 &5872284746428388497
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4281686973226301215}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cd064701d094ba24498ce4d1f3bdfffc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::OptionsAudio
-  musicSlider: {fileID: 0}
-  sfxSlider: {fileID: 0}
-  masterMixer: {fileID: 24100000, guid: 00cb03a6ea84338449da26b4afb0b02a, type: 2}
-  moveSoundCooldown: 0.08
 --- !u!114 &6792810321837849502
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -15550,7 +15509,6 @@ GameObject:
   - component: {fileID: 600370473865128107}
   - component: {fileID: 7671349363563134177}
   - component: {fileID: 3237049815577731822}
-  - component: {fileID: 4841722025297298036}
   - component: {fileID: 5032858018356580788}
   m_Layer: 5
   m_Name: Music Volume
@@ -15602,22 +15560,6 @@ MonoBehaviour:
   hoverSound: UI_Hover
   clickSound: UI_Click
   backSound: UI_Back
---- !u!114 &4841722025297298036
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4355347595181208777}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cd064701d094ba24498ce4d1f3bdfffc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::OptionsAudio
-  musicSlider: {fileID: 0}
-  sfxSlider: {fileID: 0}
-  masterMixer: {fileID: 24100000, guid: 3bfb569edf4b118458a286e5f70156cd, type: 2}
-  moveSoundCooldown: 0.08
 --- !u!114 &5032858018356580788
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -19196,7 +19138,6 @@ GameObject:
   - component: {fileID: 722964749806844290}
   - component: {fileID: 1344274870988575367}
   - component: {fileID: 4352566586340692888}
-  - component: {fileID: 8399023566573281619}
   - component: {fileID: 1638661343600553491}
   m_Layer: 5
   m_Name: SFX Volume
@@ -19248,22 +19189,6 @@ MonoBehaviour:
   hoverSound: UI_Hover
   clickSound: UI_Click
   backSound: UI_Back
---- !u!114 &8399023566573281619
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5510967223843336284}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cd064701d094ba24498ce4d1f3bdfffc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::OptionsAudio
-  musicSlider: {fileID: 0}
-  sfxSlider: {fileID: 0}
-  masterMixer: {fileID: 24100000, guid: 00cb03a6ea84338449da26b4afb0b02a, type: 2}
-  moveSoundCooldown: 0.08
 --- !u!114 &1638661343600553491
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -19533,7 +19458,6 @@ GameObject:
   - component: {fileID: 2666445355910417755}
   - component: {fileID: 5048445908680621374}
   - component: {fileID: 8353374092740674377}
-  - component: {fileID: 720842439365818706}
   m_Layer: 5
   m_Name: optionsPanel
   m_TagString: UI
@@ -19623,8 +19547,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cd064701d094ba24498ce4d1f3bdfffc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::OptionsAudio
-  musicSlider: {fileID: 0}
-  sfxSlider: {fileID: 0}
+  musicSlider: {fileID: 404325271474428035}
+  sfxSlider: {fileID: 472512545205129832}
   masterMixer: {fileID: 24100000, guid: 00cb03a6ea84338449da26b4afb0b02a, type: 2}
   moveSoundCooldown: 0.6
 --- !u!222 &5048445908680621374
@@ -19665,22 +19589,6 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &720842439365818706
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5535232283166892623}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cd064701d094ba24498ce4d1f3bdfffc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::OptionsAudio
-  musicSlider: {fileID: 0}
-  sfxSlider: {fileID: 0}
-  masterMixer: {fileID: 24100000, guid: 3bfb569edf4b118458a286e5f70156cd, type: 2}
-  moveSoundCooldown: 0.08
 --- !u!1 &5537754477502199546
 GameObject:
   m_ObjectHideFlags: 0
@@ -21189,19 +21097,19 @@ MonoBehaviour:
   m_MinValue: 0
   m_MaxValue: 1
   m_WholeNumbers: 0
-  m_Value: 0.6
+  m_Value: 0.4
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 8399023566573281619}
+      - m_Target: {fileID: 2666445355910417755}
         m_TargetAssemblyTypeName: OptionsAudio, Assembly-CSharp
-        m_MethodName: OnMasterSliderChanged
+        m_MethodName: OnSfxChanged
         m_Mode: 4
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
-          m_FloatArgument: 0.6
+          m_FloatArgument: 0.4
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
@@ -22301,9 +22209,9 @@ MonoBehaviour:
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 7589596661983705868}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: OptionsMouseSensitivity, Assembly-CSharp
-        m_MethodName: OnSensitivityChanged
+        m_MethodName: 
         m_Mode: 4
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -22481,8 +22389,8 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 1618763131735049415}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.6, y: 0}
-  m_AnchorMax: {x: 0.6, y: 1}
+  m_AnchorMin: {x: 0.4, y: 0}
+  m_AnchorMax: {x: 0.4, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 20, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -24278,7 +24186,7 @@ RectTransform:
   m_Father: {fileID: 6877745851351215028}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0.6, y: 1}
+  m_AnchorMax: {x: 0.4, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 10, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
