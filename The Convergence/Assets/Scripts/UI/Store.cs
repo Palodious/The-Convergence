@@ -408,6 +408,8 @@ public class Store : MonoBehaviour, ISaveable
 
         if (gamemanager.instance != null)
             gamemanager.instance.stateUnpause();
+            Cursor.visible = false;
+            Cursor.lockState = CursorLockMode.Locked;
     }
 
 
