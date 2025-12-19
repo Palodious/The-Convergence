@@ -63,6 +63,16 @@ public class gamemanager : MonoBehaviour
 
     private void Start()
     {
+        if (SaveManager.PendingLoad)
+        {
+            SaveManager.PendingLoad = false;
+            LoadGame();
+            return;
+        }
+
+        if (SaveManager.IsLoadingFromSave)
+            return;
+
         if (RiftShardManager.Instance != null)
         {
             RiftShardManager.Instance.OnShardAmountChanged += UpdateCoinDisplay;
@@ -72,13 +82,6 @@ public class gamemanager : MonoBehaviour
         else
         {
             //  Debug.LogWarning("RiftShardManager not found in scene. Coin display will not update.");
-        }
-
-        // If we came here via Main Menu's Continue, auto-load the save.
-        if (SaveManager.PendingLoad)
-        {
-            SaveManager.PendingLoad = false;
-            LoadGame();
         }
     }
 
@@ -188,7 +191,7 @@ public class gamemanager : MonoBehaviour
 
         if (SaveManager.Instance != null && player != null && playerScript != null)
         {
-            SaveManager.Instance.Save(player, playerScript.GetHP(), gameGoalCount);
+            SaveManager.Instance.Save(player, gameGoalCount);
         }
 
         // Reset run-only counters.
@@ -243,7 +246,7 @@ public class gamemanager : MonoBehaviour
             return;
         }
 
-        SaveManager.Instance.Save(player, playerScript.GetHP(), gameGoalCount);
+        SaveManager.Instance.Save(player, gameGoalCount);
 
         if (SFXManager.Instance != null)
             SFXManager.Instance.PlaySound("UI_Apply");
@@ -279,26 +282,11 @@ public class gamemanager : MonoBehaviour
             spawnFunc = prefabRegistry.SpawnByKey;
 
         yield return SaveManager.Instance.LoadAndRestore(data, spawnFunc);
-
-        if (data.entities != null && data.entities.Count > 0)
+        if (RiftShardManager.Instance != null)
         {
-            var savedIds = new HashSet<string>(data.entities.Select(e => e.id));
-            var allEnemies = FindObjectsByType<enemyAI>(
-                FindObjectsInactive.Include,
-                FindObjectsSortMode.None
-            );
-
-            foreach (var enemy in allEnemies)
-            {
-                var se = enemy.GetComponent<SaveEntity>();
-                if (se == null) continue;
-
-                if (!savedIds.Contains(se.Id))
-                {
-                    //Debug.Log($"[Load Cleanup] Destroying enemy '{enemy.name}' with id {se.Id} that was not in the save file.");
-                    Destroy(enemy.gameObject);
-                }
-            }
+            RiftShardManager.Instance.OnShardAmountChanged -= UpdateCoinDisplay;
+            RiftShardManager.Instance.OnShardAmountChanged += UpdateCoinDisplay;
+            UpdateCoinDisplay(RiftShardManager.Instance.Amount);
         }
 
         player = GameObject.FindWithTag("Player");
@@ -309,7 +297,6 @@ public class gamemanager : MonoBehaviour
 
         if (playerScript != null)
         {
-            playerScript.SetHP(data.playerHP);
             playerScript.RestoreGunVisual(data.playerGunIndex);
         }
         else
@@ -321,7 +308,6 @@ public class gamemanager : MonoBehaviour
         if (gameGoalCountText != null)
             gameGoalCountText.text = gameGoalCount.ToString("F0");
 
-        SaveManager.IsLoadingFromSave = false;
         stateUnpause();
     }
 

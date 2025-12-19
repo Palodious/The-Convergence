@@ -574,9 +574,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 940126913429668078}
-  - component: {fileID: 8088150622896018779}
-  - component: {fileID: -8073947940549532826}
   - component: {fileID: 1328778819628163611}
+  - component: {fileID: -8073947940549532826}
+  - component: {fileID: 8088150622896018779}
   m_Layer: 0
   m_Name: Gun Pickup - Rifle
   m_TagString: Untagged
@@ -612,6 +612,35 @@ Transform:
   - {fileID: 4037694748096230906}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1328778819628163611
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5805082395274130021}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1360eccb0862d3f4eb2c46f2d7ca93dd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::gunPickup
+  gun: {fileID: 11400000, guid: c147004ed0afc7544a357b2c7dd41b55, type: 2}
+  bonusAmmo: 0
+  gunType: 1
+--- !u!114 &-8073947940549532826
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5805082395274130021}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2595f0efb17706340b65de4d7e322ddc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SaveEntity
+  id: 
+  prefabKey: RailGun2
 --- !u!135 &8088150622896018779
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -633,35 +662,6 @@ SphereCollider:
   serializedVersion: 3
   m_Radius: 2
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &-8073947940549532826
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5805082395274130021}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2595f0efb17706340b65de4d7e322ddc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::SaveEntity
-  id: 
-  prefabKey: RailGun2
---- !u!114 &1328778819628163611
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5805082395274130021}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1360eccb0862d3f4eb2c46f2d7ca93dd, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::gunPickup
-  gun: {fileID: 11400000, guid: c147004ed0afc7544a357b2c7dd41b55, type: 2}
-  bonusAmmo: 0
-  gunType: 3
 --- !u!1 &6689138152786035156
 GameObject:
   m_ObjectHideFlags: 0

@@ -80,9 +80,6 @@ public class MainMenu : MonoBehaviour
 
         StartNewGameNow();
 
-        SaveManager.PendingLoad = false;
-        SaveManager.IsLoadingFromSave = false;
-
         SceneLoader.LoadSceneWithLoadingScreen(firstLevelSceneName);
     }
 
@@ -113,10 +110,6 @@ public class MainMenu : MonoBehaviour
 
         if (SFXManager.Instance != null)
             SFXManager.Instance.PlaySound("UI_Click");
-
-        // Tell the next scene's gamemanager to auto-load on Awake.
-        SaveManager.PendingLoad = true;
-        SaveManager.IsLoadingFromSave = true;
 
         // Load whatever scene was saved.
         SceneLoader.LoadSceneWithLoadingScreen(data.scene);
@@ -175,10 +168,6 @@ public class MainMenu : MonoBehaviour
 
     private void StartNewGameNow()
     {
-        // Clear load flags
-        SaveManager.PendingLoad = false;
-        SaveManager.IsLoadingFromSave = false;
-
         // Reset NG+ cycle
         if (NewGamePlusManager.Instance != null)
             NewGamePlusManager.Instance.SetCycle(0);

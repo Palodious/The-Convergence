@@ -11,7 +11,6 @@ public class OptionsResolution : MonoBehaviour
 
     [Header("Optional WebGL UI")]
     [SerializeField] private TMP_Text webglNoteText;
-    [SerializeField] private string webglNoteMessage = "Resolution is browser-controlled in WebGL.";
 
 
     // I keep a unique list of Width × Height pairs.

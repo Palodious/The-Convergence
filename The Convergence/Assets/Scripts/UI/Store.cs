@@ -280,7 +280,12 @@ public class Store : MonoBehaviour, ISaveable
         }
         else
         {
-            playerState.potionCount += item.quantity;
+            if (gamemanager.instance != null && gamemanager.instance.playerScript != null)
+            {
+                // Use baseAmount as heal amount for consumables (set this in the StoreItem asset)
+                int healAmount = Mathf.RoundToInt(item.baseAmount);
+                gamemanager.instance.playerScript.HealFromStore(healAmount);
+            }
         }
 
         RefreshAllButtonDisplays();
@@ -319,7 +324,14 @@ public class Store : MonoBehaviour, ISaveable
         }
 
         // Apply upgrade directly to gun stats
-        gun.ApplyUpgrade(item.upgradeStat, amount); 
+        gun.ApplyUpgrade(item.upgradeStat, amount);
+
+        // If the upgraded gun is currently equipped, rebuild the clone so gameplay updates immediately
+        if (gamemanager.instance != null && gamemanager.instance.playerScript != null)
+        {
+            gamemanager.instance.playerScript.RefreshEquippedGunIfMatchesTemplate(gun);
+        }
+
     }
 
     public void SetStoreOpen()

@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -29,7 +30,6 @@ public class SaveData
     public string playerId;
     public Vector3 playerPos;
     public Quaternion playerRot;
-    public int playerHP;
     public int gameGoalCount;
     public int playerGunIndex;
     public List<EntityRecord> entities = new();
@@ -39,32 +39,24 @@ public class SaveData
 // It grabs data from the scene, writes it to disk, and restores it when loading.
 public class SaveManager : MonoBehaviour
 {
-    public static SaveManager Instance { get; private set; }
-
-    // Set to true by the Main Menu Continue button before loading a saved scene.
     public static bool PendingLoad = false;
 
-    // True while we are loading a save into a freshly loaded scene.
-    public static bool IsLoadingFromSave = false;
+    public static SaveManager Instance { get; private set; }
+
+    public static bool IsLoadingFromSave { get; private set; }
 
     // This is where my save file gets written. Unity gives me a platform-safe path.
     string SavePath => Path.Combine(Application.persistentDataPath, "savegame.json");
 
     private void Awake()
     {
-        if (Instance != null && Instance != this)
-        {
-            //Debug.LogWarning("SaveManager: Duplicate instance detected. Destroying the new one.");
-            Destroy(gameObject);
-            return;
-        }
-
+        if (Instance != null && Instance != this) { Destroy(gameObject); return; }
         Instance = this;
         DontDestroyOnLoad(gameObject);
     }
 
     // This creates a new SaveData file, fills it with info, and writes it to disk.
-    public void Save(GameObject player, int playerHP, int gameGoalCount)
+    public void Save(GameObject player, int gameGoalCount)
     {
 
         var pc = player.GetComponent<playerController>();
@@ -76,7 +68,6 @@ public class SaveManager : MonoBehaviour
             playerId = player.GetComponent<SaveEntity>()?.Id,
             playerPos = player.transform.position,
             playerRot = player.transform.rotation,
-            playerHP = playerHP,
             gameGoalCount = gameGoalCount,
             playerGunIndex = pc != null ? pc.GetCurrentGunIndex() : 0
         };
@@ -132,7 +123,6 @@ public class SaveManager : MonoBehaviour
         //Debug.Log($"Saved game to {SavePath}");
     }
 
-    // This checks for a save file and loads it into memory.
     public bool TryLoad(out SaveData data)
     {
         data = null;
@@ -148,112 +138,117 @@ public class SaveManager : MonoBehaviour
     // This coroutine handles the actual world reconstruction when I load a save.
     public System.Collections.IEnumerator LoadAndRestore(SaveData data, Func<string, GameObject> spawnByKey)
     {
-        // If I'm in the wrong scene, load the correct one first.
-        if (SceneManager.GetActiveScene().name != data.scene)
+        IsLoadingFromSave = true;
+        try
+
         {
-            var op = SceneManager.LoadSceneAsync(data.scene);
-            while (!op.isDone) yield return null;
-        }
 
-        // Get all SaveEntities currently in the scene and build a quick lookup by ID.
-        var saveEntities = UnityEngine.Object.FindObjectsByType<SaveEntity>(
-            FindObjectsInactive.Include,
-            FindObjectsSortMode.None
-        );
-
-        // Build the dictionary manually so I can detect duplicates safely.
-        var existing = new Dictionary<string, GameObject>();
-
-        foreach (var se in saveEntities)
-        {
-            if (se == null) continue;
-
-            var id = se.Id;
-
-            if (string.IsNullOrEmpty(id))
+            // If I'm in the wrong scene, load the correct one first.
+            if (SceneManager.GetActiveScene().name != data.scene)
             {
-                //Debug.LogWarning($"SaveManager: Found SaveEntity on {se.gameObject.name} with EMPTY id. Skipping it.");
-                continue;
+                var op = SceneManager.LoadSceneAsync(data.scene);
+                while (!op.isDone) yield return null;
             }
+            yield return null;
 
-            if (existing.ContainsKey(id))
+            // Get all SaveEntities currently in the scene and build a quick lookup by ID.
+            var saveEntities = UnityEngine.Object.FindObjectsByType<SaveEntity>(
+                FindObjectsInactive.Include,
+                FindObjectsSortMode.None
+            );
+
+            // Build the dictionary manually so I can detect duplicates safely.
+            var existing = new Dictionary<string, GameObject>();
+
+            foreach (var se in saveEntities)
             {
-                //Debug.LogWarning(
+                if (se == null) continue;
+
+                var id = se.Id;
+
+                if (string.IsNullOrEmpty(id))
+
+                    //Debug.LogWarning($"SaveManager: Found SaveEntity on {se.gameObject.name} with EMPTY id. Skipping it.");
+                    continue;
+
+
+                if (existing.ContainsKey(id))
+
+                    //Debug.LogWarning(
                     //$"SaveManager: Duplicate SaveEntity id '{id}' found on {se.gameObject.name} " +
                     //$"and {existing[id].name}. Keeping the first, ignoring this one."
-                //);
-                continue;
-            }
-
-            existing.Add(id, se.gameObject);
-        }
-
-        // Destroy anything that wasn’t in the saved file (it was dead or collected).
-        foreach (var kv in existing.ToList())
-            if (!data.entities.Any(e => e.id == kv.Key))
-                GameObject.Destroy(kv.Value);
-
-        // Now go through all saved entities and make sure they exist and are restored correctly.
-        foreach (var e in data.entities)
-        {
-            // If the object doesn’t exist in the scene anymore, spawn it back in.
-            if (!existing.TryGetValue(e.id, out var go))
-            {
-                if (!string.IsNullOrEmpty(e.prefabKey) && spawnByKey != null)
-                    go = spawnByKey(e.prefabKey);
-                if (!go) continue;
-
-                // Make sure the new object keeps the same SaveEntity ID so it matches the save.
-                var se = go.GetComponent<SaveEntity>() ?? go.AddComponent<SaveEntity>();
-                var f = typeof(SaveEntity).GetField("id", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
-                f?.SetValue(se, e.id);
-                existing[e.id] = go;
-            }
-
-            // Restore transform position/rotation first.
-            go.transform.SetPositionAndRotation(e.pos, e.rot);
-
-            // Now go through each component and restore its saved values.
-            foreach (var c in e.components)
-            {
-                var t = Type.GetType(c.typeName);
-                if (t == null) continue;
-
-                var comp = go.GetComponent(t) as ISaveable;
-                if (comp == null) continue;
-
-                // Ask the component what type it actually saves as.
-                var sample = comp.CaptureState();
-                if (sample == null)
-                {
-                    //Debug.LogWarning($"SaveManager: CaptureState() on {t.Name} returned null during load. Skipping.");
+                    //);
                     continue;
+
+
+                existing.Add(id, se.gameObject);
+            }
+
+            // Destroy anything that wasn’t in the saved file (it was dead or collected).
+            foreach (var kv in existing.ToList())
+                if (!data.entities.Any(e => e.id == kv.Key))
+                    GameObject.Destroy(kv.Value);
+
+            // Now go through all saved entities and make sure they exist and are restored correctly.
+            foreach (var e in data.entities)
+            {
+                // If the object doesn’t exist in the scene anymore, spawn it back in.
+                if (!existing.TryGetValue(e.id, out var go))
+                {
+                    if (!string.IsNullOrEmpty(e.prefabKey) && spawnByKey != null)
+                        go = spawnByKey(e.prefabKey);
+                    if (!go) continue;
+
+                    // Make sure the new object keeps the same SaveEntity ID so it matches the save.
+                    var se = go.GetComponent<SaveEntity>() ?? go.AddComponent<SaveEntity>();
+                    var f = typeof(SaveEntity).GetField("id", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
+                    f?.SetValue(se, e.id);
+                    existing[e.id] = go;
                 }
 
-                var payloadType = sample.GetType();
+                // Restore transform position/rotation first.
+                go.transform.SetPositionAndRotation(e.pos, e.rot);
 
-                // Deserialize JSON into that exact type.
-                var payload = JsonUtility.FromJson(c.json, payloadType);
+                // Now go through each component and restore its saved values.
+                foreach (var c in e.components)
+                {
+                    var t = Type.GetType(c.typeName);
+                    if (t == null) continue;
 
-                // Hand the strongly-typed payload back to the component.
-                comp.RestoreState(payload);
+                    var comp = go.GetComponent(t) as ISaveable;
+                    if (comp == null) continue;
+
+                    // Ask the component what type it actually saves as.
+                    var sample = comp.CaptureState();
+                    if (sample == null) continue;
+
+                    //Debug.LogWarning($"SaveManager: CaptureState() on {t.Name} returned null during load. Skipping.");
+
+                    var payloadType = sample.GetType();
+
+                    // Deserialize JSON into that exact type.
+                    var payload = JsonUtility.FromJson(c.json, payloadType);
+
+                    // Hand the strongly-typed payload back to the component.
+                    comp.RestoreState(payload);
+                }
             }
 
             if (!string.IsNullOrEmpty(data.playerId))
             {
                 if (existing.TryGetValue(data.playerId, out var playerGo) && playerGo != null)
-                {
                     playerGo.transform.SetPositionAndRotation(data.playerPos, data.playerRot);
-                }
             }
             else
             {
                 var taggedPlayer = GameObject.FindWithTag("Player");
                 if (taggedPlayer != null)
-                {
                     taggedPlayer.transform.SetPositionAndRotation(data.playerPos, data.playerRot);
-                }
             }
+        }
+        finally
+        {
+            IsLoadingFromSave = false;
         }
     }
 

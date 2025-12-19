@@ -247,6 +247,9 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
 
     void Start()
     {
+        if (SaveManager.IsLoadingFromSave)
+            return;
+
         colorOrig = model.material.color;
         stoppingDistOrig = agent.stoppingDistance;
         startingPos = transform.position;

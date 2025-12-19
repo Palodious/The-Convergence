@@ -151,6 +151,9 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
 
     void Start()
     {
+        if (SaveManager.IsLoadingFromSave)
+            return;
+
         controller = GetComponent<CharacterController>();
 
         intialHP = HP;
@@ -1160,4 +1163,39 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
 
         ngpApplied = true;
     }
+
+    // ==== Store Upgrade Sync ====
+    public void RefreshEquippedGunIfMatchesTemplate(gunStats upgradedTemplate)
+    {
+        if (upgradedTemplate == null) return;
+        if (gunList == null || gunList.Count == 0) return;
+
+        // Is the currently selected gun using this template?
+        gunStats currentTemplate = gunList[gunListPos];
+        if (currentTemplate != upgradedTemplate) return;
+
+        // Preserve current mag ammo before rebuilding the clone
+        int magAmmo = (activeGunStats != null) ? activeGunStats.ammoCur : 0;
+
+        // Rebuild clone + visuals using your existing path
+        changeGun();
+
+        // Restore mag ammo
+        if (activeGunStats != null)
+            activeGunStats.ammoCur = magAmmo;
+
+        UpdateAmmoDisplay();
+    }
+
+    // ==== Store Healing ====
+    public void HealFromStore(int healAmount)
+    {
+        if (healAmount <= 0) return;
+
+        HP += healAmount;
+        if (HP > currentMaxHP) HP = currentMaxHP;
+
+        updatePlayerUI();
+    }
+
 }
