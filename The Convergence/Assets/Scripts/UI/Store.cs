@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [System.Serializable]
-public class UpgradeLevelEntry // This class stores player's progress for multi-level upgrades
+public class UpgradeLevelEntry
 {
     public int id; // Unique ID of StoreItem of upgrade
     public int level;
@@ -12,10 +12,8 @@ public class UpgradeLevelEntry // This class stores player's progress for multi-
 [System.Serializable]
 public class PlayerState
 {
-    // CONSUMABLES
     public int potionCount = 0;
 
-    // Which weapon types the player has unlocked/picked up. Stores the enum int values
     public List<int> ownedGuns = new List<int>();
     public List<UpgradeLevelEntry> upgradeLevels = new List<UpgradeLevelEntry>();
 }
@@ -53,20 +51,19 @@ public class Store : MonoBehaviour, ISaveable
     {
         if (Instance != null && Instance != this)
         {
-            Destroy(gameObject); // Ensure only one instance of Store exists
+            Destroy(gameObject);
             return;
         }
         Instance = this;
 
-        DontDestroyOnLoad(gameObject); // Keep the Store manager alive across scenes
+        DontDestroyOnLoad(gameObject);
        
         if (playerState == null)
             playerState = new PlayerState();
 
-        // Initialize starting guns only if playerState.ownedGuns is empty (new game)
+       
         EnsureStartingOwnedGuns();
 
-        // No more InitializeStoreData() call here, items are loaded from 'allStoreItems' list.
     }
 
     public void RegisterButton(StoreButtonUI button)
@@ -89,7 +86,7 @@ public class Store : MonoBehaviour, ISaveable
 
     public StoreItem FindItemById(int id)
     {
-        for (int i = 0; i < allStoreItems.Count; i++) // Iterate through the list of StoreItemSO assets
+        for (int i = 0; i < allStoreItems.Count; i++)
             if (allStoreItems[i].id == id)
                 return allStoreItems[i];
 
@@ -171,7 +168,7 @@ public class Store : MonoBehaviour, ISaveable
         if (playerState.ownedGuns == null)
             playerState.ownedGuns = new List<int>();
 
-        // Only apply if we have none yet.
+        // Only apply if player has none yet.
         if (playerState.ownedGuns.Count > 0)
             return;
 

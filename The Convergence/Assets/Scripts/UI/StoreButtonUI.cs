@@ -1,30 +1,36 @@
 using UnityEngine;
 using UnityEngine.UI;
-using TMPro;
+using System.Collections.Generic; 
+using TMPro; 
 
 public class StoreButtonUI : MonoBehaviour
 {
-    public int itemID;
+    [Header("Item Reference")]
+    public StoreItem assignedItem; // Drag the StoreItem asset here in the Inspector!
+
+    [Header("UI References")]
+    [SerializeField] private Image itemIcon;
+    [SerializeField] private TextMeshProUGUI itemNameText;
+    [SerializeField] private TextMeshProUGUI itemDescriptionText;
+    [SerializeField] private TextMeshProUGUI costText;
+    [SerializeField] private TextMeshProUGUI levelText; //show level (ex "LvL [1]/[4]")
+
     private Button button;
 
     [Header("Gray Out Visuals")]
     [SerializeField] private Graphic buttonGraphic;
-    [SerializeField] private Graphic[] extraGraphicsToFade;
-    [SerializeField] private TextMeshProUGUI labelText;
-    [SerializeField] private TextMeshProUGUI costText;
-
+    [SerializeField] private List<Graphic> extraGraphicsToFade; // Any other graphics (e.g., borders, small details)
     [SerializeField, Range(0.05f, 1f)] private float disabledAlpha = 0.35f;
     [SerializeField, Range(0.05f, 1f)] private float enabledAlpha = 1.0f;
 
-    // Like "sold out" or "purchased"
     [Header("Label Settings")]
-    [SerializeField] private bool showLevelOnUpgrades = true;
-    [SerializeField] private string levelFormat = "LEVEL {0}/{1}";
+    [SerializeField] private string levelFormat = "LvL [0]/[1]";
     [SerializeField] private string maxedLabel = "MAXED";
-    [SerializeField] private string cannotAffordLabel = "NEED SHARDS";
+    [SerializeField] private string cannotAffordLabel = "NEED RIFT SHARDS";
     [SerializeField] private string lockedWeaponLabel = "LOCKED";
+    [SerializeField] private string unavailableLabel = "N/A";
 
-    private string originalLabel;
+    private List<Graphic> allFadableGraphics = new List<Graphic>();
 
 
     private void Awake()
@@ -32,115 +38,137 @@ public class StoreButtonUI : MonoBehaviour
         button = GetComponent<Button>();
         if (button == null)
         {
-          //  Debug.LogError($"StoreButtonUI on {gameObject.name} is missing a Button component! Button interactivity will fail.");
-            return;
+            // Debug.LogError($"StoreButtonUI on {gameObject.name} is missing a Button component! Button interactivity will fail.");
         }
 
         if (buttonGraphic == null)
             buttonGraphic = GetComponent<Graphic>();
 
-        if (labelText != null)
-            originalLabel = labelText.text;
+        PopulateFadableGraphicsList();
+    }
+
+    private void PopulateFadableGraphicsList()
+    {
+        allFadableGraphics.Clear();
+
+        if (buttonGraphic != null) allFadableGraphics.Add(buttonGraphic);
+        if (itemIcon != null) allFadableGraphics.Add(itemIcon);
+        if (itemNameText != null) allFadableGraphics.Add(itemNameText);
+        if (itemDescriptionText != null) allFadableGraphics.Add(itemDescriptionText);
+        if (costText != null) allFadableGraphics.Add(costText);
+        if (levelText != null) allFadableGraphics.Add(levelText);
+
+        if (extraGraphicsToFade != null)
+        {
+            foreach (var g in extraGraphicsToFade)
+            {
+                if (g != null) allFadableGraphics.Add(g);
+            }
+        }
     }
 
     private void OnEnable()
     {
-        // Register when the UI actually becomes active.
         if (Store.Instance != null)
             Store.Instance.RegisterButton(this);
-
-        // Also refresh the display when it shows up.
         UpdateDisplay();
+    }
+
+    private void OnDisable()
+    {
+        if (Store.Instance != null)
+            Store.Instance.UnregisterButton(this);
     }
 
     public void UpdateDisplay()
     {
+        if (button == null) return;
 
-        if (button == null)
+        if (assignedItem == null)
+        {
+            gameObject.SetActive(false);
             return;
+        }
+        gameObject.SetActive(true);
 
-        // If Store missing, hard disable + gray out
+        if (itemIcon != null) itemIcon.sprite = assignedItem.icon;
+        if (itemNameText != null) itemNameText.text = assignedItem.itemName;
+        if (itemDescriptionText != null) itemDescriptionText.text = assignedItem.description;
+
         if (Store.Instance == null)
         {
             SetInteractable(false);
-            SetLabelSafe("STORE MISSING");
             SetCostSafe("");
+            SetLevelTextSafe(unavailableLabel);
             return;
         }
 
-        StoreItem item = Store.Instance.FindItemById(itemID);
-
-        if (item == null)
-        {
-            Debug.LogWarning($"StoreButtonUI on {gameObject.name}: No StoreItem found for ID {itemID}");
-            SetInteractable(false);
-            SetLabelSafe("INVALID");
-            SetCostSafe("");
-            return;
-        }
-
-        int effectiveCost = Store.Instance.GetEffectiveCost(item);
+        int effectiveCost = Store.Instance.GetEffectiveCost(assignedItem);
         SetCostSafe(effectiveCost.ToString());
 
-        bool isMaxed = (item.type == ItemType.Upgrade) && Store.Instance.IsUpgradeMaxed(item);
+        bool isUpgrade = assignedItem.type == ItemType.Upgrade;
+        bool isMaxed = isUpgrade && Store.Instance.IsUpgradeMaxed(assignedItem);
 
-
-        bool canBuy = Store.Instance.CanBuyItem(item, out string reason);
-
+        string reasonCannotBuy = "";
+        bool canBuy = Store.Instance.CanBuyItem(assignedItem, out reasonCannotBuy);
 
         if (isMaxed)
         {
             SetInteractable(false);
-            if (showLevelOnUpgrades)
-                SetLabelSafe(maxedLabel);
-            else
-                SetLabelSafe(originalLabel);
-
-            return;
-        }
-
-        //Only enable if player can buy, not maxed
-        SetInteractable(canBuy);
-
-        if (item.type == ItemType.Upgrade && showLevelOnUpgrades)
-        {
-            int lvl = Store.Instance.GetUpgradeLevel(item.id);
-            int max = Mathf.Max(1, item.maxLevel);
-
-            // Show level status
-            SetLabelSafe(string.Format(levelFormat, lvl, max));
-
-            if (!canBuy && reason == "Not Enough Rift Shards")
-                SetLabelSafe(cannotAffordLabel);
-            else if (!canBuy && reason == "Weapon Not Owned")
-                SetLabelSafe(lockedWeaponLabel);
+            SetLevelTextSafe(maxedLabel);
         }
         else
         {
-            SetLabelSafe(originalLabel);
+            SetInteractable(canBuy);
 
-            if (!canBuy && reason == "Not Enough Rift Shards")
-                SetLabelSafe(cannotAffordLabel);
-            else if (!canBuy && reason == "Weapon Not Owned")
-                SetLabelSafe(lockedWeaponLabel);
+            if (isUpgrade)
+            {
+                int currentLevel = Store.Instance.GetUpgradeLevel(assignedItem.id);
+                int maxLevel = Mathf.Max(1, assignedItem.maxLevel);
+                SetLevelTextSafe(string.Format(levelFormat, currentLevel, maxLevel));
+            }
+            else
+            {
+                SetLevelTextSafe("");
+            }
+
+            if (!canBuy)
+            {
+                switch (reasonCannotBuy)
+                {
+                    case "Not Enough Rift Shards":
+                        SetLevelTextSafe(cannotAffordLabel);
+                        break;
+                    case "Weapon Not Owned":
+                        SetLevelTextSafe(lockedWeaponLabel);
+                        break;
+                    default:
+                        SetLevelTextSafe(unavailableLabel);
+                        break;
+                }
+            }
         }
     }
 
     public void OnButtonClick()
     {
+        if (assignedItem == null)
+        {
+            // Debug.LogWarning($"StoreButtonUI on {gameObject.name}: Click ignored (no StoreItem assigned).");
+            return;
+        }
 
         if (Store.Instance == null)
         {
-          //  Debug.LogWarning($"StoreButtonUI on {gameObject.name}: Click ignored (Store.Instance is null).");
+            // Debug.LogWarning($"StoreButtonUI on {gameObject.name}: Click ignored (Store.Instance is null).");
             return;
         }
 
         if (button != null && !button.interactable)
-            return;
+            return; 
 
-        Store.Instance.PurchaseItemButton(itemID);
+        Store.Instance.PurchaseItemButton(assignedItem.id);
 
-        // Update immediately
         UpdateDisplay();
     }
 
@@ -151,49 +179,24 @@ public class StoreButtonUI : MonoBehaviour
 
         float targetAlpha = value ? enabledAlpha : disabledAlpha;
 
-        if (buttonGraphic != null)
+        foreach (var g in allFadableGraphics)
         {
-            Color c = buttonGraphic.color;
+            if (g == null) continue;
+            Color c = g.canvasRenderer.GetColor();
             c.a = targetAlpha;
-            buttonGraphic.color = c;
+            g.canvasRenderer.SetColor(c);
         }
-
-        if (extraGraphicsToFade != null)
-        {
-            for (int i = 0; i < extraGraphicsToFade.Length; i++)
-            {
-                var g = extraGraphicsToFade[i];
-                if (g == null) continue;
-
-                Color c = g.color;
-                c.a = targetAlpha;
-                g.color = c;
-            }
-        }
-
-        if (labelText != null)
-        {
-            Color c = labelText.color;
-            c.a = targetAlpha;
-            labelText.color = c;
-        }
-        if (costText != null)
-        {
-            Color c = costText.color;
-            c.a = targetAlpha;
-            costText.color = c;
-        }
-    }
-
-    private void SetLabelSafe(string text)
-    {
-        if (labelText != null)
-            labelText.text = text;
     }
 
     private void SetCostSafe(string text)
     {
         if (costText != null)
             costText.text = text;
+    }
+
+    private void SetLevelTextSafe(string text)
+    {
+        if (levelText != null)
+            levelText.text = text;
     }
 }
