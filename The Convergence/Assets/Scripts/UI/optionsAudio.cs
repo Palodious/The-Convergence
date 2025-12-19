@@ -5,13 +5,18 @@ using UnityEngine.UI;
 public class OptionsAudio : MonoBehaviour
 {
     [Header("UI")]
-    [SerializeField] private Slider masterSlider;
+    [SerializeField] private Slider musicSlider;
+    [SerializeField] private Slider sfxSlider;
 
     [Header("Audio")]
     [SerializeField] private AudioMixer masterMixer;   // assign MasterMixer asset in Inspector
 
-    private const string PREF_VOL = "audio_master_vol"; // 0..1
-    private const string MIXER_PARAM = "MasterVolume";     // exposed param name in mixer
+    private const string PREF_MUSIC = "audio_music_vol";
+    private const string PREF_SFX = "audio_sfx_vol";
+
+    private const string MUSIC_PARAM = "MusicVolume";
+    private const string SFX_PARAM = "SfxVolume";
+
     private const float DEFAULT_VOL = 0.7f;
 
     [SerializeField] private float moveSoundCooldown = 0.08f;
@@ -19,85 +24,86 @@ public class OptionsAudio : MonoBehaviour
 
     void OnEnable()
     {
-        if (masterSlider == null)
+
+        float music = PlayerPrefs.GetFloat(PREF_MUSIC, DEFAULT_VOL);
+        float sfx = PlayerPrefs.GetFloat(PREF_SFX, DEFAULT_VOL);
+
+        if (musicSlider != null)
         {
-          //  Debug.LogWarning("OptionsAudio: masterSlider is not assigned.");
+            musicSlider.onValueChanged.RemoveListener(OnMusicChanged);
+            musicSlider.value = music;
+            musicSlider.onValueChanged.AddListener(OnMusicChanged);
+            //  Debug.LogWarning("OptionsAudio: masterSlider is not assigned.");
         }
 
-        if (masterMixer == null)
+        if (sfxSlider != null)
         {
-          //  Debug.LogWarning("OptionsAudio: masterMixer is not assigned.");
+            sfxSlider.onValueChanged.RemoveListener(OnSfxChanged);
+            sfxSlider.value = sfx;
+            sfxSlider.onValueChanged.AddListener(OnSfxChanged);
+            //  Debug.LogWarning("OptionsAudio: masterMixer is not assigned.");
         }
 
-        // Load saved volume, default to full.
-        float saved = PlayerPrefs.GetFloat(PREF_VOL, DEFAULT_VOL);
-
-        // Make sure the slider shows the saved value and listen for changes.
-        if (masterSlider != null)
-        {
-            masterSlider.onValueChanged.RemoveListener(OnMasterSliderChanged);
-            masterSlider.value = saved;
-            masterSlider.onValueChanged.AddListener(OnMasterSliderChanged);
-        }
-
-        // Apply immediately so mixer matches the saved value.
-        ApplyMasterVolume(saved);
+        ApplyVolumes(music, sfx);
     }
 
     void OnDisable()
     {
-        if (masterSlider != null)
-        {
-            masterSlider.onValueChanged.RemoveListener(OnMasterSliderChanged);
-        }
+        if(musicSlider != null)
+            musicSlider.onValueChanged.RemoveListener(OnMusicChanged);
+
+        if (sfxSlider != null)
+            sfxSlider.onValueChanged.RemoveListener(OnSfxChanged);
     }
 
-    // This is what the slider drives.
-    public void OnMasterSliderChanged(float value)
+    public void OnMusicChanged(float value)
     {
-        ApplyMasterVolume(value);
-
-        PlayerPrefs.SetFloat(PREF_VOL, value);
+        PlayerPrefs.SetFloat(PREF_MUSIC, value);
         PlayerPrefs.Save();
 
-        if (Time.unscaledTime - lastMoveSoundTime >= moveSoundCooldown)
-        {
-            lastMoveSoundTime = Time.unscaledTime;
-
-            if (SFXManager.Instance != null)
-                SFXManager.Instance.PlaySound("UI_MoveSlider");
-        }
+        ApplyMusic(value);
+        PlayMoveSound();
     }
 
-        // Converts 0–1 linear slider to decibels and pushes it to the mixer.
-        void ApplyMasterVolume(float linear)
-        {
-            if (masterMixer == null)
-                return;
-
-            linear = Mathf.Clamp(linear, 0.0001f, 1f);
-            float dB = Mathf.Log10(linear) * 20f;
-            masterMixer.SetFloat(MIXER_PARAM, dB);
-        }
-
-    // Apply button to force-apply.
-    public void ApplySettingsNow()
+    public void OnSfxChanged(float value)
     {
-        if (masterSlider != null)
-        {
-            float value = masterSlider.value;
+        PlayerPrefs.SetFloat(PREF_SFX, value);
+        PlayerPrefs.Save();
 
-            // Lock in this value
-            PlayerPrefs.SetFloat(PREF_VOL, value);
-            PlayerPrefs.Save();
+        ApplySfx(value);
+        PlayMoveSound();
+    }
 
-            // Make sure mixer is using the final value
-            ApplyMasterVolume(value);
-        }
+    void ApplyVolumes(float music, float sfx)
+    {
+        ApplyMusic(music);
+        ApplySfx(sfx);
+    }
+
+    void ApplyMusic(float linear)
+    {
+        if (masterMixer == null) return;
+
+        float dB = Mathf.Log10(Mathf.Clamp(linear, 0.0001f, 1f)) * 20f;
+        masterMixer.SetFloat(MUSIC_PARAM, dB);
+    }
+
+    void ApplySfx(float linear)
+    {
+        if (masterMixer == null) return;
+
+        float dB = Mathf.Log10(Mathf.Clamp(linear, 0.0001f, 1f)) * 20f;
+        masterMixer.SetFloat(SFX_PARAM, dB);
+    }
+
+    void PlayMoveSound()
+    {
+        if (Time.unscaledTime - lastMoveSoundTime < moveSoundCooldown)
+            return;
+
+        lastMoveSoundTime = Time.unscaledTime;
 
         if (SFXManager.Instance != null)
-        {
-            SFXManager.Instance.PlaySound("UI_Apply");
-        }
+            SFXManager.Instance.PlaySound("UI_MoveSlider");
     }
 }
