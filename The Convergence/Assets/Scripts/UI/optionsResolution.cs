@@ -68,7 +68,6 @@ public class OptionsResolution : MonoBehaviour
 
         if (webglNoteText != null)
         {
-            webglNoteText.text = webglNoteMessage;
             webglNoteText.gameObject.SetActive(true);
         }
     }
