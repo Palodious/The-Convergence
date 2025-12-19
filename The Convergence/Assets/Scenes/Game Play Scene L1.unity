@@ -140800,6 +140800,22 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1841363090}
     - target: {fileID: 747689891001616926, guid: a2d3df0c87de3c240af523bdf4ed2b50, type: 3}
+      propertyPath: pulseForce
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 747689891001616926, guid: a2d3df0c87de3c240af523bdf4ed2b50, type: 3}
+      propertyPath: pulseRange
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 747689891001616926, guid: a2d3df0c87de3c240af523bdf4ed2b50, type: 3}
+      propertyPath: pulseDamage
+      value: 25
+      objectReference: {fileID: 0}
+    - target: {fileID: 747689891001616926, guid: a2d3df0c87de3c240af523bdf4ed2b50, type: 3}
+      propertyPath: pulseCooldown
+      value: 3.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 747689891001616926, guid: a2d3df0c87de3c240af523bdf4ed2b50, type: 3}
       propertyPath: charController
       value: 
       objectReference: {fileID: 1841363089}
@@ -140872,9 +140888,17 @@ PrefabInstance:
       value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 8236199846886816912, guid: a2d3df0c87de3c240af523bdf4ed2b50, type: 3}
+      propertyPath: enemyPushForce
+      value: 25
+      objectReference: {fileID: 0}
+    - target: {fileID: 8236199846886816912, guid: a2d3df0c87de3c240af523bdf4ed2b50, type: 3}
       propertyPath: ammoTextDisplay
       value: 
       objectReference: {fileID: 1147528055}
+    - target: {fileID: 8236199846886816912, guid: a2d3df0c87de3c240af523bdf4ed2b50, type: 3}
+      propertyPath: enemyLayer.m_Bits
+      value: 64
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
