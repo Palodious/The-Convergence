@@ -50,16 +50,19 @@ public class StoreManager : MonoBehaviour
     public void BuyAmmoUpgrade()
     {
         gunStats target = GetActiveGunInstance();
-        if (target == null) return;
 
-        target.ApplyUpgrade("ammo", ammoUpgradeAmount);
-        target.ammoCur = target.ammoMax;
+        if (target != null)
+        {
+            target.ApplyUpgrade("ammo", ammoUpgradeAmount);
 
-        if (playerRef != null)
+            target.ammoCur = target.ammoMax;
+
+          //  Debug.Log($"Ammo upgraded! New Max Ammo: {target.ammoMax}");
+
             playerRef.UpdateAmmoDisplay();
+        }
+         
     }
-
-
 
     private gunStats GetActiveGunInstance()
     {

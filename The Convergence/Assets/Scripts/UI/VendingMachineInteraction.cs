@@ -13,47 +13,56 @@ public class VendingMachineInteraction : MonoBehaviour
 
     private void Update()
     {
-        if (!playerIsNearby || storeUIPanel == null) return;
+        if (!playerIsNearby)
+            return;
+
+        if (storeUIPanel == null)
+            return;
 
         if (Input.GetKeyDown(KeyCode.E))
+        {
             ToggleStoreUI();
+        }
 
         if (Input.GetKeyDown(KeyCode.Escape) && storeUIPanel.activeSelf)
+        {
             SetStoreOpen(false);
+        }
     }
-
 
     private void OnTriggerEnter(Collider other)
     {
-        if (!other.gameObject.CompareTag("Player")) return;
-        playerIsNearby = true;
-        if (interactionPromptText != null)
+        if (other.gameObject.CompareTag("Player"))
         {
-            interactionPromptText.gameObject.SetActive(true);
+            playerIsNearby = true;
+
+            if (interactionPromptText != null)
+            {
+                interactionPromptText.gameObject.SetActive(true);
+            }
         }
     }
 
     private void OnTriggerExit(Collider other)
     {
-        if (!other.CompareTag("Player")) return;
+        if (!other.CompareTag("Player"))
+            return;
+            playerIsNearby = false;
 
-        playerIsNearby = false;
+            if (interactionPromptText != null)
+                interactionPromptText.gameObject.SetActive(false);
 
-        if (interactionPromptText != null)
-            interactionPromptText.gameObject.SetActive(false);
-
-        if (storeUIPanel != null && storeUIPanel.activeSelf) SetStoreOpen(false);
-    }
-
+            if (storeUIPanel != null && storeUIPanel.activeSelf)
+        {
+                SetStoreOpen(false);
+            }
+        }
 
     private void ToggleStoreUI()
     {
-        if (storeUIPanel == null) return;
         bool open = !storeUIPanel.activeSelf;
         SetStoreOpen(open);
     }
-
-
 
     private void SetStoreOpen(bool open)
     {
@@ -62,22 +71,31 @@ public class VendingMachineInteraction : MonoBehaviour
 
         if (open)
         {
-            if (Store.Instance == null) return;
+
+
+            // Refresh button displays / state
+            if (Store.Instance == null)
+            {
+              //  Debug.LogError("StoreSystem is missing or inactive. Store UI will not open.");
+            return;
+            }
 
             storeUIPanel.SetActive(true);
+
             Store.Instance.SetStoreOpen();
 
-            if (interactionPromptText != null) interactionPromptText.gameObject.SetActive(false);
-            if (gamemanager.instance != null) gamemanager.instance.statePause();
+            // Pause game
+            if (gamemanager.instance != null)
+                gamemanager.instance.statePause();
         }
-
         else
         {
+            // Close panel
             storeUIPanel.SetActive(false);
 
-            if (interactionPromptText != null && playerIsNearby) interactionPromptText.gameObject.SetActive(true);
-            if (gamemanager.instance != null) gamemanager.instance.stateUnpause();
+            // Unpause game
+            if (gamemanager.instance != null)
+                gamemanager.instance.stateUnpause();
         }
-
     }
 }
