@@ -1135,7 +1135,7 @@ RectTransform:
   m_Father: {fileID: 8407204393858573027}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0.6, y: 1}
+  m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 10, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -2162,7 +2162,7 @@ RectTransform:
   m_Father: {fileID: 2835148362071291847}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0.4, y: 1}
+  m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 10, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -3812,6 +3812,7 @@ GameObject:
   - component: {fileID: 7017742694012482910}
   - component: {fileID: 8279968324180862661}
   - component: {fileID: 1968724118997714966}
+  - component: {fileID: 1175181296553807816}
   m_Layer: 13
   m_Name: Store Panel 3
   m_TagString: Untagged
@@ -3878,6 +3879,21 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &1175181296553807816
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1000317837544929904}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5ca74c39c42de8040aa4a939877e12c7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MusicContextBinder
+  profile: {fileID: 11400000, guid: 6af1297f5397be44582fa011b339c494, type: 2}
+  applyOnEnable: 1
+  priority: 12
 --- !u!1 &1041476332533190201
 GameObject:
   m_ObjectHideFlags: 0
@@ -4681,7 +4697,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0.5}
   m_AnchorMax: {x: 1, y: 0.5}
-  m_AnchoredPosition: {x: -251.83447, y: 106.92035}
+  m_AnchoredPosition: {x: -272.04626, y: 106.92035}
   m_SizeDelta: {x: 200, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &1482561909648343596
@@ -7294,8 +7310,8 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 3735727200933089006}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.4, y: 0}
-  m_AnchorMax: {x: 0.4, y: 1}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 20, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -8224,7 +8240,7 @@ GameObject:
   - component: {fileID: 3382632321038512439}
   - component: {fileID: 404325271474428035}
   m_Layer: 5
-  m_Name: Master Volume
+  m_Name: Music Master Volume
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -8862,7 +8878,7 @@ RectTransform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2297291350760596413}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 5}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 0.93758, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -8870,7 +8886,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0.5}
   m_AnchorMax: {x: 1, y: 0.5}
-  m_AnchoredPosition: {x: 87.5, y: -2}
+  m_AnchoredPosition: {x: 145.29626, y: 0}
   m_SizeDelta: {x: 200, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1361750887009555613
@@ -8981,7 +8997,7 @@ MonoBehaviour:
   m_VertexBufferAutoSizeReduction: 0
   m_useMaxVisibleDescender: 1
   m_pageToDisplay: 1
-  m_margin: {x: 0, y: 0, z: 96.40297, w: 0}
+  m_margin: {x: -106.86066, y: 11.702942, z: 96.40297, w: 7.6173706}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   m_hasFontAssetChanged: 0
@@ -11075,6 +11091,7 @@ GameObject:
   - component: {fileID: 8629016773074552631}
   - component: {fileID: 3732512119012884280}
   - component: {fileID: 7622045120252581143}
+  - component: {fileID: 2934182501398741330}
   m_Layer: 5
   m_Name: Pause Menu Panel
   m_TagString: Untagged
@@ -11141,6 +11158,21 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &2934182501398741330
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2979308103593962036}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5ca74c39c42de8040aa4a939877e12c7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MusicContextBinder
+  profile: {fileID: 11400000, guid: 1c4558a92cb12714897ea056bbd6d58a, type: 2}
+  applyOnEnable: 1
+  priority: 10
 --- !u!1 &3071020851287054111
 GameObject:
   m_ObjectHideFlags: 0
@@ -13404,6 +13436,7 @@ GameObject:
   - component: {fileID: 4613242102995024636}
   - component: {fileID: 7889221463882808107}
   - component: {fileID: 3552364080003262336}
+  - component: {fileID: 9020408373242034965}
   m_Layer: 5
   m_Name: CreditsPanel
   m_TagString: Untagged
@@ -13470,6 +13503,21 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &9020408373242034965
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3800576407597320267}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5ca74c39c42de8040aa4a939877e12c7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MusicContextBinder
+  profile: {fileID: 11400000, guid: 02aaf6c400c19974abef19374fd06fa1, type: 2}
+  applyOnEnable: 1
+  priority: 30
 --- !u!1 &3809623556549835568
 GameObject:
   m_ObjectHideFlags: 0
@@ -14238,7 +14286,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 3104248849959855310}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 0}
+        m_TargetAssemblyTypeName: Store, Assembly-CSharp
+        m_MethodName: ExitStore
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &4065375354669017323
 GameObject:
   m_ObjectHideFlags: 0
@@ -18929,6 +18989,7 @@ GameObject:
   - component: {fileID: 4587960736326974723}
   - component: {fileID: 5722090115346653309}
   - component: {fileID: 8675228841978772929}
+  - component: {fileID: 5129420428512187797}
   m_Layer: 5
   m_Name: Win Menu Panel
   m_TagString: Untagged
@@ -18994,6 +19055,21 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &5129420428512187797
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5465418284635202704}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5ca74c39c42de8040aa4a939877e12c7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MusicContextBinder
+  profile: {fileID: 11400000, guid: 10a90d10295be1445b3a0b29b89597e7, type: 2}
+  applyOnEnable: 1
+  priority: 20
 --- !u!1 &5476195571645255520
 GameObject:
   m_ObjectHideFlags: 0
@@ -19452,6 +19528,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5162815151977379909}
+  - component: {fileID: 3606264690935078649}
   - component: {fileID: 2471304773665174789}
   - component: {fileID: 7589596661983705868}
   - component: {fileID: 2199030728013457923}
@@ -19491,6 +19568,21 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &3606264690935078649
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5535232283166892623}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5ca74c39c42de8040aa4a939877e12c7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MusicContextBinder
+  profile: {fileID: 11400000, guid: 6af1297f5397be44582fa011b339c494, type: 2}
+  applyOnEnable: 1
+  priority: 5
 --- !u!114 &2471304773665174789
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -22389,8 +22481,8 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 1618763131735049415}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.4, y: 0}
-  m_AnchorMax: {x: 0.4, y: 1}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 20, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -24186,7 +24278,7 @@ RectTransform:
   m_Father: {fileID: 6877745851351215028}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0.4, y: 1}
+  m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 10, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -28660,8 +28752,8 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 7705996202290513301}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.6, y: 0}
-  m_AnchorMax: {x: 0.6, y: 1}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 20, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -30121,6 +30213,7 @@ GameObject:
   - component: {fileID: 8450559804220186629}
   - component: {fileID: 1137329148144469212}
   - component: {fileID: 6738458588003729119}
+  - component: {fileID: 1480272009169880508}
   m_Layer: 5
   m_Name: Lose Menu Panel
   m_TagString: Untagged
@@ -30186,6 +30279,21 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &1480272009169880508
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8602276722040113834}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5ca74c39c42de8040aa4a939877e12c7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MusicContextBinder
+  profile: {fileID: 11400000, guid: 10a90d10295be1445b3a0b29b89597e7, type: 2}
+  applyOnEnable: 1
+  priority: 20
 --- !u!1 &8604772677716688763
 GameObject:
   m_ObjectHideFlags: 0
