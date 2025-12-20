@@ -1331,4 +1331,19 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
 
         updatePlayerUI();
     }
+    // ==== Store Healing, Percentage ====
+    public int CurrentMaxHP => currentMaxHP;
+
+    public bool IsHealthFull()
+    {
+        return HP >= currentMaxHP;
+    }
+
+    public void HealPercentFromStore(float percent)
+    {
+        if (percent <= 0f) return;
+
+        int healAmount = Mathf.CeilToInt(currentMaxHP * percent);
+        HealFromStore(healAmount);
+    }
 }

@@ -28,6 +28,7 @@ public class StoreButtonUI : MonoBehaviour
     [SerializeField] private string maxedLabel = "MAXED";
     [SerializeField] private string cannotAffordLabel = "NEED RIFT SHARDS";
     [SerializeField] private string lockedWeaponLabel = "LOCKED";
+    [SerializeField] private string healthFullLabel = "FULL HEALTH";
     [SerializeField] private string unavailableLabel = "N/A";
 
     private List<Graphic> allFadableGraphics = new List<Graphic>();
@@ -144,6 +145,9 @@ public class StoreButtonUI : MonoBehaviour
                         break;
                     default:
                         SetLevelTextSafe(unavailableLabel);
+                        break;
+                    case "Health Full":
+                        SetLevelTextSafe(healthFullLabel);
                         break;
                 }
             }

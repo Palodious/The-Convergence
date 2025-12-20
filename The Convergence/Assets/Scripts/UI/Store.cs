@@ -38,6 +38,8 @@ public class Store : MonoBehaviour, ISaveable
     [Tooltip("Weapon types that are considered owned at the start of a new game (used to unlock their upgrades).")]
     [SerializeField] private GunType[] startingOwnedGuns = new GunType[0];
 
+    [Header("Consumable Settings")]
+    [SerializeField] private bool allowConsumablePurchaseWhenHealthFull = false;
 
     [Serializable]
     private struct StoreSaveData
@@ -234,6 +236,18 @@ public class Store : MonoBehaviour, ISaveable
             return false;
         }
 
+        if (item.type == ItemType.Consumable && !allowConsumablePurchaseWhenHealthFull)
+        {
+            if (gamemanager.instance != null && gamemanager.instance.playerScript != null)
+            {
+                if (gamemanager.instance.playerScript.IsHealthFull())
+                {
+                    reason = "Health Full";
+                    return false;
+                }
+            }
+        }
+
         if (item.type == ItemType.Upgrade && IsUpgradeMaxed(item))
         {
             reason = "Maxed";
@@ -282,9 +296,17 @@ public class Store : MonoBehaviour, ISaveable
         {
             if (gamemanager.instance != null && gamemanager.instance.playerScript != null)
             {
-                // Use baseAmount as heal amount for consumables (set this in the StoreItem asset)
-                int healAmount = Mathf.RoundToInt(item.baseAmount);
-                gamemanager.instance.playerScript.HealFromStore(healAmount);
+                var player = gamemanager.instance.playerScript;
+
+                if (item.baseAmount > 0f && item.baseAmount <= 1.01f)
+                {
+                    player.HealPercentFromStore(item.baseAmount);
+                }
+                else
+                {
+                    int healAmount = Mathf.RoundToInt(item.baseAmount);
+                    player.HealFromStore(healAmount);
+                }
             }
         }
 
