@@ -113,6 +113,19 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
     private static int persistentHealthUpgradeTotal = 0;
     private static bool isNewGameSession = true;
 
+    public static void RequestFreshRunReset()
+    {
+        persistentGunList.Clear();
+        persistentKeyList.Clear();
+        persistentAmmoPickupHistory.Clear();
+        persistentAmmoCounts.Clear();
+
+        persistentGunListPos = 0;
+        persistentHealthUpgradeTotal = 0;
+
+        isNewGameSession = true;
+    }
+
     [Header("~=~= Enemy Collision Prevention =~=~")]
     [SerializeField] private float enemyPushForce = 15f;
     [SerializeField] private LayerMask enemyLayer;
@@ -1155,6 +1168,7 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
         persistentGunList.Clear();
         persistentKeyList.Clear();
         persistentAmmoPickupHistory.Clear();
+        persistentAmmoCounts.Clear();
         persistentGunListPos = 0;
         persistentHP = HP;
         persistentMaxHP = HP;

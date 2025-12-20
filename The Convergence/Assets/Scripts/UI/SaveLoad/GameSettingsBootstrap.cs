@@ -6,6 +6,8 @@ public class GameSettingsBootstrap : MonoBehaviour
     [Header("Audio")]
     [SerializeField] private AudioMixer masterMixer;
 
+    public static GameSettingsBootstrap Instance { get; private set; }
+
     private const string PREF_MUSIC = "audio_music_vol";
     private const string PREF_SFX = "audio_sfx_vol";
     private const float DEFAULT_VOL = 0.7f;
@@ -27,13 +29,15 @@ public class GameSettingsBootstrap : MonoBehaviour
         }
 
         bootstrapped = true;
+        Instance = this;
+
         DontDestroyOnLoad(gameObject);
 
         ApplyAudioFromPrefs();
         ApplyMouseSensitivityFromPrefs();
     }
 
-    private void ApplyAudioFromPrefs()
+    public void ApplyAudioFromPrefs()
     {
         if (masterMixer == null)
             return;
