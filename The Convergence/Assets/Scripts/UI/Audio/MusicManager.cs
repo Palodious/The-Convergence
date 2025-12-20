@@ -153,6 +153,9 @@ public class MusicManager : MonoBehaviour
 
     private void ApplyProfile(MusicProfile profile)
     {
+
+        Debug.Log($"[MusicManager] Active profile = {(profile != null ? profile.name : "NULL")}");
+
         activeProfile = profile;
 
         // Reset combat state when switching profiles (prevents “carryover combat” into menus)
@@ -182,15 +185,19 @@ public class MusicManager : MonoBehaviour
 
     private void EnsureSources()
     {
-        var sources = GetComponents<AudioSource>();
-        while (sources.Length < 2)
+        if (sceneMusicSource == null || battleMusicSource == null)
         {
-            gameObject.AddComponent<AudioSource>();
-            sources = GetComponents<AudioSource>();
-        }
+            var sources = GetComponents<AudioSource>();
 
-        sceneMusicSource = sources[0];
-        battleMusicSource = sources[1];
+            while (sources.Length < 2)
+            {
+                gameObject.AddComponent<AudioSource>();
+                sources = GetComponents<AudioSource>();
+            }
+
+            sceneMusicSource = sources[0];
+            battleMusicSource = sources[1];
+        }
 
         sceneMusicSource.loop = true;
         battleMusicSource.loop = true;

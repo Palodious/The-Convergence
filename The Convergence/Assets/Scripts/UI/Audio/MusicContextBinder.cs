@@ -29,4 +29,21 @@ public class MusicContextBinder : MonoBehaviour
 
         MusicManager.Instance.PopProfile(profile);
     }
+    private void Start()
+    {
+        if (!applyOnEnable) return;
+        if (profile == null) return;
+        if (MusicManager.Instance == null) return;
+
+        MusicManager.Instance.PushProfile(profile, priority);
+    }
+    private void OnDestroy()
+    {
+        if (!applyOnEnable) return;
+        if (profile == null) return;
+        if (MusicManager.Instance == null) return;
+
+        MusicManager.Instance.PopProfile(profile);
+    }
+
 }

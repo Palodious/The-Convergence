@@ -3812,7 +3812,6 @@ GameObject:
   - component: {fileID: 7017742694012482910}
   - component: {fileID: 8279968324180862661}
   - component: {fileID: 1968724118997714966}
-  - component: {fileID: 1175181296553807816}
   m_Layer: 13
   m_Name: Store Panel 3
   m_TagString: Untagged
@@ -3879,21 +3878,6 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &1175181296553807816
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1000317837544929904}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5ca74c39c42de8040aa4a939877e12c7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::MusicContextBinder
-  profile: {fileID: 11400000, guid: 6af1297f5397be44582fa011b339c494, type: 2}
-  applyOnEnable: 1
-  priority: 12
 --- !u!1 &1041476332533190201
 GameObject:
   m_ObjectHideFlags: 0
@@ -11172,7 +11156,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MusicContextBinder
   profile: {fileID: 11400000, guid: 1c4558a92cb12714897ea056bbd6d58a, type: 2}
   applyOnEnable: 1
-  priority: 10
+  priority: 20
 --- !u!1 &3071020851287054111
 GameObject:
   m_ObjectHideFlags: 0
@@ -19069,7 +19053,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MusicContextBinder
   profile: {fileID: 11400000, guid: 10a90d10295be1445b3a0b29b89597e7, type: 2}
   applyOnEnable: 1
-  priority: 20
+  priority: 0
 --- !u!1 &5476195571645255520
 GameObject:
   m_ObjectHideFlags: 0
@@ -19581,8 +19565,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MusicContextBinder
   profile: {fileID: 11400000, guid: 6af1297f5397be44582fa011b339c494, type: 2}
-  applyOnEnable: 1
-  priority: 5
+  applyOnEnable: 0
+  priority: 0
 --- !u!114 &2471304773665174789
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -30293,7 +30277,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MusicContextBinder
   profile: {fileID: 11400000, guid: 10a90d10295be1445b3a0b29b89597e7, type: 2}
   applyOnEnable: 1
-  priority: 20
+  priority: 0
 --- !u!1 &8604772677716688763
 GameObject:
   m_ObjectHideFlags: 0

@@ -105,7 +105,6 @@ public class gamemanager : MonoBehaviour
                 statePause();
                 menuActive = menuPause;
                 menuActive.SetActive(true);
-                PlayMenuMusic(menuActive);
             }
             else if (menuActive == menuPause)
             {
@@ -134,7 +133,6 @@ public class gamemanager : MonoBehaviour
 
         if (menuActive != null)
         {
-            StopMenuMusic(menuActive);
             menuActive.SetActive(false);
             menuActive = null;
         }
@@ -170,7 +168,6 @@ public class gamemanager : MonoBehaviour
             if (menuActive != null)
             {
                 menuActive.SetActive(true);
-                PlayMenuMusic(menuActive);
             }
         }
     }
@@ -219,7 +216,6 @@ public class gamemanager : MonoBehaviour
         if (menuActive != null)
         {
             menuActive.SetActive(true);
-            PlayMenuMusic(menuActive);
         }
     }
 
@@ -357,33 +353,6 @@ public class gamemanager : MonoBehaviour
             riftShardTextDisplay.text = $":{newAmount}";
         }
     }
-
-    //Music management for menus 
-    //plays menu music from the given menu GameObject
-    private void PlayMenuMusic(GameObject menuGO)
-    {
-        var musicSource = menuGO.GetComponentInChildren<AudioSource>();
-        if (musicSource != null)
-        {
-            musicSource.Play();
-            //Debug.Log($"Playing menu music from {menuGO.name}");
-        }
-        else
-        {
-            //Debug.LogWarning($"No AudioSource found in children of {menuGO.name}");
-        }
-    }
-    //stops menu music from the given menu GameObject
-    private void StopMenuMusic(GameObject menuGO)
-    {
-        var musicSource = menuGO.GetComponentInChildren<AudioSource>();
-        if (musicSource != null)
-        {
-            musicSource.Stop();
-            //Debug.Log($"Stopped menu music from {menuGO.name}");
-        }
-    }
-
 
     [Header("Wave Mode Settings")]
     public bool IsWaveModeActive = true;
