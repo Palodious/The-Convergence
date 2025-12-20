@@ -17,7 +17,7 @@ public class gunPickup : MonoBehaviour
 
             if (Store.Instance != null && gunType != GunType.None && gunType != gun.gunType)
             {
-                Debug.LogWarning($"gunPickup '{name}': Inspector gunType ({gunType}) doesn't match gunStats.gunType ({gun.gunType}). Using gunStats.gunType.");
+               // Debug.LogWarning($"gunPickup '{name}': Inspector gunType ({gunType}) doesn't match gunStats.gunType ({gun.gunType}). Using gunStats.gunType.");
             }
 
             Store.Instance.UnlockGun(gun != null ? gun.gunType : gunType);

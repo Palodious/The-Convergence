@@ -35,7 +35,7 @@ public class CreditsManager : MonoBehaviour
         if (!isScrolling)
         {
             scrollCoroutine = StartCoroutine(AutoScroll()); // Store the reference!
-            Debug.Log("Started AutoScroll Coroutine");
+            //Debug.Log("Started AutoScroll Coroutine");
         }
     }
 

@@ -72,6 +72,6 @@ public class ConfirmNewGamePopup : MonoBehaviour
 
         Hide();
 
-        Debug.Log("[ConfirmNewGamePopup] Confirm pressed (hook up wipe + new game next).");
+        //Debug.Log("[ConfirmNewGamePopup] Confirm pressed (hook up wipe + new game next).");
     }
 }
