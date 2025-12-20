@@ -178,7 +178,7 @@ public class gamemanager : MonoBehaviour
         stateUnpause();
 
         if (NewGamePlusManager.Instance != null)
-        {0
+        {
             NewGamePlusManager.Instance.AdvanceCycle();
         }
         else
