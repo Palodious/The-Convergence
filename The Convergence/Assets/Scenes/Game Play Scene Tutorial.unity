@@ -6157,7 +6157,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f6e47971b24414849b52fa8ab36084d3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::spawner
-  objectToSpawn: {fileID: 2804925484609231592, guid: 1092da00cf9eb434bb17a704015faf06, type: 3}
+  objectToSpawn: {fileID: 2804925484609231592, guid: efe5080c1d1ba724db772ebf10f2a0d1, type: 3}
   spawnAmount: 5
   spawnRate: 0.5
   spawnPos:
@@ -6165,16 +6165,11 @@ MonoBehaviour:
   - {fileID: 1305007130}
   - {fileID: 63600545}
   - {fileID: 2070809131}
-  - {fileID: 1767485929}
   - {fileID: 1861369783}
   - {fileID: 1225860661}
-  - {fileID: 1679225664}
+  - {fileID: 0}
   hasTriggered: 0
-  patrolPoints:
-  - {fileID: 1575332281}
-  - {fileID: 1767485929}
-  - {fileID: 1861369783}
-  - {fileID: 1225860661}
+  patrolPoints: []
   enableNGPlusScaling: 1
 --- !u!114 &224869881
 MonoBehaviour:
@@ -6204,7 +6199,6 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1575332281}
-  - {fileID: 1767485929}
   - {fileID: 1861369783}
   - {fileID: 1225860661}
   - {fileID: 1679225664}
@@ -48333,37 +48327,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 4000011048348644, guid: 84147b87204d0a0478bae9558d656ea2, type: 3}
   m_PrefabInstance: {fileID: 1764476168}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &1767485928
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1767485929}
-  m_Layer: 0
-  m_Name: Final Tutorial Enemy Patrol pos  (5)
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1767485929
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1767485928}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0.7071068, z: -0, w: 0.7071068}
-  m_LocalPosition: {x: -1.8, y: -1.7, z: 4.9}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 224869882}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &1770003296 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4000013765492046, guid: 721671003a026be4fb47107988831b38, type: 3}
