@@ -346,8 +346,8 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
 
         if (!controller.isGrounded)
         {
-            if (Input.GetKeyDown(KeyCode.G)) StartGlide();
-            if (Input.GetKeyUp(KeyCode.G)) StopGlide();
+            if (Input.GetKeyDown(KeyCode.C)) StartGlide();
+            if (Input.GetKeyUp(KeyCode.C)) StopGlide();
         }
         else if (isGliding) StopGlide();
 
