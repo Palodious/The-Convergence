@@ -2958,6 +2958,7 @@ GameObject:
   - component: {fileID: 4160700154801584295}
   - component: {fileID: 7061355654602859054}
   - component: {fileID: 8544191087952938931}
+  - component: {fileID: 2151474375409443729}
   m_Layer: 3
   m_Name: Player
   m_TagString: Player
@@ -3009,7 +3010,7 @@ MonoBehaviour:
   JumpSpeed: 10
   maxJumps: 1
   gravity: 32
-  glideGravity: 5
+  glideGravity: 2.7
   shootDamage: 10
   shootDist: 1
   trailDuration: 0.05
@@ -3052,20 +3053,28 @@ MonoBehaviour:
   reloadTime: 1.5
   enableNGPlusPlayerHpScaling: 1
   deathAnimationTime: 2
-  deathSound: {fileID: 0}
+  deathSound: {fileID: 8300000, guid: a7384201d2881e34b9c93f5c4f019521, type: 3}
   deathSoundVol: 1
   aud: {fileID: 4160700154801584295}
   audStep:
-  - {fileID: 8300000, guid: 552ce8157933395458d559fdee898974, type: 3}
-  audStepVol: 0
+  - {fileID: 8300000, guid: df7087e4d8a8bb546bc08ce68632903f, type: 3}
+  - {fileID: 8300000, guid: 2b16c7ed38399d940aef4157531cb6fa, type: 3}
+  - {fileID: 8300000, guid: 33dbef4d86589df4baf1c6ae944ed6dc, type: 3}
+  - {fileID: 8300000, guid: 7d82cae6003b3164db683bd79ee012f4, type: 3}
+  - {fileID: 8300000, guid: 6cc7c64d8a280e448b8fbc2ff79283ad, type: 3}
+  audStepVol: 0.16
   audJump:
   - {fileID: 8300000, guid: 57da31a052bcb9f4bab4d8b3e62edb3c, type: 3}
-  audJumpVol: 0
+  - {fileID: 8300000, guid: 31fd69a259169d441806778ec2bae9ba, type: 3}
+  - {fileID: 8300000, guid: 65f8912a6f857334392200929d5c69a9, type: 3}
+  audJumpVol: 0.16
   audHurt:
-  - {fileID: 8300000, guid: a7384201d2881e34b9c93f5c4f019521, type: 3}
-  audHurtVol: 0
-  audMedkit: {fileID: 8300000, guid: aa55ad851a936e04fb634b21d5430fce, type: 3}
-  audMedkitVol: 1
+  - {fileID: 8300000, guid: 878722455253d33438989b46a36d504b, type: 3}
+  - {fileID: 8300000, guid: c9879510c038e9e4c87c5799a698fc35, type: 3}
+  - {fileID: 8300000, guid: 8be3c39039572f04f83048db2b87599e, type: 3}
+  audHurtVol: 0.17
+  audMedkit: {fileID: 8300000, guid: 8cec2e26376299548a1c67b41409274d, type: 3}
+  audMedkitVol: 0.55
   keyList: []
   ammoPickupHistory: []
   ammoTextDisplay: {fileID: 0}
@@ -3094,11 +3103,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerAbilities
   controller: {fileID: 8236199846886816912}
   charController: {fileID: 2549095157605412425}
-  pulseDamage: 25
-  pulseRange: 10
-  pulseCooldown: 3.5
-  pulseForce: 20
-  jumpDistance: 10
+  pulseDamage: 20
+  pulseRange: 11
+  pulseCooldown: 5
+  pulseForce: 16
+  jumpDistance: 15
   forcedJumpLock: 5
   enemyMask:
     serializedVersion: 2
@@ -3495,6 +3504,29 @@ MonoBehaviour:
   - {fileID: 6151397272181562880}
   - {fileID: 1472375547134533905}
   - {fileID: 2431946884983921550}
+--- !u!114 &2151474375409443729
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7722342076906786010}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bf169a0e27b04814199389ad80307e1d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerAbilities
+  controller: {fileID: 0}
+  charController: {fileID: 0}
+  pulseDamage: 10
+  pulseRange: 5
+  pulseCooldown: 2
+  pulseForce: 5
+  jumpDistance: 10
+  forcedJumpLock: 5
+  enemyMask:
+    serializedVersion: 2
+    m_Bits: 0
 --- !u!1 &7758989993759492528
 GameObject:
   m_ObjectHideFlags: 0
@@ -4004,7 +4036,7 @@ MonoBehaviour:
     m_Bits: 1
   m_VolumeTrigger: {fileID: 0}
   m_VolumeFrameworkUpdateModeOption: 2
-  m_RenderPostProcessing: 0
+  m_RenderPostProcessing: 1
   m_Antialiasing: 0
   m_AntialiasingQuality: 2
   m_StopNaN: 0
