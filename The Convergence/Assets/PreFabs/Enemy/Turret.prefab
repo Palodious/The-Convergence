@@ -612,6 +612,8 @@ GameObject:
   m_Component:
   - component: {fileID: 48851688841842002}
   - component: {fileID: -6868155533678741046}
+  - component: {fileID: 5676882466775476961}
+  - component: {fileID: -1647810392815360952}
   m_Layer: 0
   m_Name: Turret
   m_TagString: Untagged
@@ -656,7 +658,7 @@ MonoBehaviour:
   obstacleLayer:
     serializedVersion: 2
     m_Bits: 193
-  health: 100
+  health: 200
   damage: 20
   range: 25
   fireRate: 1
@@ -678,6 +680,49 @@ MonoBehaviour:
   detectionSound: {fileID: 0}
   muzzleFlash: {fileID: 0}
   destructionEffect: {fileID: 0}
+--- !u!64 &5676882466775476961
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5305551613361319555}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 5
+  m_Convex: 0
+  m_CookingOptions: 30
+  m_Mesh: {fileID: 0}
+--- !u!65 &-1647810392815360952
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5305551613361319555}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1, y: 1, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &6187088819544799483
 GameObject:
   m_ObjectHideFlags: 0

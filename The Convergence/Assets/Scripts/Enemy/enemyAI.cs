@@ -29,7 +29,7 @@ public class enemyAI : MonoBehaviour, IDamage, ISaveable
 
     [Header("**** Stats ****")]
     bool isAlive = true;
-    [Range(1, 300)][SerializeField] int maxHP = 100;
+    [Range(1, 1500)][SerializeField] int maxHP = 100;
     private int currentHP;
     [Range(1, 360)][SerializeField] int FOV;
     [Range(1, 360)][SerializeField] int faceTargetSpeed;
