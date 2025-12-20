@@ -4,7 +4,7 @@ using UnityEngine;
 public class RiftShards : ICurrency
 {
     [Header("~=~=Rift Shards Amount=~=~")]
-    [Range(0, 999999)][SerializeField] private int amount = 0;
+    [Range(0, 999999)][SerializeField] private int amount;
 
     public string Name => "Rift Shards";
 
