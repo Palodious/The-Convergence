@@ -174,7 +174,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Store
   playerState:
-    potionCount: 1
+    potionCount: 9999999
     ownedGuns: 
     upgradeLevels: []
   allStoreItems:
@@ -197,6 +197,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 89bf896a7d791144fb8658d91ca03273, type: 2}
   storeUIPanel: {fileID: 0}
   startingOwnedGuns: 
+  allowConsumablePurchaseWhenHealthFull: 0
 --- !u!1 &194028061411433511
 GameObject:
   m_ObjectHideFlags: 0
