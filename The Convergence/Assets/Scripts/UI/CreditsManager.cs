@@ -31,12 +31,6 @@ public class CreditsManager : MonoBehaviour
         if (creditsPanel != null) creditsPanel.SetActive(true);
         ResetScroll();
 
-        if (creditsMusic != null && !creditsMusic.isPlaying)
-        {
-            creditsMusic.Play();
-            Debug.Log("Started Playing CreditsMusic");
-        }
-
         // Start auto-scroll
         if (!isScrolling)
         {
@@ -55,8 +49,6 @@ public class CreditsManager : MonoBehaviour
         isScrolling = false;
 
         if (creditsPanel != null) creditsPanel.SetActive(false);
-        if (creditsMusic != null) creditsMusic.Stop();
-        Debug.Log("Stopped Playing Credits Music");
     }
 
     private IEnumerator AutoScroll()

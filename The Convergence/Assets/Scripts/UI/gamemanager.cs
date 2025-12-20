@@ -178,7 +178,7 @@ public class gamemanager : MonoBehaviour
         stateUnpause();
 
         if (NewGamePlusManager.Instance != null)
-        {
+        {0
             NewGamePlusManager.Instance.AdvanceCycle();
         }
         else
@@ -348,7 +348,7 @@ public class gamemanager : MonoBehaviour
     {
         if (riftShardTextDisplay != null)
         {
-            // Sets the text to show the current coin amount
+            // Sets the text to show the current rift shard amount
             // You can format this string as needed, e.g., $"{newAmount} SHARDS"
             riftShardTextDisplay.text = $":{newAmount}";
         }

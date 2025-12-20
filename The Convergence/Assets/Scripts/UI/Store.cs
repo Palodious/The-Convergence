@@ -377,9 +377,16 @@ public class Store : MonoBehaviour, ISaveable
 
         playerState.potionCount = 0;
 
-        playerState.upgradeLevels.Clear();
-        playerState.ownedGuns.Clear();
- 
+        if (playerState.upgradeLevels != null)
+            playerState.upgradeLevels.Clear();
+        else
+            playerState.upgradeLevels = new List<UpgradeLevelEntry>();
+        
+        if (playerState.ownedGuns != null)
+            playerState.ownedGuns.Clear();
+        else
+            playerState.ownedGuns = new List<int>();
+        
         EnsureStartingOwnedGuns();
 
         RefreshAllButtonDisplays();
