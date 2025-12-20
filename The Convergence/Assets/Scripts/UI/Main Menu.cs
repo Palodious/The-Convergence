@@ -18,6 +18,8 @@ public class MainMenu : MonoBehaviour
 
     [SerializeField] private Button continueButton;
 
+    private playerController playerControllerInstance;
+
     void Start()
     {
         RefreshContinueButtonState();
@@ -30,7 +32,6 @@ public class MainMenu : MonoBehaviour
 
         if (cancelNewGameButton != null)
             cancelNewGameButton.onClick.AddListener(CancelStartNewGame);
-
     }
 
     void Awake()
@@ -39,6 +40,7 @@ public class MainMenu : MonoBehaviour
         Time.timeScale = 1f;
         Cursor.visible = true;
         Cursor.lockState = CursorLockMode.None;
+
     }
 
     public void RefreshContinueButtonState()
@@ -168,38 +170,44 @@ public class MainMenu : MonoBehaviour
 
     private void StartNewGameNow()
     {
-        // Reset NG+ cycle
+        if (SaveManager.Instance != null)
+            SaveManager.Instance.DeleteSave();
+
+        playerController.ResetAllRuntimePersistence();
+
+        if (GunUpgradeManager.Instance != null)
+            GunUpgradeManager.Instance.ResetAllUpgrades();
+
         if (NewGamePlusManager.Instance != null)
             NewGamePlusManager.Instance.SetCycle(0);
 
-        // Reset currency
         if (RiftShardManager.Instance != null)
             RiftShardManager.Instance.ResetAmount();
 
-        // Reset store/meta upgrade levels
         if (Store.Instance != null)
             Store.Instance.ResetStoreProgress();
-
-        // Reset gun stats back to base snapshots
-        if (GunUpgradeManager.Instance != null)
-            GunUpgradeManager.Instance.ResetToBase();
-
-        // Wipe the save file so Continue is disabled
-        if (SaveManager.Instance != null)
-            SaveManager.Instance.DeleteSave();
 
         RefreshContinueButtonState();
 
         SceneLoader.LoadSceneWithLoadingScreen(firstLevelSceneName);
     }
 
-    // Called by Quit button
+
     public void QuitGame()
     {
+        // Reset runtime and upgrades if no save exists
+        if (SaveManager.Instance == null || !SaveManager.Instance.TryLoad(out _))
+        {
+            playerController.ResetAllRuntimePersistence();
+
+            if (GunUpgradeManager.Instance != null)
+                GunUpgradeManager.Instance.ResetAllUpgrades();
+        }
+
 #if UNITY_EDITOR
         UnityEditor.EditorApplication.isPlaying = false;
 #else
-        Application.Quit();
+    Application.Quit();
 #endif
     }
 }

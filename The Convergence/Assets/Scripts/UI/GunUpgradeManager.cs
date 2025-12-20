@@ -49,6 +49,10 @@ public class GunUpgradeManager : MonoBehaviour, ISaveable
             Instance = this;
             DontDestroyOnLoad(gameObject);
             InitializeGunMap();
+
+            ResetGunStatsToDefaults();
+
+            // Now cache the "true base" snapshots
             CacheBaseSnapshots();
         }
         else
@@ -119,6 +123,55 @@ public class GunUpgradeManager : MonoBehaviour, ISaveable
         ApplySnapshot(GunType.SMG, smgStats, GetBase(GunType.SMG));
         ApplySnapshot(GunType.Rifle, rifleStats, GetBase(GunType.Rifle));
         ApplySnapshot(GunType.AR, arStats, GetBase(GunType.AR));
+    }
+
+    private void ResetGunStatsToDefaults()
+    {
+        if (smgStats != null)
+        {
+            smgStats.shootDamage = 10;
+            smgStats.shootDist = 20;
+            smgStats.shootRate = 0.25f;
+            smgStats.ammoMax = 40;
+            smgStats.ammoCur = smgStats.ammoMax;
+        }
+
+        if (rifleStats != null)
+        {
+            rifleStats.shootDamage = 30;
+            rifleStats.shootDist = 40;
+            rifleStats.shootRate = 1f;
+            rifleStats.ammoMax = 15;
+            rifleStats.ammoCur = rifleStats.ammoMax;
+        }
+
+        if (arStats != null)
+        {
+            arStats.shootDamage = 20;
+            arStats.shootDist = 30;
+            arStats.shootRate = .5f;
+            arStats.ammoMax = 25;
+            arStats.ammoCur = arStats.ammoMax;
+        }
+    }
+
+    public void ResetAllUpgrades()
+    {
+        ResetToBase();
+
+        var emptySave = new GunUpgradeSaveData
+        {
+            smg = new GunStatSave { hasData = false },
+            rifle = new GunStatSave { hasData = false },
+            ar = new GunStatSave { hasData = false }
+        };
+
+        RestoreState(emptySave);
+
+        PlayerPrefs.DeleteKey("GunUpgrade_SMG");
+        PlayerPrefs.DeleteKey("GunUpgrade_Rifle");
+        PlayerPrefs.DeleteKey("GunUpgrade_AR");
+        PlayerPrefs.Save();
     }
 
     private GunBaseSnapshot GetBase(GunType type)

@@ -113,19 +113,6 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
     private static int persistentHealthUpgradeTotal = 0;
     private static bool isNewGameSession = true;
 
-    public static void RequestFreshRunReset()
-    {
-        persistentGunList.Clear();
-        persistentKeyList.Clear();
-        persistentAmmoPickupHistory.Clear();
-        persistentAmmoCounts.Clear();
-
-        persistentGunListPos = 0;
-        persistentHealthUpgradeTotal = 0;
-
-        isNewGameSession = true;
-    }
-
     [Header("~=~= Enemy Collision Prevention =~=~")]
     [SerializeField] private float enemyPushForce = 15f;
     [SerializeField] private LayerMask enemyLayer;
@@ -161,16 +148,17 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
 
     void Awake()
     {
+        if (isNewGameSession)
+        {
+            ResetAllRuntimePersistence(); // only if flagged as new game
+            isNewGameSession = false;
+        }
+
         if (animator == null)
             animator = GetComponent<Animator>();
 
         int currentSceneIndex = SceneManager.GetActiveScene().buildIndex;
 
-        if (currentSceneIndex == 1 && isNewGameSession)
-        {
-            ResetStaticData();
-            isNewGameSession = false;
-        }
     }
 
     void Start()
@@ -1163,16 +1151,19 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
         updatePlayerUI();
     }
 
-    void ResetStaticData()
+    public static void ResetAllRuntimePersistence()
     {
         persistentGunList.Clear();
         persistentKeyList.Clear();
         persistentAmmoPickupHistory.Clear();
         persistentAmmoCounts.Clear();
+
         persistentGunListPos = 0;
-        persistentHP = HP;
-        persistentMaxHP = HP;
         persistentHealthUpgradeTotal = 0;
+        persistentHP = 0;
+        persistentMaxHP = 0;
+
+        isNewGameSession = true;
     }
 
     void LoadPersistentData()

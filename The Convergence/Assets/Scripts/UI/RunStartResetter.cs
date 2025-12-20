@@ -8,7 +8,7 @@ public class RunStartResetter : MonoBehaviour
 
     public void StartFreshRun()
     {
-        playerController.RequestFreshRunReset();
+        playerController.ResetAllRuntimePersistence();
 
         SaveManager.PendingLoad = false;
 
