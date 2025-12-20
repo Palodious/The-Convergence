@@ -1375,9 +1375,9 @@ MonoBehaviour:
   maxHP: 1000
   FOV: 80
   faceTargetSpeed: 150
-  roamDist: 15
+  roamDist: 30
   roamPauseTime: 5
-  animTransSpeed: 8
+  animTransSpeed: 2.5
   sightRange: 20
   projectile: {fileID: 4705637938062420806, guid: dc66ec9d49639764a91941412154893b, type: 3}
   shootRate: 0.6
@@ -1426,11 +1426,11 @@ MonoBehaviour:
   jumpWindupTime: 0.2
   landingDistanceFromPlayer: 0.5
   canDashAttack: 1
-  dashSpeed: 6.4
-  dashDuration: 0.53
-  dashAttackRange: 1
+  dashSpeed: 15
+  dashDuration: 1
+  dashAttackRange: 10
   minDashDistance: 4
-  dashAttackCooldown: 3.2
+  dashAttackCooldown: 4
   playerFleeingThreshold: 2.12
   waveModeRange: 200
   useAnimations: 1
