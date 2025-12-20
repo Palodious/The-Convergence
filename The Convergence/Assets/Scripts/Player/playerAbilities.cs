@@ -15,20 +15,23 @@ public class PlayerAbilities : MonoBehaviour
 
     [Header("Rift Jump Settings")]
     [Range(10f, 25f)][SerializeField] private float jumpDistance = 15f;
-    [SerializeField] private float forcedJumpLock = 5f; // hard lock for 5 seconds
+    [SerializeField] private float forcedJumpLock = 5f;   // HARD 5 second lock
 
     [Header("Enemy Settings")]
     [SerializeField] private LayerMask enemyMask;
 
-    // Cooldowns
+    // Timers
     private float pulseTimer;
 
-    // Jump lock
+    // Rift Jump Lock
     private bool jumpLocked = false;
 
     // Ability states
     public bool isPulsing { get; private set; }
     public bool isJumping { get; private set; }
+
+    // Rift Jump collision mask (everything EXCEPT Fire)
+    private int riftBlockMask;
 
     void Start()
     {
@@ -39,27 +42,29 @@ public class PlayerAbilities : MonoBehaviour
             charController = GetComponent<CharacterController>();
 
         pulseTimer = pulseCooldown;
+
+        // Ignore Fire layer during Rift Jump
+        riftBlockMask = ~LayerMask.GetMask("Fire");
     }
 
     void Update()
     {
-        // Block abilities if game is paused or popup is open
-        if (gamemanager.instance != null && (gamemanager.instance.isPaused || directionalPopup.PopupIsOpen))
+        // Block abilities if paused or popup open
+        if (gamemanager.instance != null &&
+            (gamemanager.instance.isPaused || directionalPopup.PopupIsOpen))
             return;
 
-        // Update pulse timer
+        // Update pulse cooldown
         if (pulseTimer < pulseCooldown)
             pulseTimer += Time.deltaTime;
 
-        // Rift Pulse input
+        // Rift Pulse
         if (Input.GetKeyDown(KeyCode.Q) && pulseTimer >= pulseCooldown)
             StartCoroutine(RiftPulse());
 
-        // Rift Jump input (only if not locked)
+        // Rift Jump (hard locked)
         if (Input.GetKeyDown(KeyCode.F) && !jumpLocked)
-        {
             StartCoroutine(RiftJump());
-        }
     }
 
     IEnumerator RiftPulse()
@@ -73,9 +78,12 @@ public class PlayerAbilities : MonoBehaviour
         {
             GameObject hitGO = hit.gameObject;
 
-            // Deal damage
+            // Damage
             IDamage dmg = hitGO.GetComponent<IDamage>() ?? hitGO.GetComponentInParent<IDamage>();
-            int amount = Mathf.RoundToInt(pulseDamage * (controller != null ? controller.damageBoost : 1f));
+            int amount = Mathf.RoundToInt(
+                pulseDamage * (controller != null ? controller.damageBoost : 1f)
+            );
+
             if (dmg != null)
             {
                 dmg.takeDamage(amount);
@@ -90,7 +98,7 @@ public class PlayerAbilities : MonoBehaviour
                 rb.AddForce(dir * pulseForce, ForceMode.Impulse);
             }
 
-            // Pylon hit
+            // Pylon
             PylonController pylon = hit.GetComponent<PylonController>();
             if (pylon != null)
             {
@@ -109,7 +117,7 @@ public class PlayerAbilities : MonoBehaviour
             yield break;
 
         isJumping = true;
-        jumpLocked = true; // lock the jump immediately
+        jumpLocked = true;   // HARD LOCK immediately
 
         Vector3 startPos = transform.position;
         Vector3 direction = transform.forward.normalized;
@@ -122,13 +130,21 @@ public class PlayerAbilities : MonoBehaviour
         Vector3 bottom = startPos + center + Vector3.up * radius;
         Vector3 top = startPos + center + Vector3.up * (height - radius);
 
-        // CapsuleCast to stop at obstacles
-        if (Physics.CapsuleCast(bottom, top, radius, direction, out RaycastHit hit, distance,
-            Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore))
+        // CapsuleCast ignoring Fire layer
+        if (Physics.CapsuleCast(
+            bottom,
+            top,
+            radius,
+            direction,
+            out RaycastHit hit,
+            distance,
+            riftBlockMask,
+            QueryTriggerInteraction.Ignore))
         {
-            distance = Mathf.Max(0f, hit.distance - 0.15f); // safe buffer
+            distance = Mathf.Max(0f, hit.distance - 0.15f);
         }
 
+        // Fully blocked
         if (distance <= 0.05f)
         {
             isJumping = false;
@@ -138,7 +154,7 @@ public class PlayerAbilities : MonoBehaviour
 
         Vector3 targetPos = startPos + direction * distance;
 
-        // Pre-teleport effect
+        // Effects
         EffectsManager.Instance.Create("JumpPrep", startPos);
 
         // Teleport safely
@@ -146,12 +162,11 @@ public class PlayerAbilities : MonoBehaviour
         transform.position = targetPos;
         charController.enabled = true;
 
-        // Post-teleport effect
         EffectsManager.Instance.Create("JumpImpact", targetPos);
 
         isJumping = false;
 
-        // Start unlock timer
+        // Unlock after 5 seconds
         StartCoroutine(JumpUnlockTimer());
         yield return null;
     }
