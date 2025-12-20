@@ -2958,7 +2958,6 @@ GameObject:
   - component: {fileID: 4160700154801584295}
   - component: {fileID: 7061355654602859054}
   - component: {fileID: 8544191087952938931}
-  - component: {fileID: 2151474375409443729}
   m_Layer: 3
   m_Name: Player
   m_TagString: Player
@@ -3504,29 +3503,6 @@ MonoBehaviour:
   - {fileID: 6151397272181562880}
   - {fileID: 1472375547134533905}
   - {fileID: 2431946884983921550}
---- !u!114 &2151474375409443729
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7722342076906786010}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bf169a0e27b04814199389ad80307e1d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::PlayerAbilities
-  controller: {fileID: 0}
-  charController: {fileID: 0}
-  pulseDamage: 10
-  pulseRange: 5
-  pulseCooldown: 2
-  pulseForce: 5
-  jumpDistance: 10
-  forcedJumpLock: 5
-  enemyMask:
-    serializedVersion: 2
-    m_Bits: 0
 --- !u!1 &7758989993759492528
 GameObject:
   m_ObjectHideFlags: 0

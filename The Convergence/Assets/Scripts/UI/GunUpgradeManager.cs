@@ -129,16 +129,16 @@ public class GunUpgradeManager : MonoBehaviour, ISaveable
     {
         if (smgStats != null)
         {
-            smgStats.shootDamage = 10;
+            smgStats.shootDamage = 15;
             smgStats.shootDist = 20;
-            smgStats.shootRate = 0.25f;
+            smgStats.shootRate = 0.15f;
             smgStats.ammoMax = 40;
             smgStats.ammoCur = smgStats.ammoMax;
         }
 
         if (rifleStats != null)
         {
-            rifleStats.shootDamage = 30;
+            rifleStats.shootDamage = 40;
             rifleStats.shootDist = 40;
             rifleStats.shootRate = 1f;
             rifleStats.ammoMax = 15;
@@ -149,7 +149,7 @@ public class GunUpgradeManager : MonoBehaviour, ISaveable
         {
             arStats.shootDamage = 20;
             arStats.shootDist = 30;
-            arStats.shootRate = .5f;
+            arStats.shootRate = .7f;
             arStats.ammoMax = 25;
             arStats.ammoCur = arStats.ammoMax;
         }
