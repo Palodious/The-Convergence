@@ -8,6 +8,8 @@ public class RunStartResetter : MonoBehaviour
 
     public void StartFreshRun()
     {
+        SaveManager.Instance?.DeleteSave();
+
         playerController.ResetAllRuntimePersistence();
 
         SaveManager.PendingLoad = false;
