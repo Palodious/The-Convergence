@@ -41,6 +41,8 @@ public class SaveManager : MonoBehaviour
 {
     public static bool PendingLoad = false;
 
+    public static bool BlockSaving;
+
     public static SaveManager Instance { get; private set; }
 
     public static bool IsLoadingFromSave { get; private set; }
@@ -58,6 +60,9 @@ public class SaveManager : MonoBehaviour
     // This creates a new SaveData file, fills it with info, and writes it to disk.
     public void Save(GameObject player, int gameGoalCount)
     {
+
+        if (BlockSaving)
+            return;
 
         var pc = player.GetComponent<playerController>();
 

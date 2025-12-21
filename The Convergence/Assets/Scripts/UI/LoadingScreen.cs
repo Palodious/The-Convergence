@@ -79,6 +79,8 @@ public class LoadingScreen : MonoBehaviour
 
         // Now allow scene activation
         op.allowSceneActivation = true;
+
+        SaveManager.BlockSaving = false;
     }
 
     private IEnumerator Fade(float from, float to)
