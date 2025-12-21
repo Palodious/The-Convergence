@@ -4514,6 +4514,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1000317837544929904, guid: f9cb63262ab343044a4dbdfabca5a845, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1845282844992976176, guid: f9cb63262ab343044a4dbdfabca5a845, type: 3}
       propertyPath: m_IsActive
       value: 1
@@ -5677,6 +5681,10 @@ PrefabInstance:
     - target: {fileID: 252721815972662000, guid: db569c91108052c44aa63591482b6177, type: 3}
       propertyPath: m_Name
       value: Lava
+      objectReference: {fileID: 0}
+    - target: {fileID: 6524875348257152868, guid: db569c91108052c44aa63591482b6177, type: 3}
+      propertyPath: damageAmount
+      value: 20
       objectReference: {fileID: 0}
     - target: {fileID: 8586222442493030560, guid: db569c91108052c44aa63591482b6177, type: 3}
       propertyPath: m_LocalScale.x
@@ -19094,8 +19102,8 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Glide accross the fire by getting a running start, jumping and pressing
-    *G* while in the air.
+  m_text: Glide accross the fire by getting a running start, jumping and holding
+    *C* while in the air.
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
