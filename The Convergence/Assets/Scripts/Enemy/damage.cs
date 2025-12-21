@@ -14,7 +14,7 @@ public class damage : MonoBehaviour
     [SerializeField] private LayerMask ignoreLayer;
 
     [Header("~=~= Damage Settings =~=~")]
-    [Range(1, 20)][SerializeField] private int damageAmount;
+    [Range(1, 500)][SerializeField] private int damageAmount;
     [Range(0.1f, 20f)][SerializeField] private float damageRate;
 
     [Header("~=~= Movement & Lifetime =~=~")]

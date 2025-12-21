@@ -39,7 +39,7 @@ public class LoadingScreen : MonoBehaviour
           //  Debug.LogWarning("LoadingScreen: No targetSceneName set. Falling back to main gameplay scene.");
 
             // TODO: put your default gameplay scene name here
-            SceneManager.LoadScene("Game Play Scene L1");
+            SceneManager.LoadScene("Game Play Scene Tutorial");
             yield break;
         }
 
