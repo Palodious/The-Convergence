@@ -4,9 +4,6 @@ using UnityEngine.UI;
 
 public class MainMenu : MonoBehaviour
 {
-    [Header("Scene to load when pressing Start")]
-    [SerializeField] string firstLevelSceneName = "Level1";
-
     [Header("Panels")]
     [SerializeField] GameObject optionsPanel;
 
