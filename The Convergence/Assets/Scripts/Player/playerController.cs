@@ -231,6 +231,7 @@ public class playerController : MonoBehaviour, IDamage, IPickup, ISaveable
 
     void Update()
     {
+
         if (isDead) return;
 
         if (!gamemanager.instance.isPaused)

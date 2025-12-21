@@ -42,6 +42,8 @@ public class gamemanager : MonoBehaviour
     [Header("**** New Game+ Settings ****")]
     [SerializeField] private string newGamePlusStartSceneName = "Game Play Scene L1";
 
+    private bool suppressCancelThisFrame = false;
+
     void Awake()
     {
         // Singleton pattern with safety
@@ -95,6 +97,12 @@ public class gamemanager : MonoBehaviour
 
     void Update()
     {
+        if (suppressCancelThisFrame)
+        {
+            suppressCancelThisFrame = false;
+            return;
+        }
+
         if (Input.GetButtonDown("Cancel"))
         {
             if (directionalPopup.PopupIsOpen)
@@ -111,6 +119,11 @@ public class gamemanager : MonoBehaviour
                 stateUnpause();
             }
         }
+    }
+
+    public void SuppressCancelOnce()
+    {
+        suppressCancelThisFrame = true;
     }
 
     public void statePause()
