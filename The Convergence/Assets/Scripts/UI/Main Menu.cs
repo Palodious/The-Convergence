@@ -81,8 +81,6 @@ public class MainMenu : MonoBehaviour
         }
 
         StartNewGameNow();
-
-        SceneLoader.LoadSceneWithLoadingScreen(firstLevelSceneName);
     }
 
     // Called by Continue button – only works if a save exists
