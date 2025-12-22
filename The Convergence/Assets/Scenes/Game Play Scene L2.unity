@@ -202920,6 +202920,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
+--- !u!1 &891212822 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2534677096556019482, guid: f9cb63262ab343044a4dbdfabca5a845, type: 3}
+  m_PrefabInstance: {fileID: 891212818}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &891510275 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4000011716061034, guid: a22c0c7e17126fa4f89534dc98bcac8f, type: 3}
@@ -251492,6 +251497,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1105817705}
+  - component: {fileID: 1105817710}
   - component: {fileID: 1105817708}
   - component: {fileID: 1105817707}
   - component: {fileID: 1105817706}
@@ -251537,7 +251543,7 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1, y: 1, z: 6}
+  m_Size: {x: 1, y: 1, z: 8}
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!23 &1105817707
 MeshRenderer:
@@ -251617,6 +251623,28 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!114 &1105817710
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1105817704}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6f31249851ad4734cbd6408a4bff8e4b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::elevatorDoorController
+  requiresKey: 0
+  requiresEnemiesDefeated: 1
+  requiredKey: {fileID: 0}
+  keysRequired: 0
+  interactionKey: 101
+  interactionRange: 5
+  doorPopupUI: {fileID: 891212822}
+  doorText: {fileID: 0}
+  slideDistance: 3
+  slideSpeed: 2
 --- !u!1001 &1106243925
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -433691,7 +433719,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1907946679
 Transform:
   m_ObjectHideFlags: 0
@@ -433719,11 +433747,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6f31249851ad4734cbd6408a4bff8e4b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::elevatorDoorController
-  door: {fileID: 1105817705}
-  openHeight: 6
-  speed: 2
-  openDownward: 1
-  closeOnExit: 1
+  requiresKey: 0
+  requiresEnemiesDefeated: 1
+  requiredKey: {fileID: 0}
+  keysRequired: 1
+  interactionKey: 101
+  interactionRange: 3
+  doorPopupUI: {fileID: 0}
+  doorText: {fileID: 0}
+  slideDistance: 3
+  slideSpeed: 2
 --- !u!65 &1907946681
 BoxCollider:
   m_ObjectHideFlags: 0
