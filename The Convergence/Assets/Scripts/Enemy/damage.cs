@@ -34,7 +34,7 @@ public class damage : MonoBehaviour
 
     void Start()
     {
-        if (type == damageType.moving || type == damageType.homing || type == damageType.melee)
+        if (type == damageType.moving || type == damageType.homing || type == damageType.melee || type == damageType.DOT)
         {
             Destroy(gameObject, destroyTime);
 
