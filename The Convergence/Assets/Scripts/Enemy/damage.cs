@@ -19,7 +19,7 @@ public class damage : MonoBehaviour
 
     [Header("~=~= Movement & Lifetime =~=~")]
     [Range(1, 50)][SerializeField] private int speed;
-    [Range(1, 20)][SerializeField] private int destroyTime;
+    [Range(1, 5000)][SerializeField] private int destroyTime;
 
     [Header("~=~= Projectile Arc =~=~")]
     [SerializeField] private ProjectileMode projectileMode = ProjectileMode.Straight;
