@@ -4,11 +4,12 @@ using UnityEngine.UI;
 
 public class MainMenu : MonoBehaviour
 {
-    [Header("Scene to load when pressing Start")]
-    [SerializeField] string firstLevelSceneName = "Level1";
-
     [Header("Panels")]
     [SerializeField] GameObject optionsPanel;
+
+    [Header("New Game start scene")]
+    [SerializeField] string tutorialSceneName = "Gameplay_Tutorial";
+    private bool startingNewGame = false;
 
     [Header("New Game Confirmation (resets NG+ and meta)")]
     [SerializeField] private GameObject newGameWarningPanel;
@@ -45,25 +46,22 @@ public class MainMenu : MonoBehaviour
 
     public void RefreshContinueButtonState()
     {
-        // 1) If we forgot to wire the button, fail safely.
-        if (continueButton == null)
+        if (continueButton == null) return;
+
+        if (startingNewGame)
         {
-          //  Debug.LogWarning("MainMenu: continueButton is not assigned in the Inspector.");
+            continueButton.interactable = false;
             return;
         }
 
-        // 2) If there is no SaveManager in this scene, disable the button.
         if (SaveManager.Instance == null)
         {
             continueButton.interactable = false;
             return;
         }
 
-        // 3) Check if a valid save exists.
         SaveData tmp;
         bool hasValidSave = SaveManager.Instance.TryLoad(out tmp);
-
-        // Gray-out unless there is actually a loadable save.
         continueButton.interactable = hasValidSave;
     }
 
@@ -81,8 +79,6 @@ public class MainMenu : MonoBehaviour
         }
 
         StartNewGameNow();
-
-        SceneLoader.LoadSceneWithLoadingScreen(firstLevelSceneName);
     }
 
     // Called by Continue button – only works if a save exists
@@ -170,6 +166,8 @@ public class MainMenu : MonoBehaviour
 
     private void StartNewGameNow()
     {
+        startingNewGame = true;
+
         if (SaveManager.Instance != null)
             SaveManager.Instance.DeleteSave();
 
@@ -187,10 +185,13 @@ public class MainMenu : MonoBehaviour
         if (Store.Instance != null)
             Store.Instance.ResetStoreProgress();
 
-        RefreshContinueButtonState();
+        if (continueButton != null)
+            continueButton.interactable = false;
 
-        SceneLoader.LoadSceneWithLoadingScreen(firstLevelSceneName);
+        SceneLoader.LoadSceneWithLoadingScreen(tutorialSceneName);
     }
+
+
 
 
     public void QuitGame()

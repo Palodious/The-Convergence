@@ -31,7 +31,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
   m_LocalPosition: {x: -237.14786, y: 0, z: 72.99429}
-  m_LocalScale: {x: 60, y: 0.47249, z: 50}
+  m_LocalScale: {x: 25, y: 0.47249, z: 20}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -48,16 +48,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9c0939bf7c617eb4b873ccc966bfab79, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::damage
-  type: 2
+  type: 1
   dotPrefab: {fileID: 252721815972662000}
   rb: {fileID: 277674074260553852}
   ignoreLayer:
     serializedVersion: 2
     m_Bits: 0
-  damageAmount: 10
-  damageRate: 0.5
+  damageAmount: 500
+  damageRate: 20
   speed: 1
-  destroyTime: 1
+  destroyTime: 5000
   projectileMode: 0
   launchAngle: 35
   arcSpeed: 10

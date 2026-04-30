@@ -6,11 +6,8 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-// Each component's save data gets stored in one of these.
-// It includes the type of component and the JSON for its state.
 [Serializable] public class SaveRecord { public string typeName; public string json; }
 
-// Each object in the scene gets an EntityRecord that stores its ID, prefab info, transform, and component data.
 [Serializable]
 public class EntityRecord
 {
@@ -21,12 +18,11 @@ public class EntityRecord
     public List<SaveRecord> components = new();
 }
 
-// This holds everything I want saved — the scene, player data, objectives, and all entity states.
 [Serializable]
 public class SaveData
 {
     public string scene;
-    public string version = "1.0.0"; // I’ll bump this later if I change the save format.
+    public string version = "1.0.0";
     public string playerId;
     public Vector3 playerPos;
     public Quaternion playerRot;
@@ -35,17 +31,13 @@ public class SaveData
     public List<EntityRecord> entities = new();
 }
 
-// This script handles saving and loading everything.
-// It grabs data from the scene, writes it to disk, and restores it when loading.
 public class SaveManager : MonoBehaviour
 {
     public static bool PendingLoad = false;
-
+    public static bool BlockSaving;
     public static SaveManager Instance { get; private set; }
-
     public static bool IsLoadingFromSave { get; private set; }
 
-    // This is where my save file gets written. Unity gives me a platform-safe path.
     string SavePath => Path.Combine(Application.persistentDataPath, "savegame.json");
 
     private void Awake()
@@ -55,13 +47,12 @@ public class SaveManager : MonoBehaviour
         DontDestroyOnLoad(gameObject);
     }
 
-    // This creates a new SaveData file, fills it with info, and writes it to disk.
     public void Save(GameObject player, int gameGoalCount)
     {
+        if (BlockSaving) return;
 
         var pc = player.GetComponent<playerController>();
 
-        // Start by saving core game info like player data and the current scene.
         var data = new SaveData
         {
             scene = SceneManager.GetActiveScene().name,
@@ -72,7 +63,7 @@ public class SaveManager : MonoBehaviour
             playerGunIndex = pc != null ? pc.GetCurrentGunIndex() : 0
         };
 
-        // Loop through every SaveEntity in the scene (active and inactive) and grab their data.
+        // Save all scene SaveEntities
         var saveEntities = UnityEngine.Object.FindObjectsByType<SaveEntity>(
             FindObjectsInactive.Include,
             FindObjectsSortMode.None
@@ -89,15 +80,13 @@ public class SaveManager : MonoBehaviour
                 rot = se.transform.rotation
             };
 
-            // Ask every component that implements ISaveable for its save data.
             foreach (var mb in se.GetComponentsInChildren<MonoBehaviour>(true))
             {
                 if (mb is ISaveable isv)
                 {
-                    var payload = isv.CaptureState(); // I grab its data here.
+                    var payload = isv.CaptureState();
                     if (payload == null) continue;
 
-                    // Store the component’s type and JSON data.
                     record.components.Add(new SaveRecord
                     {
                         typeName = mb.GetType().AssemblyQualifiedName,
@@ -106,11 +95,15 @@ public class SaveManager : MonoBehaviour
                 }
             }
 
-            // Add the completed entity record to my list.
             data.entities.Add(record);
         }
 
-        // Convert the whole save into JSON and write it to disk safely.
+        // Save singleton/global managers
+        SaveGlobalSingleton(GunUpgradeManager.Instance, "GunUpgradeManager", data);
+        SaveGlobalSingleton(RiftShardManager.Instance, "RiftShardManager", data);
+        // Add other singletons here
+
+        // Write to disk
         var json = JsonUtility.ToJson(data, false);
         string tmpPath = SavePath + ".tmp";
 
@@ -119,31 +112,49 @@ public class SaveManager : MonoBehaviour
 
         if (File.Exists(SavePath)) File.Delete(SavePath);
         File.Move(tmpPath, SavePath);
+    }
 
-        //Debug.Log($"Saved game to {SavePath}");
+    private void SaveGlobalSingleton(ISaveable singleton, string id, SaveData data)
+    {
+        if (singleton == null) return;
+
+        var payload = singleton.CaptureState();
+        if (payload == null) return;
+
+        var record = new EntityRecord
+        {
+            id = "global_" + id,
+            prefabKey = "",
+            pos = Vector3.zero,
+            rot = Quaternion.identity,
+            components = new List<SaveRecord>
+            {
+                new SaveRecord
+                {
+                    typeName = singleton.GetType().AssemblyQualifiedName,
+                    json = JsonUtility.ToJson(payload)
+                }
+            }
+        };
+
+        data.entities.Add(record);
     }
 
     public bool TryLoad(out SaveData data)
     {
         data = null;
-        if (!File.Exists(SavePath)) return false; // No file means nothing to load.
+        if (!File.Exists(SavePath)) return false;
         data = JsonUtility.FromJson<SaveData>(File.ReadAllText(SavePath));
         return data != null;
     }
-    public bool HasSave()
-    {
-        return File.Exists(SavePath);
-    }
 
-    // This coroutine handles the actual world reconstruction when I load a save.
-    public System.Collections.IEnumerator LoadAndRestore(SaveData data, Func<string, GameObject> spawnByKey)
+    public bool HasSave() => File.Exists(SavePath);
+
+    public IEnumerator LoadAndRestore(SaveData data, Func<string, GameObject> spawnByKey)
     {
         IsLoadingFromSave = true;
         try
-
         {
-
-            // If I'm in the wrong scene, load the correct one first.
             if (SceneManager.GetActiveScene().name != data.scene)
             {
                 var op = SceneManager.LoadSceneAsync(data.scene);
@@ -151,65 +162,38 @@ public class SaveManager : MonoBehaviour
             }
             yield return null;
 
-            // Get all SaveEntities currently in the scene and build a quick lookup by ID.
             var saveEntities = UnityEngine.Object.FindObjectsByType<SaveEntity>(
                 FindObjectsInactive.Include,
                 FindObjectsSortMode.None
             );
 
-            // Build the dictionary manually so I can detect duplicates safely.
             var existing = new Dictionary<string, GameObject>();
-
             foreach (var se in saveEntities)
             {
-                if (se == null) continue;
-
-                var id = se.Id;
-
-                if (string.IsNullOrEmpty(id))
-
-                    //Debug.LogWarning($"SaveManager: Found SaveEntity on {se.gameObject.name} with EMPTY id. Skipping it.");
-                    continue;
-
-
-                if (existing.ContainsKey(id))
-
-                    //Debug.LogWarning(
-                    //$"SaveManager: Duplicate SaveEntity id '{id}' found on {se.gameObject.name} " +
-                    //$"and {existing[id].name}. Keeping the first, ignoring this one."
-                    //);
-                    continue;
-
-
-                existing.Add(id, se.gameObject);
+                if (se == null || string.IsNullOrEmpty(se.Id) || existing.ContainsKey(se.Id)) continue;
+                existing.Add(se.Id, se.gameObject);
             }
 
-            // Destroy anything that wasn’t in the saved file (it was dead or collected).
             foreach (var kv in existing.ToList())
                 if (!data.entities.Any(e => e.id == kv.Key))
                     GameObject.Destroy(kv.Value);
 
-            // Now go through all saved entities and make sure they exist and are restored correctly.
             foreach (var e in data.entities)
             {
-                // If the object doesn’t exist in the scene anymore, spawn it back in.
                 if (!existing.TryGetValue(e.id, out var go))
                 {
                     if (!string.IsNullOrEmpty(e.prefabKey) && spawnByKey != null)
                         go = spawnByKey(e.prefabKey);
                     if (!go) continue;
 
-                    // Make sure the new object keeps the same SaveEntity ID so it matches the save.
                     var se = go.GetComponent<SaveEntity>() ?? go.AddComponent<SaveEntity>();
                     var f = typeof(SaveEntity).GetField("id", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
                     f?.SetValue(se, e.id);
                     existing[e.id] = go;
                 }
 
-                // Restore transform position/rotation first.
                 go.transform.SetPositionAndRotation(e.pos, e.rot);
 
-                // Now go through each component and restore its saved values.
                 foreach (var c in e.components)
                 {
                     var t = Type.GetType(c.typeName);
@@ -218,32 +202,51 @@ public class SaveManager : MonoBehaviour
                     var comp = go.GetComponent(t) as ISaveable;
                     if (comp == null) continue;
 
-                    // Ask the component what type it actually saves as.
                     var sample = comp.CaptureState();
                     if (sample == null) continue;
 
-                    //Debug.LogWarning($"SaveManager: CaptureState() on {t.Name} returned null during load. Skipping.");
-
                     var payloadType = sample.GetType();
-
-                    // Deserialize JSON into that exact type.
                     var payload = JsonUtility.FromJson(c.json, payloadType);
-
-                    // Hand the strongly-typed payload back to the component.
                     comp.RestoreState(payload);
                 }
             }
 
-            if (!string.IsNullOrEmpty(data.playerId))
+            // Restore global singletons
+            foreach (var e in data.entities.Where(x => x.id.StartsWith("global_")))
             {
-                if (existing.TryGetValue(data.playerId, out var playerGo) && playerGo != null)
-                    playerGo.transform.SetPositionAndRotation(data.playerPos, data.playerRot);
+                ISaveable singleton = null;
+                if (e.id == "global_GunUpgradeManager") singleton = GunUpgradeManager.Instance;
+                else if (e.id == "global_RiftShardManager") singleton = RiftShardManager.Instance;
+                // Add other singletons here
+
+                if (singleton == null) continue;
+
+                foreach (var c in e.components)
+                {
+                    var t = Type.GetType(c.typeName);
+                    if (t == null) continue;
+
+                    var payload = JsonUtility.FromJson(c.json, t);
+                    singleton.RestoreState(payload);
+                }
+            }
+
+            // Restore player position and weapon index
+            if (!string.IsNullOrEmpty(data.playerId) && existing.TryGetValue(data.playerId, out var playerGo) && playerGo != null)
+            {
+                playerGo.transform.SetPositionAndRotation(data.playerPos, data.playerRot);
+                var pc = playerGo.GetComponent<playerController>();
+                if (pc != null) pc.RestoreGunVisual(data.playerGunIndex);
             }
             else
             {
                 var taggedPlayer = GameObject.FindWithTag("Player");
                 if (taggedPlayer != null)
+                {
                     taggedPlayer.transform.SetPositionAndRotation(data.playerPos, data.playerRot);
+                    var pc = taggedPlayer.GetComponent<playerController>();
+                    if (pc != null) pc.RestoreGunVisual(data.playerGunIndex);
+                }
             }
         }
         finally
@@ -256,17 +259,11 @@ public class SaveManager : MonoBehaviour
     {
         try
         {
-            if (File.Exists(SavePath))
-                File.Delete(SavePath);
+            if (File.Exists(SavePath)) File.Delete(SavePath);
 
             string tmpPath = SavePath + ".tmp";
-            if (File.Exists(tmpPath))
-                File.Delete(tmpPath);
+            if (File.Exists(tmpPath)) File.Delete(tmpPath);
         }
-        catch (System.Exception)
-        {
-        //Debug.LogWarning($"SaveManager.DeleteSave: Failed to delete save file: {e.Message}");
-        }
+        catch { }
     }
-
 }

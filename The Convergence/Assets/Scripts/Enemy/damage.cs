@@ -14,12 +14,12 @@ public class damage : MonoBehaviour
     [SerializeField] private LayerMask ignoreLayer;
 
     [Header("~=~= Damage Settings =~=~")]
-    [Range(1, 20)][SerializeField] private int damageAmount;
+    [Range(1, 500)][SerializeField] private int damageAmount;
     [Range(0.1f, 20f)][SerializeField] private float damageRate;
 
     [Header("~=~= Movement & Lifetime =~=~")]
     [Range(1, 50)][SerializeField] private int speed;
-    [Range(1, 20)][SerializeField] private int destroyTime;
+    [Range(1, 5000)][SerializeField] private int destroyTime;
 
     [Header("~=~= Projectile Arc =~=~")]
     [SerializeField] private ProjectileMode projectileMode = ProjectileMode.Straight;
@@ -34,7 +34,7 @@ public class damage : MonoBehaviour
 
     void Start()
     {
-        if (type == damageType.moving || type == damageType.homing || type == damageType.melee)
+        if (type == damageType.moving || type == damageType.homing || type == damageType.melee || type == damageType.DOT)
         {
             Destroy(gameObject, destroyTime);
 

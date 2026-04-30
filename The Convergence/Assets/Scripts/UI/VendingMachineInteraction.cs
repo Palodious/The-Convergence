@@ -26,6 +26,9 @@ public class VendingMachineInteraction : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.Escape) && storeUIPanel.activeSelf)
         {
+            if (gamemanager.instance != null)
+                gamemanager.instance.SuppressCancelOnce();
+
             SetStoreOpen(false);
         }
     }
